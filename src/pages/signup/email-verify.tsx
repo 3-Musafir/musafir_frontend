@@ -32,8 +32,19 @@ export default function EmailVerification() {
       ...savedData, password
     }
     const response = await action.verifyEmail(password, savedData.verificationId);
-    console.log("response from the verify Email: ")
     if (response.accessToken) {
+      // Clear signup-related form data from localStorage before signing in
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.removeItem("formData");
+          localStorage.removeItem("registration");
+          localStorage.removeItem("registrationId");
+          localStorage.removeItem("isGoogleLogin");
+        } catch (err) {
+          console.warn("Failed to clear localStorage keys:", err);
+        }
+      }
+
       await signIn("credentials", {
         email: formData.email,
         password: formData.password,

@@ -116,7 +116,7 @@ function GetVerified() {
     <div className='min-h-screen bg-white p-3'>
       {/* Header */}
       <header className='flex items-center p-4 border-b'>
-        <Link href='/email-verify' className='p-2 hover:bg-gray-100 rounded-full'>
+        <Link href='signup/email-verify' className='p-2 hover:bg-gray-100 rounded-full'>
           <ArrowLeft className='h-5 w-5' />
         </Link>
         <h1 className='text-center flex-1 text-xl font-semibold mr-7'>Verification</h1>

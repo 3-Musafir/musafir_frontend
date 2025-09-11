@@ -42,8 +42,14 @@ export default function CreateAccount() {
   };
 
   const handleGoogleSignIn = async () => {
+    // Mark this navigation as a Google signup flow so downstream steps
+    // (like AdditionalInfo) can adapt the UI/flow.
+    if (typeof window !== "undefined") {
+      localStorage.setItem("isGoogleLogin", "true");
+    }
+
     await signIn("google", {
-      callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/signup/registrationform` || "/signup/registrationform", 
+      callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/signup/registrationform` || "/signup/registrationform",
     });
   };
 

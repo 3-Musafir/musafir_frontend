@@ -500,7 +500,7 @@ function FlagshipRequirements() {
                   className="sr-only peer"
                 />
                 <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
-                <span>My partner only</span>
+                <span>As a couple (twin room)</span>
               </label>
             </div>
 

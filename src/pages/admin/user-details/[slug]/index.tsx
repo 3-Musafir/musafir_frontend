@@ -21,7 +21,7 @@ export default function UserDetails() {
   const [loading, setLoading] = useState(true);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"approve" | "reject" | null>(null);
+  const [modalType, setModalType] = useState<"approve" | "reject" | "didntPick" | null>(null);
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -35,7 +35,7 @@ export default function UserDetails() {
     }));
   };
 
-  const openModal = (type: "approve" | "reject") => {
+  const openModal = (type: "approve" | "reject" | "didntPick") => {
     setModalType(type);
     setModalOpen(true);
   };
@@ -58,7 +58,11 @@ export default function UserDetails() {
       } else if (modalType === "reject") {
         await FlagshipService.rejectRegistration(slug as string, comment);
         alert("Registration Rejected");
-        router.push(`/trip/${registeredUser?.flagship}`);
+        await fetchUsers();
+      } else if (modalType === "didntPick") {
+        await FlagshipService.didntPickRegistration(slug as string, comment);
+        alert("Marked as Didn't Pick");
+        await fetchUsers();
       }
       closeModal();
     } catch (error) {
@@ -106,7 +110,7 @@ export default function UserDetails() {
               <X />
             </button>
             <h2 className="text-lg font-bold mb-4 capitalize">
-              {modalType} User
+              {modalType === 'didntPick' ? "Mark as Didn't Pick" : `${modalType} User`}
             </h2>
             <textarea
               placeholder="Optional Comment"
@@ -118,18 +122,17 @@ export default function UserDetails() {
             />
             <button
               onClick={handleSubmit}
-              className={`w-full text-white py-2 rounded-lg ${
-                modalType === "approve"
-                  ? "bg-orange-500 hover:bg-orange-600"
+              className={`w-full text-white py-2 rounded-lg ${modalType === "approve"
+                ? "bg-orange-500 hover:bg-orange-600"
+                : modalType === 'didntPick'
+                  ? "bg-gray-700 hover:bg-gray-800"
                   : "bg-red-800 hover:bg-red-900"
-              } ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
+                } ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
               disabled={submitting}
             >
               {submitting
-                ? `${modalType === "approve" ? "Approving..." : "Rejecting..."}`
-                : `Confirm ${
-                    modalType === "approve" ? "Approval" : "Rejection"
-                  }`}
+                ? (modalType === "approve" ? "Approving..." : modalType === 'didntPick' ? "Marking..." : "Rejecting...")
+                : (modalType === "approve" ? "Confirm Approval" : modalType === 'didntPick' ? "Confirm Mark as Didn't Pick" : "Confirm Rejection")}
             </button>
           </div>
         </div>
@@ -233,22 +236,64 @@ export default function UserDetails() {
               </div>
 
               <div className="flex gap-4 mt-4">
-                <button className="flex-1 border border-gray-300 rounded-lg py-2 px-4 flex items-center justify-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center">
-                    <Phone className="h-3 w-3 text-white" />
-                  </div>
-                  <span>Cell Phone</span>
-                </button>
+                {/* Use an anchor with tel: so mobile devices open the dialer. Preserve button styles. */}
+                {(() => {
+                  const phone = ((registeredUser?.user as IUser).phone || "").toString();
+                  // sanitize phone for tel: (remove spaces, parentheses)
+                  const sanitized = phone.replace(/[^+0-9]/g, '');
+                  const hasPhone = sanitized.length > 0;
+                  return (
+                    <a
+                      href={hasPhone ? `tel:${sanitized}` : undefined}
+                      onClick={(e) => {
+                        if (!hasPhone) {
+                          e.preventDefault();
+                        }
+                      }}
+                      className={`flex-1 border border-gray-300 rounded-lg py-2 px-4 flex items-center justify-center gap-2 ${!hasPhone ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      aria-disabled={!hasPhone}
+                    >
+                      <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center">
+                        <Phone className="h-3 w-3 text-white" />
+                      </div>
+                      <span>Cell Phone</span>
+                    </a>
+                  );
+                })()}
 
-                <button className="flex-1 bg-black text-white rounded-lg py-2 px-4 flex items-center justify-center gap-2">
-                  <Image
-                    src="/whatsapp.png"
-                    alt="Verified Shield"
-                    width={20}
-                    height={20}
-                  />
-                  <span>WhatsApp</span>
-                </button>
+                {(() => {
+                  const phoneRaw = ((registeredUser?.user as IUser).phone || "").toString();
+                  // wa.me expects only digits with country code, no + or spaces
+                  const sanitizedWa = phoneRaw.replace(/[^0-9]/g, '');
+                  const hasWa = sanitizedWa.length > 0;
+                  const defaultMsg = '';
+                  const waHref = hasWa
+                    ? `https://wa.me/${sanitizedWa}?text=${encodeURIComponent(defaultMsg)}`
+                    : undefined;
+
+                  return (
+                    <a
+                      href={waHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => {
+                        if (!hasWa) e.preventDefault();
+                      }}
+                      className={`flex-1 bg-black text-white rounded-lg py-2 px-4 flex items-center justify-center gap-2 ${!hasWa ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      aria-disabled={!hasWa}
+                    >
+                      <Image
+                        src="/whatsapp.png"
+                        alt="WhatsApp"
+                        width={20}
+                        height={20}
+                      />
+                      <span>WhatsApp</span>
+                    </a>
+                  );
+                })()}
               </div>
             </div>
           )}
@@ -292,9 +337,9 @@ export default function UserDetails() {
                   {" "}
                   {(registeredUser?.user as IUser).dateOfBirth
                     ? differenceInYears(
-                        new Date(),
-                        parseISO((registeredUser?.user as IUser).dateOfBirth)
-                      )
+                      new Date(),
+                      parseISO((registeredUser?.user as IUser).dateOfBirth)
+                    )
                     : "N/A"}
                 </span>
               </div>
@@ -340,9 +385,8 @@ export default function UserDetails() {
                       verification.referralIDs &&
                       verification.referralIDs.length > 0
                     ) {
-                      return `${verification.referralIDs.length} Referral${
-                        verification.referralIDs.length > 1 ? "s" : ""
-                      }`;
+                      return `${verification.referralIDs.length} Referral${verification.referralIDs.length > 1 ? "s" : ""
+                        }`;
                     }
                     if (verification.RequestCall) return "Request Call";
                     return "Not specified";
@@ -371,10 +415,16 @@ export default function UserDetails() {
                 <span className="font-medium">Dec 10, 2024</span>
               </div>
 
-              {registeredUser?.status === "pending" && (
+              {(registeredUser?.status === "pending" || registeredUser?.status === "didntPick") && (
                 <>
                   <div className="grid grid-cols-2 gap-4 mt-4">
-                    <button className="border border-gray-300 rounded-lg py-3 px-4 font-medium">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModal('didntPick');
+                      }}
+                      className="border border-gray-300 rounded-lg py-3 px-4 font-medium"
+                    >
                       Didn&apos;t Pick
                     </button>
 

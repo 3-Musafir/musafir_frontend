@@ -60,18 +60,7 @@ export const RegistrationsList = () => {
       ) : (
         registeredUsers.map((r) => (
           <Link href={`/admin/user-details/${r._id}`} key={r.id}>
-            <div className="border rounded-lg p-4 flex items-center relative">
-              <div className="h-12 w-12 mr-4 overflow-hidden rounded-full">
-                <img
-                  src={(r.user as IUser).profileImg || "/anonymous-user.png"}
-                  alt={
-                    (r.user as IUser).profileImg
-                      ? (r.user as IUser).fullName
-                      : "Anonymous User"
-                  }
-                  className="h-full w-full object-cover"
-                />
-              </div>
+            <div className="border rounded-lg p-4 flex items-center relative mb-3">
               <div className="flex-1">
                 <h3 className="font-bold text-lg">
                   {(r.user as IUser).fullName}
@@ -79,6 +68,9 @@ export const RegistrationsList = () => {
                 <p className="text-sm text-gray-500">{`Joining from ${
                   (r.user as IUser).city
                 }`}</p>
+                {(r.status === "rejected" || r.status === "accepted" || r.status === "didntPick") && (<p className="text-sm text-gray-500">{`Status: ${
+                  r.status === "rejected"? "Rejected": r.status === "accepted"? "Accepted": r.status === "didntPick"? "Didn't Pick": ""
+                }`}</p>)}
               </div>
               <div className="absolute top-4 right-4">
                 <Image

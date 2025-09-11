@@ -54,6 +54,14 @@ export class FlagshipService {
     return data;
   }
 
+  static async didntPickRegistration(registrationId: string, comment: string) {
+    const { data } = await axios.patch(
+      `${process.env.NEXT_PUBLIC_API_URL}/flagship/didnt-pick/${registrationId}`,
+      { comment }
+    );
+    return data;
+  }
+
   static async getRegistrationStats(
     flagshipId: string
   ): Promise<IRegistrationStats> {

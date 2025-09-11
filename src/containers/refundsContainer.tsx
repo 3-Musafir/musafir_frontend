@@ -139,11 +139,11 @@ export const RefundsContainer = ({
                             ?.paymentId as unknown as IPayment
                         )?.createdAt
                           ? new Date(
-                              (
-                                (refund?.registration as IRegistration)
-                                  ?.paymentId as unknown as IPayment
-                              ).createdAt
-                            ).toLocaleDateString()
+                            (
+                              (refund?.registration as IRegistration)
+                                ?.paymentId as unknown as IPayment
+                            ).createdAt
+                          ).toLocaleDateString()
                           : "N/A"}
                       </span>
                     </div>
@@ -234,6 +234,15 @@ export const RefundsContainer = ({
               <Card
                 key={refund._id}
                 className="overflow-hidden transition-all duration-200 hover:shadow-lg"
+                onClick={() => {
+                  const paymentId = (
+                    (refund?.registration as IRegistration)
+                      ?.paymentId as unknown as IPayment
+                  )?._id;
+                  if (paymentId) {
+                    handleViewDetails(paymentId);
+                  }
+                }}
               >
                 <CardHeader className="pb-2">
                   <h3 className="text-lg font-semibold">
@@ -262,17 +271,17 @@ export const RefundsContainer = ({
                       (refund?.registration as IRegistration)
                         ?.paymentId as unknown as IPayment
                     )?.discount !== 0 && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Discount Applied</span>
-                        <span className="font-medium text-green-600">
-                          Rs.{" "}
-                          {(
-                            (refund?.registration as IRegistration)
-                              ?.paymentId as unknown as IPayment
-                          )?.discount?.toLocaleString() || "0"}
-                        </span>
-                      </div>
-                    )}
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Discount Applied</span>
+                          <span className="font-medium text-green-600">
+                            Rs.{" "}
+                            {(
+                              (refund?.registration as IRegistration)
+                                ?.paymentId as unknown as IPayment
+                            )?.discount?.toLocaleString() || "0"}
+                          </span>
+                        </div>
+                      )}
                     <div className="flex justify-between">
                       <span className="text-gray-600">Payment Date</span>
                       <span className="font-medium">
@@ -281,11 +290,11 @@ export const RefundsContainer = ({
                             ?.paymentId as unknown as IPayment
                         )?.createdAt
                           ? new Date(
-                              (
-                                (refund?.registration as IRegistration)
-                                  ?.paymentId as unknown as IPayment
-                              ).createdAt
-                            ).toLocaleDateString()
+                            (
+                              (refund?.registration as IRegistration)
+                                ?.paymentId as unknown as IPayment
+                            ).createdAt
+                          ).toLocaleDateString()
                           : "N/A"}
                       </span>
                     </div>
@@ -337,21 +346,6 @@ export const RefundsContainer = ({
                   >
                     {refund.status}
                   </Badge>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const paymentId = (
-                        (refund?.registration as IRegistration)
-                          ?.paymentId as unknown as IPayment
-                      )?._id;
-                      if (paymentId) {
-                        handleViewDetails(paymentId);
-                      }
-                    }}
-                  >
-                    View Details
-                  </Button>
                 </CardFooter>
               </Card>
             ))}

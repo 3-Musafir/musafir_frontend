@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import useCustomHook from "@/hooks/useSignUp";
 import { BaseUser } from "@/interfaces/signup";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
-import { useSession } from "next-auth/react";
 
 export default function AdditionalInfo() {
   const router = useRouter();
   const action = useCustomHook();
   const registrationAction = useRegistrationHook();
-  const { data: session } = useSession();
   const [university, setUniversity] = useState("LUM");
   const [cnic, setCnic] = useState("");
   const [city, setCity] = useState("");
@@ -34,15 +33,12 @@ export default function AdditionalInfo() {
       setCity(savedData?.city || "");
       setEmploymentStatus(savedData?.employmentStatus || "");
     }
-    
-    // Check if user is coming from Google login flow
-    // Only set as Google login if session exists AND we don't have a password in formData
-    if (session?.accessToken ) {
-      setIsGoogleLogin(true);
-    } else {
-      setIsGoogleLogin(false);
-    }
-  }, [session]);
+
+    // Check if user is coming from Google login flow via localStorage flag
+    // Set a flag 'isGoogleLogin' to 'true' during the Google signup redirect flow
+    const googleFlag = localStorage.getItem('isGoogleLogin');
+    setIsGoogleLogin(googleFlag === 'true');
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -94,6 +90,15 @@ export default function AdditionalInfo() {
           verificationId,
         };
         localStorage.setItem("formData", JSON.stringify(storeData));
+
+        console.log("clearing any existing session and routing to the email verify page");
+        try {
+          // Clear any existing NextAuth session so email-verify can create a fresh one
+          await signOut({ redirect: false });
+        } catch (err) {
+          console.warn("Error signing out existing session:", err);
+        }
+
         router.push("/signup/email-verify");
       }
     } catch (error) {

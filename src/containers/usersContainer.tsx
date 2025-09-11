@@ -38,6 +38,7 @@ export function UsersContainer({ users, activeSection, searchQuery, isSearching 
         <Card
           key={user._id}
           className="overflow-hidden transition-all duration-200 hover:shadow-lg"
+          onClick={() => handleViewUserDetails(user._id)}
         >
           <CardHeader className="pb-2">
             <h3 className="text-lg font-semibold">{user.fullName}</h3>
@@ -56,13 +57,6 @@ export function UsersContainer({ users, activeSection, searchQuery, isSearching 
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleViewUserDetails(user._id)}
-            >
-              View Details
-            </Button>
             <Badge
               variant="outline"
               className={cn(

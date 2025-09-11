@@ -90,6 +90,7 @@ export function PaymentsContainer({
         <Card
           key={item._id}
           className="overflow-hidden transition-all duration-200 hover:shadow-lg"
+          onClick={() => handleViewDetails(item._id)}
         >
           <CardHeader className="pb-2">
             <h3 className="text-lg font-semibold">
@@ -211,15 +212,6 @@ export function PaymentsContainer({
                 >
                   {item.status}
                 </Badge>
-                {item.status === "pendingApproval" && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleViewDetails(item._id)}
-                  >
-                    View Details
-                  </Button>
-                )}
               </div>
             )}
           </CardFooter>

@@ -36,6 +36,7 @@ export function TripsContainer({ trips, activeSection }: TripsContainerProps) {
         <Card
           key={trip._id}
           className="overflow-hidden transition-all duration-200 hover:shadow-lg"
+          onClick={() => handleViewTripDetails(trip._id)}
         >
           <div className="relative h-48">
             <Image
@@ -57,15 +58,6 @@ export function TripsContainer({ trips, activeSection }: TripsContainerProps) {
               <span className="font-medium">{trip.totalSeats} seats</span>
             </div>
           </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleViewTripDetails(trip._id)}
-            >
-              View Details
-            </Button>
-          </CardFooter>
         </Card>
       )) : (
         <div className="text-center text-gray-500 py-8">

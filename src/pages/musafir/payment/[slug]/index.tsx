@@ -40,14 +40,13 @@ export default function TripPayment() {
   const [paymentType, setPaymentType] = useState<"full" | "partial">("full");
   const [partialAmount, setPartialAmount] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [discountEnabled, setDiscountEnabled] = useState<boolean>(false);
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const registrationHook = useRegistrationHook();
   const [registration, setRegistration] = useState<any>(null);
 
   const totalAmount = registration?.price;
-  const finalAmount = discountEnabled ? Math.max(0, totalAmount - discountAmount) : totalAmount;
+  const finalAmount = Math.max(0, totalAmount - discountAmount)
 
   const handleCopy = async (text: string) => {
     try {
@@ -134,7 +133,7 @@ export default function TripPayment() {
         bankAccount: "680929fef52e643c2a724217",
         paymentType: paymentType === "full" ? "fullPayment" : "partialPayment",
         amount: paymentType === "full" ? finalAmount : partialAmount,
-        discount: discountEnabled ? discountAmount : 0,
+        discount: discountAmount,
         screenshot: file,
       });
 
@@ -263,33 +262,18 @@ export default function TripPayment() {
 
           {/* Discount Section */}
           <div className="bg-gray-100 rounded-lg mx-4 p-4 mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-gray-700 font-medium">Discount Applicable</span>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={discountEnabled}
-                  onChange={(e) => setDiscountEnabled(e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
-              </label>
-            </div>
-
-            {discountEnabled && (
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Discount Amount:</span>
-                  <span className="font-semibold text-green-600">Rs. {discountAmount.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Final Amount:</span>
-                  <span className="font-bold text-xl text-orange-600">
-                    Rs. {finalAmount?.toLocaleString()}
-                  </span>
-                </div>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Discount Amount:</span>
+                <span className="font-semibold text-green-600">Rs. {discountAmount.toLocaleString()}</span>
               </div>
-            )}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Final Amount:</span>
+                <span className="font-bold text-xl text-orange-600">
+                  Rs. {finalAmount?.toLocaleString()}
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Step 1: Transfer Amount */}

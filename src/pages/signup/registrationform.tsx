@@ -33,8 +33,10 @@ export default function RegistrationForm() {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    const formatedPhone = `0${phone}`;
+    const formatedWhatsapp = whatsappPhone? `0${whatsappPhone}` : whatsappPhone;
     const savedData = JSON.parse(localStorage.getItem('formData') || '{}');
-    const formData = { ...savedData, gender, fullName, phone, whatsappPhone };
+    const formData = { ...savedData, gender, fullName, phone: formatedPhone, whatsappPhone: formatedWhatsapp };
 
     localStorage.setItem("formData", JSON.stringify(formData));
     router.push(flagshipId ? '/flagship/flagship-requirement' : '/signup/additionalinfo')

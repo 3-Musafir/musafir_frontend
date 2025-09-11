@@ -90,7 +90,7 @@ export const RegistrationStatsContainer = () => {
       <div className="bg-red-50 p-4 rounded-lg">
         <div className="text-sm text-gray-600">Days to Trip</div>
         <div className="text-4xl font-bold">
-          {stats.daysUntilStart}{" "}
+          {stats.daysUntilStart > 0 ? stats.daysUntilStart : 0}{" "}
           <span className="text-sm font-normal">Days</span>
         </div>
       </div>
@@ -242,15 +242,14 @@ export const RegistrationStatsContainer = () => {
           {stats.topUniversities.map(({ university, count }, index) => (
             <div key={university} className="flex items-center">
               <div
-                className={`w-4 h-4 mr-2 ${
-                  index === 0
+                className={`w-4 h-4 mr-2 ${index === 0
                     ? "bg-amber-500"
                     : index === 1
-                    ? "bg-gray-400"
-                    : index === 2
-                    ? "bg-amber-700"
-                    : "bg-blue-700"
-                }`}
+                      ? "bg-gray-400"
+                      : index === 2
+                        ? "bg-amber-700"
+                        : "bg-blue-700"
+                  }`}
               ></div>
               <div className="flex-1">{university}</div>
               <div className="font-medium">{count}</div>

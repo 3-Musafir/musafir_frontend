@@ -254,7 +254,7 @@ function UserSettings() {
               
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-5 py-3 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-orange-500 hover:text-white rounded-md transition-colors"
+                className="flex items-center gap-2 px-5 py-3 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-orange-500 hover:text-white rounded-md transition-colors mb-10"
               >
                 <LogOut className="w-5 h-5" />
                 Logout

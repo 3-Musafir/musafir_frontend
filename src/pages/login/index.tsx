@@ -70,9 +70,13 @@ export default function Login() {
   };
 
   const handleGoogleSignIn = async () => {
-    
+    // Set local flag so downstream signup pages know this was a Google flow
+    if (typeof window !== "undefined") {
+      localStorage.setItem("isGoogleLogin", "true");
+    }
+
     await signIn("google", {
-      callbackUrl:`${process.env.NEXT_PUBLIC_AUTH_URL}/home` || "/home", 
+      callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/home` || "/home",
     });
   };
 
