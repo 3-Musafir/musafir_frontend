@@ -40,7 +40,7 @@ export default function LaunchScreen() {
 
           {/* Question Text */}
           <h1 className="mb-12 text-center text-3xl font-bold leading-tight md:text-4xl">
-            Have you ever registered for a 3 musafir flagship before?
+            Have you ever registered for a 3Musafir flagship before?
           </h1>
 
           {/* Buttons */}
