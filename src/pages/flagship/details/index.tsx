@@ -17,15 +17,24 @@ import { showAlert } from "@/pages/alert";
 import useFaqHook from "@/hooks/useFaqHandler";
 import useRatingHook from "@/hooks/useRatingHandler";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import type { IFlagship } from "@/services/types/flagship";
 
 export default function FlagshipDetails() {
+  type FaqItem = { question: string; answer: string };
+  type Review = {
+    userId?: { fullName?: string };
+    flagshipId?: { destination?: string; tripName?: string };
+    rating?: number;
+    review?: string;
+  };
+
   const router = useRouter();
   const { id } = router.query;
   const { getFaq } = useFaqHook();
   const { getTopFiveRating } = useRatingHook();
   const { getFlagship, sendTripQuery } = useFlagshipHook();
 
-  const [flagship, setFlagship] = useState<any>(null);
+  const [flagship, setFlagship] = useState<IFlagship | null>(null);
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -35,23 +44,24 @@ export default function FlagshipDetails() {
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
   const [showQueryInput, setShowQueryInput] = useState(false);
   const [queryText, setQueryText] = useState("");
-  const [faq, setFaq] = useState<any>([]);
-  const [rating, setRating] = useState<any>([]);
-  const existingFlagship = useRecoilValue(flagshipState);
+  const [faq, setFaq] = useState<FaqItem[]>([]);
+  const [rating, setRating] = useState<Review[]>([]);
+  const existingFlagship =
+    useRecoilValue(flagshipState) as unknown as IFlagship | null;
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [showPdfModal, setShowPdfModal] = useState(false);
 
   const fetchFaq = async () => {
-    const faq = await getFaq();
-    setFaq(faq);
+    const faqItems = (await getFaq()) as unknown as FaqItem[];
+    setFaq(faqItems);
   };
 
   const fetchRating = async () => {
     if (!id) return;
-    const rating = await getTopFiveRating(id as string);
-    setRating(rating);
+    const ratingItems = (await getTopFiveRating(id as string)) as unknown as Review[];
+    setRating(ratingItems);
   };
 
   const fetchFlagshipDetails = async () => {
@@ -60,7 +70,7 @@ export default function FlagshipDetails() {
       if (existingFlagship && existingFlagship.id === id) {
         setFlagship(existingFlagship);
       } else {
-        const data = await getFlagship(id as string);
+        const data = (await getFlagship(id as string)) as unknown as IFlagship;
         setFlagship(data);
       }
     } catch (err) {
@@ -69,6 +79,7 @@ export default function FlagshipDetails() {
   };
 
   const calculateTimeLeft = () => {
+    if (!flagship?.endDate) return;
     const deadline = new Date(flagship.endDate);
     const now = new Date();
     const difference = deadline.getTime() - now.getTime();
@@ -121,12 +132,17 @@ export default function FlagshipDetails() {
       setShowQueryInput(!showQueryInput);
       return;
     } else {
-      const res = await sendTripQuery(queryText, id as string);
-      if (res.statusCode === 200) {
-        setQueryText("");
-        showAlert("Trip query sent successfully", "success");
-        setShowQueryInput(false);
-      } else {
+      try {
+        const res = await sendTripQuery(queryText, id as string);
+        if (res?.statusCode === 200) {
+          setQueryText("");
+          showAlert("Trip query sent successfully", "success");
+          setShowQueryInput(false);
+        } else {
+          showAlert("Failed to send trip query", "error");
+        }
+      } catch {
+        // apiService already shows an error toast; this avoids unhandled rejections
         showAlert("Failed to send trip query", "error");
       }
     }
@@ -315,14 +331,14 @@ export default function FlagshipDetails() {
                   display: none;
                 }
               `}</style>
-              {rating.map((review: any, index: number) => (
+              {rating.map((review: Review, index: number) => (
                 <div key={index} className="flex-shrink-0 w-72">
                   <ReviewCard
-                    name={review?.userId?.fullName}
-                    location={review?.flagshipId?.destination}
-                    rating={review?.rating}
-                    eventName={review?.flagshipId?.tripName}
-                    comment={review?.review}
+                    name={review?.userId?.fullName ?? ""}
+                    location={review?.flagshipId?.destination ?? ""}
+                    rating={review?.rating ?? 0}
+                    eventName={review?.flagshipId?.tripName ?? ""}
+                    comment={review?.review ?? ""}
                   />
                 </div>
               ))}
@@ -363,7 +379,7 @@ export default function FlagshipDetails() {
                 Frequently Asked Questions
               </h3>
               <div className="space-y-2">
-                {faq.map((faq: any, index: number) => (
+                {faq.map((faq: FaqItem, index: number) => (
                   <div key={index} className="border-b border-gray-200">
                     <button
                       className="w-full py-4 px-2 flex justify-between items-center text-left"

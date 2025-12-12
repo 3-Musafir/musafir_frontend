@@ -13,6 +13,13 @@ declare module "next-auth" {
   }
 }
 
+declare module "next-auth/jwt" {
+  interface JWT {
+    accessToken?: string;
+    user?: Record<string, unknown>;
+  }
+}
+
 export default NextAuth({
   providers: [
     // Google OAuth Provider
@@ -86,14 +93,19 @@ export default NextAuth({
 
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = user.accessToken;
+        const u = user as unknown as {
+          accessToken?: string;
+        } & Record<string, unknown>;
+        token.accessToken = u.accessToken;
+        token.user = u;
       }
       return token;
     },
 
-    async session({ session, token, user }) {
+    async session({ session, token }) {
       session.accessToken = token.accessToken as string | undefined;
-      session.user = user;
+      session.user =
+        (token.user as unknown as typeof session.user) ?? session.user;
       return session;
     },
   },

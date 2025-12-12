@@ -27,13 +27,14 @@ import withAuth from "@/hoc/withAuth";
 import { ROLES } from "@/config/constants";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useResetRecoilState } from "recoil";
 import { currentUser } from "@/store/signup";
 
 function AdminMainPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const userData = useRecoilValue(currentUser);
+  const resetCurrentUser = useResetRecoilState(currentUser);
   const [activeTab, setActiveTab] = useState("trips");
   const [activeSection, setActiveSection] = useState("past");
   const [trips, setTrips] = useState<{
@@ -168,6 +169,11 @@ function AdminMainPage() {
 
   const handleSignOut = async () => {
     try {
+      // Clear persisted user so a stale localStorage value can't show up on next login
+      resetCurrentUser();
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("recoil-persist");
+      }
       await signOut({
         callbackUrl: "/login",
       });
@@ -177,13 +183,31 @@ function AdminMainPage() {
   };
 
   const getAdminName = () => {
-    if (userData?.fullName) {
-      return userData.fullName;
+    type SessionUser = {
+      fullName?: string | null;
+      name?: string | null;
+      email?: string | null;
+    };
+    type PersistedUser = {
+      fullName?: string | null;
+      email?: string | null;
+    };
+
+    const sessionUser = session?.user as unknown as SessionUser | undefined;
+    const recoilUser = userData as unknown as PersistedUser;
+
+    // Prefer authenticated session first
+    const sessionName = sessionUser?.fullName || sessionUser?.name || "";
+
+    const sessionEmail = sessionUser?.email || "";
+    const recoilEmail = recoilUser?.email || "";
+
+    // If recoil is from a different user, ignore it completely
+    if (sessionEmail && recoilEmail && sessionEmail !== recoilEmail) {
+      return sessionName || "Admin";
     }
-    if (session?.user?.name) {
-      return session.user.name;
-    }
-    return "Admin";
+
+    return sessionName || recoilUser?.fullName || "Admin";
   };
 
   const handleRefundAction = async (

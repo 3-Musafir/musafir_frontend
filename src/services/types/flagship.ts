@@ -17,6 +17,7 @@ export interface IFlagship {
   tiers: Tier[];
   mattressTiers: MattressTier[];
   files: File[];
+  detailedPlan?: string;
   totalSeats: number;
   femaleSeats: number;
   maleSeats: number;
