@@ -1,6 +1,5 @@
-import Image from 'next/image'
-import { useRouter } from 'next/router'
-import imag from './../../assets/launchscreen.jpeg'
+import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import MusafirLogo from './../../assets/musafir-logo.svg';
 
