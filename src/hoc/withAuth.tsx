@@ -28,7 +28,7 @@ const withAuth = <P extends object>(
 
     const handleSignOut = async () => {
       await signOut({
-        callbackUrl: `${process.env.NEXTAUTH_UR}/login`,
+        callbackUrl: `http://localhost:3000/login`,
       });
     };
 

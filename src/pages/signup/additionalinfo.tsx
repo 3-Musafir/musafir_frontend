@@ -12,6 +12,7 @@ export default function AdditionalInfo() {
   const registrationAction = useRegistrationHook();
   const [university, setUniversity] = useState("LUM");
   const [cnic, setCnic] = useState("");
+  const [cnicError, setCnicError] = useState<string | null>(null);
   const [city, setCity] = useState("");
   const [socialLink, setSocial] = useState("");
   const [flagshipId, setFlagshipId] = useState(null);
@@ -40,8 +41,28 @@ export default function AdditionalInfo() {
     setIsGoogleLogin(googleFlag === 'true');
   }, []);
 
+  const handleCnicChange = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, "").slice(0, 13);
+    setCnic(digitsOnly);
+    if (digitsOnly.length === 13) {
+      setCnicError(null);
+    }
+  };
+
+  const validateCnic = () => {
+    if (cnic.length !== 13) {
+      setCnicError("CNIC must be exactly 13 digits.");
+      return false;
+    }
+    setCnicError(null);
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!validateCnic()) {
+      return;
+    }
     setIsLoading(true);
 
     try {
@@ -175,11 +196,25 @@ export default function AdditionalInfo() {
                   id="cnic"
                   value={cnic}
                   required={true}
-                  onChange={(e) => setCnic(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={13}
+                  onChange={(e) => handleCnicChange(e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                    cnicError
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-gray-400"
+                  }`}
                   placeholder="Enter CNIC number"
                   disabled={isLoading}
+                  aria-invalid={cnicError ? "true" : "false"}
+                  aria-describedby={cnicError ? "cnic-error" : undefined}
                 />
+                {cnicError && (
+                  <p id="cnic-error" className="text-xs text-red-600 mt-1">
+                    {cnicError}
+                  </p>
+                )}
               </div>
             </div>
 

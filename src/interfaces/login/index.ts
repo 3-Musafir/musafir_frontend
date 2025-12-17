@@ -27,5 +27,6 @@ interface VerificationSubSchema {
     roles?: [string];
     emailVerified?: boolean;
     verification?: VerificationSubSchema;
+    verificationStats?: { verifiedByMe: number };
   }
   

@@ -202,6 +202,22 @@ function UserSettings() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Musafirs Verified
+                </label>
+                <input
+                  type="text"
+                  name="musafirsVerified"
+                  value={
+                    userData.verificationStats?.verifiedByMe !== undefined
+                      ? userData.verificationStats.verifiedByMe
+                      : 0
+                  }
+                  disabled
+                  className="w-full px-3 py-2 border rounded-md bg-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Verification Status
                 </label>
                 <input

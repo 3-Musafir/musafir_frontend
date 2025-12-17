@@ -1,6 +1,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { showAlert } from '@/pages/alert'
 
 export default function RegistrationForm() {
   const router = useRouter()
@@ -31,8 +32,29 @@ export default function RegistrationForm() {
     }
   }, [status, session, router]);
 
+  const [phoneError, setPhoneError] = useState<string | null>(null)
+  const [whatsappError, setWhatsappError] = useState<string | null>(null)
+
+  const validatePhone = (value: string, label: string) => {
+    if (value.length !== 10) {
+      return `${label} must be exactly 10 digits.`
+    }
+    return null
+  }
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    const primaryError = validatePhone(phone, 'Phone')
+    const secondaryError = showWhatsapp ? null : validatePhone(whatsappPhone, 'Whatsapp')
+
+    setPhoneError(primaryError)
+    setWhatsappError(secondaryError)
+
+    if (primaryError || secondaryError) {
+      showAlert('Please fix the highlighted phone fields.', 'error')
+      return
+    }
+
     const formatedPhone = `0${phone}`;
     const formatedWhatsapp = whatsappPhone? `0${whatsappPhone}` : whatsappPhone;
     const savedData = JSON.parse(localStorage.getItem('formData') || '{}');
@@ -166,26 +188,41 @@ export default function RegistrationForm() {
               <label htmlFor="phone" className="block text-sm font-medium">
                 Phone
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-start">
                 <select
-                  className="w-[100px] px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className="w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
                 >
                   <option value="+92">+92</option>
                 </select>
-                <input
-                  type="tel"
-                  id="phone"
-                  value={phone}
-                  required
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '');
-                    if (value.length <= 10) {
-                      setPhone(value);
-                    }
-                  }}
-                  placeholder="3XXXXXXXXX"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
-                />
+                <div className="flex-1">
+                  <input
+                    type="tel"
+                    id="phone"
+                    value={phone}
+                    required
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={10}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '')
+                      setPhone(value.slice(0, 10))
+                      if (value.slice(0, 10).length === 10) {
+                        setPhoneError(null)
+                      }
+                    }}
+                    placeholder="3XXXXXXXXX"
+                    className={`w-full px-3 py-2 border rounded-md bg-gray-100 focus:outline-none focus:ring-2 ${
+                      phoneError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-400'
+                    }`}
+                    aria-invalid={phoneError ? 'true' : 'false'}
+                    aria-describedby={phoneError ? 'phone-error' : undefined}
+                  />
+                  {phoneError && (
+                    <p id="phone-error" className="text-xs text-red-600 mt-1">
+                      {phoneError}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -207,28 +244,43 @@ export default function RegistrationForm() {
               <label htmlFor="secondPhone" className="block text-sm font-medium">
                 Whatsapp
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-start">
                 <select
-                  className="w-[100px] px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className="w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
                   disabled={showWhatsapp}
                 >
                   <option value="+92">+92</option>
                 </select>
-                <input
-                  type="tel"
-                  id="secondPhone"
-                  value={whatsappPhone}
-                  required
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '');
-                    if (value.length <= 10) {
-                      setWhatsappPhone(value);
-                    }
-                  }}
-                  placeholder="3XXXXXXXXX"
-                  disabled={showWhatsapp}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
-                />
+                <div className="flex-1">
+                  <input
+                    type="tel"
+                    id="secondPhone"
+                    value={whatsappPhone}
+                    required={!showWhatsapp}
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={10}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '')
+                      setWhatsappPhone(value.slice(0, 10))
+                      if (value.slice(0, 10).length === 10) {
+                        setWhatsappError(null)
+                      }
+                    }}
+                    placeholder="3XXXXXXXXX"
+                    disabled={showWhatsapp}
+                    className={`w-full px-3 py-2 border rounded-md bg-gray-100 focus:outline-none focus:ring-2 ${
+                      whatsappError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-400'
+                    }`}
+                    aria-invalid={whatsappError ? 'true' : 'false'}
+                    aria-describedby={whatsappError ? 'whatsapp-error' : undefined}
+                  />
+                  {!showWhatsapp && whatsappError && (
+                    <p id="whatsapp-error" className="text-xs text-red-600 mt-1">
+                      {whatsappError}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 

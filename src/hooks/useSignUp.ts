@@ -11,8 +11,19 @@ const useSignUpHook = () => {
   const router = useRouter();
 
   const register = async (user: BaseUser): Promise<unknown> => {
+    console.log("[useSignUp] Register API call started", {
+      endpoint: SIGNUP,
+      payloadPreview: {
+        email: (user as SignupUser)?.email,
+        fullName: (user as SignupUser)?.fullName,
+        hasPassword: Boolean((user as SignupUser)?.password),
+      },
+    });
     const data = await api.post(`${SIGNUP}`, user);
-    console.log(data);
+    console.log("[useSignUp] Register API response", {
+      success: Boolean(data),
+      keys: data ? Object.keys(data) : [],
+    });
 
     // if (Object.keys(data).length > 0) {
     //   setUser(data);
@@ -21,7 +32,15 @@ const useSignUpHook = () => {
   };
 
   const verifyEmail = async (password: string, verificationId: string): Promise<any> => {
+    console.log("[useSignUp] Verify email API call started", {
+      endpoint: VERIFY_EMAIL,
+      hasVerificationId: Boolean(verificationId),
+    });
     const data = await api.post(`${VERIFY_EMAIL}`, { password, verificationId });
+    console.log("[useSignUp] Verify email API response", {
+      success: Boolean(data),
+      hasAccessToken: Boolean(data?.accessToken),
+    });
     if (data) {
       return data;
     } else {
