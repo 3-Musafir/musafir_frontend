@@ -13,6 +13,10 @@ interface UpdateUserData {
   fullName?: string;
   phone?: string;
   cnic?: string;
+  city?: string;
+  university?: string;
+  socialLink?: string;
+  gender?: string;
 }
 
 const useUserHandler = () => {

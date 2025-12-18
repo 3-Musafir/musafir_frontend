@@ -1,9 +1,10 @@
-import { ComponentType, useEffect } from "react";
+import { ComponentType, useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useRecoilValue } from "recoil";
-import { currentUserRoleState } from "@/store";
-import { ROUTES_CONSTANTS } from "@/config/constants";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { currentUser, currentUserRoleState } from "@/store";
+import api from "@/pages/api";
+import apiEndpoints from "@/config/apiEndpoints";
 
 interface WithAuthOptions {
   allowedRoles?: string[];
@@ -15,10 +16,12 @@ const withAuth = <P extends object>(
 ) => {
   return function AuthComponent(props: P) {
     const currentRole = useRecoilValue(currentUserRoleState); // An array
+    const setCurrentUser = useSetRecoilState(currentUser);
 
     const { data: session, status } = useSession();
     const router = useRouter();
     const allowedRoles = options?.allowedRoles;
+    const [profileChecked, setProfileChecked] = useState(false);
 
     // Calculate hasRole if allowedRoles exist and currentRole is loaded
     const hasRole =
@@ -37,15 +40,47 @@ const withAuth = <P extends object>(
 
       if (!session) {
         handleSignOut(); // Redirect to login if no session
+        return;
       }
-      // else if (allowedRoles && currentRole.length > 0 && !hasRole) {
-      //   // Redirect if the user's roles do not match
-      //   router.push('/unauthorized');
-      // }
-    }, [session, status, router, allowedRoles, currentRole, hasRole]);
+
+      let cancelled = false;
+
+      const fetchProfile = async () => {
+        try {
+          const response = await api.get(apiEndpoints.USER.GET_ME);
+          const userData = (response as any)?.data ?? (response as any)?.data?.data;
+          if (userData) {
+            setCurrentUser(userData);
+            const isProfileComplete = Boolean(
+              (userData as any).profileComplete
+            );
+            const completionPath = "/userSettings";
+            const isOnCompletionPage = router.asPath.startsWith(completionPath);
+
+            if (!isProfileComplete && !isOnCompletionPage) {
+              router.replace(`${completionPath}?forceEdit=true`);
+              return;
+            }
+          }
+        } catch (err) {
+          console.error("Failed to fetch profile:", err);
+          handleSignOut();
+        } finally {
+          if (!cancelled) {
+            setProfileChecked(true);
+          }
+        }
+      };
+
+      fetchProfile();
+
+      return () => {
+        cancelled = true;
+      };
+    }, [session, status, router, setCurrentUser]);
 
     // While checking session or if not authorized, render nothing.
-    if (status === "loading" || !session) return null;
+    if (status === "loading" || !session || !profileChecked) return null;
     if (allowedRoles && !hasRole) return null;
 
     return <WrappedComponent {...props} />;

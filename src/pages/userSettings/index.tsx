@@ -5,7 +5,7 @@ import withAuth from "@/hoc/withAuth";
 import useUserHandler from "@/hooks/useUserHandler";
 import { LogOut, Key, Edit, Save, X } from "lucide-react";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { User } from "@/interfaces/login";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,10 +18,16 @@ function UserSettings() {
     fullName: "",
     phone: "",
     cnic: "",
+    city: "",
+    university: "",
+    socialLink: "",
+    gender: "",
   });
   const [isUpdating, setIsUpdating] = useState(false);
   const userHandler = useUserHandler();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const forceEdit = searchParams?.get("forceEdit") === "true";
   const { toast } = useToast();
 
   const handleLogout = async () => {
@@ -39,16 +45,25 @@ function UserSettings() {
       fullName: userData.fullName || "",
       phone: userData.phone || "",
       cnic: userData.cnic || "",
+      city: userData.city || "",
+      university: userData.university || "",
+      socialLink: userData.socialLink || "",
+      gender: userData.gender || "",
     });
     setIsEditing(true);
   };
 
   const handleCancel = () => {
+    if (forceEdit) return; // cannot exit edit when forced
     setIsEditing(false);
     setEditData({
       fullName: "",
       phone: "",
       cnic: "",
+      city: "",
+      university: "",
+      socialLink: "",
+      gender: "",
     });
   };
 
@@ -59,12 +74,18 @@ function UserSettings() {
       
       const updatedUser = await userHandler.updateUser(editData);
       setUserData(updatedUser);
-      setIsEditing(false);
-      setEditData({
-        fullName: "",
-        phone: "",
-        cnic: "",
-      });
+      if (!forceEdit) {
+        setIsEditing(false);
+        setEditData({
+          fullName: "",
+          phone: "",
+          cnic: "",
+          city: "",
+          university: "",
+          socialLink: "",
+          gender: "",
+        });
+      }
       toast({
         title: "Success!",
         description: "Your profile has been updated successfully.",
@@ -90,6 +111,18 @@ function UserSettings() {
       setIsLoading(true);
       const response = await userHandler.getMe();
       setUserData(response);
+      setEditData({
+        fullName: response.fullName || "",
+        phone: response.phone || "",
+        cnic: response.cnic || "",
+        city: response.city || "",
+        university: response.university || "",
+        socialLink: response.socialLink || "",
+        gender: response.gender || "",
+      });
+      if (forceEdit || !(response as any)?.profileComplete) {
+        setIsEditing(true);
+      }
       setIsLoading(false);
     } catch (err) {
       console.error("Error fetching user data:", err);
@@ -127,6 +160,11 @@ function UserSettings() {
             {error && (
               <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
                 {error}
+              </div>
+            )}
+            {(forceEdit || !(userData as any)?.profileComplete) && (
+              <div className="mb-4 mx-6 p-4 bg-yellow-100 text-yellow-800 rounded-md">
+                Please complete your profile to continue. Editing is required.
               </div>
             )}
             <header className="flex items-center justify-center p-2 mt-2">
@@ -187,6 +225,66 @@ function UserSettings() {
                   required
                   className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  City
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={isEditing ? editData.city : (userData.city || "")}
+                  onChange={(e) => isEditing && setEditData({ ...editData, city: e.target.value })}
+                  disabled={!isEditing}
+                  required
+                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  University / Workplace
+                </label>
+                <input
+                  type="text"
+                  name="university"
+                  value={isEditing ? editData.university : (userData.university || "")}
+                  onChange={(e) => isEditing && setEditData({ ...editData, university: e.target.value })}
+                  disabled={!isEditing}
+                  required
+                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Social Link
+                </label>
+                <input
+                  type="text"
+                  name="socialLink"
+                  value={isEditing ? editData.socialLink : (userData.socialLink || "")}
+                  onChange={(e) => isEditing && setEditData({ ...editData, socialLink: e.target.value })}
+                  disabled={!isEditing}
+                  required
+                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Gender
+                </label>
+                <select
+                  name="gender"
+                  value={isEditing ? editData.gender : (userData.gender || "")}
+                  onChange={(e) => isEditing && setEditData({ ...editData, gender: e.target.value as User["gender"] })}
+                  disabled={!isEditing}
+                  required
+                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100 bg-white"
+                >
+                  <option value="" disabled>Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -258,13 +356,15 @@ function UserSettings() {
                     <Save className="w-5 h-5" />
                     {isUpdating ? "Saving..." : "Save Changes"}
                   </button>
-                  <button
-                    onClick={handleCancel}
-                    className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-100 rounded-md transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                    Cancel
-                  </button>
+                  {!forceEdit && (
+                    <button
+                      onClick={handleCancel}
+                      className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                      Cancel
+                    </button>
+                  )}
                 </div>
               )}
               

@@ -306,7 +306,7 @@ export const RegistrationStatsContainer = () => {
           </div>
           <div className="flex items-center">
             <div className="w-4 h-4 bg-orange-500 mr-2"></div>
-            <div className="flex-1">Self Employed/ business</div>
+            <div className="flex-1">Self Employed/Business</div>
             <div className="font-medium">74</div>
           </div>
         </div>

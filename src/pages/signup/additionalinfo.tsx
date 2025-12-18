@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import useCustomHook from "@/hooks/useSignUp";
 import { BaseUser } from "@/interfaces/signup";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
+import api from "@/pages/api";
+import apiEndpoints from "@/config/apiEndpoints";
 
 export default function AdditionalInfo() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const action = useCustomHook();
   const registrationAction = useRegistrationHook();
   const [university, setUniversity] = useState("LUM");
@@ -19,6 +22,7 @@ export default function AdditionalInfo() {
   const [employmentStatus, setEmploymentStatus] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isGoogleLogin, setIsGoogleLogin] = useState<boolean>(false);
+  const isForcedCompletion = searchParams?.get("force") === "true";
 
   useEffect(() => {
     const flagshipId = localStorage.getItem("flagshipId");
@@ -38,8 +42,8 @@ export default function AdditionalInfo() {
     // Check if user is coming from Google login flow via localStorage flag
     // Set a flag 'isGoogleLogin' to 'true' during the Google signup redirect flow
     const googleFlag = localStorage.getItem('isGoogleLogin');
-    setIsGoogleLogin(googleFlag === 'true');
-  }, []);
+    setIsGoogleLogin(googleFlag === 'true' || isForcedCompletion);
+  }, [isForcedCompletion]);
 
   const handleCnicChange = (value: string) => {
     const digitsOnly = value.replace(/\D/g, "").slice(0, 13);
@@ -79,10 +83,21 @@ export default function AdditionalInfo() {
 
       // Different flow for Google login vs password login
       if (isGoogleLogin) {
-        // For Google login, we already have authentication, so just save the data
-        // and redirect to verification page
+        // For Google login, patch the authenticated user and continue
+        const { USER } = apiEndpoints;
+        const payload = {
+          fullName: savedData?.fullName,
+          gender: savedData?.gender,
+          phone: savedData?.phone,
+          university,
+          cnic,
+          socialLink,
+          city,
+        };
+        await api.patch(USER.UPDATE_ME, payload);
+        localStorage.removeItem("isGoogleLogin");
         localStorage.setItem("formData", JSON.stringify(formData));
-        router.push("/verification");
+        router.replace("/home");
       } else {
         // For password login, continue with the original flow
         const payload: BaseUser = { ...formData };
@@ -274,7 +289,7 @@ export default function AdditionalInfo() {
                     className="mr-2 accent-black"
                     disabled={isLoading}
                   />
-                  Self Employed/ Business
+                  Self Employed/Business
                 </label>
               </div>
             </div>
@@ -339,18 +354,8 @@ export default function AdditionalInfo() {
                         Processing...
                       </>
                     ) : (
-                      "Musafir Verification"
+                      "Save & Continue"
                     )}
-                  </button>
-                </div>
-                {/* Skip Verification for now */}
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => router.push('/signup/accountCreated')}
-                    className="w-full bg-gray-200 hover:bg-gray-300 text-black py-4 rounded-md text-sm font-medium transition-colors"
-                  >
-                    Skip Verification for now
                   </button>
                 </div>
               </div>
