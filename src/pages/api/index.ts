@@ -6,6 +6,9 @@ import { showAlert } from '../alert';
 
 const baseURL = constants.APP_URL;
 
+console.log("NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
+console.log("constants.APP_URL:", constants.APP_URL);
+
 const axiosInstance = axios.create({
   baseURL,
   headers: {

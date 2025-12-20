@@ -1,9 +1,8 @@
 // import { useRecoilState } from 'recoil';
+import { BaseUser, SignupUser } from '@/interfaces/signup';
 import { useRouter } from 'next/router';
-import { BaseUser } from '@/interfaces/signup';
-import api from '../pages/api';
 import apiEndpoints from '../config/apiEndpoints';
-import { SignupUser } from '@/interfaces/signup';
+import api from '../pages/api';
 
 const useSignUpHook = () => {
   // const [user, setUser] = useRecoilState(currentUser);
@@ -31,16 +30,8 @@ const useSignUpHook = () => {
     return data;
   };
 
-  const verifyEmail = async (password: string, verificationId: string): Promise<any> => {
-    console.log("[useSignUp] Verify email API call started", {
-      endpoint: VERIFY_EMAIL,
-      hasVerificationId: Boolean(verificationId),
-    });
+  const verifyEmail = async (password: string, verificationId: string): Promise<unknown> => { 
     const data = await api.post(`${VERIFY_EMAIL}`, { password, verificationId });
-    console.log("[useSignUp] Verify email API response", {
-      success: Boolean(data),
-      hasAccessToken: Boolean(data?.accessToken),
-    });
     if (data) {
       return data;
     } else {
