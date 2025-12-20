@@ -1,12 +1,11 @@
 // "use client"
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { X, Eye, EyeOff } from "lucide-react"
 import useCustomHook from '@/hooks/useSignUp';
+import { Eye, EyeOff } from "lucide-react";
 import {
-  signIn,
-  useSession
+  signIn
 } from "next-auth/react";
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function EmailVerification() {
   const router = useRouter();
@@ -32,7 +31,7 @@ export default function EmailVerification() {
       ...savedData, password
     }
     const response = await action.verifyEmail(password, savedData.verificationId);
-    if (response.accessToken) {
+    if ((response as { accessToken: string }).accessToken) {
       // Clear signup-related form data from localStorage before signing in
       if (typeof window !== "undefined") {
         try {
