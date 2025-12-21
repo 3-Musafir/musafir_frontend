@@ -11,5 +11,8 @@ export const currentUser = atom({
 
 export const currentUserRoleState = selector({
   key: 'currentUserRoleState',
-  get: ({ get }) => get(currentUser).roles,
+  get: ({ get }) => {
+    const roles = get(currentUser).roles;
+    return Array.isArray(roles) ? roles : [];
+  },
 });

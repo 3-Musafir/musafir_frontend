@@ -7,13 +7,14 @@ import { BaseUser } from "@/interfaces/signup";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
 import api from "@/pages/api";
 import apiEndpoints from "@/config/apiEndpoints";
+import { cnicDigits, formatCnicInput, validateCnicFormat } from "@/utils/cnic";
 
 export default function AdditionalInfo() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const action = useCustomHook();
   const registrationAction = useRegistrationHook();
-  const [university, setUniversity] = useState("LUM");
+  const [university, setUniversity] = useState("");
   const [cnic, setCnic] = useState("");
   const [cnicError, setCnicError] = useState<string | null>(null);
   const [city, setCity] = useState("");
@@ -22,7 +23,18 @@ export default function AdditionalInfo() {
   const [employmentStatus, setEmploymentStatus] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isGoogleLogin, setIsGoogleLogin] = useState<boolean>(false);
+  const [employmentError, setEmploymentError] = useState<string | null>(null);
   const isForcedCompletion = searchParams?.get("force") === "true";
+
+  const employmentOptions = [
+    { value: "student", label: "Student", placeholder: "University" },
+    { value: "employed", label: "Employed", placeholder: "Workplace" },
+    { value: "selfEmployed", label: "Business/Self Employed", placeholder: "Business Name" },
+    { value: "unemployed", label: "Living in my unemployment era", placeholder: "" },
+  ];
+
+  const employmentPlaceholder =
+    employmentOptions.find((o) => o.value === employmentStatus)?.placeholder || "";
 
   useEffect(() => {
     const flagshipId = localStorage.getItem("flagshipId");
@@ -33,7 +45,7 @@ export default function AdditionalInfo() {
     console.log(savedData);
     if (savedData) {
       setUniversity(savedData?.university || "");
-      setCnic(savedData?.cnic || "");
+      setCnic(formatCnicInput(savedData?.cnic || ""));
       setSocial(savedData?.socialLink || "");
       setCity(savedData?.city || "");
       setEmploymentStatus(savedData?.employmentStatus || "");
@@ -46,16 +58,17 @@ export default function AdditionalInfo() {
   }, [isForcedCompletion]);
 
   const handleCnicChange = (value: string) => {
-    const digitsOnly = value.replace(/\D/g, "").slice(0, 13);
-    setCnic(digitsOnly);
-    if (digitsOnly.length === 13) {
+    const formatted = formatCnicInput(value);
+    setCnic(formatted);
+    if (validateCnicFormat(formatted) === null) {
       setCnicError(null);
     }
   };
 
   const validateCnic = () => {
-    if (cnic.length !== 13) {
-      setCnicError("CNIC must be exactly 13 digits.");
+    const error = validateCnicFormat(cnic);
+    if (error) {
+      setCnicError(error);
       return false;
     }
     setCnicError(null);
@@ -64,6 +77,16 @@ export default function AdditionalInfo() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!employmentStatus) {
+      setEmploymentError("Please select your employment status.");
+      return;
+    }
+    const requiresWorkDetail = employmentStatus !== "unemployed";
+    if (requiresWorkDetail && !university) {
+      setEmploymentError("This field is required for your selection.");
+      return;
+    }
+    setEmploymentError(null);
     if (!validateCnic()) {
       return;
     }
@@ -74,7 +97,7 @@ export default function AdditionalInfo() {
       const formData = {
         ...savedData,
         university,
-        cnic,
+        cnic: cnicDigits(cnic),
         socialLink,
         city,
         employmentStatus,
@@ -90,9 +113,10 @@ export default function AdditionalInfo() {
           gender: savedData?.gender,
           phone: savedData?.phone,
           university,
-          cnic,
+          cnic: cnicDigits(cnic),
           socialLink,
           city,
+          employmentStatus,
         };
         await api.patch(USER.UPDATE_ME, payload);
         localStorage.removeItem("isGoogleLogin");
@@ -100,7 +124,7 @@ export default function AdditionalInfo() {
         router.replace("/home");
       } else {
         // For password login, continue with the original flow
-        const payload: BaseUser = { ...formData };
+        const payload: BaseUser = { ...formData, employmentStatus };
         const { userId, verificationId } = (await action.register(payload)) as {
           userId: string;
           verificationId: string;
@@ -212,8 +236,8 @@ export default function AdditionalInfo() {
                   value={cnic}
                   required={true}
                   inputMode="numeric"
-                  pattern="[0-9]*"
-                  maxLength={13}
+                  pattern="[0-9-]*"
+                  maxLength={15} // allows 13 digits + 2 dashes (xxxxx-xxxxxxx-x)
                   onChange={(e) => handleCnicChange(e.target.value)}
                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
                     cnicError
@@ -254,72 +278,64 @@ export default function AdditionalInfo() {
 
             <div className="space-y-4">
               <h2 className="text-lg font-semibold">
-                Are you currently working?
+                Employment Status
               </h2>
-              <div className="flex flex-col gap-3">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    value="student"
-                    checked={employmentStatus === "student"}
-                    onChange={() => setEmploymentStatus("student")}
-                    className="mr-2 accent-black"
-                    color="black"
-                    disabled={isLoading}
-                  />
-                  I&apos;m a student
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    value="employed"
-                    checked={employmentStatus === "employed"}
-                    onChange={() => setEmploymentStatus("employed")}
-                    className="mr-2 accent-black"
-                    disabled={isLoading}
-                  />
-                  Employed Professional
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    value="selfEmployed"
-                    checked={employmentStatus === "selfEmployed"}
-                    onChange={() => setEmploymentStatus("selfEmployed")}
-                    className="mr-2 accent-black"
-                    disabled={isLoading}
-                  />
-                  Self Employed/Business
-                </label>
-              </div>
-            </div>
-
-            {/* University/Workplace */}
-            <div className="space-y-2">
-              <label htmlFor="university" className="block text-sm font-medium">
-                University/ Workplace/ Institute
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  id="university"
-                  value={university}
-                  required={true}
-                  onChange={(e) => setUniversity(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+              <div className="space-y-2">
+                <select
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white"
+                  value={employmentStatus}
+                  onChange={(e) => {
+                    setEmploymentStatus(e.target.value);
+                    setEmploymentError(null);
+                    if (e.target.value === "unemployed") {
+                      setUniversity("");
+                    }
+                  }}
+                  required
                   disabled={isLoading}
-                />
-                {university && !isLoading && (
-                  <button
-                    type="button"
-                    onClick={() => setUniversity("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full hover:bg-black p-1"
-                  >
-                    <X className="h-4 w-4 text-gray-400 hover:text-white" />
-                  </button>
+                >
+                  <option value="" disabled>Select an option</option>
+                  {employmentOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                {employmentError && (
+                  <p className="text-xs text-red-600">{employmentError}</p>
                 )}
               </div>
             </div>
+
+            {/* Employment detail input */}
+            {employmentStatus !== "unemployed" && employmentStatus !== "" && (
+              <div className="space-y-2">
+                <label htmlFor="university" className="block text-sm font-medium">
+                  {employmentPlaceholder || "Details"}
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="university"
+                    value={university}
+                    required
+                    onChange={(e) => setUniversity(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                    placeholder={employmentPlaceholder}
+                    disabled={isLoading}
+                  />
+                  {university && !isLoading && (
+                    <button
+                      type="button"
+                      onClick={() => setUniversity("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full hover:bg-black p-1"
+                    >
+                      <X className="h-4 w-4 text-gray-400 hover:text-white" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Social Handle */}
             <div className="space-y-2">

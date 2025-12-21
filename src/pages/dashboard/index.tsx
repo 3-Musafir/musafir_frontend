@@ -14,9 +14,6 @@ function Dashboard() {
   const [liveTrips, setLiveTrips] = useState([]);
   const [pastTrips, setPastTrips] = useState([]);
 
-  // Notification count
-  const [notificationCount, setNotificationCount] = useState(5);
-
   // Mobile sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(false);
   // Mounted state to avoid hydration mismatch
@@ -67,7 +64,7 @@ function Dashboard() {
       )}
 
       <div className='flex-1 flex flex-col overflow-hidden'>
-        <Header notificationCount={notificationCount} setSidebarOpen={setSidebarOpen} />
+        <Header setSidebarOpen={setSidebarOpen} />
 
         <main className='flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50'>
           {/* Live Trips Section */}

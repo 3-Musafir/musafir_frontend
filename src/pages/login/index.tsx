@@ -75,9 +75,13 @@ export default function Login() {
       localStorage.setItem("isGoogleLogin", "true");
     }
 
-    await signIn("google", {
-      callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/home` || "/home",
-    });
+    const base =
+      process.env.NEXT_PUBLIC_AUTH_URL && process.env.NEXT_PUBLIC_AUTH_URL.trim().length > 0
+        ? process.env.NEXT_PUBLIC_AUTH_URL
+        : "";
+    const callbackUrl = base ? `${base}/home` : "/home";
+
+    await signIn("google", { callbackUrl });
   };
 
   return (

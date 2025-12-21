@@ -2,6 +2,12 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { showAlert } from '@/pages/alert'
+import {
+  formatPhoneForApi,
+  inputFromStoredPhone,
+  sanitizePhoneInput,
+  validatePhoneDigits,
+} from '@/utils/phone'
 
 export default function RegistrationForm() {
   const router = useRouter()
@@ -23,7 +29,8 @@ export default function RegistrationForm() {
     if (savedData) {
       setGender(savedData?.gender || '');
       setFullName(savedData?.fullName || '');
-      setPhone(savedData?.phone || '');
+      setPhone(inputFromStoredPhone(savedData?.phone || ''));
+      setWhatsappPhone(inputFromStoredPhone(savedData?.whatsappPhone || ''));
     }
 
     // Pre-fill form with Google OAuth data if available
@@ -35,17 +42,10 @@ export default function RegistrationForm() {
   const [phoneError, setPhoneError] = useState<string | null>(null)
   const [whatsappError, setWhatsappError] = useState<string | null>(null)
 
-  const validatePhone = (value: string, label: string) => {
-    if (value.length !== 10) {
-      return `${label} must be exactly 10 digits.`
-    }
-    return null
-  }
-
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    const primaryError = validatePhone(phone, 'Phone')
-    const secondaryError = showWhatsapp ? null : validatePhone(whatsappPhone, 'Whatsapp')
+    const primaryError = validatePhoneDigits(phone, 'Phone')
+    const secondaryError = showWhatsapp ? null : validatePhoneDigits(whatsappPhone, 'Whatsapp')
 
     setPhoneError(primaryError)
     setWhatsappError(secondaryError)
@@ -55,8 +55,8 @@ export default function RegistrationForm() {
       return
     }
 
-    const formatedPhone = `0${phone}`;
-    const formatedWhatsapp = whatsappPhone? `0${whatsappPhone}` : whatsappPhone;
+    const formatedPhone = formatPhoneForApi(phone);
+    const formatedWhatsapp = whatsappPhone ? formatPhoneForApi(whatsappPhone) : whatsappPhone;
     const savedData = JSON.parse(localStorage.getItem('formData') || '{}');
     const formData = { ...savedData, gender, fullName, phone: formatedPhone, whatsappPhone: formatedWhatsapp };
 
@@ -204,9 +204,9 @@ export default function RegistrationForm() {
                     pattern="[0-9]*"
                     maxLength={10}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '')
-                      setPhone(value.slice(0, 10))
-                      if (value.slice(0, 10).length === 10) {
+                      const value = sanitizePhoneInput(e.target.value)
+                      setPhone(value)
+                      if (value.length === 10) {
                         setPhoneError(null)
                       }
                     }}
@@ -261,9 +261,9 @@ export default function RegistrationForm() {
                     pattern="[0-9]*"
                     maxLength={10}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '')
-                      setWhatsappPhone(value.slice(0, 10))
-                      if (value.slice(0, 10).length === 10) {
+                      const value = sanitizePhoneInput(e.target.value)
+                      setWhatsappPhone(value)
+                      if (value.length === 10) {
                         setWhatsappError(null)
                       }
                     }}

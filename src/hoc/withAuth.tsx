@@ -22,12 +22,12 @@ const withAuth = <P extends object>(
     const router = useRouter();
     const allowedRoles = options?.allowedRoles;
     const [profileChecked, setProfileChecked] = useState(false);
+    const [unauthorized, setUnauthorized] = useState(false);
 
-    // Calculate hasRole if allowedRoles exist and currentRole is loaded
-    const hasRole =
-      allowedRoles && currentRole?.length > 0
-        ? allowedRoles.some((role) => currentRole.includes(role))
-        : true; // If no allowedRoles provided, or if roles aren't loaded yet, default to true. If we want to treat an empty roles array as unauthorized we can adjust it heres
+    const rolesLoaded = Array.isArray(currentRole) && currentRole.length > 0;
+    const hasRole = allowedRoles
+      ? rolesLoaded && allowedRoles.some((role) => currentRole.includes(role))
+      : true;
 
     const handleSignOut = async () => {
       await signOut({
@@ -47,8 +47,9 @@ const withAuth = <P extends object>(
 
       const fetchProfile = async () => {
         try {
-          const response = await api.get(apiEndpoints.USER.GET_ME);
-          const userData = (response as any)?.data ?? (response as any)?.data?.data;
+          // api.get returns the axios data payload directly; /user/me wraps
+          // the user object under `data`.
+          const { data: userData } = await api.get(apiEndpoints.USER.GET_ME);
           if (userData) {
             setCurrentUser(userData);
             const isProfileComplete = Boolean(
@@ -79,9 +80,20 @@ const withAuth = <P extends object>(
       };
     }, [session, status, router, setCurrentUser]);
 
-    // While checking session or if not authorized, render nothing.
-    if (status === "loading" || !session || !profileChecked) return null;
-    if (allowedRoles && !hasRole) return null;
+    useEffect(() => {
+      if (!profileChecked) return;
+      if (!allowedRoles) return;
+
+      if (!hasRole) {
+        setUnauthorized(true);
+        router.replace("/login");
+      }
+    }, [allowedRoles, hasRole, profileChecked, router]);
+
+    // While checking session or redirecting, render nothing.
+    if (status === "loading" || !session || !profileChecked || unauthorized) {
+      return null;
+    }
 
     return <WrappedComponent {...props} />;
   };

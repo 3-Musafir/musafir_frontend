@@ -15,8 +15,10 @@ interface UpdateUserData {
   cnic?: string;
   city?: string;
   university?: string;
+  employmentStatus?: 'student' | 'employed' | 'selfEmployed' | 'unemployed';
   socialLink?: string;
   gender?: string;
+  profileImg?: string;
 }
 
 const useUserHandler = () => {

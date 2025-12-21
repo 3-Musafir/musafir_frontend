@@ -78,11 +78,22 @@ export default NextAuth({
             },
             { timeout: 10000 }
           );
-          if (res.data.accessToken) {
-            user.accessToken = res.data.accessToken;
-            user.email = res.data.email;
+          // Backend may return bare object or wrapped in { data }
+          const payload = res?.data?.data ?? res?.data;
+
+          // Capture backend-issued tokens and user
+          if (payload?.accessToken) {
+            (user as any).accessToken = payload.accessToken;
+            (user as any).refreshToken = payload.refreshToken;
+            (user as any).backendUser = payload.user ?? {};
+            (account as any).backendAccessToken = payload.accessToken;
+            (account as any).backendUser = payload.user ?? {};
+            user.email = payload.email ?? user.email;
             return true;
           }
+
+          // If backend did not return an access token, block sign-in so the UI shows an error
+          return false;
         } catch (error) {
           console.error("Google sign-in error:", error);
           return false;
@@ -91,12 +102,30 @@ export default NextAuth({
       return true;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
+      // On initial sign-in, prefer backend token returned during Google login
+      if (user && account?.provider === "google") {
+        const backendAccessToken =
+          (account as any).backendAccessToken ??
+          (user as any).accessToken;
+        const backendUser =
+          (account as any).backendUser ?? (user as any).backendUser ?? user;
+
+        if (backendAccessToken) {
+          token.accessToken = backendAccessToken;
+        }
+        token.user = backendUser as Record<string, unknown>;
+        return token;
+      }
+
+      // Credentials or existing session refresh
       if (user) {
         const u = user as unknown as {
           accessToken?: string;
         } & Record<string, unknown>;
-        token.accessToken = u.accessToken;
+        if (u.accessToken) {
+          token.accessToken = u.accessToken;
+        }
         token.user = u;
       }
       return token;

@@ -28,6 +28,11 @@ const endpoints = {
   FAQ: {
     GET: "/faq",
   },
+  NOTIFICATIONS: {
+    LIST: "/notifications",
+    MARK_READ: (id: string) => `/notifications/${id}/read`,
+    MARK_ALL: "/notifications/read-all",
+  },
   RATING: {
     GET: "/rating/:flagshipId",
     GET_TOP_FIVE: "/rating/top-five",

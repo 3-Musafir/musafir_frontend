@@ -19,12 +19,14 @@ interface VerificationSubSchema {
     gender?: 'male' | 'female' | 'other';
     cnic?: string;
     university?: string;
+  employmentStatus?: 'student' | 'employed' | 'selfEmployed' | 'unemployed';
     socialLink?: string;
     dateOfBirth?: string;
     working?: boolean;
     city?: string;
     heardFrom?: string;
     roles?: [string];
+  profileImg?: string;
     emailVerified?: boolean;
     verification?: VerificationSubSchema;
     verificationStats?: { verifiedByMe: number };

@@ -1,6 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import classNames from "classnames";
 import Navigation from "../navigation";
+import Header from "../../components/header";
 import withAuth from "@/hoc/withAuth";
 import useUserHandler from "@/hooks/useUserHandler";
 import { LogOut, Key, Edit, Save, X } from "lucide-react";
@@ -8,27 +10,87 @@ import { signOut } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { User } from "@/interfaces/login";
 import { useToast } from "@/hooks/use-toast";
+import {
+  formatPhoneForApi,
+  inputFromStoredPhone,
+  sanitizePhoneInput,
+  validatePhoneDigits,
+} from "@/utils/phone";
+import { cnicDigits, formatCnicInput, validateCnicFormat } from "@/utils/cnic";
+
+const employmentOptions = [
+  { value: "student", label: "Student", placeholder: "University" },
+  { value: "employed", label: "Employed", placeholder: "Workplace" },
+  { value: "selfEmployed", label: "Business/Self Employed", placeholder: "Business Name" },
+  { value: "unemployed", label: "Living in my unemployment era", placeholder: "" },
+];
+
+const blinkStyle = `
+@keyframes blink-required {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.0); }
+  50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.25); }
+}
+.blink-required {
+  animation: blink-required 1.2s ease-in-out infinite;
+  border-color: #ef4444 !important;
+}
+`;
 
 function UserSettings() {
   const [userData, setUserData] = useState<User>({} as User);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState({
+  const [editData, setEditData] = useState<{
+    fullName: string;
+    phone: string;
+    cnic: string;
+    city: string;
+    university: string;
+    employmentStatus: "student" | "employed" | "selfEmployed" | "unemployed";
+    socialLink: string;
+    gender: User["gender"] | "";
+    profileImg: string;
+  }>({
     fullName: "",
     phone: "",
     cnic: "",
     city: "",
     university: "",
+    employmentStatus: "unemployed",
     socialLink: "",
     gender: "",
+    profileImg: "",
   });
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [cnicError, setCnicError] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const userHandler = useUserHandler();
   const router = useRouter();
   const searchParams = useSearchParams();
   const forceEdit = searchParams?.get("forceEdit") === "true";
   const { toast } = useToast();
+  const hasIncompleteProfile = forceEdit || !(userData as any)?.profileComplete;
+  const initials = useMemo(() => {
+    const name = userData.fullName || userData.email || "";
+    const parts = name.trim().split(" ").filter(Boolean);
+    if (parts.length === 0) return (name[0] || "U").toUpperCase();
+    if (parts.length === 1) return parts[0][0]?.toUpperCase() || "U";
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  }, [userData.fullName, userData.email]);
+
+  const isEmpty = (val?: string | null) => !val || val.trim().length === 0;
+
+  const handleProfileImgFile = (file?: File | null) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      setEditData((prev) => ({ ...prev, profileImg: result || "" }));
+      setIsEditing(true);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleLogout = async () => {
     await signOut({
@@ -43,12 +105,14 @@ function UserSettings() {
   const handleEdit = () => {
     setEditData({
       fullName: userData.fullName || "",
-      phone: userData.phone || "",
-      cnic: userData.cnic || "",
+      phone: inputFromStoredPhone(userData.phone || ""),
+      cnic: formatCnicInput(userData.cnic || ""),
       city: userData.city || "",
       university: userData.university || "",
+      employmentStatus: (userData as any).employmentStatus || "unemployed",
       socialLink: userData.socialLink || "",
       gender: userData.gender || "",
+      profileImg: userData.profileImg || "",
     });
     setIsEditing(true);
   };
@@ -57,13 +121,15 @@ function UserSettings() {
     if (forceEdit) return; // cannot exit edit when forced
     setIsEditing(false);
     setEditData({
-      fullName: "",
-      phone: "",
-      cnic: "",
-      city: "",
-      university: "",
-      socialLink: "",
-      gender: "",
+      fullName: userData.fullName || "",
+      phone: inputFromStoredPhone(userData.phone || ""),
+      cnic: formatCnicInput(userData.cnic || ""),
+      city: userData.city || "",
+      university: userData.university || "",
+      employmentStatus: (userData as any).employmentStatus || "unemployed",
+      socialLink: userData.socialLink || "",
+      gender: userData.gender || "",
+      profileImg: userData.profileImg || "",
     });
   };
 
@@ -71,8 +137,38 @@ function UserSettings() {
     try {
       setIsUpdating(true);
       setError(null);
+      const phoneValidationError = validatePhoneDigits(editData.phone, 'Phone');
+      setPhoneError(phoneValidationError);
+      if (phoneValidationError) {
+        setIsUpdating(false);
+        return;
+      }
+      if (!editData.employmentStatus) {
+        setIsUpdating(false);
+        setError("Employment status is required.");
+        return;
+      }
+      const requiresWorkDetail = editData.employmentStatus !== "unemployed";
+      if (requiresWorkDetail && !editData.university) {
+        setIsUpdating(false);
+        setError("Please provide the required detail for your selection.");
+        return;
+      }
+      const cnicValidationError = validateCnicFormat(editData.cnic);
+      setCnicError(cnicValidationError);
+      if (cnicValidationError) {
+        setIsUpdating(false);
+        return;
+      }
       
-      const updatedUser = await userHandler.updateUser(editData);
+      const payload = {
+        ...editData,
+        phone: formatPhoneForApi(editData.phone),
+        cnic: cnicDigits(editData.cnic),
+        university: requiresWorkDetail ? editData.university : "",
+      };
+
+      const updatedUser = await userHandler.updateUser(payload);
       setUserData(updatedUser);
       if (!forceEdit) {
         setIsEditing(false);
@@ -82,10 +178,13 @@ function UserSettings() {
           cnic: "",
           city: "",
           university: "",
+          employmentStatus: "unemployed",
           socialLink: "",
           gender: "",
+          profileImg: "",
         });
       }
+      setPhoneError(null);
       toast({
         title: "Success!",
         description: "Your profile has been updated successfully.",
@@ -113,12 +212,14 @@ function UserSettings() {
       setUserData(response);
       setEditData({
         fullName: response.fullName || "",
-        phone: response.phone || "",
-        cnic: response.cnic || "",
+        phone: inputFromStoredPhone(response.phone || ""),
+        cnic: formatCnicInput(response.cnic || ""),
         city: response.city || "",
         university: response.university || "",
+        employmentStatus: (response as any).employmentStatus || "unemployed",
         socialLink: response.socialLink || "",
         gender: response.gender || "",
+        profileImg: response.profileImg || "",
       });
       if (forceEdit || !(response as any)?.profileComplete) {
         setIsEditing(true);
@@ -138,6 +239,17 @@ function UserSettings() {
     }
   };
 
+  const verificationStatus =
+    (userData as any)?.verification?.status || "";
+  const verificationLabel =
+    verificationStatus === "verified"
+      ? "Verified"
+      : verificationStatus === "pending"
+        ? "Pending"
+        : verificationStatus === "rejected"
+          ? "Rejected"
+          : "Not Verified";
+
   useEffect(() => {
     fetchUserData();
   }, []);
@@ -151,27 +263,74 @@ function UserSettings() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-white md:flex md:items-center md:justify-center p-0">
-      <div className="bg-white w-full max-w-md mx-auto rounded-lg h-screen">
-        <Navigation />
+    <div className="min-h-screen w-full bg-gray-50 flex flex-col">
+      <style>{blinkStyle}</style>
+      <Header setSidebarOpen={() => { }} showMenuButton={false} />
 
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <main className="flex-1 overflow-y-auto bg-white h-full">
-            {error && (
-              <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
-                {error}
+      <main className="flex-1 overflow-y-auto bg-white h-full px-2 md:px-4 pb-24 pt-4">
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+            {error}
+          </div>
+        )}
+        {(forceEdit || !(userData as any)?.profileComplete) && (
+          <div className="mb-4 mx-2 md:mx-6 p-4 bg-yellow-100 text-yellow-800 rounded-md">
+            Please complete your profile to continue. Editing is required.
+          </div>
+        )}
+        <header className="flex items-center justify-center p-2 mt-2">
+          <h1 className="text-2xl font-semibold">User Settings</h1>
+        </header>
+        <form className="space-y-6 h-full p-4 md:p-6">
+          <div className="flex items-center gap-4">
+            {(() => {
+              const previewImg = isEditing ? editData.profileImg : (editData.profileImg || userData.profileImg || "");
+              return (
+                <div className="w-16 h-16 rounded-full bg-gray-900 flex items-center justify-center text-white text-lg overflow-hidden relative">
+                  {previewImg ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={previewImg} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    initials
+                  )}
+                </div>
+              );
+            })()}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">Profile image</label>
+              <div className="flex flex-wrap gap-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={!isEditing}
+                  onChange={(e) => handleProfileImgFile(e.target.files?.[0])}
+                  className="text-sm"
+                />
+                <button
+                  type="button"
+                  disabled={!isEditing}
+                  onClick={() => setEditData((prev) => ({ ...prev, profileImg: "" }))}
+                  className="px-3 py-1 text-sm border rounded-md disabled:opacity-50"
+                >
+                  Remove
+                </button>
               </div>
-            )}
-            {(forceEdit || !(userData as any)?.profileComplete) && (
-              <div className="mb-4 mx-6 p-4 bg-yellow-100 text-yellow-800 rounded-md">
-                Please complete your profile to continue. Editing is required.
-              </div>
-            )}
-            <header className="flex items-center justify-center p-2 mt-2">
-              <h1 className="text-2xl font-semibold">User Settings</h1>
-            </header>
-            <form className="space-y-6 h-full p-6">
-              <div>
+              <input
+                type="url"
+                name="profileImg"
+                placeholder="https://example.com/avatar.jpg"
+                value={editData.profileImg}
+                onChange={(e) => isEditing && setEditData({ ...editData, profileImg: e.target.value })}
+                disabled={!isEditing}
+                className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+              />
+              <p className="text-xs text-gray-500">Upload an image or paste a URL (JPEG/PNG recommended).</p>
+            </div>
+          </div>
+
+              <div className={classNames({
+                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.fullName : userData.fullName),
+              })}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Full Name
                 </label>
@@ -198,35 +357,93 @@ function UserSettings() {
                   className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
                 />
               </div>
-              <div>
+              <div className={classNames({
+                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.phone : userData.phone),
+              })}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Phone
                 </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={isEditing ? editData.phone : (userData.phone || "")}
-                  onChange={(e) => isEditing && setEditData({ ...editData, phone: e.target.value })}
-                  disabled={!isEditing}
-                  required
-                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
-                />
+                <div className="flex gap-2 items-start">
+                  <select
+                    className="w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                    disabled
+                  >
+                    <option value="+92">+92</option>
+                  </select>
+                  <div className="flex-1">
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={
+                        isEditing
+                          ? editData.phone
+                          : (userData.phone || "")
+                      }
+                      onChange={(e) => {
+                        if (!isEditing) return;
+                        const value = sanitizePhoneInput(e.target.value);
+                        setEditData({ ...editData, phone: value });
+                        if (value.length === 10) {
+                          setPhoneError(null);
+                        }
+                      }}
+                      disabled={!isEditing}
+                      required
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={10}
+                      placeholder="3XXXXXXXXX"
+                      className={`w-full px-3 py-2 border rounded-md disabled:bg-gray-100 focus:outline-none focus:ring-2 ${
+                        phoneError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-gray-400"
+                      }`}
+                      aria-invalid={phoneError ? "true" : "false"}
+                      aria-describedby={phoneError ? "phone-error" : undefined}
+                    />
+                    {phoneError && (
+                      <p id="phone-error" className="text-xs text-red-600 mt-1">
+                        {phoneError}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div>
+              <div className={classNames({
+                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.cnic : userData.cnic),
+              })}>
                 <label className="block text-gray-700 mb-1">
                   CNIC
                 </label>
                 <input
                   type="text"
                   name="cnic"
-                  value={isEditing ? editData.cnic : (userData.cnic || "")}
-                  onChange={(e) => isEditing && setEditData({ ...editData, cnic: e.target.value })}
+                  value={isEditing ? editData.cnic : formatCnicInput(userData.cnic || "")}
+                  onChange={(e) => {
+                    if (!isEditing) return;
+                    const formatted = formatCnicInput(e.target.value);
+                    setEditData({ ...editData, cnic: formatted });
+                    if (!validateCnicFormat(formatted)) {
+                      setCnicError(null);
+                    }
+                  }}
                   disabled={!isEditing}
                   required
-                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                  maxLength={15}
+                  placeholder="12345-1234567-1"
+                  className={`w-full px-3 py-2 border rounded-md disabled:bg-gray-100 ${
+                    cnicError ? "border-red-500 focus:ring-red-500" : ""
+                  }`}
+                  aria-invalid={cnicError ? "true" : "false"}
+                  aria-describedby={cnicError ? "cnic-error" : undefined}
                 />
+                {cnicError && (
+                  <p id="cnic-error" className="text-xs text-red-600 mt-1">
+                    {cnicError}
+                  </p>
+                )}
               </div>
-              <div>
+              <div className={classNames({
+                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.city : userData.city),
+              })}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   City
                 </label>
@@ -240,21 +457,62 @@ function UserSettings() {
                   className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
                 />
               </div>
-              <div>
+              <div className={classNames({
+                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.employmentStatus : (userData as any).employmentStatus),
+              })}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  University / Workplace
+                  Employment Status
                 </label>
-                <input
-                  type="text"
-                  name="university"
-                  value={isEditing ? editData.university : (userData.university || "")}
-                  onChange={(e) => isEditing && setEditData({ ...editData, university: e.target.value })}
+                <select
+                  name="employmentStatus"
+                  value={isEditing ? editData.employmentStatus : ((userData as any).employmentStatus || "unemployed")}
+                  onChange={(e) => {
+                    if (!isEditing) return;
+                    const value = e.target.value as typeof editData.employmentStatus;
+                    setEditData({
+                      ...editData,
+                      employmentStatus: value,
+                      university: value === "unemployed" ? "" : editData.university,
+                    });
+                    setError(null);
+                  }}
                   disabled={!isEditing}
                   required
-                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
-                />
+                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100 bg-white"
+                >
+                  <option value="" disabled>Select status</option>
+                  {employmentOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div>
+
+              { (isEditing ? editData.employmentStatus : (userData as any).employmentStatus) !== "unemployed" && (
+                <div className={classNames({
+                  "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.university : userData.university),
+                })}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {employmentOptions.find(o => o.value === (isEditing ? editData.employmentStatus : (userData as any).employmentStatus))?.placeholder || "Details"}
+                  </label>
+                  <input
+                    type="text"
+                    name="university"
+                    value={isEditing ? editData.university : (userData.university || "")}
+                    onChange={(e) => isEditing && setEditData({ ...editData, university: e.target.value })}
+                    disabled={!isEditing}
+                    required
+                    placeholder={
+                      employmentOptions.find(o => o.value === (isEditing ? editData.employmentStatus : (userData as any).employmentStatus))?.placeholder || ""
+                    }
+                    className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                  />
+                </div>
+              )}
+              <div className={classNames({
+                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.socialLink : userData.socialLink),
+              })}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Social Link
                 </label>
@@ -268,14 +526,20 @@ function UserSettings() {
                   className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
                 />
               </div>
-              <div>
+              <div className={classNames({
+                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.gender : userData.gender),
+              })}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Gender
                 </label>
                 <select
                   name="gender"
-                  value={isEditing ? editData.gender : (userData.gender || "")}
-                  onChange={(e) => isEditing && setEditData({ ...editData, gender: e.target.value as User["gender"] })}
+                  value={isEditing ? (editData.gender ?? "") : (userData.gender ?? "")}
+                  onChange={
+                    isEditing
+                      ? (e) => setEditData({ ...editData, gender: (e.target.value as User["gender"]) || "" })
+                      : undefined
+                  }
                   disabled={!isEditing}
                   required
                   className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100 bg-white"
@@ -321,64 +585,62 @@ function UserSettings() {
                 <input
                   type="text"
                   name="verificationStatus"
-                  value={
-                    userData.verification?.status ? "Verified" : "Not Verified"
-                  }
+                  value={verificationLabel}
                   disabled
                   className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
                 />
               </div>
-            </form>
-            <div className="flex flex-col gap-3 px-6 mt-4">
+        </form>
+        <div className="flex flex-col gap-3 px-6 mt-4">
+          <button
+            onClick={handleResetPassword}
+            className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-md transition-colors"
+          >
+            <Key className="w-5 h-5" />
+            Reset Password
+          </button>
+          
+          {!isEditing ? (
+            <button
+              onClick={handleEdit}
+              className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors"
+            >
+              <Edit className="w-5 h-5" />
+              Edit Profile
+            </button>
+          ) : (
+            <div className="flex gap-2">
               <button
-                onClick={handleResetPassword}
-                className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-md transition-colors"
+                onClick={handleSave}
+                disabled={isUpdating}
+                className="flex-1 flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-white bg-green-500 hover:bg-green-600 disabled:bg-green-300 rounded-md transition-colors"
               >
-                <Key className="w-5 h-5" />
-                Reset Password
+                <Save className="w-5 h-5" />
+                {isUpdating ? "Saving..." : "Save Changes"}
               </button>
-              
-              {!isEditing ? (
+              {!forceEdit && (
                 <button
-                  onClick={handleEdit}
-                  className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors"
+                  onClick={handleCancel}
+                  className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-100 rounded-md transition-colors"
                 >
-                  <Edit className="w-5 h-5" />
-                  Edit Profile
+                  <X className="w-5 h-5" />
+                  Cancel
                 </button>
-              ) : (
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleSave}
-                    disabled={isUpdating}
-                    className="flex-1 flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-white bg-green-500 hover:bg-green-600 disabled:bg-green-300 rounded-md transition-colors"
-                  >
-                    <Save className="w-5 h-5" />
-                    {isUpdating ? "Saving..." : "Save Changes"}
-                  </button>
-                  {!forceEdit && (
-                    <button
-                      onClick={handleCancel}
-                      className="flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-100 rounded-md transition-colors"
-                    >
-                      <X className="w-5 h-5" />
-                      Cancel
-                    </button>
-                  )}
-                </div>
               )}
-              
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-5 py-3 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-orange-500 hover:text-white rounded-md transition-colors mb-10"
-              >
-                <LogOut className="w-5 h-5" />
-                Logout
-              </button>
             </div>
-          </main>
+          )}
+          
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-5 py-3 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-orange-500 hover:text-white rounded-md transition-colors mb-10"
+          >
+            <LogOut className="w-5 h-5" />
+            Logout
+          </button>
         </div>
-      </div>
+      </main>
+
+      <Navigation />
     </div>
   );
 }

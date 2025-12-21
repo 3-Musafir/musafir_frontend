@@ -29,12 +29,6 @@ export default function Navigation({ activeNav, setActiveNav, sidebarOpen, setSi
       route: '/user-management',
     },
     {
-      id: 'settings',
-      label: 'Settings',
-      icon: <Settings className='w-5 h-5' />,
-      route: '/settings',
-    },
-    {
       id: 'create-flagship',
       label: 'Create Flagship',
       icon: <Flag className='w-5 h-5' />,

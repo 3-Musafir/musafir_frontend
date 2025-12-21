@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import useSignUpHook from "@/hooks/useSignUp";
 import { showAlert } from "@/pages/alert";
@@ -11,6 +11,17 @@ export default function CreateAccount() {
   const [email, setEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const useSignUp = useSignUpHook();
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      const savedData = JSON.parse(localStorage.getItem("formData") || "{}");
+      localStorage.setItem(
+        "formData",
+        JSON.stringify({ ...savedData, referralCode: ref })
+      );
+    }
+  }, [searchParams]);
 
   const checkEmailAvailability = async () => {
     return await useSignUp.checkEmailAvailability(email);
@@ -48,9 +59,13 @@ export default function CreateAccount() {
       localStorage.setItem("isGoogleLogin", "true");
     }
 
-    await signIn("google", {
-      callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/signup/registrationform` || "/signup/registrationform",
-    });
+    const base =
+      process.env.NEXT_PUBLIC_AUTH_URL && process.env.NEXT_PUBLIC_AUTH_URL.trim().length > 0
+        ? process.env.NEXT_PUBLIC_AUTH_URL
+        : "";
+    const callbackUrl = base ? `${base}/signup/registrationform` : "/signup/registrationform";
+
+    await signIn("google", { callbackUrl });
   };
 
   return (

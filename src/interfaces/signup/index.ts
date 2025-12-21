@@ -7,7 +7,9 @@ export interface BaseUser {
   city: string;
   socialLink: string;
   university?: string;
+  employmentStatus?: 'student' | 'employed' | 'selfEmployed' | 'unemployed';
   dateOfBirth?: string;
+  referralCode?: string;
 }
 
 // Signup with Email & Password
