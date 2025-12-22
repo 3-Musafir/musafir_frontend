@@ -33,6 +33,10 @@ const endpoints = {
     MARK_READ: (id: string) => `/notifications/${id}/read`,
     MARK_ALL: "/notifications/read-all",
   },
+  COMPANY_PROFILE: {
+    GET: "/company-profile",
+    UPDATE: "/company-profile",
+  },
   RATING: {
     GET: "/rating/:flagshipId",
     GET_TOP_FIVE: "/rating/top-five",
