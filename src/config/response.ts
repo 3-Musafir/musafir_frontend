@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const errorResponse = (error: any) => {
     return {
       statusCode: error?.statusCode || error?.status || 400,

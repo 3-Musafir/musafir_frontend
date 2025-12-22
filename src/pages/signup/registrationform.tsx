@@ -16,7 +16,7 @@ export default function RegistrationForm() {
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
   const [flagshipId, setFlagshipId] = useState('');
-  const [showWhatsapp, setShowWhatsapp] = useState(false);
+  const [showWhatsapp, setShowWhatsapp] = useState(true);
   const [whatsappPhone, setWhatsappPhone] = useState('');
   
   useEffect(() => {
@@ -190,7 +190,7 @@ export default function RegistrationForm() {
               </label>
               <div className="flex gap-2 items-start">
                 <select
-                  className="w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className="w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-gray-400"
                 >
                   <option value="+92">+92</option>
                 </select>
@@ -211,7 +211,7 @@ export default function RegistrationForm() {
                       }
                     }}
                     placeholder="3XXXXXXXXX"
-                    className={`w-full px-3 py-2 border rounded-md bg-gray-100 focus:outline-none focus:ring-2 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
                       phoneError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-400'
                     }`}
                     aria-invalid={phoneError ? 'true' : 'false'}
@@ -231,6 +231,7 @@ export default function RegistrationForm() {
               <input
                 type="checkbox"
                 id="showSecondPhone"
+                checked={showWhatsapp}
                 onChange={() => {
                   setShowWhatsapp(!showWhatsapp)
                 }}
@@ -246,7 +247,9 @@ export default function RegistrationForm() {
               </label>
               <div className="flex gap-2 items-start">
                 <select
-                  className="w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className={`w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 ${
+                    showWhatsapp ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'
+                  }`}
                   disabled={showWhatsapp}
                 >
                   <option value="+92">+92</option>
@@ -269,8 +272,12 @@ export default function RegistrationForm() {
                     }}
                     placeholder="3XXXXXXXXX"
                     disabled={showWhatsapp}
-                    className={`w-full px-3 py-2 border rounded-md bg-gray-100 focus:outline-none focus:ring-2 ${
-                      whatsappError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-400'
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                      showWhatsapp 
+                        ? 'bg-gray-100 cursor-not-allowed' 
+                        : whatsappError 
+                          ? 'border-red-500 focus:ring-red-500' 
+                          : 'border-gray-300 focus:ring-gray-400'
                     }`}
                     aria-invalid={whatsappError ? 'true' : 'false'}
                     aria-describedby={whatsappError ? 'whatsapp-error' : undefined}
