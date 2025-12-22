@@ -12,7 +12,10 @@ export const currentUser = atom({
 export const currentUserRoleState = selector({
   key: 'currentUserRoleState',
   get: ({ get }) => {
-    const roles = get(currentUser).roles;
+    const user = get(currentUser) as any;
+    const roles =
+      user?.roles ||
+      user?.data?.roles; // tolerate wrapped /user/me responses
     return Array.isArray(roles) ? roles : [];
   },
 });

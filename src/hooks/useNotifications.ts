@@ -48,6 +48,13 @@ const useNotifications = () => {
     setUnreadCount((count) => Math.max(0, count - 1));
   }, []);
 
+  const handleReadAll = useCallback(() => {
+    setNotifications((prev) =>
+      prev.map((n) => ({ ...n, readAt: n.readAt ?? new Date().toISOString() })),
+    );
+    setUnreadCount(0);
+  }, []);
+
   const connectSocket = useCallback(async () => {
     try {
       const session = await getSession();
@@ -58,13 +65,12 @@ const useNotifications = () => {
         return;
       }
 
-      const base = constants.APP_URL || '';
+      const base = (constants.APP_URL || '').replace(/\/+$/, '');
       const socket = io(`${base}/notifications`, {
         path: '/socket.io',
-        transports: ['websocket'],
-        withCredentials: true,
+        transports: ['websocket', 'polling'],
+        withCredentials: false, // auth is token-based; avoid CORS credential issues
         auth: { token },
-        extraHeaders: { Authorization: `Bearer ${token}` },
         reconnection: true,
         reconnectionAttempts: 10,
         reconnectionDelay: 500,
@@ -75,6 +81,7 @@ const useNotifications = () => {
       socket.on('disconnect', () => setConnected(false));
       socket.on('notifications:new', handleNewNotification);
       socket.on('notifications:read', handleReadNotification);
+      socket.on('notifications:read-all', handleReadAll);
       socket.on('connect_error', (err) => {
         console.error('Notification socket error', err?.message || err);
       });
@@ -83,7 +90,7 @@ const useNotifications = () => {
     } catch (error) {
       console.error('Failed to connect notification socket', error);
     }
-  }, [handleNewNotification, handleReadNotification]);
+  }, [handleNewNotification, handleReadNotification, handleReadAll]);
 
   const markAsRead = useCallback(async (id: string) => {
     try {
@@ -98,12 +105,11 @@ const useNotifications = () => {
   const markAllAsRead = useCallback(async () => {
     try {
       await api.patch(apiEndpoints.NOTIFICATIONS.MARK_ALL);
-      setNotifications((prev) => prev.map((n) => ({ ...n, readAt: n.readAt ?? new Date().toISOString() })));
-      setUnreadCount(0);
+      handleReadAll();
     } catch (error) {
       console.error('Failed to mark all notifications as read', error);
     }
-  }, []);
+  }, [handleReadAll]);
 
   useEffect(() => {
     fetchNotifications();

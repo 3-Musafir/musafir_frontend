@@ -1,4 +1,4 @@
-import { ComponentType, useEffect, useState } from "react";
+import { ComponentType, useEffect, useMemo, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useRecoilValue, useSetRecoilState } from "recoil";
@@ -24,9 +24,23 @@ const withAuth = <P extends object>(
     const [profileChecked, setProfileChecked] = useState(false);
     const [unauthorized, setUnauthorized] = useState(false);
 
-    const rolesLoaded = Array.isArray(currentRole) && currentRole.length > 0;
+    const sessionRoles = useMemo(() => {
+      const roles = (session?.user as any)?.roles;
+      return Array.isArray(roles) ? roles : [];
+    }, [session]);
+
+    const effectiveRoles = useMemo(() => {
+      const merged = new Set<string>();
+      sessionRoles.forEach((r) => merged.add(r));
+      if (Array.isArray(currentRole)) {
+        currentRole.forEach((r) => merged.add(r));
+      }
+      return Array.from(merged);
+    }, [currentRole, sessionRoles]);
+
+    const rolesLoaded = effectiveRoles.length > 0;
     const hasRole = allowedRoles
-      ? rolesLoaded && allowedRoles.some((role) => currentRole.includes(role))
+      ? rolesLoaded && allowedRoles.some((role) => effectiveRoles.includes(role))
       : true;
 
     const handleSignOut = async () => {
@@ -50,10 +64,12 @@ const withAuth = <P extends object>(
           // api.get returns the axios data payload directly; /user/me wraps
           // the user object under `data`.
           const { data: userData } = await api.get(apiEndpoints.USER.GET_ME);
-          if (userData) {
-            setCurrentUser(userData);
+          // Backend wraps the user under `data`; fall back to the response itself.
+          const userPayload = (userData as any)?.data ?? userData;
+          if (userPayload) {
+            setCurrentUser(userPayload);
             const isProfileComplete = Boolean(
-              (userData as any).profileComplete
+              (userPayload as any).profileComplete
             );
             const completionPath = "/userSettings";
             const isOnCompletionPage = router.asPath.startsWith(completionPath);
@@ -83,15 +99,24 @@ const withAuth = <P extends object>(
     useEffect(() => {
       if (!profileChecked) return;
       if (!allowedRoles) return;
+      if (!rolesLoaded) return; // Wait until we have roles from session or /user/me
 
       if (!hasRole) {
         setUnauthorized(true);
         router.replace("/login");
       }
-    }, [allowedRoles, hasRole, profileChecked, router]);
+    }, [allowedRoles, hasRole, profileChecked, rolesLoaded, router]);
+
+    const shouldWaitForRoles = Boolean(allowedRoles);
 
     // While checking session or redirecting, render nothing.
-    if (status === "loading" || !session || !profileChecked || unauthorized) {
+    if (
+      status === "loading" ||
+      !session ||
+      !profileChecked ||
+      (shouldWaitForRoles && !rolesLoaded) ||
+      unauthorized
+    ) {
       return null;
     }
 

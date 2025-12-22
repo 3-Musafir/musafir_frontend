@@ -302,13 +302,11 @@ function UserSettings() {
                 <input
                   type="file"
                   accept="image/*"
-                  disabled={!isEditing}
                   onChange={(e) => handleProfileImgFile(e.target.files?.[0])}
                   className="text-sm"
                 />
                 <button
                   type="button"
-                  disabled={!isEditing}
                   onClick={() => setEditData((prev) => ({ ...prev, profileImg: "" }))}
                   className="px-3 py-1 text-sm border rounded-md disabled:opacity-50"
                 >
@@ -320,8 +318,7 @@ function UserSettings() {
                 name="profileImg"
                 placeholder="https://example.com/avatar.jpg"
                 value={editData.profileImg}
-                onChange={(e) => isEditing && setEditData({ ...editData, profileImg: e.target.value })}
-                disabled={!isEditing}
+                onChange={(e) => setEditData({ ...editData, profileImg: e.target.value })}
                 className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
               />
               <p className="text-xs text-gray-500">Upload an image or paste a URL (JPEG/PNG recommended).</p>

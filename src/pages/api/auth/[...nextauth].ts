@@ -20,6 +20,36 @@ declare module "next-auth/jwt" {
   }
 }
 
+// Keep session lightweight: only essential claims for authZ and display
+// (id, email, name, roles, profileComplete) plus accessToken.
+// All detailed profile data should come from /user/me.
+const buildSlimUser = (raw: Record<string, unknown> | undefined) => {
+  if (!raw) return {};
+  const id =
+    (raw as any)._id ??
+    (raw as any).id ??
+    (raw as any).userId ??
+    null;
+  const email = (raw as any).email ?? null;
+  const name =
+    (raw as any).fullName ??
+    (raw as any).name ??
+    (raw as any).given_name ??
+    null;
+  const roles = Array.isArray((raw as any).roles)
+    ? ((raw as any).roles as string[])
+    : [];
+  const profileComplete = Boolean((raw as any).profileComplete);
+
+  return {
+    id,
+    email,
+    name,
+    roles,
+    profileComplete,
+  };
+};
+
 export default NextAuth({
   providers: [
     // Google OAuth Provider
@@ -114,7 +144,7 @@ export default NextAuth({
         if (backendAccessToken) {
           token.accessToken = backendAccessToken;
         }
-        token.user = backendUser as Record<string, unknown>;
+        token.user = buildSlimUser(backendUser) as Record<string, unknown>;
         return token;
       }
 
@@ -126,15 +156,15 @@ export default NextAuth({
         if (u.accessToken) {
           token.accessToken = u.accessToken;
         }
-        token.user = u;
+        token.user = buildSlimUser(u);
       }
       return token;
     },
 
     async session({ session, token }) {
       session.accessToken = token.accessToken as string | undefined;
-      session.user =
-        (token.user as unknown as typeof session.user) ?? session.user;
+      // Ensure the user payload stays slim in the session as well.
+      session.user = (token.user as any) ?? session.user;
       return session;
     },
   },
