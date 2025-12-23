@@ -17,17 +17,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config: any) => {
     const session = await getSession();
-    console.log('🔍 Frontend API - Request to:', config.url);
-    console.log('🔍 Frontend API - Session:', {
-      exists: !!session,
-      hasAccessToken: !!session?.accessToken,
-      user: session?.user,
-    });
     if (session?.accessToken) {
       config.headers.Authorization = `Bearer ${session.accessToken}`;
-      console.log('✅ Frontend API - Token attached to request');
-    } else {
-      console.warn('⚠️ Frontend API - No access token in session');
     }
     return config;
   },
