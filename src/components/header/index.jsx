@@ -1,5 +1,4 @@
 import { Bell, Menu } from 'lucide-react';
-import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -83,7 +82,7 @@ export default function Header({ notificationCount = 0, setSidebarOpen, showMenu
   };
 
   const isHome = pathname === '/home';
-  const showAuthCta = status !== 'authenticated' && !isHome;
+  const showAuthCta = status !== 'authenticated'; // Show login/signup buttons when not authenticated on ANY page
 
   return (
     <header className='h-16 bg-white border-b flex items-center px-4 lg:px-6'>
@@ -138,51 +137,52 @@ export default function Header({ notificationCount = 0, setSidebarOpen, showMenu
           </div>
         )}
 
-        {/* User Profile / Settings */}
-        <div className='relative flex items-center'>
-          <button
-            onClick={handleProfileClick}
-            className='flex items-center focus:outline-none'
-          >
-            {status === 'authenticated' && user?.fullName && (
-              <span className='text-sm font-medium mr-2 hidden sm:inline'>{user.fullName}</span>
-            )}
+        {/* User Profile / Settings - Only show when authenticated */}
+        {status === 'authenticated' && (
+          <div className='relative flex items-center'>
+            <button
+              onClick={handleProfileClick}
+              className='flex items-center focus:outline-none'
+            >
+              {user?.fullName && (
+                <span className='text-sm font-medium mr-2 hidden sm:inline'>{user.fullName}</span>
+              )}
             <div className='w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center text-white text-sm overflow-hidden relative'>
-              {status === 'authenticated' && user?.profileImg ? (
-                <Image
+              {user?.profileImg ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                   src={user.profileImg}
                   alt='Profile image'
-                  fill
-                  sizes='36px'
-                  className='object-cover rounded-full'
+                  className='w-full h-full object-cover rounded-full'
                 />
               ) : (
                 initials
               )}
             </div>
-          </button>
-          {status === 'authenticated' && showDropdown && (
-            <div
-              ref={dropdownRef}
-              className='absolute right-0 mt-12 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-10'
-            >
-              <button
-                onClick={handleSettings}
-                className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+            </button>
+            {showDropdown && (
+              <div
+                ref={dropdownRef}
+                className='absolute right-0 mt-12 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-10'
               >
-                Settings
-              </button>
-              <button
-                onClick={() =>
-                  signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/login` || '/login' })
-                }
-                className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-              >
-                Sign out
-              </button>
-            </div>
-          )}
-        </div>
+                <button
+                  onClick={handleSettings}
+                  className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                >
+                  Settings
+                </button>
+                <button
+                  onClick={() =>
+                    signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/login` || '/login' })
+                  }
+                  className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                >
+                  Sign out
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

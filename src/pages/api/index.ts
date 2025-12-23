@@ -50,8 +50,12 @@ const handleError = async (error: any) => {
   } else if (error?.request) {
     if (error.code === 'ECONNABORTED') {
       errorMessage = 'Request timed out. Check your connection or try with smaller files.';
+      // Show alert for timeout errors as these are critical
+      showAlert(errorMessage, 'error');
     } else {
       errorMessage = 'No response from server. Please try again.';
+      // Show alert for network errors as these are critical
+      showAlert(errorMessage, 'error');
     }
     console.error('API Request Error:', {
       url: error.config?.url,
@@ -63,16 +67,22 @@ const handleError = async (error: any) => {
     console.error('API Error Setup:', error.message);
   }
 
-  showAlert(errorMessage, 'error');
-
+  // Handle authentication errors globally
   if (error.response?.status === 401) {
+    showAlert('Session expired. Please login again.', 'error');
     signOut();
     setTimeout(() => {
       window.location.href = `/${ROUTES_CONSTANTS.LOGIN}`;
     }, 2000);
   }
 
-  return Promise.reject(errorMessage);
+  // Return a plain object (not Error instance) to preserve details without triggering dev overlay
+  return Promise.reject({
+    message: errorMessage,
+    response: error.response,
+    request: error.request,
+    config: error.config,
+  });
 };
 
 // Define API functions
