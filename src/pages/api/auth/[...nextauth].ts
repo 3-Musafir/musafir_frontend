@@ -49,13 +49,7 @@ const buildSlimUser = (raw: Record<string, unknown> | undefined) => {
     profileComplete,
   };
 };
-// Debug logging - check what URLs are being used
-console.log('🔍 NextAuth Configuration Debug:');
-console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
-console.log('NEXT_PUBLIC_AUTH_URL:', process.env.NEXT_PUBLIC_AUTH_URL);
-console.log('CLIENTID:', process.env.CLIENTID?.substring(0, 20) + '...');
-console.log('CLIENTSECRET exists:', !!process.env.CLIENTSECRET);
-console.log('NEXTAUTH_SECRET exists:', !!process.env.NEXTAUTH_SECRET);
+
 
 export default NextAuth({
   providers: [
