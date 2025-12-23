@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'
-import { Check, ChevronLeft, ChevronRight, X } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import useCustomHook from '@/hooks/useFlagshipHandler';
-import { BaseRegistration } from '@/interfaces/registration';
-import { showAlert } from '../alert';
-import Image from 'next/image';
-import withAuth from '@/hoc/withAuth';
 import { ROLES } from '@/config/constants';
+import withAuth from '@/hoc/withAuth';
+import useCustomHook from '@/hooks/useFlagshipHandler';
 import useRegistrationHook from '@/hooks/useRegistrationHandler';
+import { BaseRegistration } from '@/interfaces/registration';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { showAlert } from '../alert';
 
 function FlagshipRequirements() {
   const router = useRouter();

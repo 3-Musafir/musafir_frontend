@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/pages/api";
 import {
   ICreatePayment,
   IPayment,
@@ -8,16 +8,14 @@ import {
 
 export class PaymentService {
   static async getBankAccounts() {
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/get-bank-accounts`
-    );
+    const data = await api.get("/payment/get-bank-accounts");
     return data;
   }
 
   static async getUserDiscountByRegistration(registrationId: string) {
     try {
-      const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/payment/get-user-discount-by-registration/${registrationId}`
+      const data = await api.get(
+        `/payment/get-user-discount-by-registration/${registrationId}`
       );
       return data;
     } catch (error) {
@@ -27,16 +25,16 @@ export class PaymentService {
   }
 
   static async createBankAccount(bankAccount: any) {
-    const { data } = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/create-bank-account`,
+    const data = await api.post(
+      "/payment/create-bank-account",
       bankAccount
     );
     return data;
   }
 
   static async requestRefund(refund: IRequestRefund) {
-    const { data } = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/refund`,
+    const data = await api.post(
+      "/payment/refund",
       refund
     );
     return data;
@@ -52,8 +50,8 @@ export class PaymentService {
       formData.append("discount", payment.discount?.toString() || "0");
       formData.append("screenshot", payment.screenshot);
 
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/payment/create-payment`,
+      const data = await api.post(
+        "/payment/create-payment",
         formData,
         {
           headers: {
@@ -62,73 +60,66 @@ export class PaymentService {
         }
       );
       return data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          // Server responded with error status
-          throw new Error(
-            error.response.data.message || "Failed to create payment"
-          );
-        } else if (error.request) {
-          // Request made but no response received
-          throw new Error("No response received from server");
-        }
+    } catch (error: any) {
+      if (error.response) {
+        // Server responded with error status
+        throw new Error(
+          error.response.data?.message || "Failed to create payment"
+        );
+      } else if (error.request) {
+        // Request made but no response received
+        throw new Error("No response received from server");
       }
-      // Generic error handling
-      // throw new Error('Failed to create payment: ' + error.message);
+      throw error;
     }
   }
 
   static async approvePayment(paymentId: string) {
-    const { data } = await axios.patch(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/approve-payment/${paymentId}`
+    const data = await api.patch(
+      `/payment/approve-payment/${paymentId}`
     );
     return data;
   }
 
   static async rejectPayment(paymentId: string) {
-    const { data } = await axios.patch(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/reject-payment/${paymentId}`
+    const data = await api.patch(
+      `/payment/reject-payment/${paymentId}`
     );
     return data;
   }
 
   static async getPendingPayments(): Promise<IPayment[]> {
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/get-pending-payments`
+    const data = await api.get(
+      "/payment/get-pending-payments"
     );
     return data;
   }
 
   static async getCompletedPayments(): Promise<IPayment[]> {
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/get-completed-payments`
+    const data = await api.get(
+      "/payment/get-completed-payments"
     );
     return data;
   }
 
   static async getPayment(id: string): Promise<IPayment> {
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/get-payment/${id}`
+    const data = await api.get(
+      `/payment/get-payment/${id}`
     );
     return data;
   }
 
   static async getRefunds(): Promise<IRefund[]> {
     try {
-      const { data } = await axios.get<IRefund[]>(
-        `${process.env.NEXT_PUBLIC_API_URL}/payment/get-refunds`
-      );
+      const data = await api.get("/payment/get-refunds");
       return data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(
-            error.response.data.message || "Failed to fetch refunds"
-          );
-        } else if (error.request) {
-          throw new Error("No response received from server");
-        }
+    } catch (error: any) {
+      if (error.response) {
+        throw new Error(
+          error.response.data?.message || "Failed to fetch refunds"
+        );
+      } else if (error.request) {
+        throw new Error("No response received from server");
       }
       throw new Error("Failed to fetch refunds");
     }
@@ -136,18 +127,14 @@ export class PaymentService {
 
   static async approveRefund(id: string): Promise<void> {
     try {
-      await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/payment/approve-refund/${id}`
-      );
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(
-            error.response.data.message || "Failed to approve refund"
-          );
-        } else if (error.request) {
-          throw new Error("No response received from server");
-        }
+      await api.patch(`/payment/approve-refund/${id}`);
+    } catch (error: any) {
+      if (error.response) {
+        throw new Error(
+          error.response.data?.message || "Failed to approve refund"
+        );
+      } else if (error.request) {
+        throw new Error("No response received from server");
       }
       throw new Error("Failed to approve refund");
     }
@@ -155,18 +142,14 @@ export class PaymentService {
 
   static async rejectRefund(id: string): Promise<void> {
     try {
-      await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/payment/reject-refund/${id}`
-      );
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(
-            error.response.data.message || "Failed to reject refund"
-          );
-        } else if (error.request) {
-          throw new Error("No response received from server");
-        }
+      await api.patch(`/payment/reject-refund/${id}`);
+    } catch (error: any) {
+      if (error.response) {
+        throw new Error(
+          error.response.data?.message || "Failed to reject refund"
+        );
+      } else if (error.request) {
+        throw new Error("No response received from server");
       }
       throw new Error("Failed to reject refund");
     }

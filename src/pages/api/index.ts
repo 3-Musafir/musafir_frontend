@@ -6,9 +6,6 @@ import { showAlert } from '../alert';
 
 const baseURL = constants.APP_URL;
 
-console.log("NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
-console.log("constants.APP_URL:", constants.APP_URL);
-
 const axiosInstance = axios.create({
   baseURL,
   headers: {
@@ -20,8 +17,17 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config: any) => {
     const session = await getSession();
+    console.log('🔍 Frontend API - Request to:', config.url);
+    console.log('🔍 Frontend API - Session:', {
+      exists: !!session,
+      hasAccessToken: !!session?.accessToken,
+      user: session?.user,
+    });
     if (session?.accessToken) {
       config.headers.Authorization = `Bearer ${session.accessToken}`;
+      console.log('✅ Frontend API - Token attached to request');
+    } else {
+      console.warn('⚠️ Frontend API - No access token in session');
     }
     return config;
   },
@@ -69,11 +75,15 @@ const handleError = async (error: any) => {
 
   // Handle authentication errors globally
   if (error.response?.status === 401) {
-    showAlert('Session expired. Please login again.', 'error');
-    signOut();
-    setTimeout(() => {
-      window.location.href = `/${ROUTES_CONSTANTS.LOGIN}`;
-    }, 2000);
+    const session = await getSession();
+    // Only trigger session expired flow if user was authenticated
+    if (session?.accessToken) {
+      showAlert('Session expired. Please login again.', 'error');
+      signOut();
+      setTimeout(() => {
+        window.location.href = `/${ROUTES_CONSTANTS.LOGIN}`;
+      }, 2000);
+    }
   }
 
   // Return a plain object (not Error instance) to preserve details without triggering dev overlay

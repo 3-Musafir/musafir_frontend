@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       "encrypted-tbn0.gstatic.com",
-      "3musafir.s3.ap-south-1.amazonaws.com",
+      "teenmusafir.s3.ap-south-1.amazonaws.com",
     ],
   },
 };

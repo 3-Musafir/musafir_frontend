@@ -22,10 +22,10 @@ export const ROUTES_CONSTANTS = {
   },
 };
 
-export const ROLES = {
-  ADMIN: 'admin',
-  MUSAFIR: 'musafir',
-};
+export enum ROLES {
+  ADMIN = 'admin',
+  MUSAFIR = 'musafir',
+}
 
 export const DESTINATIONS = [
   { value: 'hunza', label: 'Hunza Valley' },
