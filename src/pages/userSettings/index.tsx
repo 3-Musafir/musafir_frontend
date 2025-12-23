@@ -293,9 +293,15 @@ function UserSettings() {
           <div className="flex items-center gap-4">
             {(() => {
               const previewImg = isEditing ? editData.profileImg : (editData.profileImg || userData.profileImg || "");
+              // Only show image if it's a valid URL or data URL
+              const isValidImageUrl = previewImg && (
+                previewImg.startsWith('http://') || 
+                previewImg.startsWith('https://') || 
+                previewImg.startsWith('data:image/')
+              );
               return (
                 <div className="w-16 h-16 rounded-full bg-gray-900 flex items-center justify-center text-white text-lg overflow-hidden relative">
-                  {previewImg ? (
+                  {isValidImageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={previewImg} alt="Profile" className="w-full h-full object-cover" />
                   ) : (

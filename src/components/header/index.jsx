@@ -147,18 +147,22 @@ export default function Header({ notificationCount = 0, setSidebarOpen, showMenu
               {user?.fullName && (
                 <span className='text-sm font-medium mr-2 hidden sm:inline'>{user.fullName}</span>
               )}
-            <div className='w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center text-white text-sm overflow-hidden relative'>
-              {user?.profileImg ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={user.profileImg}
-                  alt='Profile image'
-                  className='w-full h-full object-cover rounded-full'
-                />
-              ) : (
-                initials
-              )}
-            </div>
+              <div className='w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center text-white text-sm overflow-hidden relative'>
+                {user?.profileImg && (
+                  user.profileImg.startsWith('http://') || 
+                  user.profileImg.startsWith('https://') || 
+                  user.profileImg.startsWith('data:image/')
+                ) ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={user.profileImg}
+                    alt='Profile image'
+                    className='w-full h-full object-cover rounded-full'
+                  />
+                ) : (
+                  initials
+                )}
+              </div>
             </button>
             {showDropdown && (
               <div
