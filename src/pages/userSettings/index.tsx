@@ -93,9 +93,9 @@ function UserSettings() {
   };
 
   const handleLogout = async () => {
-    await signOut({
-      callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/login` || "/login",
-    });
+    const base = process.env.NEXT_PUBLIC_AUTH_URL?.trim();
+    const callbackUrl = base ? `${base}/login` : "/login";
+    await signOut({ callbackUrl });
   };
 
   const handleResetPassword = () => {

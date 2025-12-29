@@ -1,4 +1,5 @@
 import axios from "axios";
+import api from "@/pages/api";
 import {
   ICreatePayment,
   IPayment,
@@ -8,18 +9,14 @@ import {
 
 export class PaymentService {
   static async getBankAccounts() {
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/get-bank-accounts`
-    );
-    return data;
+    return api.get(`/payment/get-bank-accounts`);
   }
 
   static async getUserDiscountByRegistration(registrationId: string) {
     try {
-      const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/payment/get-user-discount-by-registration/${registrationId}`
+      return api.get(
+        `/payment/get-user-discount-by-registration/${registrationId}`
       );
-      return data;
     } catch (error) {
       console.error("Error fetching user discount:", error);
       return 0;
@@ -27,19 +24,11 @@ export class PaymentService {
   }
 
   static async createBankAccount(bankAccount: any) {
-    const { data } = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/create-bank-account`,
-      bankAccount
-    );
-    return data;
+    return api.post(`/payment/create-bank-account`, bankAccount);
   }
 
   static async requestRefund(refund: IRequestRefund) {
-    const { data } = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/refund`,
-      refund
-    );
-    return data;
+    return api.post(`/payment/refund`, refund);
   }
 
   static async createPayment(payment: ICreatePayment) {
@@ -52,16 +41,11 @@ export class PaymentService {
       formData.append("discount", payment.discount?.toString() || "0");
       formData.append("screenshot", payment.screenshot);
 
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/payment/create-payment`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      return data;
+      return api.post(`/payment/create-payment`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
@@ -80,46 +64,28 @@ export class PaymentService {
   }
 
   static async approvePayment(paymentId: string) {
-    const { data } = await axios.patch(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/approve-payment/${paymentId}`
-    );
-    return data;
+    return api.patch(`/payment/approve-payment/${paymentId}`);
   }
 
   static async rejectPayment(paymentId: string) {
-    const { data } = await axios.patch(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/reject-payment/${paymentId}`
-    );
-    return data;
+    return api.patch(`/payment/reject-payment/${paymentId}`);
   }
 
   static async getPendingPayments(): Promise<IPayment[]> {
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/get-pending-payments`
-    );
-    return data;
+    return api.get(`/payment/get-pending-payments`);
   }
 
   static async getCompletedPayments(): Promise<IPayment[]> {
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/get-completed-payments`
-    );
-    return data;
+    return api.get(`/payment/get-completed-payments`);
   }
 
   static async getPayment(id: string): Promise<IPayment> {
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/payment/get-payment/${id}`
-    );
-    return data;
+    return api.get(`/payment/get-payment/${id}`);
   }
 
   static async getRefunds(): Promise<IRefund[]> {
     try {
-      const { data } = await axios.get<IRefund[]>(
-        `${process.env.NEXT_PUBLIC_API_URL}/payment/get-refunds`
-      );
-      return data;
+      return api.get<IRefund[]>(`/payment/get-refunds`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {

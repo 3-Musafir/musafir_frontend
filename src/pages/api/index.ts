@@ -16,10 +16,26 @@ const axiosInstance = axios.create({
   },
 });
 
+// Cache session briefly to avoid hammering /api/auth/session on bursts
+let cachedSession: any = null;
+let cachedAt = 0;
+const CACHE_TTL_MS = 5_000;
+
+const getCachedSession = async () => {
+  const now = Date.now();
+  if (cachedSession && now - cachedAt < CACHE_TTL_MS) {
+    return cachedSession;
+  }
+  const session = await getSession();
+  cachedSession = session;
+  cachedAt = now;
+  return session;
+};
+
 // **Attach token dynamically before each request**
 axiosInstance.interceptors.request.use(
   async (config: any) => {
-    const session = await getSession();
+    const session = await getCachedSession();
     if (session?.accessToken) {
       config.headers.Authorization = `Bearer ${session.accessToken}`;
     }

@@ -9,7 +9,11 @@ import { NotificationsProvider } from "@/context/NotificationsProvider";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
-    <SessionProvider session={pageProps.session}>
+    <SessionProvider
+      session={pageProps.session}
+      refetchOnWindowFocus={false}
+      refetchInterval={0}
+    >
       <RecoilRoot>
         <NotificationsProvider>
           <Component {...pageProps} />

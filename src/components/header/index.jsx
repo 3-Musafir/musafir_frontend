@@ -173,9 +173,11 @@ export default function Header({ notificationCount = 0, setSidebarOpen, showMenu
                 Settings
               </button>
               <button
-                onClick={() =>
-                  signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_AUTH_URL}/login` || '/login' })
-                }
+                onClick={async () => {
+                  const base = process.env.NEXT_PUBLIC_AUTH_URL?.trim();
+                  const callbackUrl = base ? `${base}/login` : '/login';
+                  await signOut({ callbackUrl });
+                }}
                 className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
               >
                 Sign out

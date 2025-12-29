@@ -44,18 +44,23 @@ const withAuth = <P extends object>(
       : true;
 
     const handleSignOut = async () => {
-      await signOut({
-        callbackUrl: `http://localhost:3000/login`,
-      });
+      const base = process.env.NEXT_PUBLIC_AUTH_URL?.trim();
+      const callbackUrl = base ? `${base}/login` : "/login";
+      await signOut({ callbackUrl });
     };
 
     useEffect(() => {
       if (status === "loading") return; // Avoid redirecting while checking session
 
-      if (!session) {
-        handleSignOut(); // Redirect to login if no session
+      // If NextAuth has definitively determined there's no session, just route
+      // to login (do not signOut here to avoid callback loops during OAuth
+      // hydration).
+      if (status === "unauthenticated" && !session) {
+        router.replace("/login");
         return;
       }
+
+      if (!session) return; // Wait for session to hydrate
 
       let cancelled = false;
 

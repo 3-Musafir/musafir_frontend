@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { User } from "@/interfaces/login";
 import useLoginHook from "@/hooks/useLoginHandler";
@@ -10,14 +10,16 @@ import { ROLES, ROUTES_CONSTANTS } from "@/config/constants";
 export default function Login() {
   const { data: session } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const actionLogin = useLoginHook();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [hasRedirected, setHasRedirected] = useState(false);
 
-  const verifyUser = async () => {
+  const verifyUser = useCallback(async () => {
     try {
       const userData: User = await actionLogin.verifyToken(); // Call API
       if (userData?.roles?.includes(ROLES.ADMIN)) {
@@ -29,14 +31,14 @@ export default function Login() {
       console.error("Token verification failed", error);
       router.push("/login"); // Redirect to login if token invalid
     }
-  };
+  }, [actionLogin, router]);
 
   useEffect(() => {
-    if (session) {
-      console.log("session: ", session);
-      // router.push('/home'); // Redirect logged-in users to home
-    }
-  }, [session, router]);
+    if (!session || hasRedirected) return;
+    // Session exists (e.g., after Google OAuth); route based on role
+    setHasRedirected(true);
+    verifyUser();
+  }, [session, hasRedirected, verifyUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +54,7 @@ export default function Login() {
       console.log(result, "results");
 
       if (result?.status === 200) {
+        setHasRedirected(true);
         setTimeout(() => {
           verifyUser();
         }, 1000);
@@ -75,11 +78,18 @@ export default function Login() {
       localStorage.setItem("isGoogleLogin", "true");
     }
 
+    // Allow caller to pass a safe callbackUrl (e.g., /admin) via query.
+    const requestedCallback = searchParams?.get("callbackUrl");
+    const isSafePath =
+      typeof requestedCallback === "string" &&
+      /^\/(?!\/)/.test(requestedCallback); // allow "/foo", disallow "//" or protocols
+
     const base =
       process.env.NEXT_PUBLIC_AUTH_URL && process.env.NEXT_PUBLIC_AUTH_URL.trim().length > 0
         ? process.env.NEXT_PUBLIC_AUTH_URL
         : "";
-    const callbackUrl = base ? `${base}/home` : "/home";
+    const defaultCallback = base ? `${base}/login` : "/login";
+    const callbackUrl = isSafePath ? requestedCallback! : defaultCallback;
 
     await signIn("google", { callbackUrl });
   };

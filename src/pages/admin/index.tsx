@@ -26,13 +26,12 @@ import { RefundsContainer } from "@/containers/refundsContainer";
 import withAuth from "@/hoc/withAuth";
 import { ROLES } from "@/config/constants";
 import { useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useRecoilValue, useResetRecoilState } from "recoil";
 import { currentUser } from "@/store/signup";
 
 function AdminMainPage() {
   const router = useRouter();
-  const { data: session } = useSession();
   const userData = useRecoilValue(currentUser);
   const resetCurrentUser = useResetRecoilState(currentUser);
   const [activeTab, setActiveTab] = useState("trips");
@@ -78,6 +77,9 @@ function AdminMainPage() {
   });
   const [isSearching, setIsSearching] = useState(false);
 
+  const ensureArray = <T,>(value: T[] | null | undefined): T[] =>
+    Array.isArray(value) ? value : [];
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -105,9 +107,9 @@ function AdminMainPage() {
         ]);
 
         setTrips({
-          past: pastTrips,
-          live: liveTrips,
-          upcoming: upcomingTrips,
+          past: ensureArray(pastTrips),
+          live: ensureArray(liveTrips),
+          upcoming: ensureArray(upcomingTrips),
         });
 
         setUsers({
@@ -183,31 +185,13 @@ function AdminMainPage() {
   };
 
   const getAdminName = () => {
-    type SessionUser = {
-      fullName?: string | null;
-      name?: string | null;
-      email?: string | null;
-    };
     type PersistedUser = {
       fullName?: string | null;
       email?: string | null;
     };
 
-    const sessionUser = session?.user as unknown as SessionUser | undefined;
     const recoilUser = userData as unknown as PersistedUser;
-
-    // Prefer authenticated session first
-    const sessionName = sessionUser?.fullName || sessionUser?.name || "";
-
-    const sessionEmail = sessionUser?.email || "";
-    const recoilEmail = recoilUser?.email || "";
-
-    // If recoil is from a different user, ignore it completely
-    if (sessionEmail && recoilEmail && sessionEmail !== recoilEmail) {
-      return sessionName || "Admin";
-    }
-
-    return sessionName || recoilUser?.fullName || "Admin";
+    return recoilUser?.fullName || "Admin";
   };
 
   const handleRefundAction = async (
