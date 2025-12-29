@@ -163,3 +163,67 @@ body {
 h2 {
   color: #2B2D42;
 }
+
+/* Rich text preview/editor styling */
+.richtext {
+  color: #2B2D42;
+  line-height: 1.6;
+}
+
+.richtext h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.richtext h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.richtext h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0.75rem 0 0.4rem;
+}
+
+.richtext p {
+  margin: 0.35rem 0;
+}
+
+.richtext ul,
+.richtext ol {
+  margin: 0.35rem 0 0.5rem 1.25rem;
+  padding-left: 1.1rem;
+}
+
+.richtext ul {
+  list-style: disc;
+}
+
+.richtext ol {
+  list-style: decimal;
+}
+
+.richtext strong {
+  font-weight: 700;
+}
+
+.richtext em {
+  font-style: italic;
+}
+
+.richtext blockquote {
+  margin: 0.75rem 0;
+  padding-left: 1rem;
+  border-left: 4px solid #e5e7eb;
+  color: #4b5563;
+}
+
+.richtext code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  background: #f3f4f6;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+}

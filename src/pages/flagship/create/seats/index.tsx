@@ -22,6 +22,11 @@ function SeatsAllocation() {
   // Total capacity state
   const [totalSeats, setTotalSeats] = useState('');
 
+  // Toggles
+  const [genderSplitEnabled, setGenderSplitEnabled] = useState(true);
+  const [citySplitEnabled, setCitySplitEnabled] = useState(true);
+  const [mattressSplitEnabled, setMattressSplitEnabled] = useState(true);
+
   // Gender split state
   const [genderSplit, setGenderSplit] = useState(50);
   const [femaleSeats, setFemaleSeats] = useState('');
@@ -31,6 +36,7 @@ function SeatsAllocation() {
   const [bedMattressSplit, setBedMattressSplit] = useState(50);
   const [bedSeats, setBedSeats] = useState('');
   const [mattressSeats, setMattressSeats] = useState('');
+  const [mattressPriceDelta, setMattressPriceDelta] = useState('');
   // Mounted state to avoid hydration mismatch
   const [mounted, setMounted] = useState(false);
 
@@ -41,7 +47,9 @@ function SeatsAllocation() {
   const [errors, setErrors] = useState<{
     totalSeats: string;
     citySeats: { [key: string]: string };
-  }>({ totalSeats: '', citySeats: {} });
+    gender: string;
+    mattress: string;
+  }>({ totalSeats: '', citySeats: {}, gender: '', mattress: '' });
 
   // When locations change, update citySeats for enabled locations
   useEffect(() => {
@@ -60,6 +68,10 @@ function SeatsAllocation() {
   // useEffect to update state on page load if flagshipData is available
   useEffect(() => {
     if (flagshipData) {
+      if (flagshipData.genderSplitEnabled === false) setGenderSplitEnabled(false);
+      if (flagshipData.citySplitEnabled === false) setCitySplitEnabled(false);
+      if (flagshipData.mattressSplitEnabled === false) setMattressSplitEnabled(false);
+
       // For discounts, basePrice, citySeats, gender splits, etc.
       if (flagshipData?.maleSeats && flagshipData?.femaleSeats) {
         const male = Number(flagshipData.maleSeats);
@@ -87,22 +99,52 @@ function SeatsAllocation() {
       if (flagshipData.femaleSeats) setFemaleSeats(String(flagshipData.femaleSeats));
       if (flagshipData.bedSeats) setBedSeats(String(flagshipData.bedSeats));
       if (flagshipData.mattressSeats) setMattressSeats(String(flagshipData.mattressSeats));
+      if (flagshipData.mattressPriceDelta) setMattressPriceDelta(String(flagshipData.mattressPriceDelta));
     }
   }, [flagshipData]);
 
+  useEffect(() => {
+    if (!citySplitEnabled) {
+      setCitySeats({});
+    }
+  }, [citySplitEnabled]);
+
+  useEffect(() => {
+    if (!genderSplitEnabled) {
+      setErrors((prev) => ({ ...prev, gender: '' }));
+    }
+  }, [genderSplitEnabled]);
+
+  useEffect(() => {
+    if (!mattressSplitEnabled) {
+      setErrors((prev) => ({ ...prev, mattress: '' }));
+      setMattressPriceDelta('');
+    }
+  }, [mattressSplitEnabled]);
+
   // Update gender seats when total or split changes
   useEffect(() => {
+    if (!genderSplitEnabled) {
+      setFemaleSeats('');
+      setMaleSeats('');
+      return;
+    }
     const total = Number.parseInt(totalSeats) || 0;
     setFemaleSeats(Math.round((genderSplit / 100) * total).toString());
     setMaleSeats(Math.round(((100 - genderSplit) / 100) * total).toString());
-  }, [totalSeats, genderSplit]);
+  }, [totalSeats, genderSplit, genderSplitEnabled]);
 
   // Update bed/mattress seats when total or split changes
   useEffect(() => {
+    if (!mattressSplitEnabled) {
+      setBedSeats('');
+      setMattressSeats('');
+      return;
+    }
     const total = Number.parseInt(totalSeats) || 0;
     setBedSeats(Math.round((bedMattressSplit / 100) * total).toString());
     setMattressSeats(Math.round(((100 - bedMattressSplit) / 100) * total).toString());
-  }, [totalSeats, bedMattressSplit]);
+  }, [totalSeats, bedMattressSplit, mattressSplitEnabled]);
 
   // Handle city seat changes
   const updateCitySeats = (city: keyof typeof citySeats, increment: boolean) => {
@@ -122,33 +164,62 @@ function SeatsAllocation() {
     const newErrors: {
       totalSeats: string;
       citySeats: { [key: string]: string };
+      gender: string;
+      mattress: string;
     } = {
       totalSeats: '',
       citySeats: {},
+      gender: '',
+      mattress: '',
     };
 
-    if (!totalSeats.trim()) {
+    const total = Number(totalSeats);
+    if (!totalSeats.trim() || Number.isNaN(total) || total <= 0) {
       newErrors.totalSeats = 'Total capacity is required';
       isValid = false;
     }
 
-    let totalCitySeats = 0;
-    console.log(citySeats);
-
-    for (const city in citySeats) {
-      const value = citySeats[city];
-      if (value === undefined || value === null || isNaN(Number(value))) {
-        newErrors.citySeats[city] = `${city} seats is required and must be a number`;
+    if (citySplitEnabled) {
+      let totalCitySeats = 0;
+      for (const city in citySeats) {
+        const value = citySeats[city];
+        if (value === undefined || value === null || Number.isNaN(Number(value))) {
+          newErrors.citySeats[city] = `${city} seats is required and must be a number`;
+          isValid = false;
+        } else {
+          totalCitySeats += Number(value);
+        }
+      }
+      if (isValid && totalCitySeats !== total) {
+        newErrors.citySeats['global'] = 'Sum of all city seats should equal total seats';
         isValid = false;
-      } else {
-        totalCitySeats += Number(value);
       }
     }
 
-    if (isValid) {
-      const total = Number(totalSeats);
-      if (totalCitySeats !== total) {
-        newErrors.citySeats['global'] = 'Sum of all city seats should be equal to total seats';
+    if (genderSplitEnabled) {
+      const male = Number(maleSeats);
+      const female = Number(femaleSeats);
+      if (Number.isNaN(male) || Number.isNaN(female)) {
+        newErrors.gender = 'Gender seats must be valid numbers';
+        isValid = false;
+      } else if (male + female !== total) {
+        newErrors.gender = 'Male + Female must equal total seats';
+        isValid = false;
+      }
+    }
+
+    if (mattressSplitEnabled) {
+      const bed = Number(bedSeats);
+      const mattress = Number(mattressSeats);
+      if (Number.isNaN(bed) || Number.isNaN(mattress)) {
+        newErrors.mattress = 'Bed/Mattress seats must be valid numbers';
+        isValid = false;
+      } else if (bed + mattress !== total) {
+        newErrors.mattress = 'Bed + Mattress must equal total seats';
+        isValid = false;
+      }
+      if (mattressPriceDelta && Number.isNaN(Number(mattressPriceDelta))) {
+        newErrors.mattress = 'Mattress price delta must be a number';
         isValid = false;
       }
     }
@@ -161,14 +232,35 @@ function SeatsAllocation() {
   const handleSubmit = async () => {
     if (!validateFields()) return;
 
-    const formData = {
+    const formData: any = {
       totalSeats: Number(totalSeats),
-      femaleSeats: Number(femaleSeats),
-      maleSeats: Number(maleSeats),
-      citySeats: citySeats,
-      bedSeats: Number(bedSeats),
-      mattressSeats: Number(mattressSeats),
+      citySplitEnabled,
+      genderSplitEnabled,
+      mattressSplitEnabled,
+      mattressPriceDelta: mattressSplitEnabled && mattressPriceDelta ? Number(mattressPriceDelta) : null,
     };
+
+    if (genderSplitEnabled) {
+      formData.femaleSeats = Number(femaleSeats);
+      formData.maleSeats = Number(maleSeats);
+    } else {
+      formData.femaleSeats = null;
+      formData.maleSeats = null;
+    }
+
+    if (citySplitEnabled) {
+      formData.citySeats = citySeats;
+    } else {
+      formData.citySeats = null;
+    }
+
+    if (mattressSplitEnabled) {
+      formData.bedSeats = Number(bedSeats);
+      formData.mattressSeats = Number(mattressSeats);
+    } else {
+      formData.bedSeats = null;
+      formData.mattressSeats = null;
+    }
 
     try {
       const flagshipId = flagshipData._id || '';
@@ -217,43 +309,75 @@ function SeatsAllocation() {
 
           {/* Gender Split */}
           <div className='mb-8'>
-            <h3 className='text-xl font-bold mb-4'>Gender Split</h3>
-            <input
-              type='range'
-              min='0'
-              max='100'
-              value={genderSplit}
-              onChange={(e) => setGenderSplit(Number.parseInt(e.target.value))}
-              className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black'
-            />
-            <div className='flex justify-between mt-4 gap-4'>
-              <div className='flex-1'>
-                <p className='mb-2'>Female Seats</p>
+            <div className='flex items-center justify-between mb-2'>
+              <h3 className='text-xl font-bold'>Gender Split</h3>
+              <label className='flex items-center gap-2 text-sm'>
                 <input
-                  type='number'
-                  min={0}
-                  value={femaleSeats}
-                  readOnly
-                  className='w-full px-4 py-3 border rounded-xl focus:outline-none text-lg'
+                  type='checkbox'
+                  checked={genderSplitEnabled}
+                  onChange={(e) => setGenderSplitEnabled(e.target.checked)}
                 />
-              </div>
-              <div className='flex-1'>
-                <p className='mb-2'>Males Seats</p>
-                <input
-                  type='number'
-                  min={0}
-                  value={maleSeats}
-                  readOnly
-                  className='w-full px-4 py-3 border rounded-xl focus:outline-none text-lg'
-                />
-              </div>
+                Enable
+              </label>
             </div>
+            <p className='text-sm text-gray-600 mb-3'>
+              When disabled, seats are pooled without gender limits.
+            </p>
+            {genderSplitEnabled && (
+              <>
+                <input
+                  type='range'
+                  min='0'
+                  max='100'
+                  value={genderSplit}
+                  onChange={(e) => setGenderSplit(Number.parseInt(e.target.value))}
+                  className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black'
+                />
+                <div className='flex justify-between mt-4 gap-4'>
+                  <div className='flex-1'>
+                    <p className='mb-2'>Female Seats</p>
+                    <input
+                      type='number'
+                      min={0}
+                      value={femaleSeats}
+                      readOnly
+                      className='w-full px-4 py-3 border rounded-xl focus:outline-none text-lg'
+                    />
+                  </div>
+                  <div className='flex-1'>
+                    <p className='mb-2'>Male Seats</p>
+                    <input
+                      type='number'
+                      min={0}
+                      value={maleSeats}
+                      readOnly
+                      className='w-full px-4 py-3 border rounded-xl focus:outline-none text-lg'
+                    />
+                  </div>
+                </div>
+                {errors.gender && <p className='text-red-500 text-sm mt-1'>{errors.gender}</p>}
+              </>
+            )}
           </div>
 
           {/* City-wise Split */}
           <div className='mb-8'>
-            <h3 className='text-xl font-bold mb-4'>City-wise Split</h3>
-            {flagshipLocations?.length !== 0 &&
+            <div className='flex items-center justify-between mb-2'>
+              <h3 className='text-xl font-bold'>City-wise Split</h3>
+              <label className='flex items-center gap-2 text-sm'>
+                <input
+                  type='checkbox'
+                  checked={citySplitEnabled}
+                  onChange={(e) => setCitySplitEnabled(e.target.checked)}
+                />
+                Enable
+              </label>
+            </div>
+            <p className='text-sm text-gray-600 mb-3'>
+              When disabled, all seats share one pool; per-city limits are ignored.
+            </p>
+            {citySplitEnabled &&
+              flagshipLocations?.length !== 0 &&
               flagshipLocations.map((city, index) => {
                 const cityKey = city.name.toLowerCase();
                 return (
@@ -288,44 +412,76 @@ function SeatsAllocation() {
                   </div>
                 );
               })}
-            {errors.citySeats && errors.citySeats['global'] && (
+            {citySplitEnabled && errors.citySeats && errors.citySeats['global'] && (
               <p className='text-red-500 text-sm mt-1'>{errors.citySeats['global']}</p>
             )}
           </div>
 
           {/* Mattress - Bed Split */}
           <div className='mb-8'>
-            <h3 className='text-xl font-bold mb-4'>Mattress - Bed Split</h3>
-            <input
-              type='range'
-              min='0'
-              max='100'
-              value={bedMattressSplit}
-              onChange={(e) => setBedMattressSplit(Number.parseInt(e.target.value))}
-              className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black'
-            />
-            <div className='flex justify-between mt-4 gap-4'>
-              <div className='flex-1'>
-                <p className='mb-2'>Bed</p>
+            <div className='flex items-center justify-between mb-2'>
+              <h3 className='text-xl font-bold'>Mattress - Bed Split</h3>
+              <label className='flex items-center gap-2 text-sm'>
                 <input
-                  type='number'
-                  min={0}
-                  value={bedSeats}
-                  readOnly
-                  className='w-full px-4 py-3 border rounded-xl focus:outline-none text-lg'
+                  type='checkbox'
+                  checked={mattressSplitEnabled}
+                  onChange={(e) => setMattressSplitEnabled(e.target.checked)}
                 />
-              </div>
-              <div className='flex-1'>
-                <p className='mb-2'>Mattress</p>
-                <input
-                  type='number'
-                  min={0}
-                  value={mattressSeats}
-                  readOnly
-                  className='w-full px-4 py-3 border rounded-xl focus:outline-none text-lg'
-                />
-              </div>
+                Enable
+              </label>
             </div>
+            <p className='text-sm text-gray-600 mb-3'>
+              When disabled, all seats use the base price and no bed/mattress choice is enforced.
+            </p>
+            {mattressSplitEnabled && (
+              <>
+                <input
+                  type='range'
+                  min='0'
+                  max='100'
+                  value={bedMattressSplit}
+                  onChange={(e) => setBedMattressSplit(Number.parseInt(e.target.value))}
+                  className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black'
+                />
+                <div className='flex justify-between mt-4 gap-4'>
+                  <div className='flex-1'>
+                    <p className='mb-2'>Bed</p>
+                    <input
+                      type='number'
+                      min={0}
+                      value={bedSeats}
+                      readOnly
+                      className='w-full px-4 py-3 border rounded-xl focus:outline-none text-lg'
+                    />
+                  </div>
+                  <div className='flex-1'>
+                    <p className='mb-2'>Mattress</p>
+                    <input
+                      type='number'
+                      min={0}
+                      value={mattressSeats}
+                      readOnly
+                      className='w-full px-4 py-3 border rounded-xl focus:outline-none text-lg'
+                    />
+                  </div>
+                </div>
+                <div className='mt-4'>
+                  <p className='mb-2'>Mattress Price Delta (amount deducted from base seat price)</p>
+                  <input
+                    type='number'
+                    min={0}
+                    value={mattressPriceDelta}
+                    onChange={(e) => setMattressPriceDelta(e.target.value)}
+                    className='w-full px-4 py-3 border rounded-xl focus:outline-none text-lg'
+                    placeholder='e.g., 2000'
+                  />
+                  <p className='text-xs text-gray-600 mt-1'>
+                    Mattress price = base seat price - this delta. Shown to users during selection.
+                  </p>
+                </div>
+                {errors.mattress && <p className='text-red-500 text-sm mt-1'>{errors.mattress}</p>}
+              </>
+            )}
           </div>
         </div>
 

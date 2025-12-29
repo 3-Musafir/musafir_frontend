@@ -1,5 +1,4 @@
 import api from "@/pages/api";
-import api from "@/pages/api";
 import { IUser } from "./types/user";
 
 export class UserService {

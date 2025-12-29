@@ -24,6 +24,7 @@ export interface Flagship {
     name: string;
     price: string;
   }[];
+  earlyBirdPrice?: number;
 
   // Seats Allocation
   totalSeats?: number;
@@ -32,6 +33,10 @@ export interface Flagship {
   citySeats?: object;
   bedSeats?: number;
   mattressSeats?: number;
+  genderSplitEnabled?: boolean;
+  citySplitEnabled?: boolean;
+  mattressSplitEnabled?: boolean;
+  mattressPriceDelta?: number;
 
   // Important Dates
   tripDates: string;
@@ -144,6 +149,7 @@ export interface IUpdateFlagship {
     name?: string;
     price?: string;
   }[];
+  earlyBirdPrice?: number;
 
   // Content fields
   travelPlan?: string;
@@ -157,6 +163,10 @@ export interface IUpdateFlagship {
   citySeats?: object;
   bedSeats?: number;
   mattressSeats?: number;
+  genderSplitEnabled?: boolean;
+  citySplitEnabled?: boolean;
+  mattressSplitEnabled?: boolean;
+  mattressPriceDelta?: number;
 
   // Important Dates
   tripDates?: string;

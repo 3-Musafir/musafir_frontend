@@ -20,6 +20,7 @@ function PricingPage() {
   const flagshipData = useRecoilValue(currentFlagship);
   // Base price state
   const [basePrice, setBasePrice] = useState('');
+  const [earlyBirdPrice, setEarlyBirdPrice] = useState('');
 
   // Locations state
   const [locations, setLocations] = useState([
@@ -54,6 +55,7 @@ function PricingPage() {
     tiers: '',
     mattressTiers: '',
     roomSharingPreference: '',
+    earlyBirdPrice: '',
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -119,6 +121,7 @@ function PricingPage() {
       }
       // For discounts, basePrice, citySeats, gender splits, etc.
       if (flagshipData.basePrice) setBasePrice(flagshipData.basePrice);
+      if (flagshipData.earlyBirdPrice) setEarlyBirdPrice(String(flagshipData.earlyBirdPrice));
     }
   }, [flagshipData]);
 
@@ -212,6 +215,7 @@ function PricingPage() {
       tiers: tierEnabled ? tiers.map(({ id, ...rest }) => rest) : [],
       mattressTiers: mattressTierEnabled ? mattressTiers.map(({ id, ...rest }) => rest) : [],
       roomSharingPreference: roomSharingEnabled ? roomSharingPreference.map(({ id, ...rest }) => rest) : [],
+      earlyBirdPrice: earlyBirdPrice ? Number(earlyBirdPrice) : undefined,
     };
     try {
       const flagshipId = flagshipData?._id;
@@ -230,7 +234,14 @@ function PricingPage() {
   // Validate fields before submit
   const validateFields = (): boolean => {
     let isValid = true;
-    const newErrors = { basePrice: '', locations: '', tiers: '', mattressTiers: '', roomSharingPreference: '' };
+    const newErrors = {
+      basePrice: '',
+      locations: '',
+      tiers: '',
+      mattressTiers: '',
+      roomSharingPreference: '',
+      earlyBirdPrice: '',
+    };
 
     if (!basePrice.trim()) {
       newErrors.basePrice = 'Base price is required';
@@ -277,6 +288,18 @@ function PricingPage() {
       }
     }
 
+    if (earlyBirdPrice) {
+      const eb = Number(earlyBirdPrice);
+      const base = Number(basePrice);
+      if (Number.isNaN(eb) || eb <= 0) {
+        newErrors.earlyBirdPrice = 'Enter a valid early-bird price';
+        isValid = false;
+      } else if (!Number.isNaN(base) && eb > base) {
+        newErrors.earlyBirdPrice = 'Early-bird price should be <= base price';
+        isValid = false;
+      }
+    }
+
     setErrors(newErrors);
     return isValid;
   };
@@ -313,6 +336,32 @@ function PricingPage() {
             </div>
             {errors.basePrice && <p className='text-red-500 text-sm mt-1'>{errors.basePrice}</p>}
             <p className='text-gray-600 mt-2 text-sm'>Set the &quot;Starting from&quot; price</p>
+          </div>
+
+          {/* Early Bird Price */}
+          <div className='mb-8'>
+            <div className='flex items-center justify-between'>
+              <h3 className='text-xl font-bold mb-2'>Early-bird price (override)</h3>
+              <p className='text-xs text-gray-600'>Applies until Early Bird Deadline (Step 5)</p>
+            </div>
+            <div className='border-2 border-black rounded-xl overflow-hidden'>
+              <input
+                min={0}
+                value={earlyBirdPrice}
+                onChange={(e) => {
+                  setEarlyBirdPrice(e.target.value);
+                  setIsDirty(true);
+                }}
+                className='w-full px-4 py-3 focus:outline-none text-lg'
+                placeholder='Optional early-bird price (<= base price)'
+              />
+            </div>
+            {errors.earlyBirdPrice && (
+              <p className='text-red-500 text-sm mt-1'>{errors.earlyBirdPrice}</p>
+            )}
+            <p className='text-gray-600 mt-2 text-sm'>
+              Users will see this lower price before adding city/tier adjustments when registering before the deadline.
+            </p>
           </div>
 
           {/* Departure Points Section */}

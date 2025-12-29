@@ -85,7 +85,7 @@ export class PaymentService {
 
   static async getRefunds(): Promise<IRefund[]> {
     try {
-      return api.get<IRefund[]>(`/payment/get-refunds`);
+      return api.get(`/payment/get-refunds`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
