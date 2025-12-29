@@ -133,9 +133,13 @@ function ContentPage() {
         showAlert('Content Added!', 'success');
         router.push(ROUTES_CONSTANTS.FLAGSHIP.PRICING);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      showAlert('Something went wrong while creating the flagship.', 'error');
+      // Extract the actual error message from the API response
+      const errorMessage = error?.response?.data?.message 
+        || error?.message 
+        || 'Something went wrong while updating the flagship.';
+      showAlert(errorMessage, 'error');
     }
   };
 

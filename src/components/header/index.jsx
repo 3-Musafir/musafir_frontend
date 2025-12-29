@@ -1,5 +1,4 @@
 import { Bell, Menu } from 'lucide-react';
-import Image from 'next/image';
 import { signOut, useSession } from 'next-auth/react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -83,7 +82,7 @@ export default function Header({ notificationCount = 0, setSidebarOpen, showMenu
   };
 
   const isHome = pathname === '/home';
-  const showAuthCta = status !== 'authenticated' && !isHome;
+  const showAuthCta = status !== 'authenticated'; // Show login/signup buttons when not authenticated on ANY page
 
   return (
     <header className='h-16 bg-white border-b flex items-center px-4 lg:px-6'>

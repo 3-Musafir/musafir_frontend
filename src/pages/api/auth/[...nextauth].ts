@@ -50,6 +50,7 @@ const buildSlimUser = (raw: Record<string, unknown> | undefined) => {
   };
 };
 
+
 export default NextAuth({
   providers: [
     // Google OAuth Provider

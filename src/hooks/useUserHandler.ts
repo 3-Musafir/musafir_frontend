@@ -26,37 +26,19 @@ const useUserHandler = () => {
 
   const getMe = async (): Promise<User> => {
     const res = await api.get(USER.GET_ME);
-    if (res.statusCode === 200) {
-      return res.data;
-    } else {
-      throw new Error("Failed to fetch user data");
-    }
+    return res.data;
   };
 
   const updateUser = async (data: UpdateUserData): Promise<User> => {
-    try {
-      const res = await api.patch(USER.UPDATE_ME, data);
-      if (res.statusCode === 200) {
-        return res.data;
-      } else {
-        throw new Error("Failed to update user data");
-      }
-    } catch (error) {
-      console.error("Update user error:", error);
-      throw error;
-    }
+    const res = await api.patch(USER.UPDATE_ME, data);
+    return res.data;
   };
 
   const resetPassword = async (
     data: ResetPasswordData
-  ): Promise<{ message: string }> =>{
-    try {
-      const res = await api.post(USER.RESET_PASSWORD, data);
-      return res.data;
-    } catch (error) {
-      console.error("Reset password error:", error);
-      throw error;
-    }
+  ): Promise<{ message: string }> => {
+    const res = await api.post(USER.RESET_PASSWORD, data);
+    return res.data;
   };
 
   return {

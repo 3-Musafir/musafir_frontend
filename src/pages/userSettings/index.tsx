@@ -39,7 +39,6 @@ const blinkStyle = `
 function UserSettings() {
   const [userData, setUserData] = useState<User>({} as User);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<{
     fullName: string;
@@ -136,7 +135,6 @@ function UserSettings() {
   const handleSave = async () => {
     try {
       setIsUpdating(true);
-      setError(null);
       const phoneValidationError = validatePhoneDigits(editData.phone, 'Phone');
       setPhoneError(phoneValidationError);
       if (phoneValidationError) {
@@ -145,13 +143,21 @@ function UserSettings() {
       }
       if (!editData.employmentStatus) {
         setIsUpdating(false);
-        setError("Employment status is required.");
+        toast({
+          title: "Validation Error",
+          description: "Employment status is required.",
+          variant: "destructive",
+        });
         return;
       }
       const requiresWorkDetail = editData.employmentStatus !== "unemployed";
       if (requiresWorkDetail && !editData.university) {
         setIsUpdating(false);
-        setError("Please provide the required detail for your selection.");
+        toast({
+          title: "Validation Error",
+          description: "Please provide the required detail for your employment status.",
+          variant: "destructive",
+        });
         return;
       }
       const cnicValidationError = validateCnicFormat(editData.cnic);
@@ -166,6 +172,8 @@ function UserSettings() {
         phone: formatPhoneForApi(editData.phone),
         cnic: cnicDigits(editData.cnic),
         university: requiresWorkDetail ? editData.university : "",
+        // Don't send profileImg if it's empty to avoid validation error
+        ...(editData.profileImg ? { profileImg: editData.profileImg } : {}),
       };
 
       const updatedUser = await userHandler.updateUser(payload);
@@ -190,14 +198,20 @@ function UserSettings() {
         description: "Your profile has been updated successfully.",
         variant: "success",
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error updating user data:", err);
-      setError("Failed to update user data");
       
-      // Show error toast
+      // Extract the actual error message from backend
+      const errorMessage = err?.response?.data?.message 
+        ? (Array.isArray(err.response.data.message) 
+            ? err.response.data.message.join(', ') 
+            : err.response.data.message)
+        : "Failed to update user data. Please try again.";
+      
+      // Only show toast, don't set error state to avoid duplicate messages
       toast({
         title: "Update Failed",
-        description: "Failed to update user data. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -227,10 +241,9 @@ function UserSettings() {
       setIsLoading(false);
     } catch (err) {
       console.error("Error fetching user data:", err);
-      setError("Failed to load user data");
       setIsLoading(false);
       
-      // Show error toast
+      // Only show toast, don't set error state to avoid duplicate messages
       toast({
         title: "Load Failed",
         description: "Failed to load user data. Please refresh the page.",
@@ -268,11 +281,6 @@ function UserSettings() {
       <Header setSidebarOpen={() => { }} showMenuButton={false} />
 
       <main className="flex-1 overflow-y-auto bg-white h-full px-2 md:px-4 pb-24 pt-4">
-        {error && (
-          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
-            {error}
-          </div>
-        )}
         {(forceEdit || !(userData as any)?.profileComplete) && (
           <div className="mb-4 mx-2 md:mx-6 p-4 bg-yellow-100 text-yellow-800 rounded-md">
             Please complete your profile to continue. Editing is required.
@@ -285,9 +293,15 @@ function UserSettings() {
           <div className="flex items-center gap-4">
             {(() => {
               const previewImg = isEditing ? editData.profileImg : (editData.profileImg || userData.profileImg || "");
+              // Only show image if it's a valid URL or data URL
+              const isValidImageUrl = previewImg && (
+                previewImg.startsWith('http://') || 
+                previewImg.startsWith('https://') || 
+                previewImg.startsWith('data:image/')
+              );
               return (
                 <div className="w-16 h-16 rounded-full bg-gray-900 flex items-center justify-center text-white text-lg overflow-hidden relative">
-                  {previewImg ? (
+                  {isValidImageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={previewImg} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
@@ -471,7 +485,6 @@ function UserSettings() {
                       employmentStatus: value,
                       university: value === "unemployed" ? "" : editData.university,
                     });
-                    setError(null);
                   }}
                   disabled={!isEditing}
                   required
@@ -507,11 +520,9 @@ function UserSettings() {
                   />
                 </div>
               )}
-              <div className={classNames({
-                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.socialLink : userData.socialLink),
-              })}>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Social Link
+                  Instagram Handle/Link
                 </label>
                 <input
                   type="text"
@@ -519,7 +530,7 @@ function UserSettings() {
                   value={isEditing ? editData.socialLink : (userData.socialLink || "")}
                   onChange={(e) => isEditing && setEditData({ ...editData, socialLink: e.target.value })}
                   disabled={!isEditing}
-                  required
+                  placeholder="@username or instagram.com/username"
                   className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
                 />
               </div>

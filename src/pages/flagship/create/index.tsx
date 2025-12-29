@@ -128,9 +128,13 @@ function CreateFlagship() {
       if (res.statusCode === HttpStatusCode.Created) {
         router.push(ROUTES_CONSTANTS.FLAGSHIP.CONTENT);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      showAlert('Something went wrong while creating the flagship.', 'error');
+      // Extract the actual error message from the API response
+      const errorMessage = error?.response?.data?.message 
+        || error?.message 
+        || 'Something went wrong while creating the flagship.';
+      showAlert(errorMessage, 'error');
     } finally {
       setLoading(false);
     }

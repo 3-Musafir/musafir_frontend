@@ -102,18 +102,14 @@ export class PaymentService {
 
   static async approveRefund(id: string): Promise<void> {
     try {
-      await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/payment/approve-refund/${id}`
-      );
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(
-            error.response.data.message || "Failed to approve refund"
-          );
-        } else if (error.request) {
-          throw new Error("No response received from server");
-        }
+      await api.patch(`/payment/approve-refund/${id}`);
+    } catch (error: any) {
+      if (error.response) {
+        throw new Error(
+          error.response.data?.message || "Failed to approve refund"
+        );
+      } else if (error.request) {
+        throw new Error("No response received from server");
       }
       throw new Error("Failed to approve refund");
     }
@@ -121,18 +117,14 @@ export class PaymentService {
 
   static async rejectRefund(id: string): Promise<void> {
     try {
-      await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/payment/reject-refund/${id}`
-      );
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(
-            error.response.data.message || "Failed to reject refund"
-          );
-        } else if (error.request) {
-          throw new Error("No response received from server");
-        }
+      await api.patch(`/payment/reject-refund/${id}`);
+    } catch (error: any) {
+      if (error.response) {
+        throw new Error(
+          error.response.data?.message || "Failed to reject refund"
+        );
+      } else if (error.request) {
+        throw new Error("No response received from server");
       }
       throw new Error("Failed to reject refund");
     }
