@@ -19,6 +19,7 @@ import {
   Link,
   Hash,
   LucideIcon,
+  ArrowLeft,
 } from "lucide-react";
 import { useRouter } from "next/router";
 
@@ -29,13 +30,21 @@ export default function UserDetailsPage() {
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [toggleLoading, setToggleLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!userId) return;
       try {
         const data = await UserService.getUserById(userId);
-        setUser(data);
+        setUser({
+          ...data,
+          verification: data.verification ?? {
+            status: "unverified",
+            RequestCall: false,
+          },
+        });
       } catch (error) {
         console.error("Error fetching user:", error);
         toast({
@@ -49,7 +58,7 @@ export default function UserDetailsPage() {
     };
 
     fetchUser();
-  }, [id, toast]);
+  }, [id, toast, userId]);
 
   const handleApproveUser = async () => {
     if (!user) return;
@@ -101,6 +110,44 @@ export default function UserDetailsPage() {
     }
   };
 
+  const handleToggleVerification = async () => {
+    if (!user) return;
+    const nextStatus =
+      user.verification.status === "verified" ? "unverified" : "verified";
+
+    setToggleLoading(true);
+    try {
+      const updatedUser = await UserService.updateVerificationStatus(
+        user._id,
+        nextStatus
+      );
+      const normalizedUser = {
+        ...updatedUser,
+        verification: updatedUser.verification ?? {
+          status: "unverified",
+          RequestCall: false,
+        },
+      };
+      setUser(normalizedUser);
+      toast({
+        title: "Success",
+        description:
+          nextStatus === "verified"
+            ? "User verified successfully"
+            : "User marked as unverified",
+      });
+    } catch (error) {
+      console.error("Error updating verification status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update verification status",
+        variant: "destructive",
+      });
+    } finally {
+      setToggleLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -118,7 +165,8 @@ export default function UserDetailsPage() {
   }
 
   const getVerificationBadge = () => {
-    switch (user.verification.status) {
+    const status = user?.verification?.status ?? "unverified";
+    switch (status) {
       case "pending":
         return (
           <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
@@ -184,11 +232,22 @@ export default function UserDetailsPage() {
         <Card className="w-full max-w-md mx-auto bg-gradient-to-r from-blue-50 to-indigo-50 border-none">
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <CardTitle className="text-2xl font-bold text-gray-900">
-                  {user.fullName}
-                </CardTitle>
-                <p className="text-gray-600 mt-1">{user.email}</p>
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => router.back()}
+                  aria-label="Back to users"
+                  className="hover:bg-blue-100 text-gray-700"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <div>
+                  <CardTitle className="text-2xl font-bold text-gray-900">
+                    {user.fullName}
+                  </CardTitle>
+                  <p className="text-gray-600 mt-1">{user.email}</p>
+                </div>
               </div>
               {getVerificationBadge()}
             </div>
@@ -262,6 +321,24 @@ export default function UserDetailsPage() {
                 </div>
               </div>
             )}
+            <div className="pt-2">
+              <Button
+                variant="outline"
+                onClick={handleToggleVerification}
+                disabled={toggleLoading}
+                className="w-full justify-center"
+              >
+                {toggleLoading && (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                )}
+                {user.verification.status === "verified"
+                  ? "Mark as Unverified"
+                  : "Mark as Verified"}
+              </Button>
+              <p className="text-xs text-gray-500 mt-2">
+                Admin override — toggle between verified and unverified.
+              </p>
+            </div>
           </div>
         </InfoCard>
 

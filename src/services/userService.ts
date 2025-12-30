@@ -33,4 +33,13 @@ export class UserService {
   static async getUserById(userId: string): Promise<IUser> {
     return api.get(`/user/user-details/${userId}`);
   }
+
+  static async updateVerificationStatus(
+    userId: string,
+    status: "verified" | "unverified"
+  ): Promise<IUser> {
+    const res = await api.patch(`/user/verification-status/${userId}`, { status });
+    // Backend wraps payload as { data, message, statusCode }
+    return (res as any)?.data ?? res;
+  }
 }
