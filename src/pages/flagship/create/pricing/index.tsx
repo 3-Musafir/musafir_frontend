@@ -344,7 +344,9 @@ function PricingPage() {
               />
             </div>
             {errors.basePrice && <p className='text-red-500 text-sm mt-1'>{errors.basePrice}</p>}
-            <p className='text-gray-600 mt-2 text-sm'>Set the &quot;Starting from&quot; price</p>
+            <p className='text-gray-600 mt-2 text-sm'>
+              This is the &quot;Starting from&quot; price. Location and tier add-ons will be added on top of this base price.
+            </p>
           </div>
 
           {/* Early Bird Price */}
@@ -375,7 +377,10 @@ function PricingPage() {
 
           {/* Departure Points Section */}
           <div className='mb-8'>
-            <h3 className='text-xl font-bold mb-6'>As per Departure Points</h3>
+            <h3 className='text-xl font-bold mb-2'>Departure City Add-Ons</h3>
+            <p className='text-sm text-gray-600 mb-4'>
+              These prices will be <span className='font-semibold'>added to the base price</span>. Set to 0 if included in base price.
+            </p>
             {locations?.length !== 0 &&
               locations?.map((location) => (
                 <div key={location.id} className='mb-6'>

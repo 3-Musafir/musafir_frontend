@@ -118,6 +118,19 @@ function FlagshipRequirements() {
   }, [searchParams]);
 
   useEffect(() => {
+    if (flagship && !tiers) {
+      if (flagship.tiers && flagship.tiers.length > 0) {
+        const firstTier = flagship.tiers[0];
+        setTiers(firstTier.name);
+        setSelectedTierPrice(Number(firstTier.price) || 0);
+      } else {
+        setTiers('Standard');
+        setSelectedTierPrice(0);
+      }
+    }
+  }, [flagship, tiers]);
+
+  useEffect(() => {
     if (flagship) {
       const newPrice = recalculateTotalPrice();
       setPrice(newPrice);
@@ -297,36 +310,51 @@ function FlagshipRequirements() {
             {/* City */}
             <div className="space-y-4">
               <label htmlFor="city" className="block text-sm font-medium">
-                Joining from city (Base Price)
+                Departure City
               </label>
               {flagship?.locations?.map(
                 (
                   location: { enabled: boolean; name: string; price: string },
                   index: number
-                ) =>
-                  location.enabled && (
+                ) => {
+                  const basePrice = Number(flagship?.basePrice) || 0;
+                  const locationAddOn = Number(location.price) || 0;
+                  const totalPrice = basePrice + locationAddOn;
+
+                  return location.enabled && (
                     <label
                       key={index}
-                      className={`flex items-center space-x-2 ${city === location.name ? "text-black" : "text-gray-600"
-                        }`}
+                      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
+                        city === location.name
+                          ? "bg-orange-50 border-orange-300"
+                          : "hover:bg-gray-50 border-gray-200"
+                      }`}
                     >
-                      <input
-                        type="radio"
-                        name="city"
-                        value={location.name}
-                        checked={city === location.name}
-                        onChange={() => {
-                          setCity(location.name);
-                          setSelectedLocationPrice(Number(location.price));
-                        }}
-                        className="sr-only peer"
-                      />
-                      <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
-                      <span>
-                        {location.name} Rs.{location.price}
-                      </span>
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="radio"
+                          name="city"
+                          value={location.name}
+                          checked={city === location.name}
+                          onChange={() => {
+                            setCity(location.name);
+                            setSelectedLocationPrice(locationAddOn);
+                          }}
+                          className="sr-only peer"
+                        />
+                        <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
+                        <span className={city === location.name ? "font-semibold" : ""}>
+                          {location.name}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <div className={`text-lg font-bold ${city === location.name ? "text-black" : "text-gray-700"}`}>
+                          Rs. {totalPrice.toLocaleString()}
+                        </div>
+                      </div>
                     </label>
-                  )
+                  );
+                }
               )}
             </div>
 
@@ -336,38 +364,56 @@ function FlagshipRequirements() {
                 Package/Ticket
               </label>
               {flagship?.tiers?.length > 0 ? (
-                flagship.tiers.map((tier: { name: string; price: string }, index: number) => (
-                  <label key={index} className={`flex items-center space-x-2 ${tiers === tier.name ? 'text-black' : 'text-gray-600'}`}>
+                flagship.tiers.map((tier: { name: string; price: string }, index: number) => {
+                  const tierPrice = Number(tier.price) || 0;
+                  return (
+                    <label
+                      key={index}
+                      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
+                        tiers === tier.name
+                          ? "bg-orange-50 border-orange-300"
+                          : "hover:bg-gray-50 border-gray-200"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="radio"
+                          name="tier"
+                          value={tier.name}
+                          checked={tiers === tier.name}
+                          onChange={() => {
+                            setTiers(tier.name);
+                            setSelectedTierPrice(tierPrice);
+                          }}
+                          className="sr-only peer"
+                        />
+                        <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
+                        <span className={tiers === tier.name ? "font-semibold" : ""}>{tier.name}</span>
+                      </div>
+                      <span className={`text-sm ${tiers === tier.name ? "font-bold text-black" : "text-gray-600"}`}>
+                        {tierPrice === 0 ? 'Included' : `+ Rs.${tierPrice.toLocaleString()}`}
+                      </span>
+                    </label>
+                  );
+                })
+              ) : (
+                <label className="flex items-center justify-between p-3 border rounded-lg bg-orange-50 border-orange-300">
+                  <div className="flex items-center space-x-3">
                     <input
                       type="radio"
                       name="tier"
-                      value={tier.name}
-                      checked={tiers === tier.name}
+                      value="Standard"
+                      checked={tiers === "Standard"}
                       onChange={() => {
-                        setTiers(tier.name);
-                        setSelectedTierPrice(Number(tier.price));
+                        setTiers('Standard');
+                        setSelectedTierPrice(0);
                       }}
                       className="sr-only peer"
                     />
                     <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
-                    <span>{tier.name} Rs.{tier.price}</span>
-                  </label>
-                ))
-              ) : (
-                <label className="flex items-center space-x-2 text-black">
-                  <input
-                    type="radio"
-                    name="tier"
-                    value="Standard"
-                    checked={tiers === "Standard"}
-                    onChange={() => {
-                      setTiers('Standard');
-                      setSelectedTierPrice(0);
-                    }}
-                    className="sr-only peer"
-                  />
-                  <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
-                  <span>Standard Rs.0</span>
+                    <span className="font-semibold">Standard</span>
+                  </div>
+                  <span className="text-sm font-bold">Included</span>
                 </label>
               )}
             </div>
@@ -377,79 +423,66 @@ function FlagshipRequirements() {
               <label htmlFor="package" className="block text-sm font-medium">
                 Room sharing preference
               </label>
-              <label className={`flex items-center space-x-2 ${roomSharing === "default" ? 'text-black' : 'text-gray-600'}`}>
-                <input
-                  type="radio"
-                  name="roomSharing"
-                  value="default"
-                  checked={roomSharing === "default"}
-                  onChange={() => {
-                    setRoomSharing('default');
-                    setSelectedRoomSharingPrice(0);
-                  }}
-                  className="sr-only peer"
-                />
-                <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
-                <span>Default (3-4 sharing)</span>
-              </label>
-              {flagship?.roomSharingPreference?.map((preference: { name: string; price: string }, index: number) => (
-                <label key={index} className={`flex items-center space-x-2 ${roomSharing === preference.name ? 'text-black' : 'text-gray-600'}`}>
+              <label
+                className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
+                  roomSharing === "default"
+                    ? "bg-orange-50 border-orange-300"
+                    : "hover:bg-gray-50 border-gray-200"
+                }`}
+              >
+                <div className="flex items-center space-x-3">
                   <input
                     type="radio"
                     name="roomSharing"
-                    value={preference.name}
-                    checked={roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default")}
+                    value="default"
+                    checked={roomSharing === "default"}
                     onChange={() => {
-                      setRoomSharing(preference.name === "Twin Sharing" ? "twin" : "default");
-                      setSelectedRoomSharingPrice(Number(preference.price));
+                      setRoomSharing('default');
+                      setSelectedRoomSharingPrice(0);
                     }}
                     className="sr-only peer"
                   />
                   <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
-                  <span>{preference.name} (+ Rs.{preference.price})</span>
-                </label>
-              ))}
-            </div>
-
-            {/* Sleeping preference */}
-            <div className="space-y-4">
-              <label htmlFor="package" className="block text-sm font-medium">
-                Sleeping preference
+                  <span className={roomSharing === "default" ? "font-semibold" : ""}>Default (3-4 sharing)</span>
+                </div>
+                <span className={`text-sm ${roomSharing === "default" ? "font-bold text-black" : "text-gray-600"}`}>
+                  Included
+                </span>
               </label>
-              <label
-                className={`flex items-center space-x-2 ${sleepPreference == "mattress" ? "text-black" : "text-gray-600"
-                  }`}
-              >
-                <input
-                  type="radio"
-                  name="sleepPreference"
-                  value="mattress"
-                  checked={sleepPreference === "mattress"}
-                  onChange={() => {
-                    setSleepPreference("mattress");
-                  }}
-                  className="sr-only peer"
-                />
-                <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
-                <span>Mattress (Rs. 0)</span>
-              </label>
-              <label
-                className={`flex items-center space-x-2 ${sleepPreference == "bed" ? "text-black" : "text-gray-600"
-                  }`}
-              >
-                <input
-                  type="radio"
-                  name="sleepPreference"
-                  value="bed"
-                  checked={sleepPreference === "bed"}
-                  onChange={() => {
-                    setSleepPreference("bed");
-                  }}
-                  className="sr-only peer"
-                />
-                <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
-                <span>Bed (+ Rs.{flagship?.mattressTiers?.[0]?.price || 0})</span>
-              </label>
+              {flagship?.roomSharingPreference?.map((preference: { name: string; price: string }, index: number) => {
+                const prefPrice = Number(preference.price) || 0;
+                return (
+                  <label
+                    key={index}
+                    className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
+                      roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default")
+                        ? "bg-orange-50 border-orange-300"
+                        : "hover:bg-gray-50 border-gray-200"
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="radio"
+                        name="roomSharing"
+                        value={preference.name}
+                        checked={roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default")}
+                        onChange={() => {
+                          setRoomSharing(preference.name === "Twin Sharing" ? "twin" : "default");
+                          setSelectedRoomSharingPrice(prefPrice);
+                        }}
+                        className="sr-only peer"
+                      />
+                      <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
+                      <span className={roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default") ? "font-semibold" : ""}>
+                        {preference.name}
+                      </span>
+                    </div>
+                    <span className={`text-sm ${roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default") ? "font-bold text-black" : "text-gray-600"}`}>
+                      + Rs.{prefPrice.toLocaleString()}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
 
             {/* Solo/Group Selection */}
@@ -505,7 +538,7 @@ function FlagshipRequirements() {
             </div>
 
             {/* Group Members */}
-            {(tripType === "group" || tripType === "partner") && (
+            {tripType === "group" && (
               <div className="space-y-2">
                 <label
                   htmlFor="groupMembers"
@@ -518,6 +551,27 @@ function FlagshipRequirements() {
                   id="groupMembers"
                   value={groupMembers}
                   onChange={(e) => setGroupMembers(e.target.value)}
+                  placeholder="Hameez, Ahmed, Ali"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                />
+              </div>
+            )}
+
+            {/* Couple Field */}
+            {tripType === "partner" && (
+              <div className="space-y-2">
+                <label
+                  htmlFor="groupMembers"
+                  className="block text-sm font-small text-gray-500"
+                >
+                  Your partner&apos;s name
+                </label>
+                <input
+                  type="text"
+                  id="groupMembers"
+                  value={groupMembers}
+                  onChange={(e) => setGroupMembers(e.target.value)}
+                  placeholder="no nicknames, please :)"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
                 />
               </div>
@@ -541,6 +595,7 @@ function FlagshipRequirements() {
                 value={expectations}
                 onChange={handleExpectationsChange}
                 rows={3}
+                placeholder="What are you hoping to experience on this trip?"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 resize-none"
               />
             </div>
@@ -555,14 +610,43 @@ function FlagshipRequirements() {
               </label>
             </div>
 
-            {/* Ticket Price */}
-            <div className="flex space-y-2 items-center justify-between">
-              <label className="block text-sm font-medium text-gray-600">
-                Your Ticket Price
-              </label>
-              <label className="block text-xl font-medium text-gray-600">
-                Rs. <span className="font-bold">{price}</span>
-              </label>
+            {/* Price Breakdown */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-semibold text-sm mb-3 text-blue-900">Price Breakdown</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-700">Base Price:</span>
+                  <span className="font-medium">Rs. {Number(flagship?.basePrice || 0).toLocaleString()}</span>
+                </div>
+                {selectedLocationPrice > 0 && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>+ {city} (City):</span>
+                    <span>Rs. {selectedLocationPrice.toLocaleString()}</span>
+                  </div>
+                )}
+                {selectedTierPrice > 0 && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>+ {tiers} (Tier):</span>
+                    <span>Rs. {selectedTierPrice.toLocaleString()}</span>
+                  </div>
+                )}
+                {selectedRoomSharingPrice > 0 && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>+ Room Sharing:</span>
+                    <span>Rs. {selectedRoomSharingPrice.toLocaleString()}</span>
+                  </div>
+                )}
+                {sleepPreference === 'bed' && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>+ Bed Upgrade:</span>
+                    <span>Rs. {Number(flagship?.mattressTiers?.[0]?.price || 0).toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="border-t border-blue-300 pt-2 mt-2 flex justify-between font-bold text-base">
+                  <span className="text-blue-900">Total Amount:</span>
+                  <span className="text-orange-600">Rs. {price.toLocaleString()}</span>
+                </div>
+              </div>
             </div>
 
             {/* Submit Button */}
