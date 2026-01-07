@@ -12,7 +12,6 @@ interface PasswordValidation {
   uppercase: boolean;
   lowercase: boolean;
   number: boolean;
-  special: boolean;
 }
 
 function ResetPassword() {
@@ -33,7 +32,6 @@ function ResetPassword() {
       uppercase: false,
       lowercase: false,
       number: false,
-      special: false,
     });
 
   const userHandler = useUserHandler();
@@ -62,7 +60,6 @@ function ResetPassword() {
       uppercase: /[A-Z]/.test(newPassword),
       lowercase: /[a-z]/.test(newPassword),
       number: /\d/.test(newPassword),
-      special: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword),
     });
   }, [newPassword]);
 
@@ -290,22 +287,6 @@ function ResetPassword() {
                             }
                           >
                             One number
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          {passwordValidation.special ? (
-                            <Check className="h-4 w-4 text-green-500" />
-                          ) : (
-                            <X className="h-4 w-4 text-red-500" />
-                          )}
-                          <span
-                            className={
-                              passwordValidation.special
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }
-                          >
-                            One special character
                           </span>
                         </div>
                       </div>

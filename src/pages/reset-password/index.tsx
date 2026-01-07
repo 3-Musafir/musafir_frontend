@@ -10,7 +10,6 @@ interface PasswordValidation {
   uppercase: boolean;
   lowercase: boolean;
   number: boolean;
-  special: boolean;
 }
 
 export default function ResetPassword() {
@@ -29,7 +28,6 @@ export default function ResetPassword() {
       uppercase: false,
       lowercase: false,
       number: false,
-      special: false,
     });
 
   useEffect(() => {
@@ -45,7 +43,6 @@ export default function ResetPassword() {
       uppercase: /[A-Z]/.test(password),
       lowercase: /[a-z]/.test(password),
       number: /\d/.test(password),
-      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
     });
   }, [password]);
 
@@ -214,22 +211,6 @@ export default function ResetPassword() {
                     }
                   >
                     One number
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  {passwordValidation.special ? (
-                    <Check className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <X className="h-4 w-4 text-red-500" />
-                  )}
-                  <span
-                    className={
-                      passwordValidation.special
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }
-                  >
-                    One special character
                   </span>
                 </div>
               </div>
