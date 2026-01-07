@@ -9,7 +9,7 @@ import { useRecoilValue } from 'recoil';
 import { currentFlagship } from '@/store';
 import { HttpStatusCode } from 'axios';
 import { showAlert } from '@/pages/alert';
-import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
+import { ROLES, ROUTES_CONSTANTS, steps, CITIES } from '@/config/constants';
 import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
 
@@ -25,6 +25,7 @@ function PricingPage() {
   // Locations state
   const [locations, setLocations] = useState([
     { id: 1, name: 'Islamabad', enabled: true, price: '0' },
+    { id: 2, name: 'Lahore', enabled: true, price: '0' },
   ]);
 
   // State to hold the new location name typed by user
@@ -163,11 +164,19 @@ function PricingPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const addLocation = (e: any) => {
     e.preventDefault();
+    if (!newLocationName) return;
+
+    // Check if location already exists
+    const locationExists = locations.some(loc => loc.name === newLocationName);
+    if (locationExists) {
+      showAlert(`${newLocationName} is already added`, 'error');
+      return;
+    }
+
     const maxId = locations.length > 0 ? Math.max(...locations.map((loc) => loc.id)) : 0;
     const newId = maxId + 1;
-    const locationName = newLocationName.trim() ? newLocationName : `Location ${newId}`;
 
-    setLocations([...locations, { id: newId, name: locationName, enabled: true, price: '0' }]);
+    setLocations([...locations, { id: newId, name: newLocationName, enabled: true, price: '0' }]);
     setNewLocationName('');
   };
 
@@ -427,21 +436,27 @@ function PricingPage() {
                 className='w-full flex items-center justify-between text-sm font-bold py-2'
                 onSubmit={addLocation}
               >
-                <input
-                  type='text'
+                <select
                   id='newLocation'
                   value={newLocationName}
                   onChange={(e) => {
                     setNewLocationName(e.target.value);
                     setIsDirty(true);
                   }}
-                  placeholder='Enter location name'
                   className='w-full py-2 border rounded-lg focus:outline-none px-2 mx-4'
                   required
-                />
+                >
+                  <option value=''>Select a city</option>
+                  {CITIES.filter(city => !locations.some(loc => loc.name === city)).map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </select>
                 <button
                   type='submit'
                   className='w-8 h-8 rounded-full border-2 border-black flex items-center justify-center px-2'
+                  disabled={!newLocationName}
                 >
                   <Plus className='w-5 h-5' />
                 </button>

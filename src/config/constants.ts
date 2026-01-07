@@ -45,6 +45,8 @@ export const FLAGSHIP_STATUS = {
   COMPLETED: 'completed',
 };
 
+export const CITIES = ['Islamabad', 'Lahore', 'Karachi'] as const;
+
 // Progress steps
 export const steps = [
   { label: 'Basic Info', route: ROUTES_CONSTANTS.FLAGSHIP.CREATE },
