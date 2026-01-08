@@ -180,7 +180,7 @@ function ContentPage() {
               if (value === 'paragraph') {
                 editor.chain().focus().setParagraph().run();
               } else {
-                editor.chain().focus().setHeading({ level: Number(value) }).run();
+                editor.chain().focus().setHeading({ level: Number(value) as 1 | 2 | 3 }).run();
               }
             }}
             value={
