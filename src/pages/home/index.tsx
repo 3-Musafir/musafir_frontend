@@ -18,6 +18,7 @@ function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
+  const fallbackLogo = '/3mwinterlogo.png';
 
   const fetchFlagships = async () => {
     try {
@@ -71,17 +72,21 @@ function Home() {
             <div className='absolute right-0 -bottom-20 h-48 w-48 rounded-full bg-orange-400/20 blur-3xl' />
           </div>
           <div className='relative flex flex-col items-center text-center space-y-4 sm:space-y-5'>
-            <div className='w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden ring-4 ring-white/20'>
+            <div className='w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center overflow-hidden bg-transparent shadow-none'>
               {profileLoading ? (
                 <Skeleton className='h-16 w-16 rounded-full' />
               ) : companyProfile?.logoUrl ? (
                 <img
                   src={companyProfile.logoUrl}
                   alt={companyProfile.name || 'Company logo'}
-                  className='h-full w-full object-contain p-3'
+                  className='h-full w-full object-cover'
                 />
               ) : (
-                <span className='text-base font-semibold text-[#2c3047]'>Logo</span>
+                <img
+                  src={fallbackLogo}
+                  alt='3Musafir logo'
+                  className='h-full w-full object-cover'
+                />
               )}
             </div>
             {profileLoading ? (

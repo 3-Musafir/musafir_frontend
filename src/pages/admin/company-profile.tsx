@@ -11,6 +11,8 @@ import useCompanyProfile from "@/hooks/useCompanyProfile";
 import { CompanyProfile } from "@/services/types/companyProfile";
 import { showAlert } from "@/pages/alert";
 
+const FALLBACK_LOGO = "/3mwinterlogo.png";
+
 function CompanyProfilePage() {
   const { getProfile, updateProfile } = useCompanyProfile();
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
@@ -40,12 +42,12 @@ function CompanyProfilePage() {
         setProfile(data);
         setName(data.name || "");
         setDescription(data.description || "");
-        setLogoPreview(data.logoUrl || null);
+        setLogoPreview(data.logoUrl || FALLBACK_LOGO);
       } else {
         setProfile(null);
         setName("");
         setDescription("");
-        setLogoPreview(null);
+        setLogoPreview(FALLBACK_LOGO);
       }
     } catch (error) {
       console.error("Failed to load company profile", error);
@@ -63,7 +65,7 @@ function CompanyProfilePage() {
 
     if (!file) {
       setLogoFile(null);
-      setLogoPreview(profile?.logoUrl ?? null);
+      setLogoPreview(profile?.logoUrl ?? FALLBACK_LOGO);
       return;
     }
 
@@ -88,7 +90,7 @@ function CompanyProfilePage() {
       });
       if (updated) {
         setProfile(updated);
-        setLogoPreview(updated.logoUrl || null);
+        setLogoPreview(updated.logoUrl || FALLBACK_LOGO);
         setLogoFile(null);
       }
     } catch (error) {
@@ -113,17 +115,21 @@ function CompanyProfilePage() {
           className="bg-white shadow-sm rounded-xl border border-gray-100 p-6 space-y-6"
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-            <div className="w-20 h-20 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden">
+            <div className="w-20 h-20 rounded-full bg-transparent shadow-none flex items-center justify-center overflow-hidden">
               {loading ? (
                 <Skeleton className="h-12 w-12 rounded-full" />
               ) : logoPreview ? (
                 <img
                   src={logoPreview}
                   alt="Company logo preview"
-                  className="h-full w-full object-contain p-2"
+                  className="h-full w-full object-cover"
                 />
               ) : (
-                <span className="text-sm text-gray-500">No logo</span>
+                <img
+                  src={FALLBACK_LOGO}
+                  alt="Default company logo"
+                  className="h-full w-full object-cover"
+                />
               )}
             </div>
             <div className="flex-1">
