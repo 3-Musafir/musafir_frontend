@@ -17,13 +17,13 @@ export function Navigation() {
   ]
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 border-t bg-white px-4 py-2 md:bottom-auto md:left-4 md:top-1/2 md:w-16 md:-translate-y-1/2 md:rounded-full md:border md:py-8">
+    <nav className="fixed bottom-0 left-0 right-0 border-t bg-white px-3 pt-1 pb-[calc(0.25rem+env(safe-area-inset-bottom))] md:bottom-auto md:left-4 md:top-1/2 md:w-16 md:-translate-y-1/2 md:rounded-full md:border md:px-3 md:pt-6 md:pb-6">
       <ul className="flex justify-between md:flex-col md:space-y-6">
         {links.map(({ href, label, icon: Icon }) => {
           const isHomeLink = href === "/home"
           const isActive = pathname === href
           const linkClasses = [
-            "flex flex-col items-center gap-1 p-2 text-xs rounded-xl transition",
+            "flex flex-col items-center gap-1 px-3 py-1.5 text-xs rounded-xl transition",
             isActive ? "text-orange-500" : "text-gray-600 hover:text-orange-500",
           ].join(" ")
 
@@ -44,4 +44,3 @@ export function Navigation() {
 export default function NavigationPage() {
   return <Navigation />
 }
-
