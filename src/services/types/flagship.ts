@@ -13,6 +13,7 @@ export interface IFlagship {
   status: string;
   packages: Package[];
   basePrice: string;
+  earlyBirdPrice?: number;
   locations: Location[];
   tiers: Tier[];
   mattressTiers: MattressTier[];

@@ -153,6 +153,23 @@ export default function FlagshipDetails() {
       ? flagship.images
       : [defaultImage];
 
+  const parseAmount = (value: string | number | undefined | null) => {
+    if (value === undefined || value === null) return 0;
+    const numeric = value.toString().replace(/[^0-9.-]/g, "");
+    const parsed = Number(numeric);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  const baseAmount = parseAmount(flagship.earlyBirdPrice ?? flagship.basePrice);
+  const formatLocationPrice = (locationPrice: string | number) => {
+    const surcharge = parseAmount(locationPrice);
+    // If base is missing, fall back to whatever was provided.
+    if (baseAmount <= 0) return surcharge.toLocaleString();
+    // If the provided price already looks like a full fare, don't double add.
+    if (surcharge >= baseAmount) return surcharge.toLocaleString();
+    return (baseAmount + surcharge).toLocaleString();
+  };
+
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     setCurrentImageIndex((prev) => (prev + 1) % imageUrls.length);
@@ -363,7 +380,7 @@ export default function FlagshipDetails() {
                     >
                       <span className="font-medium">From {location.name}</span>
                       <span className="font-medium">
-                        {parseInt(location.price).toLocaleString()}
+                        {formatLocationPrice(location.price)}
                       </span>
                     </div>
                   )
