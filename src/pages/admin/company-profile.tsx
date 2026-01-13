@@ -171,7 +171,7 @@ function CompanyProfilePage() {
               id="description"
               value={description}
               onChange={(event) => setDescription(event.target.value)}
-              placeholder="A Founder Institute certified platform making community-led travel safe and sustainable for Asians globally."
+              placeholder="A Fsdcscdounder Institute certified platform making community-led travel safe and sustainable for Asians globally."
               rows={4}
               required
               disabled={saving}
@@ -187,11 +187,18 @@ function CompanyProfilePage() {
               variant="outline"
               onClick={loadProfile}
               disabled={loading || saving}
+              isLoading={loading}
+              loadingText="Loading..."
             >
               Reset
             </Button>
-            <Button type="submit" disabled={saving}>
-              {saving ? "Saving..." : "Save profile"}
+            <Button
+              type="submit"
+              disabled={saving}
+              isLoading={saving}
+              loadingText="Saving..."
+            >
+              Save profile
             </Button>
           </div>
         </form>

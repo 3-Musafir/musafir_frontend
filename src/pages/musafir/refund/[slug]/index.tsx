@@ -232,8 +232,10 @@ export default function RefundForm() {
           type="submit"
           className="w-full bg-orange-500 hover:bg-orange-600 h-12 text-base disabled:bg-gray-300 disabled:cursor-not-allowed"
           disabled={!isFormValid() || isLoading}
+          isLoading={isLoading}
+          loadingText="Submitting..."
         >
-          {isLoading ? "Submitting..." : "Submit"}
+          Submit
         </Button>
       </form>
     </div>

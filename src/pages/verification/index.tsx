@@ -19,6 +19,8 @@ function GetVerified() {
   const [requestCall, setRequestCall] = useState(false);
   const action = useVerificationHook();
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
     const flagshipId = localStorage.getItem('flagshipId');
@@ -66,14 +68,25 @@ function GetVerified() {
     if (videoFile) formData.append('video', videoFile);
     if (requestCall) formData.append('requestCall', requestCall.toString());
 
-    const res: any = await action.requestVerification(formData);
-    if (res?.statusCode === 200) {
-      flagshipId ? router.push('flagship/seats') : router.push('/home');
+    try {
+      setIsSubmitting(true);
+      const res: any = await action.requestVerification(formData);
+      if (res?.statusCode === 200) {
+        flagshipId ? router.push('flagship/seats') : router.push('/home');
+      } else {
+        showAlert('Verification request failed. Please try again.', 'error');
+      }
+    } catch (error) {
+      console.error('Verification request failed:', error);
+      showAlert('Verification request failed. Please try again.', 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleRecordVideo = async () => {
     try {
+      setIsRecording(true);
       // Clear other verification methods
       setReferral1('');
       setReferral2('');
@@ -86,6 +99,8 @@ function GetVerified() {
     } catch (error) {
       console.error('Error accessing camera:', error);
       showAlert('Could not access camera. Please check permissions.', 'error');
+    } finally {
+      setIsRecording(false);
     }
   }
 
@@ -265,12 +280,15 @@ function GetVerified() {
             <div className="grid grid-cols-2 gap-4">
               <button 
                 onClick={handleRecordVideo} 
-                disabled={isMethodDisabled('video')}
+                disabled={isMethodDisabled('video') || isRecording}
                 title={isMethodDisabled('video') ? 'Only one verification method can be chosen at a time' : ''}
                 className={`p-8 bg-white rounded-lg flex flex-col items-center justify-center gap-2 ${!isMethodDisabled('video') ? 'hover:bg-gray-100' : 'opacity-50 cursor-not-allowed'} transition-colors`}
+                aria-busy={isRecording || undefined}
               >
                 <Video className="h-6 w-6" />
-                <span className="text-sm font-medium">Record Video</span>
+                <span className="text-sm font-medium">
+                  {isRecording ? 'Opening Camera...' : 'Record Video'}
+                </span>
               </button>
               <label 
                 title={isMethodDisabled('video') ? 'Only one verification method can be chosen at a time' : ''}
@@ -349,8 +367,10 @@ function GetVerified() {
         <button
           onClick={handleSubmit}
           className='w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-md text-base font-medium transition-colors'
+          disabled={isSubmitting}
+          aria-busy={isSubmitting || undefined}
         >
-          Submit
+          {isSubmitting ? 'Submitting...' : 'Submit'}
         </button>
       </main>
     </div>

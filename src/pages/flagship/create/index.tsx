@@ -277,6 +277,7 @@ function CreateFlagship() {
               className={`w-full bg-orange-500 text-black py-4 rounded-lg text-lg font-medium transition-colors ${loading ? 'bg-gray-300 cursor-not-allowed' : ''
                 }`}
               disabled={loading}
+              aria-busy={loading || undefined}
             >
               {loading ? 'Processing...' : 'Next'}
             </button>

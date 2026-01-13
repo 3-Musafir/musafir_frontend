@@ -106,6 +106,7 @@ export default function UserDetails() {
               onClick={closeModal}
               className="absolute top-2 right-2 text-gray-500"
               disabled={submitting}
+              aria-busy={submitting || undefined}
             >
               <X />
             </button>
@@ -129,6 +130,7 @@ export default function UserDetails() {
                   : "bg-red-800 hover:bg-red-900"
                 } ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
               disabled={submitting}
+              aria-busy={submitting || undefined}
             >
               {submitting
                 ? (modalType === "approve" ? "Approving..." : modalType === 'didntPick' ? "Marking..." : "Rejecting...")

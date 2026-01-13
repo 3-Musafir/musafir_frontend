@@ -326,11 +326,9 @@ export default function UserDetailsPage() {
                 variant="outline"
                 onClick={handleToggleVerification}
                 disabled={toggleLoading}
+                isLoading={toggleLoading}
                 className="w-full justify-center"
               >
-                {toggleLoading && (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                )}
                 {user.verification.status === "verified"
                   ? "Mark as Unverified"
                   : "Mark as Verified"}
@@ -350,21 +348,17 @@ export default function UserDetailsPage() {
                 <Button
                   onClick={handleApproveUser}
                   disabled={processing}
+                  isLoading={processing}
                   className="w-full sm:w-1/2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-sm"
                 >
-                  {processing ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : null}
                   Approve User
                 </Button>
                 <Button
                   onClick={handleRejectUser}
                   disabled={processing}
+                  isLoading={processing}
                   className="w-full sm:w-1/2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-sm"
                 >
-                  {processing ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : null}
                   Reject User
                 </Button>
               </div>

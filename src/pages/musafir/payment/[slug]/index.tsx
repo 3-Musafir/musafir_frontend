@@ -431,8 +431,10 @@ export default function TripPayment() {
                 }`}
               disabled={!file || isSubmitting}
               onClick={handleSubmit}
+              isLoading={isSubmitting}
+              loadingText="Submitting..."
             >
-              {isSubmitting ? "Submitting..." : "Confirm Payment"}
+              Confirm Payment
             </Button>
           </div>
         </div>

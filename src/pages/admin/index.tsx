@@ -355,6 +355,7 @@ function AdminMainPage() {
                   router.push("/flagship/create");
                 }}
                 disabled={loadingCreateFlagship}
+                aria-busy={loadingCreateFlagship || undefined}
               >
                 {loadingCreateFlagship
                   ? "Opening Create Flagship"

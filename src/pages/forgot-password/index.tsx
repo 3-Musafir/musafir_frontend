@@ -73,6 +73,7 @@ export default function ForgotPassword() {
               type="submit"
               disabled={isLoading}
               className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-white py-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
+              aria-busy={isLoading || undefined}
             >
               {isLoading ? (
                 <>

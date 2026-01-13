@@ -340,6 +340,7 @@ function ResetPassword() {
                         isLoading
                       }
                       className="w-full px-4 py-3 text-white bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed rounded-md transition-colors"
+                      aria-busy={isLoading || undefined}
                     >
                       {isLoading ? "Resetting Password..." : "Reset Password"}
                     </button>

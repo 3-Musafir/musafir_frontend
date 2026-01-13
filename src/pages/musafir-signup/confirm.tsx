@@ -162,6 +162,7 @@ export default function MusafirSignupConfirm() {
                             onClick={handleFillForm}
                             disabled={isLoading}
                             className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-4 rounded-md text-sm font-medium transition-colors"
+                            aria-busy={isLoading || undefined}
                         >
                             Not me, I'll fill form
                         </button>
@@ -170,6 +171,7 @@ export default function MusafirSignupConfirm() {
                             onClick={handleVerifyEmail}
                             disabled={isLoading || !email?.trim()}
                             className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-white py-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
+                            aria-busy={isLoading || undefined}
                         >
                             {isLoading ? (
                                 <>
