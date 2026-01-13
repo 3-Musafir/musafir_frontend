@@ -73,16 +73,6 @@ const withAuth = <P extends object>(
           const userPayload = (userData as any)?.data ?? userData;
           if (userPayload) {
             setCurrentUser(userPayload);
-            const isProfileComplete = Boolean(
-              (userPayload as any).profileComplete
-            );
-            const completionPath = "/userSettings";
-            const isOnCompletionPage = router.asPath.startsWith(completionPath);
-
-            if (!isProfileComplete && !isOnCompletionPage) {
-              router.replace(`${completionPath}?forceEdit=true`);
-              return;
-            }
           }
         } catch (err) {
           console.error("Failed to fetch profile:", err);

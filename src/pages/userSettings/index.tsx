@@ -68,8 +68,11 @@ function UserSettings() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const forceEdit = searchParams?.get("forceEdit") === "true";
+  const profileStatus = (userData as any)?.profileStatus;
   const { toast } = useToast();
-  const hasIncompleteProfile = forceEdit || !(userData as any)?.profileComplete;
+  const hasIncompleteProfile = forceEdit; // only force when explicitly requested
+  const missingFields: string[] = profileStatus?.missing || [];
+  const highlightMissing = forceEdit;
   const initials = useMemo(() => {
     const name = userData.fullName || userData.email || "";
     const parts = name.trim().split(" ").filter(Boolean);
@@ -235,7 +238,7 @@ function UserSettings() {
         gender: response.gender || "",
         profileImg: response.profileImg || "",
       });
-      if (forceEdit || !(response as any)?.profileComplete) {
+      if (forceEdit) {
         setIsEditing(true);
       }
       setIsLoading(false);
@@ -281,9 +284,29 @@ function UserSettings() {
       <Header setSidebarOpen={() => { }} showMenuButton={false} />
 
       <main className="flex-1 overflow-y-auto bg-white h-full px-2 md:px-4 pb-24 pt-4">
-        {(forceEdit || !(userData as any)?.profileComplete) && (
-          <div className="mb-4 mx-2 md:mx-6 p-4 bg-yellow-100 text-yellow-800 rounded-md">
-            Please complete your profile to continue. Editing is required.
+        {(forceEdit || missingFields.length > 0) && (
+          <div className="mb-4 mx-2 md:mx-6 p-4 bg-yellow-100 text-yellow-800 rounded-md flex flex-col gap-2">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-semibold">
+                  {forceEdit ? "Please complete your profile to continue." : "Profile incomplete"}
+                </p>
+                {missingFields.length > 0 && (
+                  <p className="text-sm">
+                    Missing: {missingFields.join(", ")}.
+                  </p>
+                )}
+              </div>
+              {!isEditing && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                  className="px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-md"
+                >
+                  Edit now
+                </button>
+              )}
+            </div>
           </div>
         )}
         <header className="flex items-center justify-center p-2 mt-2">
@@ -340,7 +363,7 @@ function UserSettings() {
           </div>
 
               <div className={classNames({
-                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.fullName : userData.fullName),
+                "blink-required": highlightMissing && isEmpty(isEditing ? editData.fullName : userData.fullName),
               })}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Full Name
@@ -369,7 +392,7 @@ function UserSettings() {
                 />
               </div>
               <div className={classNames({
-                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.phone : userData.phone),
+                "blink-required": highlightMissing && isEmpty(isEditing ? editData.phone : userData.phone),
               })}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Phone
@@ -419,7 +442,7 @@ function UserSettings() {
                 </div>
               </div>
               <div className={classNames({
-                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.cnic : userData.cnic),
+                "blink-required": highlightMissing && isEmpty(isEditing ? editData.cnic : userData.cnic),
               })}>
                 <label className="block text-gray-700 mb-1">
                   CNIC
@@ -453,7 +476,7 @@ function UserSettings() {
                 )}
               </div>
               <div className={classNames({
-                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.city : userData.city),
+                "blink-required": highlightMissing && isEmpty(isEditing ? editData.city : userData.city),
               })}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   City
@@ -469,7 +492,7 @@ function UserSettings() {
                 />
               </div>
               <div className={classNames({
-                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.employmentStatus : (userData as any).employmentStatus),
+                "blink-required": highlightMissing && isEmpty(isEditing ? editData.employmentStatus : (userData as any).employmentStatus),
               })}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Employment Status
@@ -501,7 +524,7 @@ function UserSettings() {
 
               { (isEditing ? editData.employmentStatus : (userData as any).employmentStatus) !== "unemployed" && (
                 <div className={classNames({
-                  "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.university : userData.university),
+                  "blink-required": highlightMissing && isEmpty(isEditing ? editData.university : userData.university),
                 })}>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     {employmentOptions.find(o => o.value === (isEditing ? editData.employmentStatus : (userData as any).employmentStatus))?.placeholder || "Details"}
@@ -535,7 +558,7 @@ function UserSettings() {
                 />
               </div>
               <div className={classNames({
-                "blink-required": hasIncompleteProfile && isEmpty(isEditing ? editData.gender : userData.gender),
+                "blink-required": highlightMissing && isEmpty(isEditing ? editData.gender : userData.gender),
               })}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Gender
