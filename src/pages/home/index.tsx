@@ -80,12 +80,16 @@ function Home() {
                   src={companyProfile.logoUrl}
                   alt={companyProfile.name || 'Company logo'}
                   className='h-full w-full object-cover'
+                  width={112}
+                  height={112}
                 />
               ) : (
                 <img
                   src={fallbackLogo}
                   alt='3Musafir logo'
                   className='h-full w-full object-cover'
+                  width={112}
+                  height={112}
                 />
               )}
             </div>

@@ -123,12 +123,16 @@ function CompanyProfilePage() {
                   src={logoPreview}
                   alt="Company logo preview"
                   className="h-full w-full object-cover"
+                  width={80}
+                  height={80}
                 />
               ) : (
                 <img
                   src={FALLBACK_LOGO}
                   alt="Default company logo"
                   className="h-full w-full object-cover"
+                  width={80}
+                  height={80}
                 />
               )}
             </div>
