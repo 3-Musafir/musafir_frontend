@@ -6,12 +6,15 @@ import PassportPastCard from "@/components/cards/PassportPastCard";
 import PassportUpcomingCard from "@/components/cards/PassportUpcomingCard";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
 import { formatDate } from "@/utils/formatDate";
+import useUserHandler from "@/hooks/useUserHandler";
 
 function Passport() {
   const [activeTab, setActiveTab] = useState<"past" | "upcoming">("past");
   const [pastEvents, setPastEvents] = useState<any[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+  const [userVerificationStatus, setUserVerificationStatus] = useState<string | undefined>(undefined);
   const registrationHook = useRegistrationHook();
+  const userHandler = useUserHandler();
 
   const fetchPastPassport = async () => {
     try {
@@ -31,9 +34,19 @@ function Passport() {
     }
   };
 
+  const fetchUserVerificationStatus = async () => {
+    try {
+      const user = await userHandler.getMe();
+      setUserVerificationStatus(user?.verification?.status);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
   useEffect(() => {
     fetchPastPassport();
     fetchUpcomingPassport();
+    fetchUserVerificationStatus();
   }, []);
 
   return (
@@ -109,6 +122,7 @@ function Passport() {
                   dueAmount: event.amountDue,
                 }}
                 detailedPlan={event?.flagship?.detailedPlan}
+                userVerificationStatus={userVerificationStatus}
               />
             ))
           : activeTab === "upcoming" && (

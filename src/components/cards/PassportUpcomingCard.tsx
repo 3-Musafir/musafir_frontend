@@ -35,7 +35,8 @@ const getActionButton = (
   registrationId: string,
   sendReEvaluateRequestToJury: any,
   router: AppRouterInstance,
-  setShowPdfModal: React.Dispatch<React.SetStateAction<boolean>>
+  setShowPdfModal: React.Dispatch<React.SetStateAction<boolean>>,
+  userVerificationStatus?: string
 ) => {
   switch (status) {
     case "rejected":
@@ -45,10 +46,21 @@ const getActionButton = (
         onClick: () => sendReEvaluateRequestToJury(registrationId)
       };
     case "pending":
+      if (
+        userVerificationStatus === "unverified" ||
+        userVerificationStatus === "pending" ||
+        userVerificationStatus === "rejected"
+      ) {
+        return {
+          css: '',
+          text: 'Add video for quicker verification',
+          onClick: () => router.push(ROUTES_CONSTANTS.VERIFICATION_REQUEST)
+        };
+      }
       return {
-        css: '',
-        text: 'Add video for quicker verification',
-        onClick: () => router.push(ROUTES_CONSTANTS.VERIFICATION_REQUEST)
+        css: 'bg-[#FF9000]',
+        text: 'Complete Payment',
+        onClick: () => router.push(`/musafir/payment/${registrationId}`)
       };
     case "notReserved":
       return {
@@ -147,6 +159,7 @@ const PassportUpcomingCard: React.FC<any> = ({
   paymentInfo,
   appliedDate,
   detailedPlan,
+  userVerificationStatus,
 }) => {
   const { sendReEvaluateRequestToJury } = useRegistrationHook();
   const router = useRouter();
@@ -157,6 +170,7 @@ const PassportUpcomingCard: React.FC<any> = ({
     sendReEvaluateRequestToJury,
     router,
     setShowPdfModal,
+    userVerificationStatus,
   );
 
   return (
