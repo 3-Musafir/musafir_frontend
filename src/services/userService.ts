@@ -1,13 +1,30 @@
 import api from "@/pages/api";
 import { IUser } from "./types/user";
 
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export class UserService {
   static async getUnverifiedUsers(search?: string): Promise<IUser[]> {
     return api.get(`/user/unverified-users`, { search });
   }
 
-  static async getVerifiedUsers(search?: string): Promise<IUser[]> {
-    return api.get(`/user/verified-users`, { search });
+  static async getVerifiedUsers(
+    search?: string,
+    page?: number,
+    limit?: number
+  ): Promise<PaginatedResponse<IUser> | IUser[]> {
+    const params: any = {};
+    if (search) params.search = search;
+    if (page !== undefined) params.page = page;
+    if (limit !== undefined) params.limit = limit;
+
+    return api.get(`/user/verified-users`, params);
   }
 
   static async getPendingVerificationUsers(search?: string): Promise<IUser[]> {

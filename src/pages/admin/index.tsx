@@ -76,6 +76,12 @@ function AdminMainPage() {
     verified: [],
   });
   const [isSearching, setIsSearching] = useState(false);
+  const [verifiedUsersPagination, setVerifiedUsersPagination] = useState({
+    page: 1,
+    limit: 100,
+    total: 0,
+    totalPages: 0,
+  });
 
   const ensureArray = <T,>(value: T[] | null | undefined): T[] =>
     Array.isArray(value) ? value : [];
@@ -90,7 +96,7 @@ function AdminMainPage() {
           upcomingTrips,
           unverifiedUsers,
           pendingUsers,
-          verifiedUsers,
+          verifiedUsersResponse,
           pendingPayments,
           completedPayments,
           refunds,
@@ -100,7 +106,7 @@ function AdminMainPage() {
           FlagshipService.getUpcomingTrips(),
           UserService.getUnverifiedUsers(),
           UserService.getPendingVerificationUsers(),
-          UserService.getVerifiedUsers(),
+          UserService.getVerifiedUsers(undefined, verifiedUsersPagination.page, verifiedUsersPagination.limit),
           PaymentService.getPendingPayments(),
           PaymentService.getCompletedPayments(),
           PaymentService.getRefunds(),
@@ -112,11 +118,24 @@ function AdminMainPage() {
           upcoming: ensureArray(upcomingTrips),
         });
 
+        // Check if verifiedUsersResponse is paginated
+        const isPaginated = verifiedUsersResponse && 'data' in verifiedUsersResponse;
+
         setUsers({
           unverified: unverifiedUsers,
           pendingVerification: pendingUsers,
-          verified: verifiedUsers,
+          verified: isPaginated ? verifiedUsersResponse.data : verifiedUsersResponse,
         });
+
+        // Update pagination info if response is paginated
+        if (isPaginated) {
+          setVerifiedUsersPagination({
+            page: verifiedUsersResponse.page,
+            limit: verifiedUsersResponse.limit,
+            total: verifiedUsersResponse.total,
+            totalPages: verifiedUsersResponse.totalPages,
+          });
+        }
 
         setPayments({
           pending: pendingPayments,
@@ -131,7 +150,7 @@ function AdminMainPage() {
     };
 
     fetchData();
-  }, []);
+  }, [verifiedUsersPagination.page]);
 
   useEffect(() => {
     const timeoutId = setTimeout(async () => {
@@ -473,18 +492,43 @@ function AdminMainPage() {
             )}
 
             {activeTab === "users" && (
-              <UsersContainer
-                users={
-                  activeSection === "unverified"
-                    ? getUsersToDisplay().unverified
-                    : activeSection === "pendingVerification"
-                      ? getUsersToDisplay().pendingVerification
-                      : getUsersToDisplay().verified
-                }
-                activeSection={activeSection}
-                searchQuery={searchQuery}
-                isSearching={isSearching}
-              />
+              <>
+                <UsersContainer
+                  users={
+                    activeSection === "unverified"
+                      ? getUsersToDisplay().unverified
+                      : activeSection === "pendingVerification"
+                        ? getUsersToDisplay().pendingVerification
+                        : getUsersToDisplay().verified
+                  }
+                  activeSection={activeSection}
+                  searchQuery={searchQuery}
+                  isSearching={isSearching}
+                />
+                {/* Pagination controls for verified users */}
+                {activeSection === "verified" && !searchQuery && verifiedUsersPagination.totalPages > 1 && (
+                  <div className="flex items-center justify-between mt-6 px-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setVerifiedUsersPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                      disabled={verifiedUsersPagination.page === 1}
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-sm text-gray-600">
+                      Page {verifiedUsersPagination.page} of {verifiedUsersPagination.totalPages}
+                      ({verifiedUsersPagination.total} total users)
+                    </span>
+                    <Button
+                      variant="outline"
+                      onClick={() => setVerifiedUsersPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                      disabled={verifiedUsersPagination.page >= verifiedUsersPagination.totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
 
             {activeTab === "payments" && (
