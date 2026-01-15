@@ -89,6 +89,18 @@ export default function TripPayment() {
     fetchRegistration();
   }, [registrationId]);
 
+  useEffect(() => {
+    if (!registrationId || typeof window === "undefined") return;
+    try {
+      const rt = localStorage.getItem("verificationReturnTo");
+      if (rt === `/musafir/payment/${registrationId}`) {
+        localStorage.removeItem("verificationReturnTo");
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [registrationId]);
+
   // Calculate discount when registration is loaded
   useEffect(() => {
     if (registration?.user?._id) {
@@ -147,9 +159,40 @@ export default function TripPayment() {
       }, 2000);
     } catch (error) {
       console.error("Payment submission error:", error);
+
+      const code =
+        (error as any)?.response?.data?.code ||
+        (error as any)?.code;
+
+      if (
+        code === "verification_required" ||
+        code === "verification_pending" ||
+        code === "verification_rejected"
+      ) {
+        try {
+          if (typeof window !== "undefined") {
+            localStorage.setItem(
+              "verificationReturnTo",
+              `/musafir/payment/${registrationId}`,
+            );
+            const flagshipId = registration?.flagship?._id;
+            if (flagshipId) {
+              localStorage.setItem("flagshipId", JSON.stringify(flagshipId));
+            }
+          }
+        } catch (e) {
+          console.error("Failed to persist verification redirect context", e);
+        }
+
+        router.push("/verification");
+        return;
+      }
+
       toast({
         title: "Error",
-        description: "Failed to submit payment. Please try again.",
+        description:
+          (error as any)?.message ||
+          "Failed to submit payment. Please try again.",
         variant: "destructive",
       });
     } finally {

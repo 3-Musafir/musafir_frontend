@@ -32,35 +32,20 @@ export class PaymentService {
   }
 
   static async createPayment(payment: ICreatePayment) {
-    try {
-      const formData = new FormData();
-      formData.append("registration", payment.registration);
-      formData.append("bankAccount", payment.bankAccount);
-      formData.append("paymentType", payment.paymentType);
-      formData.append("amount", payment.amount.toString());
-      formData.append("discount", payment.discount?.toString() || "0");
-      formData.append("screenshot", payment.screenshot);
+    const formData = new FormData();
+    formData.append("registration", payment.registration);
+    formData.append("bankAccount", payment.bankAccount);
+    formData.append("paymentType", payment.paymentType);
+    formData.append("amount", payment.amount.toString());
+    formData.append("discount", payment.discount?.toString() || "0");
+    formData.append("screenshot", payment.screenshot);
 
-      return api.post(`/payment/create-payment`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          // Server responded with error status
-          throw new Error(
-            error.response.data.message || "Failed to create payment"
-          );
-        } else if (error.request) {
-          // Request made but no response received
-          throw new Error("No response received from server");
-        }
-      }
-      // Generic error handling
-      // throw new Error('Failed to create payment: ' + error.message);
-    }
+    // Let the shared API layer surface structured errors (including verification codes)
+    return api.post(`/payment/create-payment`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   }
 
   static async approvePayment(paymentId: string) {

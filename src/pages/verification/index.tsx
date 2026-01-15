@@ -1,5 +1,4 @@
 import type React from 'react';
-import Link from 'next/link';
 import { ArrowLeft, Camera, Trash, Video, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,6 +14,7 @@ function GetVerified() {
   const { getMe } = useUserHandler();
   const [verificationStatus, setVerificationStatus] = useState<string | undefined>(undefined);
   const [fallbackPath, setFallbackPath] = useState<string>('/home');
+  const [returnToPath, setReturnToPath] = useState<string | null>(null);
   const [referral1, setReferral1] = useState('');
   const [referral2, setReferral2] = useState('');
   const [videoLink, setVideoLink] = useState('');
@@ -43,6 +43,13 @@ function GetVerified() {
       } catch (err) {
         setFallbackPath('/home');
       }
+
+      try {
+        const rt = localStorage.getItem('verificationReturnTo');
+        if (rt) setReturnToPath(rt);
+      } catch (err) {
+        setReturnToPath(null);
+      }
     }
 
     const ensureNotVerified = async () => {
@@ -51,7 +58,22 @@ function GetVerified() {
         const status = (user as any)?.verification?.status;
         setVerificationStatus(status);
         if (status === 'verified') {
-          router.replace('/home');
+          let rt: string | null = null;
+          try {
+            rt = typeof window !== 'undefined' ? localStorage.getItem('verificationReturnTo') : null;
+          } catch (e) {
+            rt = null;
+          }
+          if (rt) {
+            try {
+              localStorage.removeItem('verificationReturnTo');
+            } catch (e) {
+              // ignore
+            }
+            router.replace(rt);
+          } else {
+            router.replace('/home');
+          }
         }
       } catch (err) {
         console.error('Failed to fetch user for verification check', err);
@@ -99,11 +121,17 @@ function GetVerified() {
     if (videoLink) formData.append('videoUrl', videoLink);
     if (videoFile) formData.append('video', videoFile);
     if (requestCall) formData.append('requestCall', requestCall.toString());
+    if (flagshipId) formData.append('flagshipId', flagshipId);
 
     try {
       setIsSubmitting(true);
       const res: any = await action.requestVerification(formData);
       if (res?.statusCode === 200) {
+        if (returnToPath) {
+          // If user came here because of a gated flow (e.g., payment), keep them on this page and show pending state.
+          setVerificationStatus('pending');
+          return;
+        }
         flagshipId ? router.push('flagship/seats') : router.push('/home');
       } else {
         showAlert('Verification request failed. Please try again.', 'error');
@@ -190,10 +218,10 @@ function GetVerified() {
             <div className='mt-4 flex gap-2'>
               <button
                 type='button'
-                onClick={() => router.push('/home')}
+                onClick={() => router.push(returnToPath || '/home')}
                 className='flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100'
               >
-                Back to home
+                {returnToPath ? 'Back' : 'Back to home'}
               </button>
             </div>
           </section>
