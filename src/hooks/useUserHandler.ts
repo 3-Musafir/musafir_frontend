@@ -29,6 +29,16 @@ const useUserHandler = () => {
     return res.data;
   };
 
+  const getVerificationStatus = async (): Promise<string | undefined> => {
+    try {
+      const res = await api.get('/user/verification-status');
+      return res?.data?.status;
+    } catch (error) {
+      const user = await getMe();
+      return (user as any)?.verification?.status;
+    }
+  };
+
   const updateUser = async (data: UpdateUserData): Promise<User> => {
     const res = await api.patch(USER.UPDATE_ME, data);
     return res.data;
@@ -43,6 +53,7 @@ const useUserHandler = () => {
 
   return {
     getMe,
+    getVerificationStatus,
     updateUser,
     resetPassword,
   };

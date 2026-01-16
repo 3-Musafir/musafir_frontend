@@ -36,8 +36,8 @@ function Passport() {
 
   const fetchUserVerificationStatus = async () => {
     try {
-      const user = await userHandler.getMe();
-      setUserVerificationStatus(user?.verification?.status);
+      const status = await userHandler.getVerificationStatus();
+      setUserVerificationStatus(status);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -48,6 +48,47 @@ function Passport() {
     fetchUpcomingPassport();
     fetchUserVerificationStatus();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "upcoming") {
+      fetchUserVerificationStatus();
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleFocus = () => fetchUserVerificationStatus();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchUserVerificationStatus();
+      }
+    };
+
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (activeTab !== "upcoming") return;
+    if (
+      userVerificationStatus !== "unverified" &&
+      userVerificationStatus !== "pending" &&
+      userVerificationStatus !== "rejected"
+    ) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      fetchUserVerificationStatus();
+    }, 20_000);
+
+    return () => window.clearInterval(intervalId);
+  }, [activeTab, userVerificationStatus]);
 
   return (
     <div className='min-h-screen w-full bg-gray-50 flex flex-col'>
