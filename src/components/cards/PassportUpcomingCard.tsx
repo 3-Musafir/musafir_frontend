@@ -9,8 +9,9 @@ import { X } from "lucide-react";
 type StatusType = "rejected" | "pending" | "notReserved" | "confirmed" | "refundProcessing";
 
 interface PaymentDetails {
-  amount: number;
+  price: number;
   dueAmount: number;
+  discountApplied?: number;
 }
 
 const getStatusStyles = (status: StatusType) => {
@@ -36,6 +37,9 @@ const getActionButton = (
   sendReEvaluateRequestToJury: any,
   router: AppRouterInstance,
   setShowPdfModal: React.Dispatch<React.SetStateAction<boolean>>,
+  paymentInfo?: PaymentDetails,
+  hasPaymentSubmitted?: boolean,
+  paymentStatus?: string,
   userVerificationStatus?: string
 ) => {
   switch (status) {
@@ -57,6 +61,14 @@ const getActionButton = (
           onClick: () => router.push(ROUTES_CONSTANTS.VERIFICATION_REQUEST)
         };
       }
+      if (paymentStatus === "pendingApproval" || (hasPaymentSubmitted && !paymentStatus)) {
+        return {
+          css: 'bg-gray-100 text-gray-400 hover:bg-gray-100 hover:text-gray-400 hover:border-gray-300 cursor-not-allowed',
+          text: 'Awaiting approval',
+          onClick: () => {},
+          disabled: true,
+        };
+      }
       return {
         css: 'bg-[#FF9000]',
         text: 'Complete Payment',
@@ -69,6 +81,21 @@ const getActionButton = (
         onClick: () => router.push(`/musafir/payment/${registrationId}`)
       };
     case "confirmed":
+      if (paymentStatus === "pendingApproval") {
+        return {
+          css: 'bg-gray-100 text-gray-400 hover:bg-gray-100 hover:text-gray-400 hover:border-gray-300 cursor-not-allowed',
+          text: 'Awaiting approval',
+          onClick: () => {},
+          disabled: true,
+        };
+      }
+      if (paymentInfo && typeof paymentInfo.dueAmount === 'number' && paymentInfo.dueAmount > 0) {
+        return {
+          css: 'bg-[#FF9000]',
+          text: `Pay remaining (Rs.${paymentInfo.dueAmount.toLocaleString()})`,
+          onClick: () => router.push(`/musafir/payment/${registrationId}`),
+        };
+      }
       return {
         css: 'bg-[#FF9000]',
         text: 'View Brief',
@@ -86,13 +113,24 @@ const StatusInfo: React.FC<{
   status: StatusType;
   paymentInfo?: PaymentDetails;
   appliedDate?: string;
-}> = ({ status, paymentInfo, appliedDate }) => {
+  hasPaymentSubmitted?: boolean;
+  paymentStatus?: string;
+}> = ({ status, paymentInfo, appliedDate, hasPaymentSubmitted, paymentStatus }) => {
   switch (status) {
     case "rejected":
       return (
         <p className="text-sm text-gray-900">Status: Verification Failed</p>
       );
     case "pending":
+      if (paymentStatus === "pendingApproval" || (hasPaymentSubmitted && !paymentStatus)) {
+        return (
+          <p className="text-sm text-gray-900">
+            Status: Payment submitted, awaiting approval
+            <br />
+            {`Applied on ${appliedDate}`}
+          </p>
+        );
+      }
       return (
         <p className="text-sm text-gray-900">
           Status: Pending on 3m Team
@@ -109,18 +147,25 @@ const StatusInfo: React.FC<{
       );
     case "confirmed":
       if (!paymentInfo) return null;
+      const discountApplied =
+        typeof paymentInfo.discountApplied === 'number' ? paymentInfo.discountApplied : 0;
+      const paidAmount = Math.max(
+        0,
+        (paymentInfo.price || 0) - (paymentInfo.dueAmount || 0) - discountApplied,
+      );
+      const isFullyPaid = (paymentInfo.dueAmount || 0) <= 0;
       return (
         <div className="text-sm text-gray-900 space-y-1">
           <p>
             Status:{" "}
-            {status === "confirmed"
-              ? "Your seat is confirmed"
-              : "Seat will be booked on payment"}
+            {isFullyPaid ? "Your seat is confirmed" : "Payment approved (balance due)"}
           </p>
-          <p>Receipt: Rs.{paymentInfo.amount.toLocaleString()}</p>
+          <p>Total: Rs.{paymentInfo.price.toLocaleString()}</p>
+          {discountApplied > 0 && (
+            <p>Discount: Rs.{discountApplied.toLocaleString()}</p>
+          )}
           <p>
-            Paid: Rs.
-            {(paymentInfo.amount - paymentInfo.dueAmount).toLocaleString()}
+            Paid: Rs.{paidAmount.toLocaleString()}
           </p>
           <p className="font-bold text-sm">
             Due Amount: Rs.{paymentInfo.dueAmount.toLocaleString()}
@@ -160,6 +205,8 @@ const PassportUpcomingCard: React.FC<any> = ({
   appliedDate,
   detailedPlan,
   userVerificationStatus,
+  hasPaymentSubmitted,
+  paymentStatus,
 }) => {
   const { sendReEvaluateRequestToJury } = useRegistrationHook();
   const router = useRouter();
@@ -170,6 +217,9 @@ const PassportUpcomingCard: React.FC<any> = ({
     sendReEvaluateRequestToJury,
     router,
     setShowPdfModal,
+    paymentInfo,
+    hasPaymentSubmitted,
+    paymentStatus,
     userVerificationStatus,
   );
 
@@ -209,15 +259,18 @@ const PassportUpcomingCard: React.FC<any> = ({
             status={status}
             paymentInfo={paymentInfo}
             appliedDate={appliedDate}
+            hasPaymentSubmitted={hasPaymentSubmitted}
+            paymentStatus={paymentStatus}
           />
           <div className="flex items-center justify-between">
             <button
               onClick={actionButton.onClick}
-              className={`rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-[#FF9000] hover:text-gray-900 hover:border-yellow-500 active:bg-yellow-400 ${actionButton.css ? actionButton.css : 'bg.white'}`}
+              disabled={Boolean((actionButton as any)?.disabled)}
+              className={`rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-[#FF9000] hover:text-gray-900 hover:border-yellow-500 active:bg-yellow-400 disabled:opacity-60 disabled:cursor-not-allowed ${actionButton.css ? actionButton.css : 'bg-white'}`}
             >
               {actionButton.text}
             </button>
-            {status === "confirmed" && (
+            {status === "confirmed" && paymentInfo?.dueAmount === 0 && (
               <button
                 onClick={() => router.push(`/musafir/refund/${registrationId}`)}
                 className="ml-2 p-2 text-gray-500 hover:text-red-600 transition-colors"

@@ -45,8 +45,22 @@ export default function TripPayment() {
   const registrationHook = useRegistrationHook();
   const [registration, setRegistration] = useState<any>(null);
 
-  const totalAmount = registration?.price;
-  const finalAmount = Math.max(0, totalAmount - discountAmount)
+  const tripPrice = registration?.price || 0;
+  const amountDue =
+    typeof registration?.amountDue === "number" ? registration.amountDue : tripPrice;
+  const discountApplied =
+    typeof registration?.discountApplied === "number"
+      ? registration.discountApplied
+      : 0;
+  const paymentStatus =
+    registration?.paymentId && typeof registration.paymentId === "object"
+      ? registration.paymentId.status
+      : undefined;
+
+  const discountRemaining = Math.max(0, discountAmount - discountApplied);
+  const finalAmount = Math.max(0, amountDue - discountRemaining);
+  const paymentPendingApproval = paymentStatus === "pendingApproval";
+  const noPaymentDue = finalAmount <= 0;
 
   const handleCopy = async (text: string) => {
     try {
@@ -122,6 +136,24 @@ export default function TripPayment() {
   };
 
   const handleSubmit = async () => {
+    if (paymentPendingApproval) {
+      toast({
+        title: "Payment already submitted",
+        description: "Your payment is pending approval. Please wait for an update.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (noPaymentDue) {
+      toast({
+        title: "No payment due",
+        description: "There is no remaining payment due for this trip.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!file) {
       toast({
         title: "Please Upload Screenshot",
@@ -133,6 +165,14 @@ export default function TripPayment() {
     if (paymentType === "partial" && (!partialAmount || partialAmount <= 0)) {
       toast({
         title: "Please Enter A Valid Partial Amount",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (paymentType === "partial" && partialAmount > finalAmount) {
+      toast({
+        title: "Partial amount too high",
+        description: "Partial amount cannot exceed the remaining payable amount.",
         variant: "destructive",
       });
       return;
@@ -228,11 +268,19 @@ export default function TripPayment() {
 
           {/* Price and Payment Type */}
           <div className="bg-gray-100 rounded-lg mx-4 p-4 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-gray-700">Total Amount</span>
-              <span className="font-bold text-xl">
-                Rs. {totalAmount?.toLocaleString()}
-              </span>
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700">Trip Price</span>
+                <span className="font-bold text-xl">
+                  Rs. {tripPrice?.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700">Remaining Due</span>
+                <span className="font-bold text-xl">
+                  Rs. {amountDue?.toLocaleString()}
+                </span>
+              </div>
             </div>
 
             <div className="flex space-x-4">
@@ -244,6 +292,7 @@ export default function TripPayment() {
                   checked={paymentType === "full"}
                   onChange={() => setPaymentType("full")}
                   className="h-4 w-4 text-orange-500 focus:ring-orange-500"
+                  disabled={paymentPendingApproval || noPaymentDue}
                 />
                 <label htmlFor="fullPayment" className="text-gray-700">
                   Full Payment
@@ -257,12 +306,24 @@ export default function TripPayment() {
                   checked={paymentType === "partial"}
                   onChange={() => setPaymentType("partial")}
                   className="h-4 w-4 text-orange-500 focus:ring-orange-500"
+                  disabled={paymentPendingApproval || noPaymentDue}
                 />
                 <label htmlFor="partialPayment" className="text-gray-700">
                   Partial Payment
                 </label>
               </div>
             </div>
+
+            {paymentPendingApproval && (
+              <p className="mt-3 text-sm text-gray-600">
+                Payment already submitted and pending approval.
+              </p>
+            )}
+            {noPaymentDue && !paymentPendingApproval && (
+              <p className="mt-3 text-sm text-gray-600">
+                No remaining payment due.
+              </p>
+            )}
 
             {paymentType === "partial" && (
               <div className="mt-4">
@@ -286,6 +347,7 @@ export default function TripPayment() {
                     }}
                     min="0"
                     max={finalAmount}
+                    disabled={paymentPendingApproval || noPaymentDue}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                     placeholder="Enter amount"
                     style={{
@@ -296,7 +358,7 @@ export default function TripPayment() {
                 </div>
                 {partialAmount > finalAmount && (
                   <p className="text-red-500 text-sm mt-1">
-                    Amount cannot exceed final amount
+                    Amount cannot exceed remaining payable amount
                   </p>
                 )}
               </div>
@@ -307,11 +369,29 @@ export default function TripPayment() {
           <div className="bg-gray-100 rounded-lg mx-4 p-4 mb-6">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Discount Amount:</span>
-                <span className="font-semibold text-green-600">Rs. {discountAmount.toLocaleString()}</span>
+                <span className="text-gray-600">Discount Available:</span>
+                <span className="font-semibold text-green-600">
+                  Rs. {discountAmount.toLocaleString()}
+                </span>
               </div>
+              {discountApplied > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Discount Applied:</span>
+                  <span className="font-semibold text-green-600">
+                    Rs. {discountApplied.toLocaleString()}
+                  </span>
+                </div>
+              )}
+              {discountRemaining > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Discount Remaining:</span>
+                  <span className="font-semibold text-green-600">
+                    Rs. {discountRemaining.toLocaleString()}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Final Amount:</span>
+                <span className="text-gray-600">Amount to Pay Now:</span>
                 <span className="font-bold text-xl text-orange-600">
                   Rs. {finalAmount?.toLocaleString()}
                 </span>
@@ -472,7 +552,7 @@ export default function TripPayment() {
                 ? "bg-orange-500 text-white hover:bg-white hover:text-black"
                 : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                 }`}
-              disabled={!file || isSubmitting}
+              disabled={!file || isSubmitting || paymentPendingApproval || noPaymentDue}
               onClick={handleSubmit}
               isLoading={isSubmitting}
               loadingText="Submitting..."

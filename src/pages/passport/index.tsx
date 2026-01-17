@@ -159,11 +159,18 @@ function Passport() {
                 image={event.flagship.images[0]}
                 status={event.status}
                 paymentInfo={{
-                  amount: event.price,
+                  price: event.price,
                   dueAmount: event.amountDue,
+                  discountApplied: event.discountApplied,
                 }}
                 detailedPlan={event?.flagship?.detailedPlan}
                 userVerificationStatus={userVerificationStatus}
+                hasPaymentSubmitted={Boolean(event.paymentId)}
+                paymentStatus={
+                  event.paymentId && typeof event.paymentId === "object"
+                    ? event.paymentId.status
+                    : undefined
+                }
               />
             ))
           : activeTab === "upcoming" && (

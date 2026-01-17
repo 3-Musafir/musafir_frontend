@@ -128,6 +128,21 @@ export default function PaymentDetailsPage() {
     typeof (payment.registration as IRegistration).user === "string"
       ? null
       : ((payment.registration as IRegistration).user as IUser);
+  const registration = payment.registration as any;
+  const registrationPrice =
+    typeof registration?.price === "number" ? registration.price : undefined;
+  const registrationAmountDue =
+    typeof registration?.amountDue === "number" ? registration.amountDue : undefined;
+  const registrationDiscountApplied =
+    typeof registration?.discountApplied === "number"
+      ? registration.discountApplied
+      : 0;
+  const paymentDiscount = payment.discount || 0;
+  const discountDelta = Math.max(0, paymentDiscount - registrationDiscountApplied);
+  const projectedRemainingDue =
+    typeof registrationAmountDue === "number"
+      ? Math.max(0, registrationAmountDue - payment.amount - discountDelta)
+      : undefined;
   // Type guard to check if bankAccount is an IBankAccount object
   const bankAccount =
     typeof payment.bankAccount === "string" ? null : payment.bankAccount;
@@ -217,6 +232,33 @@ export default function PaymentDetailsPage() {
                 {payment.paymentType}
               </span>
             </div>
+            {typeof registrationPrice === "number" && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Trip Price</span>
+                <span className="font-medium">
+                  Rs. {registrationPrice.toLocaleString()}
+                </span>
+              </div>
+            )}
+            {typeof registrationAmountDue === "number" && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Remaining Due</span>
+                <span className="font-medium">
+                  Rs. {registrationAmountDue.toLocaleString()}
+                </span>
+              </div>
+            )}
+            {payment.status === "pendingApproval" &&
+              typeof projectedRemainingDue === "number" && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">
+                    Remaining Due (after approval)
+                  </span>
+                  <span className="font-medium">
+                    Rs. {projectedRemainingDue.toLocaleString()}
+                  </span>
+                </div>
+              )}
             <div className="flex justify-between">
               <span className="text-gray-600">Date</span>
               <span className="font-medium">
@@ -229,7 +271,7 @@ export default function PaymentDetailsPage() {
                 variant="outline"
                 className={cn(
                   "capitalize",
-                  payment.status === "pending" && "text-yellow-600",
+                  payment.status === "pendingApproval" && "text-yellow-600",
                   payment.status === "approved" && "text-green-600",
                   payment.status === "rejected" && "text-red-600"
                 )}
