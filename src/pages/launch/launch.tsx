@@ -24,14 +24,14 @@ export default function LaunchScreen() {
           <span className="text-md text-gray-600">Already have an account?</span>
           <button
             onClick={() => router.push('/login')}
-            className="text-md text-gray-600 underline hover:text-orange-600 transition-colors"
+            className="text-md text-gray-600 underline hover:text-brand-primary-hover transition-colors"
           >
             Login
           </button>
         </div>
 
         {/* Content */}
-        <div className="relative flex min-h-screen flex-col items-center justify-center px-4 text-[#2B2D42]">
+        <div className="relative flex min-h-screen flex-col items-center justify-center px-4 text-heading">
           {/* Logo */}
           <div className="mb-8">
             <Image src={MusafirLogo} alt="Musafir Logo" className="h-16 w-16" />
@@ -44,10 +44,10 @@ export default function LaunchScreen() {
 
           {/* Buttons */}
           <div className="w-full max-w-sm space-y-4">
-            <button onClick={() => router.push('/musafir-signup')} className="w-full rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-orange-600">
+            <button onClick={() => router.push('/musafir-signup')} className="w-full rounded-lg bg-brand-primary px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-primary-hover">
               Yes
             </button>
-            <button onClick={() => router.push('/signup/create-account')} className="w-full rounded-lg border-2 border-orange-500 px-6 py-3 font-semibold text-[#2B2D42] transition-colors hover:bg-orange-500/10">
+            <button onClick={() => router.push('/signup/create-account')} className="w-full rounded-lg border-2 border-brand-primary px-6 py-3 font-semibold text-heading transition-colors hover:bg-brand-primary/10">
               No
             </button>
           </div>

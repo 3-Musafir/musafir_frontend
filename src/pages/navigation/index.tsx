@@ -24,7 +24,7 @@ export function Navigation() {
           const isActive = pathname === href
           const linkClasses = [
             "flex flex-col items-center gap-1 px-3 py-1.5 text-xs rounded-xl transition",
-            isActive ? "text-orange-500" : "text-gray-600 hover:text-orange-500",
+            isActive ? "text-brand-primary" : "text-gray-600 hover:text-brand-primary",
           ].join(" ")
 
           return (

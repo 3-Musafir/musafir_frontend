@@ -241,7 +241,7 @@ export default function AdditionalInfo() {
                   onChange={(e) => handleCnicChange(e.target.value)}
                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
                     cnicError
-                      ? "border-red-500 focus:ring-red-500"
+                      ? "border-brand-error focus:ring-red-500"
                       : "border-gray-300 focus:ring-gray-400"
                   }`}
                   placeholder="Enter CNIC number"
@@ -250,7 +250,7 @@ export default function AdditionalInfo() {
                   aria-describedby={cnicError ? "cnic-error" : undefined}
                 />
                 {cnicError && (
-                  <p id="cnic-error" className="text-xs text-red-600 mt-1">
+                  <p id="cnic-error" className="text-xs text-brand-error mt-1">
                     {cnicError}
                   </p>
                 )}
@@ -302,7 +302,7 @@ export default function AdditionalInfo() {
                   ))}
                 </select>
                 {employmentError && (
-                  <p className="text-xs text-red-600">{employmentError}</p>
+                  <p className="text-xs text-brand-error">{employmentError}</p>
                 )}
               </div>
             </div>
@@ -362,7 +362,7 @@ export default function AdditionalInfo() {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-black py-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
+                    className="w-full bg-brand-primary hover:bg-brand-primary-hover disabled:bg-brand-primary-disabled disabled:cursor-not-allowed text-black py-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
                     aria-busy={isLoading || undefined}
                   >
                     {isLoading ? (
@@ -380,7 +380,7 @@ export default function AdditionalInfo() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-black py-4 rounded-md text-sm font-medium transition-colors mt-8 flex items-center justify-center"
+                className="w-full bg-brand-primary hover:bg-brand-primary-hover disabled:bg-brand-primary-disabled disabled:cursor-not-allowed text-black py-4 rounded-md text-sm font-medium transition-colors mt-8 flex items-center justify-center"
                 aria-busy={isLoading || undefined}
               >
                 {isLoading ? (

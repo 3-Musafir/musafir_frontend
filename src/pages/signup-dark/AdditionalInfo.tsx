@@ -34,7 +34,7 @@ export default function AdditionalInfo() {
               <input
                 type="text"
                 id="cnic"
-                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                 placeholder="Enter your CNIC number"
               />
             </div>
@@ -46,7 +46,7 @@ export default function AdditionalInfo() {
               <input
                 type="text"
                 id="institution"
-                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                 placeholder="Enter your institution"
               />
             </div>
@@ -58,14 +58,14 @@ export default function AdditionalInfo() {
               <input
                 type="text"
                 id="social"
-                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                 placeholder="Enter your social media handle"
               />
             </div>
 
             <button
               type="submit"
-              className="mt-8 w-full rounded-lg bg-orange-500 px-4 py-3 font-medium text-white hover:bg-orange-600 transition-colors"
+              className="mt-8 w-full rounded-lg bg-brand-primary px-4 py-3 font-medium text-white hover:bg-brand-primary-hover transition-colors"
             >
               Flagship Preferences
             </button>

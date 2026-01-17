@@ -75,7 +75,7 @@ export default function SetPassword() {
 
             <button
               type='submit'
-              className='w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-md text-sm font-medium transition-colors'
+              className='w-full bg-brand-primary hover:bg-brand-primary-hover text-white py-4 rounded-md text-sm font-medium transition-colors'
             >
               On to Flagship Deeds
             </button>

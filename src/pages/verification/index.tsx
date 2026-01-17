@@ -230,7 +230,7 @@ function GetVerified() {
         {verificationStatus === 'rejected' && (
           <section className='mb-8 rounded-lg border border-red-200 bg-red-50 p-4'>
             <h2 className='text-lg font-semibold text-red-800'>Verification not approved</h2>
-            <p className='text-sm text-red-700 mt-2'>
+            <p className='text-sm text-brand-error mt-2'>
               Please resubmit your verification. You can use referral codes, a video link, or request a call.
             </p>
           </section>
@@ -411,7 +411,7 @@ function GetVerified() {
                     <div className="mt-2 text-sm text-gray-600">
                       Selected: {videoFile.name}
                     </div>
-                    <button onClick={handleRemoveFile} className="text-red-500 hover:text-red-700 p-3">
+                    <button onClick={handleRemoveFile} className="text-brand-error hover:text-brand-error p-3">
                       <Trash className="h-4 w-4" />
                     </button>
                   </div>
@@ -456,7 +456,7 @@ function GetVerified() {
                   }}
                   disabled={isMethodDisabled('call')}
                   title={isMethodDisabled('call') ? 'Only one verification method can be chosen at a time' : ''}
-                  className='h-5 w-5 rounded border-gray-300 text-orange-500 focus:ring-orange-500 accent-black'
+                  className='h-5 w-5 rounded border-gray-300 text-brand-primary focus:ring-orange-500 accent-black'
                 />
                 <span className='text-black'>I want verification call</span>
               </label>
@@ -465,7 +465,7 @@ function GetVerified() {
             {/* Submit Button */}
             <button
               onClick={handleSubmit}
-              className='w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-md text-base font-medium transition-colors'
+              className='w-full bg-brand-primary hover:bg-brand-primary-hover text-white py-4 rounded-md text-base font-medium transition-colors'
               disabled={isSubmitting}
               aria-busy={isSubmitting || undefined}
             >

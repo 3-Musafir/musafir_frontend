@@ -124,7 +124,7 @@ export default function UserDetails() {
             <button
               onClick={handleSubmit}
               className={`w-full text-white py-2 rounded-lg ${modalType === "approve"
-                ? "bg-orange-500 hover:bg-orange-600"
+                ? "bg-brand-primary hover:bg-brand-primary-hover"
                 : modalType === 'didntPick'
                   ? "bg-gray-700 hover:bg-gray-800"
                   : "bg-red-800 hover:bg-red-900"
@@ -256,7 +256,7 @@ export default function UserDetails() {
                         }`}
                       aria-disabled={!hasPhone}
                     >
-                      <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-brand-primary flex items-center justify-center">
                         <Phone className="h-3 w-3 text-white" />
                       </div>
                       <span>Cell Phone</span>
@@ -446,7 +446,7 @@ export default function UserDetails() {
                       e.stopPropagation();
                       openModal("approve");
                     }}
-                    className="w-full bg-orange-500 text-white rounded-lg py-3 px-4 font-medium"
+                    className="w-full bg-brand-primary text-white rounded-lg py-3 px-4 font-medium"
                   >
                     Approve
                   </button>
@@ -454,13 +454,13 @@ export default function UserDetails() {
               )}
 
               {registeredUser?.status === "accepted" && (
-                <div className="mt-4 p-3 bg-green-100 text-green-800 rounded-lg text-center font-medium">
+                <div className="mt-4 p-3 bg-brand-primary/10 text-green-800 rounded-lg text-center font-medium">
                   Registration Accepted
                 </div>
               )}
 
               {registeredUser?.status === "rejected" && (
-                <div className="mt-4 p-3 bg-red-100 text-red-800 rounded-lg text-center font-medium">
+                <div className="mt-4 p-3 bg-brand-error-light text-red-800 rounded-lg text-center font-medium">
                   Registration Rejected
                 </div>
               )}

@@ -74,7 +74,7 @@ export const PaymentStatsContainer = () => {
 
         <div className="flex items-center mb-4">
           <div className="flex-1 h-2 bg-gray-200 rounded-full mr-3">
-            <div className="h-2 bg-orange-500 rounded-full w-[56%]"></div>
+            <div className="h-2 bg-brand-primary rounded-full w-[56%]"></div>
           </div>
           <div className="text-sm font-medium">56%</div>
         </div>

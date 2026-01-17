@@ -69,7 +69,7 @@ export default function RegistrationForm() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary mx-auto mb-4"></div>
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function RegistrationForm() {
         {/* Form Content */}
         <div className="p-4">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold mb-2 text-[#2B2D42]">Lets get to know you first!</h1>
+            <h1 className="text-2xl font-bold mb-2 text-heading">Lets get to know you first!</h1>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -212,13 +212,13 @@ export default function RegistrationForm() {
                     }}
                     placeholder="3XXXXXXXXX"
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                      phoneError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-gray-400'
+                      phoneError ? 'border-brand-error focus:ring-red-500' : 'border-gray-300 focus:ring-gray-400'
                     }`}
                     aria-invalid={phoneError ? 'true' : 'false'}
                     aria-describedby={phoneError ? 'phone-error' : undefined}
                   />
                   {phoneError && (
-                    <p id="phone-error" className="text-xs text-red-600 mt-1">
+                    <p id="phone-error" className="text-xs text-brand-error mt-1">
                       {phoneError}
                     </p>
                   )}
@@ -276,14 +276,14 @@ export default function RegistrationForm() {
                       showWhatsapp 
                         ? 'bg-gray-100 cursor-not-allowed' 
                         : whatsappError 
-                          ? 'border-red-500 focus:ring-red-500' 
+                          ? 'border-brand-error focus:ring-red-500' 
                           : 'border-gray-300 focus:ring-gray-400'
                     }`}
                     aria-invalid={whatsappError ? 'true' : 'false'}
                     aria-describedby={whatsappError ? 'whatsapp-error' : undefined}
                   />
                   {!showWhatsapp && whatsappError && (
-                    <p id="whatsapp-error" className="text-xs text-red-600 mt-1">
+                    <p id="whatsapp-error" className="text-xs text-brand-error mt-1">
                       {whatsappError}
                     </p>
                   )}
@@ -294,7 +294,7 @@ export default function RegistrationForm() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-md text-sm font-medium transition-colors"
+              className="btn-primary w-full"
             >
               Next
             </button>

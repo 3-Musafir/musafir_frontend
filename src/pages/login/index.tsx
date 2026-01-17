@@ -164,7 +164,7 @@ export default function Login() {
             <div className="text-right">
               <Link
                 href="/forgot-password"
-                className="text-orange-500 hover:text-orange-600 text-sm font-medium"
+                className="text-brand-primary hover:text-brand-primary-hover text-sm font-medium"
               >
                 Forgot Password?
               </Link>
@@ -173,7 +173,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-white py-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
+              className="btn-primary w-full flex items-center justify-center"
               aria-busy={isLoading || undefined}
             >
               {isLoading ? (

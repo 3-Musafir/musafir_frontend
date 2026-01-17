@@ -17,7 +17,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ steps, activeStep }) => {
       {steps.map((step, index) => {
         let bgClass = 'bg-gray-200';
         if (index === activeStep) {
-          bgClass = 'bg-orange-500';
+          bgClass = 'bg-brand-primary';
         } else if (index < activeStep) {
           bgClass = 'bg-orange-200';
         }

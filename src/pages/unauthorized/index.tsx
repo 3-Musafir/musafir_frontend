@@ -42,7 +42,7 @@ export default function Unauthorized() {
           <div className='flex flex-col gap-4'>
             <button
               onClick={handleSignOut}
-              className='w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-md text-sm font-medium transition-colors'
+              className='w-full bg-brand-primary hover:bg-brand-primary-hover text-white py-4 rounded-md text-sm font-medium transition-colors'
             >
               Sign Out
             </button>

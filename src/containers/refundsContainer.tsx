@@ -122,7 +122,7 @@ export const RefundsContainer = ({
                           <span className="text-gray-600">
                             Discount Applied
                           </span>
-                          <span className="font-medium text-green-600">
+                          <span className="font-medium text-brand-primary">
                             Rs.{" "}
                             {(
                               (refund?.registration as IRegistration)
@@ -189,7 +189,7 @@ export const RefundsContainer = ({
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-green-600"
+                      className="text-brand-primary"
                       onClick={() => onRefundAction?.(refund._id, "approve")}
                     >
                       Clear
@@ -197,7 +197,7 @@ export const RefundsContainer = ({
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-red-600"
+                      className="text-brand-error"
                       onClick={() => onRefundAction?.(refund._id, "reject")}
                     >
                       Reject
@@ -273,7 +273,7 @@ export const RefundsContainer = ({
                     )?.discount !== 0 && (
                         <div className="flex justify-between">
                           <span className="text-gray-600">Discount Applied</span>
-                          <span className="font-medium text-green-600">
+                          <span className="font-medium text-brand-primary">
                             Rs.{" "}
                             {(
                               (refund?.registration as IRegistration)
@@ -340,8 +340,8 @@ export const RefundsContainer = ({
                     variant="outline"
                     className={cn(
                       "capitalize",
-                      refund.status === "cleared" && "text-green-600",
-                      refund.status === "rejected" && "text-red-600"
+                      refund.status === "cleared" && "text-brand-primary",
+                      refund.status === "rejected" && "text-brand-error"
                     )}
                   >
                     {refund.status}

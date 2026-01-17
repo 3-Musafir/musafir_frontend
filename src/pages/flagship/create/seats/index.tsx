@@ -304,7 +304,7 @@ function SeatsAllocation() {
                 placeholder='Enter total seats'
               />
             </div>
-            {errors.totalSeats && <p className='text-red-500 text-sm mt-1'>{errors.totalSeats}</p>}
+            {errors.totalSeats && <p className='text-brand-error text-sm mt-1'>{errors.totalSeats}</p>}
           </div>
 
           {/* Gender Split */}
@@ -355,7 +355,7 @@ function SeatsAllocation() {
                     />
                   </div>
                 </div>
-                {errors.gender && <p className='text-red-500 text-sm mt-1'>{errors.gender}</p>}
+                {errors.gender && <p className='text-brand-error text-sm mt-1'>{errors.gender}</p>}
               </>
             )}
           </div>
@@ -413,7 +413,7 @@ function SeatsAllocation() {
                 );
               })}
             {citySplitEnabled && errors.citySeats && errors.citySeats['global'] && (
-              <p className='text-red-500 text-sm mt-1'>{errors.citySeats['global']}</p>
+              <p className='text-brand-error text-sm mt-1'>{errors.citySeats['global']}</p>
             )}
           </div>
 
@@ -479,7 +479,7 @@ function SeatsAllocation() {
                     Mattress price = base seat price - this delta. Shown to users during selection.
                   </p>
                 </div>
-                {errors.mattress && <p className='text-red-500 text-sm mt-1'>{errors.mattress}</p>}
+                {errors.mattress && <p className='text-brand-error text-sm mt-1'>{errors.mattress}</p>}
               </>
             )}
           </div>
@@ -488,7 +488,7 @@ function SeatsAllocation() {
         {/* Next Button */}
             <button
               onClick={handleSubmit}
-              className='w-full bg-orange-500 text-black py-4 rounded-xl font-bold text-lg'
+              className='w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg'
             >
               Next
             </button>

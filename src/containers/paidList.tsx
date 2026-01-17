@@ -128,7 +128,7 @@ export const PaidListContainer = () => {
                   (r.payment as IPayment)?.discount !== 0 && (
                     <>
                       <div className="text-gray-500">Discount</div>
-                      <div className="text-right font-medium text-green-600">
+                      <div className="text-right font-medium text-brand-primary">
                         {(r.payment as IPayment).discount}{" "}
                         <span className="text-gray-400 text-sm">PKR</span>
                       </div>

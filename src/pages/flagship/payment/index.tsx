@@ -182,14 +182,14 @@ function PaymentOptions() {
                 </div>
               ))}
             </div>
-            {error && <p className='text-red-500 text-sm mt-2'>{error}</p>}
+            {error && <p className='text-brand-error text-sm mt-2'>{error}</p>}
           </div>
         </div>
 
         {/* Back to Home Button */}
         <button
           onClick={handleSubmit}
-          className='w-full bg-orange-500 text-black py-4 rounded-xl font-bold text-lg'
+          className='w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg'
         >
           Next
         </button>

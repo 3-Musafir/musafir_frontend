@@ -107,7 +107,7 @@ export default function RemainingSeats() {
           {/* Make Payment Button */}
           <button
             onClick={handleSubmit}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-md text-sm font-medium transition-colors"
+            className="btn-primary w-full"
           >
             Make Payment
           </button>

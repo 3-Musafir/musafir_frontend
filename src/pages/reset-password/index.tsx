@@ -151,15 +151,15 @@ export default function ResetPassword() {
               <div className="mt-3 space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   {passwordValidation.length ? (
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="h-4 w-4 text-brand-primary" />
                   ) : (
-                    <X className="h-4 w-4 text-red-500" />
+                    <X className="h-4 w-4 text-brand-error" />
                   )}
                   <span
                     className={
                       passwordValidation.length
-                        ? "text-green-600"
-                        : "text-red-600"
+                        ? "text-brand-primary"
+                        : "text-brand-error"
                     }
                   >
                     At least 8 characters
@@ -167,15 +167,15 @@ export default function ResetPassword() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   {passwordValidation.uppercase ? (
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="h-4 w-4 text-brand-primary" />
                   ) : (
-                    <X className="h-4 w-4 text-red-500" />
+                    <X className="h-4 w-4 text-brand-error" />
                   )}
                   <span
                     className={
                       passwordValidation.uppercase
-                        ? "text-green-600"
-                        : "text-red-600"
+                        ? "text-brand-primary"
+                        : "text-brand-error"
                     }
                   >
                     One uppercase letter
@@ -183,15 +183,15 @@ export default function ResetPassword() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   {passwordValidation.lowercase ? (
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="h-4 w-4 text-brand-primary" />
                   ) : (
-                    <X className="h-4 w-4 text-red-500" />
+                    <X className="h-4 w-4 text-brand-error" />
                   )}
                   <span
                     className={
                       passwordValidation.lowercase
-                        ? "text-green-600"
-                        : "text-red-600"
+                        ? "text-brand-primary"
+                        : "text-brand-error"
                     }
                   >
                     One lowercase letter
@@ -199,15 +199,15 @@ export default function ResetPassword() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   {passwordValidation.number ? (
-                    <Check className="h-4 w-4 text-green-500" />
+                    <Check className="h-4 w-4 text-brand-primary" />
                   ) : (
-                    <X className="h-4 w-4 text-red-500" />
+                    <X className="h-4 w-4 text-brand-error" />
                   )}
                   <span
                     className={
                       passwordValidation.number
-                        ? "text-green-600"
-                        : "text-red-600"
+                        ? "text-brand-primary"
+                        : "text-brand-error"
                     }
                   >
                     One number
@@ -248,14 +248,14 @@ export default function ResetPassword() {
                 </button>
               </div>
               {confirmPassword && !passwordsMatch && (
-                <p className="text-red-500 text-sm">Passwords do not match</p>
+                <p className="text-brand-error text-sm">Passwords do not match</p>
               )}
             </div>
 
             <button
               type="submit"
               disabled={isLoading || !isPasswordValid || !passwordsMatch}
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-white py-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
+              className="btn-primary w-full flex items-center justify-center"
               aria-busy={isLoading || undefined}
             >
               {isLoading ? (

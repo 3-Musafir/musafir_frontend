@@ -50,7 +50,7 @@ export default function PasswordSetup() {
                 id="password"
                 value={password}
                 onChange={handlePasswordChange}
-                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                 placeholder="Enter your password"
               />
               <p className="text-xs text-gray-400">
@@ -69,18 +69,18 @@ export default function PasswordSetup() {
                   value={confirmPassword}
                   onChange={handleConfirmPasswordChange}
                   className={`w-full rounded-lg border ${
-                    showError ? 'border-red-500' : 'border-gray-600'
-                  } bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none`}
+                    showError ? 'border-brand-error' : 'border-gray-600'
+                  } bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none`}
                   placeholder="Confirm your password"
                 />
                 {showError && (
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <AlertCircle className="h-5 w-5 text-red-500" />
+                    <AlertCircle className="h-5 w-5 text-brand-error" />
                   </div>
                 )}
               </div>
               {showError && (
-                <p className="text-xs text-red-500">
+                <p className="text-xs text-brand-error">
                   Your password is incorrect...
                 </p>
               )}
@@ -88,7 +88,7 @@ export default function PasswordSetup() {
 
             <button
               type="submit"
-              className="mt-8 w-full rounded-lg bg-orange-500 px-4 py-3 font-medium text-white hover:bg-orange-600 transition-colors"
+              className="mt-8 w-full rounded-lg bg-brand-primary px-4 py-3 font-medium text-white hover:bg-brand-primary-hover transition-colors"
             >
               On to Flagship Deeds
             </button>

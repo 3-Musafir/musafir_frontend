@@ -86,13 +86,13 @@ export default function MusafirSignup() {
                                 value={emailOrPhone}
                                 onChange={(e) => setEmailOrPhone(e.target.value)}
                                 placeholder="Enter your email or phone number"
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 ${error ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 ${error ? 'border-brand-error' : 'border-gray-300'
                                     }`}
                                 disabled={isLoading}
                                 required
                             />
                             {error && (
-                                <p className="text-red-500 text-sm">{error}</p>
+                                <p className="text-brand-error text-sm">{error}</p>
                             )}
                         </div>
 
@@ -100,7 +100,7 @@ export default function MusafirSignup() {
                             <button
                                 type="submit"
                                 disabled={isLoading || !emailOrPhone.trim()}
-                                className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-white py-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
+                                className="btn-primary w-full flex items-center justify-center"
                                 aria-busy={isLoading || undefined}
                             >
                                 {isLoading ? (
@@ -121,7 +121,7 @@ export default function MusafirSignup() {
                                 // Show login button for existing accounts
                                 <button
                                     onClick={handleLogin}
-                                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-md text-sm font-medium transition-colors"
+                                    className="btn-primary w-full"
                                 >
                                     Login
                                 </button>

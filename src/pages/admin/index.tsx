@@ -368,7 +368,7 @@ function AdminMainPage() {
             </div>
             <div className="flex flex-row items-center justify-center p-4">
               <button
-                className="bg-orange-500 text-white px-4 py-2 rounded-md w-full hover:bg-white hover:text-gray-700 hover:border-[1px] hover:border-gray-300"
+                className="bg-brand-primary text-white px-4 py-2 rounded-md w-full hover:bg-white hover:text-gray-700 hover:border-[1px] hover:border-gray-300"
                 onClick={() => {
                   setLoadingCreateFlagship(true);
                   router.push("/flagship/create");

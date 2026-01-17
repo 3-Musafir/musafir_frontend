@@ -25,8 +25,8 @@ export default function Alert({
 
   const bgColor =
     type === 'success'
-      ? 'bg-green-100 border-green-400 text-green-700'
-      : 'bg-red-100 border-red-400 text-red-700';
+      ? 'bg-brand-primary/10 border-green-400 text-brand-primary'
+      : 'bg-brand-error-light border-red-400 text-brand-error';
 
   return (
     <div

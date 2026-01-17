@@ -34,7 +34,7 @@ export default function AccountCreation() {
               <input
                 type="email"
                 id="email"
-                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                 placeholder="Enter your email"
               />
             </div>
@@ -46,7 +46,7 @@ export default function AccountCreation() {
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
-                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                 placeholder="Enter your password"
               />
             </div>
@@ -54,7 +54,7 @@ export default function AccountCreation() {
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
-                className="h-4 w-4 rounded border-gray-600 bg-transparent text-orange-500 focus:ring-orange-500"
+                className="h-4 w-4 rounded border-gray-600 bg-transparent text-brand-primary focus:ring-orange-500"
                 checked={showPassword}
                 onChange={(e) => setShowPassword(e.target.checked)}
               />
@@ -63,7 +63,7 @@ export default function AccountCreation() {
 
             <button
               type="submit"
-              className="w-full rounded-lg bg-orange-500 px-4 py-3 font-medium text-white hover:bg-orange-600 transition-colors"
+              className="w-full rounded-lg bg-brand-primary px-4 py-3 font-medium text-white hover:bg-brand-primary-hover transition-colors"
             >
               Sign Up
             </button>
@@ -79,7 +79,7 @@ export default function AccountCreation() {
 
             <button
               type="button"
-              className="w-full rounded-lg border border-orange-500 px-4 py-3 font-medium text-white hover:bg-orange-500/10 transition-colors"
+              className="w-full rounded-lg border border-brand-primary px-4 py-3 font-medium text-white hover:bg-brand-primary/10 transition-colors"
             >
               Sign Up with Google
             </button>

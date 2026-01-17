@@ -291,7 +291,7 @@ export default function TripPayment() {
                   name="paymentType"
                   checked={paymentType === "full"}
                   onChange={() => setPaymentType("full")}
-                  className="h-4 w-4 text-orange-500 focus:ring-orange-500"
+                  className="h-4 w-4 text-brand-primary focus:ring-orange-500"
                   disabled={paymentPendingApproval || noPaymentDue}
                 />
                 <label htmlFor="fullPayment" className="text-gray-700">
@@ -305,7 +305,7 @@ export default function TripPayment() {
                   name="paymentType"
                   checked={paymentType === "partial"}
                   onChange={() => setPaymentType("partial")}
-                  className="h-4 w-4 text-orange-500 focus:ring-orange-500"
+                  className="h-4 w-4 text-brand-primary focus:ring-orange-500"
                   disabled={paymentPendingApproval || noPaymentDue}
                 />
                 <label htmlFor="partialPayment" className="text-gray-700">
@@ -357,7 +357,7 @@ export default function TripPayment() {
                   />
                 </div>
                 {partialAmount > finalAmount && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-brand-error text-sm mt-1">
                     Amount cannot exceed remaining payable amount
                   </p>
                 )}
@@ -370,14 +370,14 @@ export default function TripPayment() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Discount Available:</span>
-                <span className="font-semibold text-green-600">
+                <span className="font-semibold text-brand-primary">
                   Rs. {discountAmount.toLocaleString()}
                 </span>
               </div>
               {discountApplied > 0 && (
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Discount Applied:</span>
-                  <span className="font-semibold text-green-600">
+                  <span className="font-semibold text-brand-primary">
                     Rs. {discountApplied.toLocaleString()}
                   </span>
                 </div>
@@ -385,14 +385,14 @@ export default function TripPayment() {
               {discountRemaining > 0 && (
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Discount Remaining:</span>
-                  <span className="font-semibold text-green-600">
+                  <span className="font-semibold text-brand-primary">
                     Rs. {discountRemaining.toLocaleString()}
                   </span>
                 </div>
               )}
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Amount to Pay Now:</span>
-                <span className="font-bold text-xl text-orange-600">
+                <span className="font-bold text-xl text-brand-primary-hover">
                   Rs. {finalAmount?.toLocaleString()}
                 </span>
               </div>
@@ -549,7 +549,7 @@ export default function TripPayment() {
           <div className="px-4 mt-auto mb-6">
             <Button
               className={`w-full py-6 ${file
-                ? "bg-orange-500 text-white hover:bg-white hover:text-black"
+                ? "bg-brand-primary text-white hover:bg-white hover:text-black"
                 : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                 }`}
               disabled={!file || isSubmitting || paymentPendingApproval || noPaymentDue}

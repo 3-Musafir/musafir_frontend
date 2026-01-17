@@ -17,15 +17,15 @@ interface PaymentDetails {
 const getStatusStyles = (status: StatusType) => {
   switch (status) {
     case "rejected":
-      return "bg-white text-red-700 border-red-300";
+      return "bg-white text-brand-error border-red-300";
     case "pending":
       return "bg-white text-gray-700 border-gray-300";
     case "notReserved":
-      return "bg-white text-red-700 border-red-300";
+      return "bg-white text-brand-error border-red-300";
     case "confirmed":
-      return "bg-white text-green-700 border-green-300";
+      return "bg-white text-brand-primary border-green-300";
     case "refundProcessing":
-      return "bg-white text-green-700 border-green-300";
+      return "bg-white text-brand-primary border-green-300";
     default:
       return "bg-white text-gray-700 border-gray-300";
   }
@@ -70,13 +70,13 @@ const getActionButton = (
         };
       }
       return {
-        css: 'bg-[#FF9000]',
+        css: 'bg-brand-primary',
         text: 'Complete Payment',
         onClick: () => router.push(`/musafir/payment/${registrationId}`)
       };
     case "notReserved":
       return {
-        css: 'bg-[#FF9000]',
+        css: 'bg-brand-primary',
         text: 'Complete Payment',
         onClick: () => router.push(`/musafir/payment/${registrationId}`)
       };
@@ -91,13 +91,13 @@ const getActionButton = (
       }
       if (paymentInfo && typeof paymentInfo.dueAmount === 'number' && paymentInfo.dueAmount > 0) {
         return {
-          css: 'bg-[#FF9000]',
+          css: 'bg-brand-primary',
           text: `Pay remaining (Rs.${paymentInfo.dueAmount.toLocaleString()})`,
           onClick: () => router.push(`/musafir/payment/${registrationId}`),
         };
       }
       return {
-        css: 'bg-[#FF9000]',
+        css: 'bg-brand-primary',
         text: 'View Brief',
         onClick: () => setShowPdfModal(true)
       };
@@ -266,14 +266,14 @@ const PassportUpcomingCard: React.FC<any> = ({
             <button
               onClick={actionButton.onClick}
               disabled={Boolean((actionButton as any)?.disabled)}
-              className={`rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-[#FF9000] hover:text-gray-900 hover:border-yellow-500 active:bg-yellow-400 disabled:opacity-60 disabled:cursor-not-allowed ${actionButton.css ? actionButton.css : 'bg-white'}`}
+              className={`rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-brand-primary hover:text-gray-900 hover:border-brand-warning active:bg-yellow-400 disabled:opacity-60 disabled:cursor-not-allowed ${actionButton.css ? actionButton.css : 'bg-white'}`}
             >
               {actionButton.text}
             </button>
             {status === "confirmed" && paymentInfo?.dueAmount === 0 && (
               <button
                 onClick={() => router.push(`/musafir/refund/${registrationId}`)}
-                className="ml-2 p-2 text-gray-500 hover:text-red-600 transition-colors"
+                className="ml-2 p-2 text-gray-500 hover:text-brand-error transition-colors"
               >
                 <DeleteIcon />
               </button>

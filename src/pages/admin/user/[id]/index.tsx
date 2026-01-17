@@ -169,19 +169,19 @@ export default function UserDetailsPage() {
     switch (status) {
       case "pending":
         return (
-          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+          <Badge variant="secondary" className="bg-brand-warning-light text-yellow-800">
             Pending
           </Badge>
         );
       case "verified":
         return (
-          <Badge variant="default" className="bg-green-100 text-green-800">
+          <Badge variant="default" className="bg-brand-primary/10 text-green-800">
             Verified
           </Badge>
         );
       case "rejected":
         return (
-          <Badge variant="destructive" className="bg-red-100 text-red-800">
+          <Badge variant="destructive" className="bg-brand-error-light text-red-800">
             Rejected
           </Badge>
         );

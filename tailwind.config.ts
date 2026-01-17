@@ -11,10 +11,10 @@ export default {
   ],
   theme: {
   	extend: {
-			fontFamily: {
+		fontFamily: {
         outfit: ['Outfit', 'sans-serif'],
       },
-			fontSize: {
+		fontSize: {
         'main-heading': ['28px', '36px'],
         'sub-heading': ['16px', '20px'],
         'body': ['16px', '24px'],
@@ -28,9 +28,32 @@ export default {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
-				heading: '#2B2D42',
-        text: '#757575',
-        primary: '#FF9000',
+
+			// Brand Colors
+			brand: {
+				primary: '#FF9000',
+				'primary-hover': '#E68200',
+				'primary-light': '#FFA726',
+				'primary-disabled': '#FFD4A3',
+				error: '#DE1135',
+				'error-hover': '#B90E2C',
+				'error-light': '#F8D7DA',
+				warning: '#F6BC2F',
+				'warning-hover': '#DDA929',
+				'warning-light': '#FFF4D5',
+			},
+
+			// Semantic Colors
+			heading: '#2B2D42',
+			text: '#757575',
+			'text-light': '#9CA3AF',
+			'text-dark': '#2B2D42',
+
+			// Button Colors
+			'btn-text': '#2B2D42',
+			'btn-secondary': '#2B2D42',
+			'btn-secondary-text': '#F6F6F6',
+
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'

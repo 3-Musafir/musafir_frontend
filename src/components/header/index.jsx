@@ -98,13 +98,13 @@ export default function Header({ notificationCount = 0, setSidebarOpen, showMenu
           <div className='flex items-center space-x-3 mr-1'>
             <button
               onClick={() => router.push('/login')}
-              className='text-sm font-medium text-gray-700 hover:text-orange-600 transition-colors'
+              className='text-sm font-medium text-gray-700 hover:text-brand-primary-hover transition-colors'
             >
               Login
             </button>
             <button
               onClick={() => router.push('/signup/create-account')}
-              className='rounded-full bg-orange-500 px-3 py-1.5 text-sm font-semibold text-white shadow-md shadow-orange-200 transition hover:bg-orange-600 hover:shadow-lg'
+              className='rounded-full bg-brand-primary px-3 py-1.5 text-sm font-semibold text-white shadow-md shadow-brand-primary/20 transition hover:bg-brand-primary-hover hover:shadow-lg'
             >
               Sign up
             </button>

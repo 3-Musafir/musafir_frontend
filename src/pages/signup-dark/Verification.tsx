@@ -32,7 +32,7 @@ export default function GetVerified() {
                 <input
                   type="text"
                   id="referral1"
-                  className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                   placeholder="Enter referral code"
                 />
               </div>
@@ -43,7 +43,7 @@ export default function GetVerified() {
                 <input
                   type="text"
                   id="referral2"
-                  className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                   placeholder="Enter referral code"
                 />
               </div>
@@ -90,7 +90,7 @@ export default function GetVerified() {
           </div>
 
           {/* Call Button */}
-          <button className="w-full rounded-lg bg-orange-500 px-4 py-3 font-medium text-white hover:bg-orange-600 transition-colors">
+          <button className="w-full rounded-lg bg-brand-primary px-4 py-3 font-medium text-white hover:bg-brand-primary-hover transition-colors">
             Get a Verification Call
           </button>
         </div>

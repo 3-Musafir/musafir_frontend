@@ -86,7 +86,7 @@ function Feedback() {
         {/* Main Content */}
         <main className='px-4 space-y-6'>
           <div>
-            <h2 className='text-3xl font-bold text-[#2B2D42]'>Quickest Feedback Ever</h2>
+            <h2 className='text-3xl font-bold text-heading'>Quickest Feedback Ever</h2>
             <p className='text-[#757575] text-md'>Fill out this small community onboarding form</p>
           </div>
 
@@ -296,7 +296,7 @@ function Feedback() {
               <textarea
                 value={likeAboutTrip}
                 onChange={(e) => setLikeAboutTrip(e.target.value)}
-                className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#FF9000] focus:ring-[#FF9000]'
+                className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-brand-primary focus:ring-brand-primary'
                 rows={3}
                 maxLength={100}
               />
@@ -313,7 +313,7 @@ function Feedback() {
               <textarea
                 value={improvement}
                 onChange={(e) => setImprovement(e.target.value)}
-                className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#FF9000] focus:ring-[#FF9000]'
+                className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-brand-primary focus:ring-brand-primary'
                 rows={3}
                 maxLength={100}
               />
@@ -436,7 +436,7 @@ function Feedback() {
                     type="text"
                     value={talkTo}
                     onChange={(e) => setTalkTo(e.target.value)}
-                    className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#FF9000] focus:ring-[#FF9000]'
+                    className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-brand-primary focus:ring-brand-primary'
                     placeholder="Who did you talk to?"
                   />
                 </div>
@@ -450,7 +450,7 @@ function Feedback() {
                     type="text"
                     value={enjoyableActivity}
                     onChange={(e) => setEnjoyableActivity(e.target.value)}
-                    className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#FF9000] focus:ring-[#FF9000]'
+                    className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-brand-primary focus:ring-brand-primary'
                     placeholder="e.g scav hunt"
                   />
                 </div>
@@ -464,7 +464,7 @@ function Feedback() {
                     type="text"
                     value={leastEnjoyableActivity}
                     onChange={(e) => setLeastEnjoyableActivity(e.target.value)}
-                    className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#FF9000] focus:ring-[#FF9000]'
+                    className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-brand-primary focus:ring-brand-primary'
                     placeholder="e.g mehndi night"
                   />
                 </div>
@@ -480,7 +480,7 @@ function Feedback() {
                   <textarea
                     value={whistleblowing}
                     onChange={(e) => setWhistleblowing(e.target.value)}
-                    className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#FF9000] focus:ring-[#FF9000]'
+                    className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-brand-primary focus:ring-brand-primary'
                     rows={2}
                     placeholder="X was doing this..."
                   />
@@ -498,7 +498,7 @@ function Feedback() {
                     type="text"
                     value={contactInfo}
                     onChange={(e) => setContactInfo(e.target.value)}
-                    className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-[#FF9000] focus:ring-[#FF9000]'
+                    className='block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-brand-primary focus:ring-brand-primary'
                     placeholder="Name, number & email to contact you..."
                   />
                 </div>
@@ -508,7 +508,7 @@ function Feedback() {
             {/* Submit Button - always visible */}
             <button
               onClick={handleSubmit}
-              className='w-full rounded-lg bg-[#FF9000] px-4 py-3 text-[#2B2D42] font-medium hover:bg-[#FF9000]/90 transition-colors'
+              className='w-full rounded-lg bg-brand-primary px-4 py-3 text-heading font-medium hover:bg-brand-primary/90 transition-colors'
             >
               Submit Feedback
             </button>

@@ -144,13 +144,13 @@ function ResetPassword() {
               ) : (
                 <>
                   {error && (
-                    <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+                    <div className="mb-4 p-4 bg-brand-error-light text-brand-error rounded-md">
                       {error}
                     </div>
                   )}
 
                   {success && (
-                    <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
+                    <div className="mb-4 p-4 bg-brand-primary/10 text-brand-primary rounded-md">
                       {success}
                     </div>
                   )}
@@ -227,15 +227,15 @@ function ResetPassword() {
                       <div className="mt-3 space-y-2">
                         <div className="flex items-center gap-2 text-sm">
                           {passwordValidation.length ? (
-                            <Check className="h-4 w-4 text-green-500" />
+                            <Check className="h-4 w-4 text-brand-primary" />
                           ) : (
-                            <X className="h-4 w-4 text-red-500" />
+                            <X className="h-4 w-4 text-brand-error" />
                           )}
                           <span
                             className={
                               passwordValidation.length
-                                ? "text-green-600"
-                                : "text-red-600"
+                                ? "text-brand-primary"
+                                : "text-brand-error"
                             }
                           >
                             At least 8 characters
@@ -243,15 +243,15 @@ function ResetPassword() {
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           {passwordValidation.uppercase ? (
-                            <Check className="h-4 w-4 text-green-500" />
+                            <Check className="h-4 w-4 text-brand-primary" />
                           ) : (
-                            <X className="h-4 w-4 text-red-500" />
+                            <X className="h-4 w-4 text-brand-error" />
                           )}
                           <span
                             className={
                               passwordValidation.uppercase
-                                ? "text-green-600"
-                                : "text-red-600"
+                                ? "text-brand-primary"
+                                : "text-brand-error"
                             }
                           >
                             One uppercase letter
@@ -259,15 +259,15 @@ function ResetPassword() {
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           {passwordValidation.lowercase ? (
-                            <Check className="h-4 w-4 text-green-500" />
+                            <Check className="h-4 w-4 text-brand-primary" />
                           ) : (
-                            <X className="h-4 w-4 text-red-500" />
+                            <X className="h-4 w-4 text-brand-error" />
                           )}
                           <span
                             className={
                               passwordValidation.lowercase
-                                ? "text-green-600"
-                                : "text-red-600"
+                                ? "text-brand-primary"
+                                : "text-brand-error"
                             }
                           >
                             One lowercase letter
@@ -275,15 +275,15 @@ function ResetPassword() {
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           {passwordValidation.number ? (
-                            <Check className="h-4 w-4 text-green-500" />
+                            <Check className="h-4 w-4 text-brand-primary" />
                           ) : (
-                            <X className="h-4 w-4 text-red-500" />
+                            <X className="h-4 w-4 text-brand-error" />
                           )}
                           <span
                             className={
                               passwordValidation.number
-                                ? "text-green-600"
-                                : "text-red-600"
+                                ? "text-brand-primary"
+                                : "text-brand-error"
                             }
                           >
                             One number
@@ -320,12 +320,12 @@ function ResetPassword() {
                         </button>
                       </div>
                       {confirmPassword && !passwordsMatch && (
-                        <p className="mt-1 text-sm text-red-600">
+                        <p className="mt-1 text-sm text-brand-error">
                           Passwords do not match
                         </p>
                       )}
                       {confirmPassword && passwordsMatch && (
-                        <p className="mt-1 text-sm text-green-600">
+                        <p className="mt-1 text-sm text-brand-primary">
                           Passwords match
                         </p>
                       )}
@@ -339,7 +339,7 @@ function ResetPassword() {
                         !currentPassword ||
                         isLoading
                       }
-                      className="w-full px-4 py-3 text-white bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed rounded-md transition-colors"
+                      className="btn-primary w-full"
                       aria-busy={isLoading || undefined}
                     >
                       {isLoading ? "Resetting Password..." : "Reset Password"}

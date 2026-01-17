@@ -98,7 +98,7 @@ function SuccessPage() {
               <div className='flex-1 font-medium truncate'>{shareLink}</div>
               <button
                 onClick={copyToClipboard}
-                className={`font-bold flex items-center gap-2 ${!isPublic ? 'text-gray-500' : 'text-orange-500'
+                className={`font-bold flex items-center gap-2 ${!isPublic ? 'text-gray-500' : 'text-brand-primary'
                   }`}
                 disabled={!isPublic}
               >
@@ -122,7 +122,7 @@ function SuccessPage() {
               />
             </button>
           </div>
-          {toggleError && <p className='text-red-500 text-sm mb-4'>{toggleError}</p>}
+          {toggleError && <p className='text-brand-error text-sm mb-4'>{toggleError}</p>}
         </div>
 
         {/* Back to Home Button */}
@@ -130,7 +130,7 @@ function SuccessPage() {
           <div className='max-w-md mx-auto'>
             <button
               onClick={handleHome}
-              className='w-full bg-white text-black hover:bg-[#FF9000] py-4 rounded-xl font-bold text-lg border-2 border-gray-200 relative'
+              className='w-full bg-white text-black hover:bg-brand-primary py-4 rounded-xl font-bold text-lg border-2 border-gray-200 relative'
             >
               Back to home
             </button>

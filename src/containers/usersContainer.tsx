@@ -61,9 +61,9 @@ export function UsersContainer({ users, activeSection, searchQuery, isSearching 
               variant="outline"
               className={cn(
                 "capitalize",
-                user.verification.status === "unverified" && "text-red-600",
-                user.verification.status === "pending" && "text-yellow-600",
-                user.verification.status === "verified" && "text-green-600"
+                user.verification.status === "unverified" && "text-brand-error",
+                user.verification.status === "pending" && "text-brand-warning",
+                user.verification.status === "verified" && "text-brand-primary"
               )}
             >
               {user.verification.status}

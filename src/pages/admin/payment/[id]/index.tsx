@@ -199,7 +199,7 @@ export default function PaymentDetailsPage() {
             {payment.discount && payment.discount > 0 && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Discount Applied</span>
-                <span className="font-medium text-green-600">
+                <span className="font-medium text-brand-primary">
                   Rs. {payment.discount.toLocaleString()}
                 </span>
               </div>
@@ -271,9 +271,9 @@ export default function PaymentDetailsPage() {
                 variant="outline"
                 className={cn(
                   "capitalize",
-                  payment.status === "pendingApproval" && "text-yellow-600",
-                  payment.status === "approved" && "text-green-600",
-                  payment.status === "rejected" && "text-red-600"
+                  payment.status === "pendingApproval" && "text-brand-warning",
+                  payment.status === "approved" && "text-brand-primary",
+                  payment.status === "rejected" && "text-brand-error"
                 )}
               >
                 {payment.status}

@@ -10,6 +10,57 @@
   }
 }
 
+@layer components {
+  /* Primary Button */
+  .btn-primary {
+    @apply bg-brand-primary hover:bg-brand-primary-hover disabled:bg-brand-primary-disabled
+           text-white disabled:cursor-not-allowed
+           px-4 py-3 rounded-md text-sm font-medium
+           transition-colors;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply bg-btn-secondary hover:bg-opacity-90 disabled:bg-opacity-60
+           text-btn-secondary-text disabled:cursor-not-allowed
+           px-4 py-3 rounded-md text-sm font-medium
+           transition-colors;
+  }
+
+  /* Error/Destructive Button */
+  .btn-error {
+    @apply bg-brand-error hover:bg-brand-error-hover disabled:opacity-60
+           text-white disabled:cursor-not-allowed
+           px-4 py-3 rounded-md text-sm font-medium
+           transition-colors;
+  }
+
+  /* Outline Button */
+  .btn-outline {
+    @apply border-2 border-brand-primary text-brand-primary
+           hover:bg-brand-primary hover:text-white disabled:opacity-60
+           disabled:cursor-not-allowed
+           px-4 py-3 rounded-md text-sm font-medium
+           transition-colors;
+  }
+
+  /* Ghost Button */
+  .btn-ghost {
+    @apply text-heading hover:bg-gray-100 disabled:opacity-60
+           disabled:cursor-not-allowed
+           px-4 py-3 rounded-md text-sm font-medium
+           transition-colors;
+  }
+
+  /* Warning Button */
+  .btn-warning {
+    @apply bg-brand-warning hover:bg-brand-warning-hover disabled:opacity-60
+           text-heading disabled:cursor-not-allowed
+           px-4 py-3 rounded-md text-sm font-medium
+           transition-colors;
+  }
+}
+
 @layer utilities {
 
   .no-scrollbar::-webkit-scrollbar {

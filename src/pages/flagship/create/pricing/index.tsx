@@ -343,7 +343,7 @@ function PricingPage() {
                 placeholder='Enter base price'
               />
             </div>
-            {errors.basePrice && <p className='text-red-500 text-sm mt-1'>{errors.basePrice}</p>}
+            {errors.basePrice && <p className='text-brand-error text-sm mt-1'>{errors.basePrice}</p>}
             <p className='text-gray-600 mt-2 text-sm'>
               This is the &quot;Starting from&quot; price. Location and tier add-ons will be added on top of this base price.
             </p>
@@ -368,7 +368,7 @@ function PricingPage() {
               />
             </div>
             {errors.earlyBirdPrice && (
-              <p className='text-red-500 text-sm mt-1'>{errors.earlyBirdPrice}</p>
+              <p className='text-brand-error text-sm mt-1'>{errors.earlyBirdPrice}</p>
             )}
             <p className='text-gray-600 mt-2 text-sm'>
               Users will see this lower price before adding city/tier adjustments when registering before the deadline.
@@ -421,7 +421,7 @@ function PricingPage() {
                           {locations.length > 1 ? (
                             <button
                               onClick={() => deleteLocation(location.id)}
-                              className='ml-2 text-red-500 hover:text-red-700 mr-2'
+                              className='ml-2 text-brand-error hover:text-brand-error mr-2'
                             >
                               <X className='w-5 h-5' />
                             </button>
@@ -434,7 +434,7 @@ function PricingPage() {
                   </div>
                 </div>
               ))}
-            {errors.locations && <p className='text-red-500 text-sm mb-2'>{errors.locations}</p>}
+            {errors.locations && <p className='text-brand-error text-sm mb-2'>{errors.locations}</p>}
             <div>
               <span className='text-sm font-bold'>Add Another Location</span>
               <form
@@ -507,7 +507,7 @@ function PricingPage() {
                         {tiers.length > 1 ? (
                           <button
                             onClick={() => deleteTier(tier.id)}
-                            className='ml-2 text-red-500 hover:text-red-700 mr-2'
+                            className='ml-2 text-brand-error hover:text-brand-error mr-2'
                           >
                             <X className='w-5 h-5' />
                           </button>
@@ -517,7 +517,7 @@ function PricingPage() {
                       </div>
                     </div>
                   ))}
-                {errors.tiers && <p className='text-red-500 text-sm mb-2'>{errors.tiers}</p>}
+                {errors.tiers && <p className='text-brand-error text-sm mb-2'>{errors.tiers}</p>}
                 <div>
                   <span className='text-sm font-bold'>Add Another Tier</span>
                   <form
@@ -586,7 +586,7 @@ function PricingPage() {
                         {mattressTiers.length > 1 ? (
                           <button
                             onClick={() => deleteMattressTier(tier.id)}
-                            className='ml-2 text-red-500 hover:text-red-700 mr-2'
+                            className='ml-2 text-brand-error hover:text-brand-error mr-2'
                           >
                             <X className='w-5 h-5' />
                           </button>
@@ -597,7 +597,7 @@ function PricingPage() {
                     </div>
                   ))}
                 {errors.mattressTiers && (
-                  <p className='text-red-500 text-sm mb-2'>{errors.mattressTiers}</p>
+                  <p className='text-brand-error text-sm mb-2'>{errors.mattressTiers}</p>
                 )}
                 <div>
                   <span className='text-sm font-bold'>Add Another Mattress Tier</span>
@@ -666,7 +666,7 @@ function PricingPage() {
                     </div>
                   ))}
                 {errors.roomSharingPreference && (
-                  <p className='text-red-500 text-sm mb-2'>{errors.roomSharingPreference}</p>
+                  <p className='text-brand-error text-sm mb-2'>{errors.roomSharingPreference}</p>
                 )}
               </>
             )}
@@ -676,7 +676,7 @@ function PricingPage() {
         {/* Next Button */}
           <button
             onClick={handleSubmit}
-            className='w-full bg-orange-500 text-black py-4 rounded-xl font-bold text-lg'
+            className='btn-primary w-full rounded-xl text-lg font-bold'
           >
             Next
           </button>

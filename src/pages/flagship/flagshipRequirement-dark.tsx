@@ -37,7 +37,7 @@ export default function FlagshipRequirementsDark() {
               <input
                 type="text"
                 id="city"
-                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                 placeholder="Enter your city"
               />
             </div>
@@ -49,7 +49,7 @@ export default function FlagshipRequirementsDark() {
               <input
                 type="text"
                 id="package"
-                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                 placeholder="Select your package"
               />
             </div>
@@ -65,10 +65,10 @@ export default function FlagshipRequirementsDark() {
                       onChange={() => setTripType('solo')}
                     />
                     <div className={`absolute h-4 w-4 rounded-full border ${
-                      tripType === 'solo' ? 'border-orange-500' : 'border-gray-600'
+                      tripType === 'solo' ? 'border-brand-primary' : 'border-gray-600'
                     }`}>
                       {tripType === 'solo' && (
-                        <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-500" />
+                        <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-primary" />
                       )}
                     </div>
                   </div>
@@ -83,10 +83,10 @@ export default function FlagshipRequirementsDark() {
                       onChange={() => setTripType('group')}
                     />
                     <div className={`absolute h-4 w-4 rounded-full border ${
-                      tripType === 'group' ? 'border-orange-500' : 'border-gray-600'
+                      tripType === 'group' ? 'border-brand-primary' : 'border-gray-600'
                     }`}>
                       {tripType === 'group' && (
-                        <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-500" />
+                        <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-primary" />
                       )}
                     </div>
                   </div>
@@ -103,7 +103,7 @@ export default function FlagshipRequirementsDark() {
                 <input
                   type="text"
                   id="members"
-                  className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                   placeholder="Enter group members"
                 />
               </div>
@@ -116,14 +116,14 @@ export default function FlagshipRequirementsDark() {
               <textarea
                 id="expectations"
                 rows={4}
-                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-orange-500 focus:outline-none"
+                className="w-full rounded-lg border border-gray-600 bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none"
                 placeholder="Enter your expectations"
               />
             </div>
 
             <button
               type="submit"
-              className="mt-8 w-full rounded-lg bg-orange-500 px-4 py-3 font-medium text-white hover:bg-orange-600 transition-colors"
+              className="mt-8 w-full rounded-lg bg-brand-primary px-4 py-3 font-medium text-white hover:bg-brand-primary-hover transition-colors"
             >
               Get Verified
             </button>

@@ -326,7 +326,7 @@ function FlagshipRequirements() {
                       key={index}
                       className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
                         city === location.name
-                          ? "bg-orange-50 border-orange-300"
+                          ? "bg-brand-primary/10 border-brand-primary-light"
                           : "hover:bg-gray-50 border-gray-200"
                       }`}
                     >
@@ -371,7 +371,7 @@ function FlagshipRequirements() {
                       key={index}
                       className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
                         tiers === tier.name
-                          ? "bg-orange-50 border-orange-300"
+                          ? "bg-brand-primary/10 border-brand-primary-light"
                           : "hover:bg-gray-50 border-gray-200"
                       }`}
                     >
@@ -397,7 +397,7 @@ function FlagshipRequirements() {
                   );
                 })
               ) : (
-                <label className="flex items-center justify-between p-3 border rounded-lg bg-orange-50 border-orange-300">
+                <label className="flex items-center justify-between p-3 border rounded-lg bg-brand-primary/10 border-brand-primary-light">
                   <div className="flex items-center space-x-3">
                     <input
                       type="radio"
@@ -426,7 +426,7 @@ function FlagshipRequirements() {
               <label
                 className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
                   roomSharing === "default"
-                    ? "bg-orange-50 border-orange-300"
+                    ? "bg-brand-primary/10 border-brand-primary-light"
                     : "hover:bg-gray-50 border-gray-200"
                 }`}
               >
@@ -456,7 +456,7 @@ function FlagshipRequirements() {
                     key={index}
                     className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
                       roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default")
-                        ? "bg-orange-50 border-orange-300"
+                        ? "bg-brand-primary/10 border-brand-primary-light"
                         : "hover:bg-gray-50 border-gray-200"
                     }`}
                   >
@@ -644,7 +644,7 @@ function FlagshipRequirements() {
                 )}
                 <div className="border-t border-blue-300 pt-2 mt-2 flex justify-between font-bold text-base">
                   <span className="text-blue-900">Total Amount:</span>
-                  <span className="text-orange-600">Rs. {price.toLocaleString()}</span>
+                  <span className="text-brand-primary-hover">Rs. {price.toLocaleString()}</span>
                 </div>
               </div>
             </div>
@@ -652,7 +652,7 @@ function FlagshipRequirements() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-md text-sm font-medium transition-colors mt-8"
+              className="btn-primary w-full mt-8"
             >
               {fromDetailsPage ? "Make Payment" : "Get Verified"}
             </button>

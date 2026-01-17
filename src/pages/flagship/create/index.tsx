@@ -169,7 +169,7 @@ function CreateFlagship() {
                   onChange={(e) => setTripName(e.target.value)}
                   className='w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-gray-400'
                 />
-                {errors.tripName && <p className='text-red-500 text-sm'>{errors.tripName}</p>}
+                {errors.tripName && <p className='text-brand-error text-sm'>{errors.tripName}</p>}
               </div>
 
               {/* Destination */}
@@ -193,7 +193,7 @@ function CreateFlagship() {
                   </select>
                   <ChevronDown className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500' />
                 </div>
-                {errors.destination && <p className='text-red-500 text-sm'>{errors.destination}</p>}
+                {errors.destination && <p className='text-brand-error text-sm'>{errors.destination}</p>}
               </div>
 
               {/* Dates */}
@@ -212,7 +212,7 @@ function CreateFlagship() {
                       className='w-full p-3 bg-gray-100 rounded-lg focus:outline-none'
                     />
                   </div>
-                  {errors.startDate && <p className='text-red-500 text-sm'>{errors.startDate}</p>}
+                  {errors.startDate && <p className='text-brand-error text-sm'>{errors.startDate}</p>}
                 </div>
                 <div>
                   <label className='block text-lg mb-2' htmlFor='endDate'>
@@ -228,7 +228,7 @@ function CreateFlagship() {
                       className='w-full p-3 bg-gray-100 rounded-lg focus:outline-none'
                     />
                   </div>
-                  {errors.endDate && <p className='text-red-500 text-sm'>{errors.endDate}</p>}
+                  {errors.endDate && <p className='text-brand-error text-sm'>{errors.endDate}</p>}
                 </div>
               </div>
 
@@ -248,7 +248,7 @@ function CreateFlagship() {
                     </button>
                   ))}
                 </div>
-                {errors.category && <p className='text-red-500 text-sm'>{errors.category}</p>}
+                {errors.category && <p className='text-brand-error text-sm'>{errors.category}</p>}
               </div>
 
               {/* Trip View */}
@@ -267,14 +267,14 @@ function CreateFlagship() {
                     </button>
                   ))}
                 </div>
-                {errors.visibility && <p className='text-red-500 text-sm'>{errors.visibility}</p>}
+                {errors.visibility && <p className='text-brand-error text-sm'>{errors.visibility}</p>}
               </div>
             </div>
             {/* Fixed Next Button */}
 
             <button
               type='submit'
-              className={`w-full bg-orange-500 text-black py-4 rounded-lg text-lg font-medium transition-colors ${loading ? 'bg-gray-300 cursor-not-allowed' : ''
+              className={`w-full bg-brand-primary text-black py-4 rounded-lg text-lg font-medium transition-colors ${loading ? 'bg-gray-300 cursor-not-allowed' : ''
                 }`}
               disabled={loading}
               aria-busy={loading || undefined}

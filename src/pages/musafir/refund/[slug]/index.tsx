@@ -21,7 +21,7 @@ const SuccessComponent = () => {
           <div className="w-16 h-16 rounded-full bg-black flex items-center justify-center">
             <Check className="h-8 w-8 text-white" />
           </div>
-          <div className="absolute inset-0 rounded-full border-4 border-orange-500 -m-1"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-brand-primary -m-1"></div>
         </div>
 
         <h1 className="text-2xl font-bold mb-4">Form Submitted Successfully</h1>
@@ -35,7 +35,7 @@ const SuccessComponent = () => {
       <div className="p-4">
         <Button
           onClick={() => router.push("/passport")}
-          className="w-full bg-orange-500 hover:bg-orange-600 h-12 text-base"
+          className="w-full bg-brand-primary hover:bg-brand-primary-hover h-12 text-base"
         >
           Okay, Great
         </Button>
@@ -151,7 +151,7 @@ export default function RefundForm() {
 
       <form onSubmit={handleSubmit} className="p-4 space-y-6">
         {errorMessage && (
-          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-brand-error">
             {errorMessage}
           </div>
         )}
@@ -286,7 +286,7 @@ export default function RefundForm() {
 
         <Button
           type="submit"
-          className="w-full bg-orange-500 hover:bg-orange-600 h-12 text-base disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="w-full bg-brand-primary hover:bg-brand-primary-hover h-12 text-base disabled:bg-gray-300 disabled:cursor-not-allowed"
           disabled={
             !isFormValid() ||
             isLoading ||

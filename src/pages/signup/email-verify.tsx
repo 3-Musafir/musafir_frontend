@@ -110,7 +110,7 @@ export default function EmailVerification() {
               <div className="space-y-2">
                 <button
                   onClick={handleSubmit}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-black py-4 rounded-md text-sm font-medium transition-colors"
+                  className="w-full bg-brand-primary hover:bg-brand-primary-hover text-black py-4 rounded-md text-sm font-medium transition-colors"
                 >
                   Musafir Verification
                 </button>

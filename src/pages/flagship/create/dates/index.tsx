@@ -166,7 +166,7 @@ function ImportantDates() {
                 disabled
               />
             </div>
-            {errors.tripDates && <p className='text-red-500 text-sm'>{errors.tripDates}</p>}
+            {errors.tripDates && <p className='text-brand-error text-sm'>{errors.tripDates}</p>}
           </div>
 
           {/* Registration Deadline */}
@@ -184,7 +184,7 @@ function ImportantDates() {
                   />
                 </div>
                 {errors.registrationDeadline && (
-                  <p className='text-red-500 text-sm'>{errors.registrationDeadline}</p>
+                  <p className='text-brand-error text-sm'>{errors.registrationDeadline}</p>
                 )}
               </div>
             </div>
@@ -205,7 +205,7 @@ function ImportantDates() {
                   />
                 </div>
                 {errors.advancePaymentDeadline && (
-                  <p className='text-red-500 text-sm'>{errors.advancePaymentDeadline}</p>
+                  <p className='text-brand-error text-sm'>{errors.advancePaymentDeadline}</p>
                 )}
               </div>
             </div>
@@ -226,7 +226,7 @@ function ImportantDates() {
               </div>
             </div>
             {errors.earlyBirdDeadline && (
-              <p className='text-red-500 text-sm'>{errors.earlyBirdDeadline}</p>
+              <p className='text-brand-error text-sm'>{errors.earlyBirdDeadline}</p>
             )}
           </div>
         </div>
@@ -234,7 +234,7 @@ function ImportantDates() {
         {/* Next Button */}
         <button
           onClick={handleSubmit}
-          className='w-full bg-orange-500 text-black py-4 rounded-xl font-bold text-lg'
+          className='w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg'
         >
           Next
         </button>

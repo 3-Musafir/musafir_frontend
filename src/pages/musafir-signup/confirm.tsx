@@ -84,7 +84,7 @@ export default function MusafirSignupConfirm() {
     if (!userData) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
             </div>
         );
     }
@@ -170,7 +170,7 @@ export default function MusafirSignupConfirm() {
                         <button
                             onClick={handleVerifyEmail}
                             disabled={isLoading || !email?.trim()}
-                            className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-white py-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center"
+                            className="btn-primary w-full flex items-center justify-center"
                             aria-busy={isLoading || undefined}
                         >
                             {isLoading ? (

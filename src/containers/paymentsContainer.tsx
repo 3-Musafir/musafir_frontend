@@ -171,7 +171,7 @@ export function PaymentsContainer({
                 {/* {item.discount && item.discount > 0 && ( */}
                 <div className="flex justify-between">
                   <span className="text-gray-600">Discount Applied</span>
-                  <span className="font-medium text-green-600">
+                  <span className="font-medium text-brand-primary">
                     Rs. {item.discount?.toLocaleString() || 'N/A'}
                   </span>
                 </div>
@@ -185,7 +185,7 @@ export function PaymentsContainer({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-green-600"
+                  className="text-brand-primary"
                   onClick={() => onRefundAction(item._id, "approve")}
                 >
                   Clear
@@ -193,7 +193,7 @@ export function PaymentsContainer({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-red-600"
+                  className="text-brand-error"
                   onClick={() => onRefundAction(item._id, "reject")}
                 >
                   Reject
@@ -205,9 +205,9 @@ export function PaymentsContainer({
                   variant="outline"
                   className={cn(
                     "capitalize",
-                    item.status === "pending" && "text-yellow-600",
-                    item.status === "approved" && "text-green-600",
-                    item.status === "rejected" && "text-red-600"
+                    item.status === "pending" && "text-brand-warning",
+                    item.status === "approved" && "text-brand-primary",
+                    item.status === "rejected" && "text-brand-error"
                   )}
                 >
                   {item.status}

@@ -314,7 +314,7 @@ function ContentPage() {
                 className='min-h-[200px] p-4 focus:outline-none prose max-w-none richtext'
               />
             </div>
-            {errors.travelPlan && <p className='text-red-500 text-sm'>Travel Plan is required.</p>}
+            {errors.travelPlan && <p className='text-brand-error text-sm'>Travel Plan is required.</p>}
 
             {/* File Upload Area */}
             <h3 className='text-2xl font-bold mb-4'>Upload Images</h3>
@@ -341,7 +341,7 @@ function ContentPage() {
                 />
               </div>
               {errors.files && (
-                <p className='text-red-500 text-sm'>Please upload at least one file.</p>
+                <p className='text-brand-error text-sm'>Please upload at least one file.</p>
               )}
             </div>
 
@@ -428,7 +428,7 @@ function ContentPage() {
         {/* Next Button */}
         <button
           onClick={submitData}
-          className='w-full bg-orange-500 text-black py-4 rounded-xl font-bold text-lg'
+          className='w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg'
         >
           Next
         </button>

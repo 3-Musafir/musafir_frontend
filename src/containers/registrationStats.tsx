@@ -116,7 +116,7 @@ export const RegistrationStatsContainer = () => {
             style={{ width: `${acceptedPercentage}%` }}
           ></div>
           <div
-            className="bg-orange-500"
+            className="bg-brand-primary"
             style={{ width: `${pendingPercentage}%` }}
           ></div>
           <div
@@ -126,7 +126,7 @@ export const RegistrationStatsContainer = () => {
         </div>
         <div className="space-y-2">
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-orange-500 mr-2"></div>
+            <div className="w-4 h-4 bg-brand-primary mr-2"></div>
             <div className="flex-1">Pending</div>
             <div className="font-medium">{stats.pendingCount}</div>
           </div>
@@ -263,7 +263,7 @@ export const RegistrationStatsContainer = () => {
         <h3 className="font-medium mb-2">Musafir</h3>
         <div className="h-6 flex rounded-sm overflow-hidden mb-4">
           <div className="bg-blue-700 w-[45%]"></div>
-          <div className="bg-orange-500 w-[55%]"></div>
+          <div className="bg-brand-primary w-[55%]"></div>
         </div>
         <div className="space-y-2">
           <div className="flex items-center">
@@ -272,7 +272,7 @@ export const RegistrationStatsContainer = () => {
             <div className="font-medium">{stats.newUsersCount}</div>
           </div>
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-orange-500 mr-2"></div>
+            <div className="w-4 h-4 bg-brand-primary mr-2"></div>
             <div className="flex-1">Returning Musafir</div>
             <div className="font-medium">{stats.returningUsersCount}</div>
           </div>
@@ -286,7 +286,7 @@ export const RegistrationStatsContainer = () => {
           <div className="bg-emerald-500 w-[17%]"></div>
           <div className="bg-gray-300 w-[2%]"></div>
           <div className="bg-blue-700 w-[30%]"></div>
-          <div className="bg-orange-500 w-[51%]"></div>
+          <div className="bg-brand-primary w-[51%]"></div>
         </div>
         <div className="space-y-2">
           <div className="flex items-center">
@@ -305,7 +305,7 @@ export const RegistrationStatsContainer = () => {
             <div className="font-medium">45</div>
           </div>
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-orange-500 mr-2"></div>
+            <div className="w-4 h-4 bg-brand-primary mr-2"></div>
             <div className="flex-1">Self Employed/Business</div>
             <div className="font-medium">74</div>
           </div>
@@ -318,11 +318,11 @@ export const RegistrationStatsContainer = () => {
         <div className="h-6 flex rounded-sm overflow-hidden mb-4">
           <div className="bg-pink-500 w-[2%]"></div>
           <div className="bg-blue-700 w-[37%]"></div>
-          <div className="bg-orange-500 w-[61%]"></div>
+          <div className="bg-brand-primary w-[61%]"></div>
         </div>
         <div className="space-y-2">
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-orange-500 mr-2"></div>
+            <div className="w-4 h-4 bg-brand-primary mr-2"></div>
             <div className="flex-1">With other Musafirs</div>
             <div className="font-medium">74</div>
           </div>

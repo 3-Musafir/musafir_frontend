@@ -190,7 +190,7 @@ export default function FlagshipDetails() {
           <div className="p-1">
             <button
               onClick={() => router.push(`/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`)}
-              className="w-full py-3 bg-orange-500 text-[#2B2D42] font-semibold rounded-md"
+              className="w-full py-3 bg-brand-primary text-heading font-semibold rounded-md"
             >
               Register
             </button>
@@ -285,7 +285,7 @@ export default function FlagshipDetails() {
         {/* Register Button */}
         <button
           onClick={() => router.push(`/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`)}
-          className="w-full py-3 bg-orange-500 text-[#2B2D42] font-semibold rounded-md mb-3"
+          className="w-full py-3 bg-brand-primary text-heading font-semibold rounded-md mb-3"
         >
           Register
         </button>
@@ -376,7 +376,7 @@ export default function FlagshipDetails() {
                   location.enabled && (
                     <div
                       key={index}
-                      className="bg-red-100 px-4 py-3 flex justify-between mb-[3px]"
+                      className="bg-brand-error-light px-4 py-3 flex justify-between mb-[3px]"
                     >
                       <span className="font-medium">From {location.name}</span>
                       <span className="font-medium">
@@ -440,7 +440,7 @@ export default function FlagshipDetails() {
             )}
             <button
               onClick={() => handleSubmitQuery()}
-              className={`w-full py-3 border-2 text-black font-semibold rounded-lg ${queryText.length > 0 ? "bg-orange-500 text-[#2B2D42]" : "border-black"}`}
+              className={`w-full py-3 border-2 text-black font-semibold rounded-lg ${queryText.length > 0 ? "bg-brand-primary text-heading" : "border-black"}`}
             >
               {queryText.length > 0 ? "Send Trip Query" : "Trip Query Button"}
             </button>

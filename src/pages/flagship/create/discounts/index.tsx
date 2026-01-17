@@ -293,7 +293,7 @@ function DiscountsPage() {
               />
             </div>
             {errors.totalDiscountsValue && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-brand-error text-sm mt-1">
                 {errors.totalDiscountsValue}
               </p>
             )}
@@ -331,7 +331,7 @@ function DiscountsPage() {
                     />
                   </div>
                   {errors.partialTeamAmount && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-brand-error text-sm mt-1">
                       {errors.partialTeamAmount}
                     </p>
                   )}
@@ -370,7 +370,7 @@ function DiscountsPage() {
                     </button>
                   </div>
                   {errors.partialTeamCount && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-brand-error text-sm mt-1">
                       {errors.partialTeamCount}
                     </p>
                   )}
@@ -411,7 +411,7 @@ function DiscountsPage() {
                     />
                   </div>
                   {errors.soloFemaleAmount && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-brand-error text-sm mt-1">
                       {errors.soloFemaleAmount}
                     </p>
                   )}
@@ -446,7 +446,7 @@ function DiscountsPage() {
                     </button>
                   </div>
                   {errors.soloFemaleCount && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-brand-error text-sm mt-1">
                       {errors.soloFemaleCount}
                     </p>
                   )}
@@ -487,7 +487,7 @@ function DiscountsPage() {
                     />
                   </div>
                   {errors.groupValue && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-brand-error text-sm mt-1">
                       {errors.groupValue}
                     </p>
                   )}
@@ -505,7 +505,7 @@ function DiscountsPage() {
                     />
                   </div>
                   {errors.groupAmount && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-brand-error text-sm mt-1">
                       {errors.groupAmount}
                     </p>
                   )}
@@ -540,7 +540,7 @@ function DiscountsPage() {
                     </button>
                   </div>
                   {errors.groupCount && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-brand-error text-sm mt-1">
                       {errors.groupCount}
                     </p>
                   )}
@@ -581,7 +581,7 @@ function DiscountsPage() {
                     />
                   </div>
                   {errors.musafirBudget && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-brand-error text-sm mt-1">
                       {errors.musafirBudget}
                     </p>
                   )}
@@ -616,7 +616,7 @@ function DiscountsPage() {
                     </button>
                   </div>
                   {errors.musafirCount && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-brand-error text-sm mt-1">
                       {errors.musafirCount}
                     </p>
                   )}
@@ -629,7 +629,7 @@ function DiscountsPage() {
         {/* Next Button */}
         <button
           onClick={handleSubmit}
-          className="w-full bg-orange-500 text-black py-4 rounded-xl font-bold text-lg"
+          className="w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg"
         >
           Next
         </button>
