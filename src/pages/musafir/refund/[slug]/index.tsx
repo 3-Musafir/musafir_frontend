@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Check, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { PaymentService } from "@/services/paymentService";
 import { useRouter } from "next/router";
+import useRegistrationHook from "@/hooks/useRegistrationHandler";
 
 const SuccessComponent = () => {
   const router = useRouter();
@@ -48,8 +49,12 @@ export default function RefundForm() {
   const [bankDetails, setBankDetails] = useState("");
   const [feedback, setFeedback] = useState("");
   const [rating, setRating] = useState(0);
+  const [eligibilityChecked, setEligibilityChecked] = useState(false);
+  const [eligible, setEligible] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
   const { slug } = router.query;
+  const registrationHook = useRegistrationHook();
   // const [reasonOption, setReasonOption] = useState("change-of-plans");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,9 +66,40 @@ export default function RefundForm() {
     );
   };
 
+  useEffect(() => {
+    const checkEligibility = async () => {
+      if (!slug) return;
+      try {
+        const registration = await registrationHook.getRegistrationById(slug as string);
+        const status = String(registration?.status || "");
+        const amountDue =
+          typeof registration?.amountDue === "number"
+            ? registration.amountDue
+            : typeof registration?.price === "number"
+              ? registration.price
+              : undefined;
+
+        const ok = status === "confirmed" && typeof amountDue === "number" && amountDue <= 0;
+        setEligible(ok);
+        if (!ok) {
+          setErrorMessage(
+            "Refunds can only be requested after your payment is approved and your seat is confirmed.",
+          );
+        }
+      } catch (e) {
+        // If we can't check eligibility, keep the form usable and let the backend decide.
+        setEligible(true);
+      } finally {
+        setEligibilityChecked(true);
+      }
+    };
+    checkEligibility();
+  }, [slug]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage(null);
 
     try {
       await PaymentService.requestRefund({
@@ -77,7 +113,22 @@ export default function RefundForm() {
       setIsSubmitted(true);
     } catch (error) {
       console.error("Failed to submit refund request:", error);
-      // You might want to show an error message to the user here
+      const code =
+        (error as any)?.response?.data?.code ||
+        (error as any)?.code;
+      const message =
+        (error as any)?.response?.data?.message ||
+        (error as any)?.message ||
+        "Failed to submit refund request.";
+
+      if (
+        code === "refund_not_eligible" ||
+        code === "refund_payment_not_approved" ||
+        code === "refund_already_requested"
+      ) {
+        setEligible(false);
+      }
+      setErrorMessage(message);
     } finally {
       setIsLoading(false);
     }
@@ -99,6 +150,11 @@ export default function RefundForm() {
       </header>
 
       <form onSubmit={handleSubmit} className="p-4 space-y-6">
+        {errorMessage && (
+          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {errorMessage}
+          </div>
+        )}
         <div className="space-y-2">
           <h2 className="text-2xl font-bold text-gray-800">
             Are you sure you want to let go off
@@ -231,7 +287,11 @@ export default function RefundForm() {
         <Button
           type="submit"
           className="w-full bg-orange-500 hover:bg-orange-600 h-12 text-base disabled:bg-gray-300 disabled:cursor-not-allowed"
-          disabled={!isFormValid() || isLoading}
+          disabled={
+            !isFormValid() ||
+            isLoading ||
+            (eligibilityChecked && !eligible)
+          }
           isLoading={isLoading}
           loadingText="Submitting..."
         >
