@@ -52,6 +52,7 @@ export default function RefundForm() {
   const [eligibilityChecked, setEligibilityChecked] = useState(false);
   const [eligible, setEligible] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [retryAt, setRetryAt] = useState<string | null>(null);
   const router = useRouter();
   const { slug } = router.query;
   const registrationHook = useRegistrationHook();
@@ -100,6 +101,7 @@ export default function RefundForm() {
     e.preventDefault();
     setIsLoading(true);
     setErrorMessage(null);
+    setRetryAt(null);
 
     try {
       await PaymentService.requestRefund({
@@ -120,15 +122,22 @@ export default function RefundForm() {
         (error as any)?.response?.data?.message ||
         (error as any)?.message ||
         "Failed to submit refund request.";
+      const retryAtValue =
+        (error as any)?.response?.data?.retryAt ||
+        (error as any)?.response?.data?.data?.retryAt;
 
       if (
         code === "refund_not_eligible" ||
         code === "refund_payment_not_approved" ||
-        code === "refund_already_requested"
+        code === "refund_already_requested" ||
+        code === "refund_cooldown"
       ) {
         setEligible(false);
       }
       setErrorMessage(message);
+      if (retryAtValue) {
+        setRetryAt(String(retryAtValue));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -153,6 +162,19 @@ export default function RefundForm() {
         {errorMessage && (
           <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-brand-error">
             {errorMessage}
+            {retryAt && (
+              <div className="mt-1 text-xs text-red-700">
+                Try again after{" "}
+                {new Date(retryAt).toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+                .
+              </div>
+            )}
           </div>
         )}
         <div className="space-y-2">

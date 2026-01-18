@@ -101,6 +101,13 @@ const getActionButton = (
         text: 'View Brief',
         onClick: () => setShowPdfModal(true)
       };
+    case "refundProcessing":
+      return {
+        css: 'bg-gray-100 text-gray-400 hover:bg-gray-100 hover:text-gray-400 hover:border-gray-300 cursor-not-allowed',
+        text: 'Refund under review',
+        onClick: () => { },
+        disabled: true,
+      };
     default:
       return {
         text: "Action",
@@ -142,7 +149,7 @@ const StatusInfo: React.FC<{
     case "refundProcessing":
       return (
         <p className="text-sm text-gray-900">
-          Status: Refund Pending on 3m Team
+          Status: Refund under review
         </p>
       );
     case "confirmed":
