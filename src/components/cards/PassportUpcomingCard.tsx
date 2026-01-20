@@ -238,22 +238,18 @@ const PassportUpcomingCard: React.FC<any> = ({
   hasPaymentSubmitted,
   paymentStatus,
 }) => {
-  const { sendReEvaluateRequestToJury, cancelSeat } = useRegistrationHook();
+  const { sendReEvaluateRequestToJury } = useRegistrationHook();
   const router = useRouter();
   const [showPdfModal, setShowPdfModal] = useState(false);
-  const [isCancelling, setIsCancelling] = useState(false);
 
-  const handleCancelAndRefund = async () => {
-    if (isCancelling) return;
-    setIsCancelling(true);
-    try {
-      const cancelled = await cancelSeat(registrationId);
-      if (cancelled) {
-        router.push(`/musafir/refund/${registrationId}`);
-      }
-    } finally {
-      setIsCancelling(false);
+  const handleCancelAndRefund = () => {
+    if (typeof window !== "undefined") {
+      const confirmed = window.confirm(
+        `Cancel your registration for ${title}? You’ll be taken to the refund form.`
+      );
+      if (!confirmed) return;
     }
+    router.push(`/musafir/refund/${registrationId}`);
   };
   const actionButton = getActionButton(
     status,

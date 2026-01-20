@@ -94,6 +94,12 @@ export default function RefundForm() {
 
   const handleCancelSeat = async () => {
     if (!slug) return;
+    if (typeof window !== "undefined") {
+      const confirmed = window.confirm(
+        "You're about to cancel your registration. This will release your seat and cannot be undone. Continue?"
+      );
+      if (!confirmed) return;
+    }
     setCancelling(true);
     setErrorMessage(null);
     try {
