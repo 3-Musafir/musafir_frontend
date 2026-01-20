@@ -5,7 +5,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Navigation } from "../navigation";
 
 export default function RefundPolicyBy3Musafir() {
-  const externalUrl = "https://3musafir.com/refundpolicyby3musafir";
 
   const tiers = [
     { label: "15+ days", percent: 100, detail: "Full refund (minus processing fee)" },
@@ -52,16 +51,16 @@ export default function RefundPolicyBy3Musafir() {
                 </div>
               ))}
             </div>
-
-            <p className="mt-3 text-xs text-muted-foreground">
-              Refund amount = floor(amountPaid × tier%) − 500, minimum 0.
-            </p>
           </div>
         </section>
 
-        {/* Official policy text */}
-        <section className="rounded-xl border border-border bg-card p-4 space-y-4">
-          <div className="space-y-1">
+        <section className="rounded-xl border border-border bg-card p-4">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="official-policy" className="border-border">
+              <AccordionTrigger className="text-sm text-brand-primary">View detailed refund policy</AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-4">
+<div className="space-y-1">
             <h2 className="text-base font-semibold text-heading">Refund Form Requirement</h2>
             <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
               <li>Clients must fill out the refund form to initiate a cancellation and refund request.</li>
@@ -139,21 +138,7 @@ export default function RefundPolicyBy3Musafir() {
             <p className="text-sm text-muted-foreground">All refunds will be processed within 14-30 business days after approval.</p>
           </div>
 
-          <Accordion type="single" collapsible className="pt-2">
-            <AccordionItem value="official-link" className="border-border">
-              <AccordionTrigger className="text-sm text-brand-primary">View official refund policy</AccordionTrigger>
-              <AccordionContent>
-                <p className="text-sm text-muted-foreground">
-                  This opens the official version on the 3Musafir website.
-                </p>
-                <a
-                  href={externalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 inline-flex text-sm font-medium text-brand-primary hover:underline"
-                >
-                  {externalUrl}
-                </a>
+                </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
