@@ -23,7 +23,10 @@ import { IPayment, IRegistration, IUser } from "@/interfaces/trip/trip";
 
 interface RefundsContainerProps {
   refunds: IRefund[];
-  onRefundAction?: (id: string, action: "approve" | "reject") => Promise<void>;
+  onRefundAction?: (
+    id: string,
+    action: "approve_and_credit" | "approve_defer_credit" | "post_credit" | "reject",
+  ) => Promise<void>;
   flagshipId?: string;
 }
 
@@ -56,9 +59,16 @@ export const RefundsContainer = ({
   const pendingRefunds = refunds.filter(
     (refund) => refund.status === "pending"
   );
-  const clearedRefunds = refunds.filter(
-    (refund) => refund.status === "cleared" || refund.status === "rejected"
+  const approvedNotCredited = refunds.filter(
+    (refund) =>
+      refund.status === "cleared" &&
+      (refund as any)?.settlement?.status !== "posted",
   );
+  const historyRefunds = refunds.filter((refund) => {
+    if (refund.status === "rejected") return true;
+    if (refund.status !== "cleared") return false;
+    return (refund as any)?.settlement?.status === "posted";
+  });
 
   const handleViewDetails = (paymentId: string) => {
     router.push(`/admin/payment/${paymentId}`);
@@ -76,9 +86,10 @@ export const RefundsContainer = ({
         className="w-full"
         onValueChange={setActiveTab}
       >
-        <TabsList className="w-full grid grid-cols-2">
+        <TabsList className="w-full grid grid-cols-3">
           <TabsTrigger value="pending">Pending Refunds</TabsTrigger>
-          <TabsTrigger value="cleared">Cleared Refunds</TabsTrigger>
+          <TabsTrigger value="pending_credit">Approved (Not Credited)</TabsTrigger>
+          <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
         <TabsContent value="pending">
           <div className="space-y-6">
@@ -190,9 +201,21 @@ export const RefundsContainer = ({
                       variant="outline"
                       size="sm"
                       className="text-brand-primary"
-                      onClick={() => onRefundAction?.(refund._id, "approve")}
+                      onClick={() =>
+                        onRefundAction?.(refund._id, "approve_and_credit")
+                      }
                     >
-                      Clear
+                      Approve & Credit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-brand-primary"
+                      onClick={() =>
+                        onRefundAction?.(refund._id, "approve_defer_credit")
+                      }
+                    >
+                      Approve (Defer Credit)
                     </Button>
                     <Button
                       variant="outline"
@@ -228,21 +251,12 @@ export const RefundsContainer = ({
             )}
           </div>
         </TabsContent>
-        <TabsContent value="cleared">
+        <TabsContent value="pending_credit">
           <div className="space-y-6">
-            {clearedRefunds.map((refund) => (
+            {approvedNotCredited.map((refund) => (
               <Card
                 key={refund._id}
                 className="overflow-hidden transition-all duration-200 hover:shadow-lg"
-                onClick={() => {
-                  const paymentId = (
-                    (refund?.registration as IRegistration)
-                      ?.paymentId as unknown as IPayment
-                  )?._id;
-                  if (paymentId) {
-                    handleViewDetails(paymentId);
-                  }
-                }}
               >
                 <CardHeader className="pb-2">
                   <h3 className="text-lg font-semibold">
@@ -256,6 +270,20 @@ export const RefundsContainer = ({
                   </p>
                 </CardHeader>
                 <CardContent>
+                  <div className="mb-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Quoted refund</span>
+                      <span className="font-medium">
+                        Rs. {Number((refund as any)?.refundAmount || 0).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Settlement</span>
+                      <span className="font-medium">
+                        {(refund as any)?.settlement?.status || "pending"}
+                      </span>
+                    </div>
+                  </div>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Payment Amount</span>
@@ -340,18 +368,104 @@ export const RefundsContainer = ({
                     variant="outline"
                     className={cn(
                       "capitalize",
+                      "text-brand-primary"
+                    )}
+                  >
+                    approved (not credited)
+                  </Badge>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-brand-primary"
+                      onClick={() => onRefundAction?.(refund._id, "post_credit")}
+                    >
+                      Credit now
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const paymentId = (
+                          (refund?.registration as IRegistration)
+                            ?.paymentId as unknown as IPayment
+                        )?._id;
+                        if (paymentId) {
+                          handleViewDetails(paymentId);
+                        }
+                      }}
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
+            {approvedNotCredited.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                No approved refunds pending credit
+              </div>
+            )}
+          </div>
+        </TabsContent>
+        <TabsContent value="history">
+          <div className="space-y-6">
+            {historyRefunds.map((refund) => (
+              <Card
+                key={refund._id}
+                className="overflow-hidden transition-all duration-200 hover:shadow-lg"
+                onClick={() => {
+                  const paymentId = (
+                    (refund?.registration as IRegistration)
+                      ?.paymentId as unknown as IPayment
+                  )?._id;
+                  if (paymentId) {
+                    handleViewDetails(paymentId);
+                  }
+                }}
+              >
+                <CardHeader className="pb-2">
+                  <h3 className="text-lg font-semibold">
+                    {((refund?.registration as IRegistration)?.user as IUser)
+                      ?.fullName || "Unknown User"}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {refund?.createdAt
+                      ? new Date(refund.createdAt).toLocaleDateString()
+                      : "N/A"}
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Refund amount</span>
+                      <span className="font-medium">
+                        Rs. {Number((refund as any)?.refundAmount || 0).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Status</span>
+                      <span className="font-medium">{refund.status}</span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "capitalize",
                       refund.status === "cleared" && "text-brand-primary",
                       refund.status === "rejected" && "text-brand-error"
                     )}
                   >
-                    {refund.status}
+                    {refund.status === "cleared" ? "credited" : "rejected"}
                   </Badge>
                 </CardFooter>
               </Card>
             ))}
-            {clearedRefunds.length === 0 && (
+            {historyRefunds.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
-                No cleared refunds found
+                No refunds found
               </div>
             )}
           </div>

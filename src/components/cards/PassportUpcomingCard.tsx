@@ -6,7 +6,13 @@ import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { X } from "lucide-react";
 
-type StatusType = "rejected" | "pending" | "notReserved" | "confirmed" | "refundProcessing";
+type StatusType =
+  | "rejected"
+  | "pending"
+  | "notReserved"
+  | "confirmed"
+  | "cancelled"
+  | "refundProcessing";
 
 interface PaymentDetails {
   price: number;
@@ -17,17 +23,19 @@ interface PaymentDetails {
 const getStatusStyles = (status: StatusType) => {
   switch (status) {
     case "rejected":
-      return "bg-white text-brand-error border-red-300";
+      return "bg-brand-error-light text-brand-error border-brand-error";
     case "pending":
-      return "bg-white text-gray-700 border-gray-300";
+      return "bg-card text-heading border-border";
     case "notReserved":
-      return "bg-white text-brand-error border-red-300";
+      return "bg-brand-error-light text-brand-error border-brand-error";
     case "confirmed":
-      return "bg-white text-brand-primary border-green-300";
+      return "bg-card text-brand-primary border-brand-primary";
+    case "cancelled":
+      return "bg-card text-heading border-border";
     case "refundProcessing":
-      return "bg-white text-brand-primary border-green-300";
+      return "bg-card text-brand-primary border-brand-primary";
     default:
-      return "bg-white text-gray-700 border-gray-300";
+      return "bg-card text-heading border-border";
   }
 };
 
@@ -45,7 +53,7 @@ const getActionButton = (
   switch (status) {
     case "rejected":
       return {
-        css: '',
+        css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
         text: 'Ask Jury to re-evaluate (Rs.500)',
         onClick: () => sendReEvaluateRequestToJury(registrationId)
       };
@@ -56,34 +64,34 @@ const getActionButton = (
         userVerificationStatus === "rejected"
       ) {
         return {
-          css: '',
+          css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
           text: 'Add video for quicker verification',
           onClick: () => router.push(ROUTES_CONSTANTS.VERIFICATION_REQUEST)
         };
       }
       if (paymentStatus === "pendingApproval" || (hasPaymentSubmitted && !paymentStatus)) {
         return {
-          css: 'bg-gray-100 text-gray-400 hover:bg-gray-100 hover:text-gray-400 hover:border-gray-300 cursor-not-allowed',
+          css: "bg-muted text-muted-foreground border-border cursor-not-allowed hover:bg-muted hover:text-muted-foreground hover:border-border",
           text: 'Awaiting approval',
           onClick: () => {},
           disabled: true,
         };
       }
       return {
-        css: 'bg-brand-primary',
+        css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
         text: 'Complete Payment',
         onClick: () => router.push(`/musafir/payment/${registrationId}`)
       };
     case "notReserved":
       return {
-        css: 'bg-brand-primary',
+        css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
         text: 'Complete Payment',
         onClick: () => router.push(`/musafir/payment/${registrationId}`)
       };
     case "confirmed":
       if (paymentStatus === "pendingApproval") {
         return {
-          css: 'bg-gray-100 text-gray-400 hover:bg-gray-100 hover:text-gray-400 hover:border-gray-300 cursor-not-allowed',
+          css: "bg-muted text-muted-foreground border-border cursor-not-allowed hover:bg-muted hover:text-muted-foreground hover:border-border",
           text: 'Awaiting approval',
           onClick: () => {},
           disabled: true,
@@ -91,25 +99,32 @@ const getActionButton = (
       }
       if (paymentInfo && typeof paymentInfo.dueAmount === 'number' && paymentInfo.dueAmount > 0) {
         return {
-          css: 'bg-brand-primary',
+          css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
           text: `Pay remaining (Rs.${paymentInfo.dueAmount.toLocaleString()})`,
           onClick: () => router.push(`/musafir/payment/${registrationId}`),
         };
       }
       return {
-        css: 'bg-brand-primary',
+        css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
         text: 'View Brief',
         onClick: () => setShowPdfModal(true)
       };
+    case "cancelled":
+      return {
+        css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
+        text: 'Request refund',
+        onClick: () => router.push(`/musafir/refund/${registrationId}`),
+      };
     case "refundProcessing":
       return {
-        css: 'bg-gray-100 text-gray-400 hover:bg-gray-100 hover:text-gray-400 hover:border-gray-300 cursor-not-allowed',
+        css: "bg-muted text-muted-foreground border-border cursor-not-allowed hover:bg-muted hover:text-muted-foreground hover:border-border",
         text: 'Refund under review',
         onClick: () => { },
         disabled: true,
       };
     default:
       return {
+        css: "bg-background text-btn-text border-border hover:bg-muted",
         text: "Action",
         onClick: () => console.log("Default action clicked"),
       };
@@ -126,12 +141,12 @@ const StatusInfo: React.FC<{
   switch (status) {
     case "rejected":
       return (
-        <p className="text-sm text-gray-900">Status: Verification Failed</p>
+        <p className="text-sm text-heading">Status: Verification Failed</p>
       );
     case "pending":
       if (paymentStatus === "pendingApproval" || (hasPaymentSubmitted && !paymentStatus)) {
         return (
-          <p className="text-sm text-gray-900">
+          <p className="text-sm text-heading">
             Status: Payment submitted, awaiting approval
             <br />
             {`Applied on ${appliedDate}`}
@@ -139,7 +154,7 @@ const StatusInfo: React.FC<{
         );
       }
       return (
-        <p className="text-sm text-gray-900">
+        <p className="text-sm text-heading">
           Status: Pending on 3m Team
           <br />
           {`Applied on ${appliedDate}`}
@@ -148,8 +163,16 @@ const StatusInfo: React.FC<{
     case "notReserved":
     case "refundProcessing":
       return (
-        <p className="text-sm text-gray-900">
+        <p className="text-sm text-heading">
           Status: Refund under review
+        </p>
+      );
+    case "cancelled":
+      return (
+        <p className="text-sm text-heading">
+          Status: Seat cancelled
+          <br />
+          You can request a refund.
         </p>
       );
     case "confirmed":
@@ -162,7 +185,7 @@ const StatusInfo: React.FC<{
       );
       const isFullyPaid = (paymentInfo.dueAmount || 0) <= 0;
       return (
-        <div className="text-sm text-gray-900 space-y-1">
+        <div className="text-sm text-heading space-y-1">
           <p>
             Status:{" "}
             {isFullyPaid ? "Your seat is confirmed" : "Payment approved (balance due)"}
@@ -215,9 +238,23 @@ const PassportUpcomingCard: React.FC<any> = ({
   hasPaymentSubmitted,
   paymentStatus,
 }) => {
-  const { sendReEvaluateRequestToJury } = useRegistrationHook();
+  const { sendReEvaluateRequestToJury, cancelSeat } = useRegistrationHook();
   const router = useRouter();
   const [showPdfModal, setShowPdfModal] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  const handleCancelAndRefund = async () => {
+    if (isCancelling) return;
+    setIsCancelling(true);
+    try {
+      const cancelled = await cancelSeat(registrationId);
+      if (cancelled) {
+        router.push(`/musafir/refund/${registrationId}`);
+      }
+    } finally {
+      setIsCancelling(false);
+    }
+  };
   const actionButton = getActionButton(
     status,
     registrationId,
@@ -231,7 +268,7 @@ const PassportUpcomingCard: React.FC<any> = ({
   );
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-300">
+    <div className="overflow-hidden rounded-2xl bg-card shadow-sm border border-border">
       {/* Image */}
       <div className="relative h-[140px] w-full overflow-hidden">
         <Image
@@ -245,7 +282,7 @@ const PassportUpcomingCard: React.FC<any> = ({
       {/* Content */}
       <div className="space-y-2 p-4">
         <div className="flex items-start justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <h3 className="text-lg font-semibold text-heading">{title}</h3>
           <span
             className={`rounded-md px-2 py-1 text-md font-medium border ${getStatusStyles(
               status
@@ -256,7 +293,7 @@ const PassportUpcomingCard: React.FC<any> = ({
         </div>
 
         {status === "rejected" && (
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             {date} @ {location}
           </p>
         )}
@@ -273,14 +310,19 @@ const PassportUpcomingCard: React.FC<any> = ({
             <button
               onClick={actionButton.onClick}
               disabled={Boolean((actionButton as any)?.disabled)}
-              className={`rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-brand-primary hover:text-gray-900 hover:border-brand-warning active:bg-yellow-400 disabled:opacity-60 disabled:cursor-not-allowed ${actionButton.css ? actionButton.css : 'bg-white'}`}
+              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+                actionButton.css
+                  ? actionButton.css
+                  : "bg-background text-btn-text border-border hover:bg-muted"
+              }`}
             >
               {actionButton.text}
             </button>
-            {status === "confirmed" && paymentInfo?.dueAmount === 0 && (
+            {status === "confirmed" && (
               <button
-                onClick={() => router.push(`/musafir/refund/${registrationId}`)}
-                className="ml-2 p-2 text-gray-500 hover:text-brand-error transition-colors"
+                onClick={handleCancelAndRefund}
+                className="ml-2 p-2 text-muted-foreground hover:text-brand-error transition-colors"
+                aria-label="Cancel seat"
               >
                 <DeleteIcon />
               </button>
@@ -290,13 +332,13 @@ const PassportUpcomingCard: React.FC<any> = ({
       </div>
 
       {showPdfModal && detailedPlan && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-4xl h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center p-2 border-b">
-              <h3 className="text-md font-semibold">Detailed Travel Plan</h3>
+        <div className="fixed inset-0 bg-heading/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-card text-foreground rounded-lg w-full max-w-4xl h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center p-2 border-b border-border">
+              <h3 className="text-md font-semibold text-heading">Detailed Travel Plan</h3>
               <button
                 onClick={() => setShowPdfModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className="p-2 hover:bg-muted rounded-full"
               >
                 <X className="w-5 h-5" />
               </button>

@@ -8,7 +8,9 @@ export interface ICreatePayment {
   registration: string;
   amount: number;
   discount?: number;
-  screenshot: File;
+  walletAmount?: number;
+  walletUseId?: string;
+  screenshot?: File;
 }
 
 export interface IBankAccount {
@@ -48,6 +50,20 @@ export interface IRefund {
   feedback: string;
   rating: number;
   status: "pending" | "cleared" | "rejected";
+  amountPaid?: number;
+  refundPercent?: number;
+  processingFee?: number;
+  refundAmount?: number;
+  tierLabel?: string;
+  policyLink?: string;
+  policyAppliedAt?: string;
+  settlement?: {
+    _id: string;
+    status: "pending" | "posted" | "void";
+    amount: number;
+    method: "wallet_credit";
+    postedAt?: string;
+  } | null;
   createdAt: string;
   updatedAt: string;
 }

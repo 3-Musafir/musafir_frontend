@@ -91,15 +91,15 @@ function Passport() {
   }, [activeTab, userVerificationStatus]);
 
   return (
-    <div className='min-h-screen w-full bg-gray-50 flex flex-col'>
+    <div className="min-h-screen w-full bg-background text-foreground flex flex-col">
       <Header setSidebarOpen={() => { }} showMenuButton={false} />
 
-      <div className='border-b flex justify-between mt-4'>
+      <div className="border-b border-border flex justify-between mt-4">
         <button
           className={`w-1/2 py-3 text-sm font-medium text-center ${
             activeTab === "past"
-              ? "border-b-2 border-black text-black"
-              : "text-gray-500 border-b-2 border-gray-300"
+              ? "border-b-2 border-heading text-heading"
+              : "text-muted-foreground border-b-2 border-border"
           }`}
           onClick={() => setActiveTab("past")}
         >
@@ -108,8 +108,8 @@ function Passport() {
         <button
           className={`w-1/2 py-3 text-sm font-medium text-center ${
             activeTab === "upcoming"
-              ? "border-b-2 border-black text-black"
-              : "text-gray-500 border-b-2 border-gray-300"
+              ? "border-b-2 border-heading text-heading"
+              : "text-muted-foreground border-b-2 border-border"
           }`}
           onClick={() => setActiveTab("upcoming")}
         >
@@ -135,7 +135,7 @@ function Passport() {
               />
             ))
           : activeTab === "past" && (
-              <div className="flex flex-col items-center justify-center h-60 text-gray-400">
+              <div className="flex flex-col items-center justify-center h-60 text-muted-foreground">
                 <p className="text-center text-lg mb-2">
                   You haven't been on any trips yet.
                 </p>
@@ -174,7 +174,7 @@ function Passport() {
               />
             ))
           : activeTab === "upcoming" && (
-              <div className="flex flex-col items-center justify-center h-60 text-gray-400">
+              <div className="flex flex-col items-center justify-center h-60 text-muted-foreground">
                 <p className="text-center text-lg mb-2">
                   No upcoming trips scheduled!
                 </p>

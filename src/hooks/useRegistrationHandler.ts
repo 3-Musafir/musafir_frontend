@@ -48,12 +48,23 @@ const useRegistrationHook = () => {
     return false;
   };
 
+  const cancelSeat = async (registrationId: string): Promise<any> => {
+    const res = await api.post(`${REGISTRATION.CANCEL_SEAT(registrationId)}`);
+    if (res.statusCode === 200) {
+      showAlert(res.message, 'success');
+      return res.data;
+    }
+    showAlert(res.message, 'error');
+    return false;
+  };
+
   return {
     create,
     getPastPassport,
     getUpcomingPassport,
     sendReEvaluateRequestToJury,
     getRegistrationById,
+    cancelSeat,
   };
 };
 

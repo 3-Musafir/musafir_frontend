@@ -18,11 +18,12 @@ import { IFlagship } from "@/services/types/flagship";
 import { UserService } from "@/services/userService";
 import { IUser } from "@/services/types/user";
 import { PaymentService } from "@/services/paymentService";
-import { IPayment, IRefund } from "@/services/types/payment";
+import { IPayment } from "@/services/types/payment";
 import { TripsContainer } from "@/containers/tripsContainer";
 import { UsersContainer } from "@/containers/usersContainer";
 import { PaymentsContainer } from "@/containers/paymentsContainer";
-import { RefundsContainer } from "@/containers/refundsContainer";
+import { RefundsAdminContainer } from "@/containers/refundsAdminContainer";
+import { WalletAdminContainer } from "@/containers/walletAdminContainer";
 import withAuth from "@/hoc/withAuth";
 import { ROLES } from "@/config/constants";
 import { useRouter } from "next/navigation";
@@ -57,11 +58,9 @@ function AdminMainPage() {
   const [payments, setPayments] = useState<{
     pending: IPayment[];
     completed: IPayment[];
-    refunds: IRefund[];
   }>({
     pending: [],
     completed: [],
-    refunds: [],
   });
   const [loading, setLoading] = useState(false);
   const [loadingCreateFlagship, setLoadingCreateFlagship] = useState(false);
@@ -99,7 +98,6 @@ function AdminMainPage() {
           verifiedUsersResponse,
           pendingPayments,
           completedPayments,
-          refunds,
         ] = await Promise.all([
           FlagshipService.getPastTrips(),
           FlagshipService.getLiveTrips(),
@@ -109,7 +107,6 @@ function AdminMainPage() {
           UserService.getVerifiedUsers(undefined, verifiedUsersPagination.page, verifiedUsersPagination.limit),
           PaymentService.getPendingPayments(),
           PaymentService.getCompletedPayments(),
-          PaymentService.getRefunds(),
         ]);
 
         setTrips({
@@ -140,7 +137,6 @@ function AdminMainPage() {
         setPayments({
           pending: pendingPayments,
           completed: completedPayments,
-          refunds: refunds,
         });
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -213,27 +209,6 @@ function AdminMainPage() {
     return recoilUser?.fullName || "Admin";
   };
 
-  const handleRefundAction = async (
-    id: string,
-    action: "approve" | "reject"
-  ) => {
-    try {
-      if (action === "approve") {
-        await PaymentService.approveRefund(id);
-      } else {
-        await PaymentService.rejectRefund(id);
-      }
-      // Refresh refunds list
-      const updatedRefunds = await PaymentService.getRefunds();
-      setPayments((prev) => ({
-        ...prev,
-        refunds: updatedRefunds,
-      }));
-    } catch (error) {
-      console.error("Error processing refund:", error);
-    }
-  };
-
   const LoadingSkeleton = () => (
     <div className="space-y-6">
       {[1, 2, 3].map((i) => (
@@ -260,11 +235,11 @@ function AdminMainPage() {
   return (
     <div className="max-w-md mx-auto pb-8">
       {/* Admin Header */}
-      <div className="sticky top-0 bg-white z-20 border-b border-gray-200">
+      <div className="sticky top-0 bg-background z-20 border-b border-border">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center space-x-2">
-            <User className="h-5 w-5 text-gray-600" />
-            <span className="font-medium text-gray-800">{getAdminName()}</span>
+            <User className="h-5 w-5 text-text" />
+            <span className="font-medium text-heading">{getAdminName()}</span>
           </div>
           <Button
             variant="outline"
@@ -278,7 +253,7 @@ function AdminMainPage() {
         </div>
       </div>
 
-      <header className="sticky top-[65px] bg-white z-10">
+      <header className="sticky top-[65px] bg-background z-10">
         <Tabs
           defaultValue="trips"
           className="w-full"
@@ -292,15 +267,17 @@ function AdminMainPage() {
               setActiveSection("pendingPayments");
             } else if (value === "refunds") {
               setActiveSection("pending");
+            } else if (value === "wallet") {
+              setActiveSection("wallets");
             }
           }}
         >
-          <TabsList className="w-full grid grid-cols-4 h-12">
+          <TabsList className="w-full grid grid-cols-5 h-12">
             <TabsTrigger
               value="trips"
               className={cn(
                 "py-3 flex justify-center",
-                activeTab === "trips" && "border-b-2 border-black"
+                activeTab === "trips" && "border-b-2 border-brand-primary"
               )}
             >
               Trips
@@ -309,7 +286,7 @@ function AdminMainPage() {
               value="users"
               className={cn(
                 "py-3 flex justify-center",
-                activeTab === "users" && "border-b-2 border-black"
+                activeTab === "users" && "border-b-2 border-brand-primary"
               )}
             >
               Users
@@ -318,7 +295,7 @@ function AdminMainPage() {
               value="payments"
               className={cn(
                 "py-3 flex justify-center",
-                activeTab === "payments" && "border-b-2 border-black"
+                activeTab === "payments" && "border-b-2 border-brand-primary"
               )}
             >
               Payments
@@ -327,10 +304,19 @@ function AdminMainPage() {
               value="refunds"
               className={cn(
                 "py-3 flex justify-center",
-                activeTab === "refunds" && "border-b-2 border-black"
+                activeTab === "refunds" && "border-b-2 border-brand-primary"
               )}
             >
               Refunds
+            </TabsTrigger>
+            <TabsTrigger
+              value="wallet"
+              className={cn(
+                "py-3 flex justify-center",
+                activeTab === "wallet" && "border-b-2 border-brand-primary"
+              )}
+            >
+              Wallet
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -341,7 +327,7 @@ function AdminMainPage() {
               <button
                 className={cn(
                   "py-3 text-center font-medium",
-                  activeSection === "past" && "border-b-2 border-black"
+                  activeSection === "past" && "border-b-2 border-brand-primary"
                 )}
                 onClick={() => setActiveSection("past")}
               >
@@ -350,7 +336,7 @@ function AdminMainPage() {
               <button
                 className={cn(
                   "py-3 text-center font-medium",
-                  activeSection === "live" && "border-b-2 border-black"
+                  activeSection === "live" && "border-b-2 border-brand-primary"
                 )}
                 onClick={() => setActiveSection("live")}
               >
@@ -359,7 +345,7 @@ function AdminMainPage() {
               <button
                 className={cn(
                   "py-3 text-center font-medium",
-                  activeSection === "upcoming" && "border-b-2 border-black"
+                  activeSection === "upcoming" && "border-b-2 border-brand-primary"
                 )}
                 onClick={() => setActiveSection("upcoming")}
               >
@@ -368,7 +354,7 @@ function AdminMainPage() {
             </div>
             <div className="flex flex-row items-center justify-center p-4">
               <button
-                className="bg-brand-primary text-white px-4 py-2 rounded-md w-full hover:bg-white hover:text-gray-700 hover:border-[1px] hover:border-gray-300"
+                className="bg-brand-primary text-btn-secondary-text px-4 py-2 rounded-md w-full hover:bg-background hover:text-heading hover:border-[1px] hover:border-border"
                 onClick={() => {
                   setLoadingCreateFlagship(true);
                   router.push("/flagship/create");
@@ -390,13 +376,13 @@ function AdminMainPage() {
               <button
                 className={cn(
                   "py-3 text-center font-medium",
-                  activeSection === "unverified" && "border-b-2 border-black"
+                  activeSection === "unverified" && "border-b-2 border-brand-primary"
                 )}
                 onClick={() => setActiveSection("unverified")}
               >
                 Unverified
                 {searchQuery && (
-                  <span className="ml-1 text-sm text-gray-500">
+                  <span className="ml-1 text-sm text-muted-foreground">
                     ({getUsersToDisplay().unverified.length})
                   </span>
                 )}
@@ -405,13 +391,13 @@ function AdminMainPage() {
                 className={cn(
                   "py-3 text-center font-medium",
                   activeSection === "pendingVerification" &&
-                  "border-b-2 border-black"
+                  "border-b-2 border-brand-primary"
                 )}
                 onClick={() => setActiveSection("pendingVerification")}
               >
                 Pending Verification
                 {searchQuery && (
-                  <span className="ml-1 text-sm text-gray-500">
+                  <span className="ml-1 text-sm text-muted-foreground">
                     ({getUsersToDisplay().pendingVerification.length})
                   </span>
                 )}
@@ -419,13 +405,13 @@ function AdminMainPage() {
               <button
                 className={cn(
                   "py-3 text-center font-medium",
-                  activeSection === "verified" && "border-b-2 border-black"
+                  activeSection === "verified" && "border-b-2 border-brand-primary"
                 )}
                 onClick={() => setActiveSection("verified")}
               >
                 Verified
                 {searchQuery && (
-                  <span className="ml-1 text-sm text-gray-500">
+                  <span className="ml-1 text-sm text-muted-foreground">
                     ({getUsersToDisplay().verified.length})
                   </span>
                 )}
@@ -440,7 +426,7 @@ function AdminMainPage() {
                 className="w-full"
               />
               {searchQuery && (
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-muted-foreground mt-2">
                   {isSearching ? "Searching..." : `Search results for "${searchQuery}"`}
                 </p>
               )}
@@ -453,7 +439,7 @@ function AdminMainPage() {
             <button
               className={cn(
                 "py-3 text-center font-medium",
-                activeSection === "pendingPayments" && "border-b-2 border-black"
+                activeSection === "pendingPayments" && "border-b-2 border-brand-primary"
               )}
               onClick={() => setActiveSection("pendingPayments")}
             >
@@ -463,7 +449,7 @@ function AdminMainPage() {
               className={cn(
                 "py-3 text-center font-medium",
                 activeSection === "completedPayments" &&
-                "border-b-2 border-black"
+                "border-b-2 border-brand-primary"
               )}
               onClick={() => setActiveSection("completedPayments")}
             >
@@ -515,7 +501,7 @@ function AdminMainPage() {
                     >
                       Previous
                     </Button>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-muted-foreground">
                       Page {verifiedUsersPagination.page} of {verifiedUsersPagination.totalPages}
                       ({verifiedUsersPagination.total} total users)
                     </span>
@@ -543,11 +529,10 @@ function AdminMainPage() {
             )}
 
             {activeTab === "refunds" && (
-              <RefundsContainer
-                refunds={payments.refunds}
-                onRefundAction={handleRefundAction}
-              />
+              <RefundsAdminContainer />
             )}
+
+            {activeTab === "wallet" && <WalletAdminContainer />}
           </>
         )}
       </main>
