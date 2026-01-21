@@ -7,6 +7,7 @@ import withAuth from '@/hoc/withAuth';
 import { PaymentService } from '@/services/paymentService';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 function Wallet() {
   const [loading, setLoading] = useState(true);
@@ -19,6 +20,7 @@ function Wallet() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [creatingTopup, setCreatingTopup] = useState<number | null>(null);
+  const [showPolicies, setShowPolicies] = useState(false);
 
   const topupPackages = useMemo(() => {
     const packages = summary?.topupPackages;
@@ -75,9 +77,12 @@ function Wallet() {
       <Header setSidebarOpen={() => { }} showMenuButton={false} />
 
       <main className='flex-1 overflow-y-auto px-4 pb-24 pt-16 md:pt-6 space-y-6'>
-        <div className='flex items-center justify-between'>
+        
+        <div className='flex items-start justify-between gap-3'>
           <h1 className='text-2xl font-semibold text-heading'>Wallet</h1>
-          <div className='flex items-center gap-3'>
+
+          {/* Desktop: inline links */}
+          <div className='hidden md:flex items-center gap-3 whitespace-nowrap'>
             <Link
               href='/refundpolicyby3musafir'
               className='text-sm text-brand-primary hover:underline'
@@ -96,10 +101,53 @@ function Wallet() {
               href='/terms&conditonsby3musafir'
               className='text-sm text-brand-primary hover:underline'
             >
-              Terms & Conditions
+              Terms &amp; Conditions
             </Link>
           </div>
+
+          {/* Mobile: collapsible menu */}
+          <button
+            type='button'
+            className='md:hidden inline-flex items-center gap-1 rounded-md border border-border bg-card px-3 py-1.5 text-sm text-brand-primary'
+            onClick={() => setShowPolicies((v) => !v)}
+            aria-expanded={showPolicies}
+            aria-controls='wallet-policy-links'
+          >
+            Policies
+            {showPolicies ? <ChevronUp className='h-4 w-4' /> : <ChevronDown className='h-4 w-4' />}
+          </button>
         </div>
+
+        {showPolicies && (
+          <div
+            id='wallet-policy-links'
+            className='md:hidden -mt-3 rounded-xl border border-border bg-card p-3'
+          >
+            <div className='flex flex-col gap-2'>
+              <Link
+                href='/refundpolicyby3musafir'
+                className='text-sm text-brand-primary hover:underline'
+                onClick={() => setShowPolicies(false)}
+              >
+                Refund policy
+              </Link>
+              <Link
+                href='/musafircommunityequityframework'
+                className='text-sm text-brand-primary hover:underline'
+                onClick={() => setShowPolicies(false)}
+              >
+                Community equity framework
+              </Link>
+              <Link
+                href='/terms&conditonsby3musafir'
+                className='text-sm text-brand-primary hover:underline'
+                onClick={() => setShowPolicies(false)}
+              >
+                Terms &amp; Conditions
+              </Link>
+            </div>
+          </div>
+        )}
 
         <section className='rounded-xl border border-border bg-card p-4'>
           <div className='text-sm text-text'>Balance</div>
