@@ -5,6 +5,7 @@ import useRegistrationHook from '@/hooks/useRegistrationHandler';
 import { BaseRegistration } from '@/interfaces/registration';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { showAlert } from '../alert';
@@ -25,6 +26,7 @@ function FlagshipRequirements() {
   const [selectedLocationPrice, setSelectedLocationPrice] = useState(0);
   const [selectedTierPrice, setSelectedTierPrice] = useState(0);
   const [fromDetailsPage, setFromDetailsPage] = useState(false);
+  const [policiesAccepted, setPoliciesAccepted] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedRoomSharingPrice, setSelectedRoomSharingPrice] = useState(0);
   const registrationAction = useRegistrationHook();
@@ -157,6 +159,10 @@ function FlagshipRequirements() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    if (fromDetailsPage && !policiesAccepted) {
+      showAlert('Please confirm you've read the policies before continuing.', 'error');
+      return;
+    }
     if (flagship._id) {
       const registration: BaseRegistration = {
         flagshipId: flagship._id,
@@ -649,6 +655,42 @@ function FlagshipRequirements() {
               </div>
             </div>
 
+
+            {fromDetailsPage && (
+              <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <label className="flex items-start gap-3 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    className="mt-1 h-4 w-4"
+                    checked={policiesAccepted}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setPoliciesAccepted(checked);
+                      try {
+                        localStorage.setItem('policiesAccepted', checked ? 'true' : 'false');
+                      } catch {
+                        // ignore
+                      }
+                    }}
+                  />
+                  <span>
+                    I have read and agree to the 
+                    <Link href="/refundpolicyby3musafir" className="text-brand-primary hover:underline">
+                      Refund Policy
+                    </Link>
+                    , 
+                    <Link href="/musafircommunityequityframework" className="text-brand-primary hover:underline">
+                      Community Equity Framework
+                    </Link>
+                    , and 
+                    <Link href="/terms&conditonsby3musafir" className="text-brand-primary hover:underline">
+                      Terms &amp; Conditions
+                    </Link>
+                    .
+                  </span>
+                </label>
+              </div>
+            )}
             {/* Submit Button */}
             <button
               type="submit"
