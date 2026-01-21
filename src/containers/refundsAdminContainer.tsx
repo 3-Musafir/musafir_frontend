@@ -109,12 +109,13 @@ export const RefundsAdminContainer = ({ flagshipId }: { flagshipId?: string }) =
 
   const handleAction = async (
     refundId: string,
-    action: "approve_and_credit" | "approve_defer_credit" | "post_credit" | "reject",
+    action: "approve_and_credit" | "approve_defer_credit" | "post_credit" | "post_bank" | "reject",
   ) => {
     try {
       if (action === "approve_and_credit") await PaymentService.approveRefund(refundId);
       else if (action === "approve_defer_credit") await PaymentService.approveRefundNoCredit(refundId);
       else if (action === "post_credit") await PaymentService.postRefundCredit(refundId);
+      else if (action === "post_bank") await PaymentService.postRefundBank(refundId);
       else await PaymentService.rejectRefund(refundId);
     } catch (error) {
       console.error("Refund action failed:", error);
@@ -189,6 +190,7 @@ export const RefundsAdminContainer = ({ flagshipId }: { flagshipId?: string }) =
                   const refundPercent = Number(refund?.refundPercent || 0);
                   const tierLabel = refund?.tierLabel || "—";
                   const settlementStatus = refund?.settlement?.status || "—";
+                  const settlementMethod = refund?.settlement?.method || "—";
 
                   const badgeText =
                     activeTab === "approved_not_credited"
@@ -245,7 +247,10 @@ export const RefundsAdminContainer = ({ flagshipId }: { flagshipId?: string }) =
                           </div>
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Settlement</span>
-                            <span className="font-medium text-heading">{settlementStatus}</span>
+                            <span className="font-medium text-heading">
+                              {settlementStatus}
+                              {settlementMethod !== "—" ? ` (${settlementMethod.replace("_", " ")})` : ""}
+                            </span>
                           </div>
                         </div>
 
@@ -321,14 +326,25 @@ export const RefundsAdminContainer = ({ flagshipId }: { flagshipId?: string }) =
                           ) : null}
 
                           {activeTab === "approved_not_credited" ? (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-brand-primary"
-                              onClick={() => handleAction(refund._id, "post_credit")}
-                            >
-                              Credit now
-                            </Button>
+                            settlementMethod === "bank_refund" ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-brand-primary"
+                                onClick={() => handleAction(refund._id, "post_bank")}
+                              >
+                                Mark bank paid
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-brand-primary"
+                                onClick={() => handleAction(refund._id, "post_credit")}
+                              >
+                                Credit now
+                              </Button>
+                            )
                           ) : null}
                         </div>
 

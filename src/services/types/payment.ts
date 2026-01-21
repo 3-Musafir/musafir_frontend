@@ -61,7 +61,7 @@ export interface IRefund {
     _id: string;
     status: "pending" | "posted" | "void";
     amount: number;
-    method: "wallet_credit";
+    method: "wallet_credit" | "bank_refund";
     postedAt?: string;
   } | null;
   createdAt: string;

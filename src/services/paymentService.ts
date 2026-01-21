@@ -150,6 +150,21 @@ export class PaymentService {
     }
   }
 
+  static async postRefundBank(id: string): Promise<void> {
+    try {
+      await api.patch(`/payment/post-refund-bank/${id}`);
+    } catch (error: any) {
+      if (error.response) {
+        throw new Error(
+          error.response.data?.message || "Failed to post bank refund"
+        );
+      } else if (error.request) {
+        throw new Error("No response received from server");
+      }
+      throw new Error("Failed to post bank refund");
+    }
+  }
+
   static async rejectRefund(id: string): Promise<void> {
     try {
       await api.patch(`/payment/reject-refund/${id}`);

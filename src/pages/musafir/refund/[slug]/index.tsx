@@ -180,6 +180,7 @@ export default function RefundForm() {
 
   const refund = refundStatus?.refund;
   const settlement = refundStatus?.settlement;
+  const settlementMethod = settlement?.method;
   const effectiveRetryAt = retryAt;
   const cooldownActive = Boolean(
     effectiveRetryAt && Date.now() < new Date(effectiveRetryAt).getTime()
@@ -189,6 +190,10 @@ export default function RefundForm() {
     if (refund?.status === "pending" || isUnderReview) return "under_review";
     if (refund?.status === "rejected") return "rejected";
     if (refund?.status === "cleared") {
+      if (settlementMethod === "bank_refund") {
+        if (settlement?.status === "posted") return "bank_paid";
+        return "approved_pending_bank";
+      }
       if (settlement?.status === "posted") return "credited";
       return "approved_pending_credit";
     }
@@ -303,6 +308,18 @@ export default function RefundForm() {
             {refundStage === "credited" && (
               <p className="text-sm text-text">
                 Your refund has been credited to your wallet.
+              </p>
+            )}
+
+            {refundStage === "approved_pending_bank" && (
+              <p className="text-sm text-text">
+                Your refund was approved. Bank transfer is pending.
+              </p>
+            )}
+
+            {refundStage === "bank_paid" && (
+              <p className="text-sm text-text">
+                Your refund has been processed to your bank details.
               </p>
             )}
 
