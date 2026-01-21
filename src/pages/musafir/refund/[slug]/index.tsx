@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Check, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-// import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -24,17 +23,21 @@ const SuccessComponent = ({ refundAmount }: { refundAmount?: number }) => {
           <div className="absolute inset-0 rounded-full border-4 border-brand-primary -m-1"></div>
         </div>
 
-        <h1 className="text-2xl font-bold mb-4">Form Submitted Successfully</h1>
+        <h1 className="text-2xl font-bold mb-4">Refund request submitted</h1>
 
         <p className="text-text mb-2">
-          Thank you for submitting your refund request. Our team will review it
-          and update you shortly.
+          Thank you for submitting your refund request. Our team will review it and update you via in-app notification.
         </p>
+
         {typeof refundAmount === "number" && (
-          <p className="text-sm text-text-light mb-8">
+          <p className="text-sm text-text-light mb-2">
             Estimated refund (policy-based): Rs.{refundAmount.toLocaleString()}
           </p>
         )}
+
+        <p className="text-xs text-text-light">
+          Typical timelines after approval: Wallet credit 3–7 business days, bank/card refunds 14–30 business days.
+        </p>
       </div>
 
       <div className="p-4">
@@ -42,7 +45,7 @@ const SuccessComponent = ({ refundAmount }: { refundAmount?: number }) => {
           onClick={() => router.push("/passport")}
           className="w-full bg-brand-primary hover:bg-brand-primary-hover h-12 text-base text-btn-secondary-text"
         >
-          Okay, Great
+          Go to Passport
         </Button>
       </div>
     </div>
@@ -56,6 +59,7 @@ export default function RefundForm() {
   const [rating, setRating] = useState(0);
   const [registration, setRegistration] = useState<any>(null);
   const [quote, setQuote] = useState<any>(null);
+  const [refundStatus, setRefundStatus] = useState<any>(null);
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -63,33 +67,43 @@ export default function RefundForm() {
   const router = useRouter();
   const { slug } = router.query;
   const registrationHook = useRegistrationHook();
-  // const [reasonOption, setReasonOption] = useState("change-of-plans");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const isFormValid = () => {
     return (
-      // reasonOption &&
       reason.trim().length > 0 && bankDetails.trim().length > 0 && rating > 0
     );
   };
 
-  useEffect(() => {
-    const load = async () => {
-      if (!slug) return;
-      setQuoteLoading(true);
-      try {
-        const reg = await registrationHook.getRegistrationById(slug as string);
-        setRegistration(reg);
-        const q = await PaymentService.getRefundQuote(slug as string);
-        setQuote(q);
-      } catch (e) {
-        // Backend will enforce, but we try to show quote when possible.
-      } finally {
-        setQuoteLoading(false);
+  const loadAll = async (registrationId: string) => {
+    setQuoteLoading(true);
+    try {
+      const [reg, refundQuote, status] = await Promise.all([
+        registrationHook.getRegistrationById(registrationId),
+        PaymentService.getRefundQuote(registrationId).catch(() => null),
+        PaymentService.getRefundStatus(registrationId).catch(() => null),
+      ]);
+
+      setRegistration(reg);
+      if (refundQuote) setQuote(refundQuote);
+      if (status) {
+        setRefundStatus(status);
+        if (status?.retryAt) {
+          setRetryAt(String(status.retryAt));
+        }
       }
-    };
-    load();
+    } catch {
+      // Backend enforces; we try to show data when possible.
+    } finally {
+      setQuoteLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!slug) return;
+    loadAll(slug as string);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   const handleCancelSeat = async () => {
@@ -106,8 +120,7 @@ export default function RefundForm() {
       const updated = await registrationHook.cancelSeat(slug as string);
       if (updated) {
         setRegistration(updated);
-        const q = await PaymentService.getRefundQuote(slug as string);
-        setQuote(q);
+        await loadAll(slug as string);
       }
     } catch (e: any) {
       setErrorMessage(e?.message || "Failed to cancel seat.");
@@ -134,9 +147,6 @@ export default function RefundForm() {
       setIsSubmitted(true);
     } catch (error) {
       console.error("Failed to submit refund request:", error);
-      const code =
-        (error as any)?.response?.data?.code ||
-        (error as any)?.code;
       const message =
         (error as any)?.response?.data?.message ||
         (error as any)?.message ||
@@ -148,6 +158,10 @@ export default function RefundForm() {
       setErrorMessage(message);
       if (retryAtValue) {
         setRetryAt(String(retryAtValue));
+      }
+
+      if (slug) {
+        await loadAll(slug as string);
       }
     } finally {
       setIsLoading(false);
@@ -164,6 +178,24 @@ export default function RefundForm() {
   const isUnderReview = status === "refundProcessing";
   const isRefunded = status === "refunded";
 
+  const refund = refundStatus?.refund;
+  const settlement = refundStatus?.settlement;
+  const effectiveRetryAt = retryAt;
+  const cooldownActive = Boolean(
+    effectiveRetryAt && Date.now() < new Date(effectiveRetryAt).getTime()
+  );
+
+  const refundStage = (() => {
+    if (refund?.status === "pending" || isUnderReview) return "under_review";
+    if (refund?.status === "rejected") return "rejected";
+    if (refund?.status === "cleared") {
+      if (settlement?.status === "posted") return "credited";
+      return "approved_pending_credit";
+    }
+    if (isRefunded) return "refunded";
+    return null;
+  })();
+
   return (
     <div className="max-w-md mx-auto bg-background text-foreground min-h-screen pb-8">
       <header className="sticky top-0 bg-background z-10 border-b border-border">
@@ -176,7 +208,7 @@ export default function RefundForm() {
           >
             <ArrowLeft className="h-6 w-6" />
           </button>
-          <h1 className="text-xl font-bold flex-1 text-center">Refund Form</h1>
+          <h1 className="text-xl font-bold flex-1 text-center">Refund Request</h1>
         </div>
       </header>
 
@@ -199,13 +231,11 @@ export default function RefundForm() {
             )}
           </div>
         )}
+
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-heading">
-            Are you sure you want to let go off
-          </h2>
+          <h2 className="text-2xl font-bold text-heading">Refund form</h2>
           <p className="text-text">
-            Unforeseen circumstances can arise and plans may change, hence
-            we&apos;ve created this refund form.
+            Cancellation is required before submitting a refund request.
           </p>
         </div>
 
@@ -252,150 +282,173 @@ export default function RefundForm() {
               </p>
             </div>
           )}
-          {isUnderReview && (
-            <p className="text-sm text-text-light">Refund under review.</p>
-          )}
-          {isRefunded && (
-            <p className="text-sm text-text-light">Refund completed.</p>
-          )}
         </div>
 
-        {/* <div className="space-y-3">
-          <Label className="text-base font-medium">
-            What changed your mind?
-          </Label>
-          <RadioGroup value={reasonOption} onValueChange={setReasonOption}>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem
-                value="change-of-plans"
-                id="change-of-plans"
-                className="border-2"
-              />
-              <Label htmlFor="change-of-plans" className="font-normal">
-                Change of plans
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem
-                value="family-errands"
-                id="family-errands"
-                className="border-2"
-              />
-              <Label htmlFor="family-errands" className="font-normal">
-                Family errands
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem
-                value="health-reasons"
-                id="health-reasons"
-                className="border-2"
-              />
-              <Label htmlFor="health-reasons" className="font-normal">
-                Health reasons
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem
-                value="financial-constraints"
-                id="financial-constraints"
-                className="border-2"
-              />
-              <Label htmlFor="financial-constraints" className="font-normal">
-                Financial constraints
-              </Label>
-            </div>
-          </RadioGroup>
-        </div> */}
+        {refundStage && (
+          <div className="rounded-xl border border-border bg-card p-4 space-y-2">
+            <p className="text-sm font-medium text-heading">Refund status</p>
 
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <Label htmlFor="reason" className="text-base font-medium">
-              Reason
-            </Label>
-            <span className="text-sm text-text-light">{reason.length}/100</span>
-          </div>
-          <Input
-            id="reason"
-            placeholder="Change my mind"
-            value={reason}
-            onChange={(e) => setReason(e.target.value.slice(0, 100))}
-            className="h-12"
-          />
-        </div>
+            {refundStage === "under_review" && (
+              <p className="text-sm text-text">
+                Your refund request is under review. You’ll get an in-app notification when it’s approved or rejected.
+              </p>
+            )}
 
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <Label htmlFor="bank-details" className="text-base font-medium">
-              Bank Account Details
-            </Label>
-            <span className="text-sm text-text-light">
-              {bankDetails.length}/100
-            </span>
-          </div>
-          <Input
-            id="bank-details"
-            placeholder="Bank title | Bank Name | Account Number"
-            value={bankDetails}
-            onChange={(e) => setBankDetails(e.target.value.slice(0, 100))}
-            className="h-12"
-          />
-        </div>
+            {refundStage === "approved_pending_credit" && (
+              <p className="text-sm text-text">
+                Your refund was approved. Wallet credit is pending.
+              </p>
+            )}
 
-        <div className="space-y-2">
-          <Label className="text-base font-medium">Overall Experience</Label>
-          <div className="flex space-x-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
+            {refundStage === "credited" && (
+              <p className="text-sm text-text">
+                Your refund has been credited to your wallet.
+              </p>
+            )}
+
+            {refundStage === "rejected" && (
+              <div className="space-y-1">
+                <p className="text-sm text-text">
+                  Your refund request was rejected.
+                </p>
+                {retryAt && (
+                  <p className="text-xs text-text-light">
+                    {cooldownActive
+                      ? `You can reapply after ${new Date(retryAt).toLocaleString()}.`
+                      : "You can reapply now."}
+                  </p>
+                )}
+              </div>
+            )}
+
+            <p className="text-xs text-text-light">
+              Typical timelines after approval: Wallet credit 3–7 business days, bank/card refunds 14–30 business days.
+            </p>
+
+            {(refundStage === "credited" || refundStage === "approved_pending_credit") && (
+              <Button
                 type="button"
-                onClick={() => setRating(star)}
-                className="focus:outline-none"
+                className="w-full bg-brand-primary hover:bg-brand-primary-hover text-btn-secondary-text"
+                onClick={() => router.push("/wallet")}
               >
-                <Star
-                  className={`h-6 w-6 ${
-                    rating >= star
-                      ? "fill-brand-warning text-brand-warning"
-                      : "text-text-light"
-                  }`}
-                />
-              </button>
-            ))}
+                Go to Wallet
+              </Button>
+            )}
           </div>
-        </div>
+        )}
 
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <Label htmlFor="feedback" className="text-base font-medium">
-              Anything else you&apos;d like to share with us?
-            </Label>
-            <span className="text-sm text-text-light">{feedback.length}/100</span>
+        {canSubmit && (
+          <div className="space-y-6">
+            {cooldownActive && retryAt && (
+              <div className="rounded-md border border-brand-error bg-brand-error-light p-3 text-sm text-brand-error">
+                You can reapply after{" "}
+                {new Date(retryAt).toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "short",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+                .
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <Label htmlFor="reason" className="text-base font-medium">
+                  Reason
+                </Label>
+                <span className="text-sm text-text-light">{reason.length}/100</span>
+              </div>
+              <Input
+                id="reason"
+                placeholder="Change of plans"
+                value={reason}
+                onChange={(e) => setReason(e.target.value.slice(0, 100))}
+                className="h-12"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <Label htmlFor="bank-details" className="text-base font-medium">
+                  Bank Account Details
+                </Label>
+                <span className="text-sm text-text-light">
+                  {bankDetails.length}/100
+                </span>
+              </div>
+              <Input
+                id="bank-details"
+                placeholder="Bank title | Bank Name | Account Number"
+                value={bankDetails}
+                onChange={(e) => setBankDetails(e.target.value.slice(0, 100))}
+                className="h-12"
+              />
+              <p className="text-xs text-text-light">
+                Wallet credit is usually the default refund method. Bank details are collected for cases where a bank/card
+                refund is required.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-base font-medium">Overall Experience</Label>
+              <div className="flex space-x-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    className="focus:outline-none"
+                  >
+                    <Star
+                      className={`h-6 w-6 ${
+                        rating >= star
+                          ? "fill-brand-warning text-brand-warning"
+                          : "text-text-light"
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <Label htmlFor="feedback" className="text-base font-medium">
+                  Anything else you&apos;d like to share with us?
+                </Label>
+                <span className="text-sm text-text-light">{feedback.length}/100</span>
+              </div>
+              <Textarea
+                id="feedback"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value.slice(0, 100))}
+                className="min-h-[100px]"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-brand-primary hover:bg-brand-primary-hover h-12 text-base text-btn-secondary-text disabled:bg-brand-primary-disabled disabled:cursor-not-allowed"
+              disabled={!isFormValid() || isLoading || cooldownActive}
+              isLoading={isLoading}
+              loadingText="Submitting..."
+            >
+              Submit refund request
+            </Button>
           </div>
-          <Textarea
-            id="feedback"
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value.slice(0, 100))}
-            className="min-h-[100px]"
-          />
-        </div>
+        )}
 
-        <Button
-          type="submit"
-          className="w-full bg-brand-primary hover:bg-brand-primary-hover h-12 text-base text-btn-secondary-text disabled:bg-brand-primary-disabled disabled:cursor-not-allowed"
-          disabled={
-            !isFormValid() ||
-            isLoading ||
-            !canSubmit ||
-            isUnderReview ||
-            isRefunded ||
-            needsCancellation
-          }
-          isLoading={isLoading}
-          loadingText="Submitting..."
-        >
-          Submit
-        </Button>
+        {!needsCancellation && !canSubmit && !isUnderReview && !isRefunded && (
+          <p className="text-xs text-text-light">
+            If your seat is already cancelled, you can submit this form. Otherwise, cancel your seat first.
+          </p>
+        )}
       </form>
+
+      {/* Bottom spacing for the fixed nav */}
+      <div className="h-6" />
     </div>
   );
 }

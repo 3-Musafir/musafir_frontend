@@ -35,6 +35,10 @@ export class PaymentService {
     return api.get(`/payment/refund-quote/${registrationId}`);
   }
 
+  static async getRefundStatus(registrationId: string) {
+    return api.get(`/payment/refund-status/${registrationId}`);
+  }
+
   static async createPayment(payment: ICreatePayment) {
     const formData = new FormData();
     formData.append("registration", payment.registration);

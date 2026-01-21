@@ -12,7 +12,8 @@ type StatusType =
   | "notReserved"
   | "confirmed"
   | "cancelled"
-  | "refundProcessing";
+  | "refundProcessing"
+  | "refunded";
 
 interface PaymentDetails {
   price: number;
@@ -34,6 +35,8 @@ const getStatusStyles = (status: StatusType) => {
       return "bg-card text-heading border-border";
     case "refundProcessing":
       return "bg-card text-brand-primary border-brand-primary";
+    case "refunded":
+      return "bg-card text-heading border-border";
     default:
       return "bg-card text-heading border-border";
   }
@@ -122,6 +125,12 @@ const getActionButton = (
         onClick: () => { },
         disabled: true,
       };
+    case "refunded":
+      return {
+        css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
+        text: 'View refund status',
+        onClick: () => router.push(`/musafir/refund/${registrationId}`),
+      };
     default:
       return {
         css: "bg-background text-btn-text border-border hover:bg-muted",
@@ -165,6 +174,14 @@ const StatusInfo: React.FC<{
       return (
         <p className="text-sm text-heading">
           Status: Refund under review
+        </p>
+      );
+    case "refunded":
+      return (
+        <p className="text-sm text-heading">
+          Status: Refund processed
+          <br />
+          Check your wallet/notifications for updates.
         </p>
       );
     case "cancelled":
