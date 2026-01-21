@@ -77,12 +77,21 @@ function Wallet() {
       <main className='flex-1 overflow-y-auto px-4 pb-24 pt-16 md:pt-6 space-y-6'>
         <div className='flex items-center justify-between'>
           <h1 className='text-2xl font-semibold text-heading'>Wallet</h1>
-          <Link
-            href='/refundpolicyby3musafir'
-            className='text-sm text-brand-primary hover:underline'
-          >
-            Refund policy
-          </Link>
+          <div className='flex items-center gap-3'>
+            <Link
+              href='/refundpolicyby3musafir'
+              className='text-sm text-brand-primary hover:underline'
+            >
+              Refund policy
+            </Link>
+            <span className='text-border'>|</span>
+            <Link
+              href='/musafircommunityequityframework'
+              className='text-sm text-brand-primary hover:underline'
+            >
+              Community equity framework
+            </Link>
+          </div>
         </div>
 
         <section className='rounded-xl border border-border bg-card p-4'>
