@@ -91,6 +91,13 @@ function Wallet() {
             >
               Community equity framework
             </Link>
+            <span className='text-border'>|</span>
+            <Link
+              href='/terms&conditonsby3musafir'
+              className='text-sm text-brand-primary hover:underline'
+            >
+              Terms & Conditions
+            </Link>
           </div>
         </div>
 
