@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { User } from "@/interfaces/login";
@@ -11,6 +11,12 @@ export default function Login() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const requestedCallback = useMemo(() => {
+    const raw = searchParams?.get("callbackUrl");
+    const isSafe = typeof raw === "string" && /^\/(?!\/)/.test(raw);
+    return isSafe ? raw : null;
+  }, [searchParams]);
   const actionLogin = useLoginHook();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,20 +24,33 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasRedirected, setHasRedirected] = useState(false);
-
   const verifyUser = useCallback(async () => {
     try {
       const userData: User = await actionLogin.verifyToken(); // Call API
+
       if (userData?.roles?.includes(ROLES.ADMIN)) {
+        if (requestedCallback && requestedCallback.startsWith("/admin")) {
+          router.push(requestedCallback);
+          return;
+        }
+
         router.push(ROUTES_CONSTANTS.ADMIN_DASHBOARD);
-      } else if (userData.roles?.includes(ROLES.MUSAFIR)) {
+        return;
+      }
+
+      if (userData?.roles?.includes(ROLES.MUSAFIR)) {
+        if (requestedCallback && !requestedCallback.startsWith("/admin")) {
+          router.push(requestedCallback);
+          return;
+        }
+
         router.push(ROUTES_CONSTANTS.HOME);
       }
     } catch (error) {
       console.error("Token verification failed", error);
       router.push("/login"); // Redirect to login if token invalid
     }
-  }, [actionLogin, router]);
+  }, [actionLogin, requestedCallback, router]);
 
   useEffect(() => {
     if (!session || hasRedirected) return;
@@ -55,6 +74,10 @@ export default function Login() {
 
       if (result?.status === 200) {
         setHasRedirected(true);
+        if (requestedCallback) {
+          router.replace(requestedCallback);
+          return;
+        }
         setTimeout(() => {
           verifyUser();
         }, 1000);
@@ -79,17 +102,17 @@ export default function Login() {
     }
 
     // Allow caller to pass a safe callbackUrl (e.g., /admin) via query.
-    const requestedCallback = searchParams?.get("callbackUrl");
+    const requestedCallbackParam = searchParams?.get("callbackUrl");
     const isSafePath =
-      typeof requestedCallback === "string" &&
-      /^\/(?!\/)/.test(requestedCallback); // allow "/foo", disallow "//" or protocols
+      typeof requestedCallbackParam === "string" &&
+      /^\/(?!\/)/.test(requestedCallbackParam); // allow "/foo", disallow "//" or protocols
 
     const base =
       process.env.NEXT_PUBLIC_AUTH_URL && process.env.NEXT_PUBLIC_AUTH_URL.trim().length > 0
         ? process.env.NEXT_PUBLIC_AUTH_URL
         : "";
     const defaultCallback = base ? `${base}/login` : "/login";
-    const callbackUrl = isSafePath ? requestedCallback! : defaultCallback;
+    const callbackUrl = requestedCallback ?? (isSafePath ? requestedCallbackParam! : defaultCallback);
 
     await signIn("google", { callbackUrl });
   };

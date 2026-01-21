@@ -56,7 +56,8 @@ const withAuth = <P extends object>(
       // to login (do not signOut here to avoid callback loops during OAuth
       // hydration).
       if (status === "unauthenticated" && !session) {
-        router.replace("/login");
+        const callbackUrl = typeof router.asPath === "string" ? router.asPath : "/";
+        router.replace(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
         return;
       }
 
