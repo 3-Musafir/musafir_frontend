@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import useVerificationHook from '../../hooks/useVerificationHandler';
 
 import { showAlert } from '../alert';
+import { Navigation } from '../navigation';
 import { ROLES } from '@/config/constants';
 import withAuth from '@/hoc/withAuth';
 import useUserHandler from '@/hooks/useUserHandler';
@@ -25,6 +26,7 @@ function GetVerified() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const safeExitPath = returnToPath ? '/passport' : '/home';
 
   useEffect(() => {
     const flagshipId = localStorage.getItem('flagshipId');
@@ -226,17 +228,13 @@ function GetVerified() {
   };
 
   return (
-    <div className='min-h-screen bg-white p-3'>
+    <div className='min-h-screen bg-white p-3 pb-24'>
       {/* Header */}
       <header className='flex items-center p-4 border-b'>
         <button
           type='button'
           onClick={() => {
-            if (typeof window !== 'undefined' && window.history.length > 1) {
-              router.back();
-            } else {
-              router.push(fallbackPath);
-            }
+            router.push(safeExitPath);
           }}
           className='p-2 hover:bg-gray-100 rounded-full'
         >
@@ -256,10 +254,10 @@ function GetVerified() {
             <div className='mt-4 flex gap-2'>
               <button
                 type='button'
-                onClick={() => router.push(returnToPath || '/home')}
+                onClick={() => router.push(safeExitPath)}
                 className='flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100'
               >
-                {returnToPath ? 'Back' : 'Back to home'}
+                {returnToPath ? 'Back to passport' : 'Back to home'}
               </button>
             </div>
           </section>
@@ -512,6 +510,7 @@ function GetVerified() {
           </>
         )}
       </main>
+      <Navigation />
     </div>
   );
 }
