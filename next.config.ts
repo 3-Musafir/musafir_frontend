@@ -7,10 +7,19 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: [
-      "encrypted-tbn0.gstatic.com",
-      "3musafir.s3.ap-south-1.amazonaws.com",
-      "teenmusafir.s3.ap-south-1.amazonaws.com",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "encrypted-tbn0.gstatic.com",
+      },
+      {
+        protocol: "https",
+        hostname: "3musafir.s3.ap-south-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "teenmusafir.s3.ap-south-1.amazonaws.com",
+      },
     ],
   },
 };
