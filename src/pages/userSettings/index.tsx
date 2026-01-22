@@ -356,7 +356,7 @@ function UserSettings() {
                 placeholder="https://example.com/avatar.jpg"
                 value={editData.profileImg}
                 onChange={(e) => setEditData({ ...editData, profileImg: e.target.value })}
-                className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                className="w-full input-field"
               />
               <p className="text-xs text-gray-500">Upload an image or paste a URL (JPEG/PNG recommended).</p>
             </div>
@@ -375,7 +375,7 @@ function UserSettings() {
                   onChange={(e) => isEditing && setEditData({ ...editData, fullName: e.target.value })}
                   disabled={!isEditing}
                   required
-                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                  className="w-full input-field"
                 />
               </div>
               <div>
@@ -388,7 +388,7 @@ function UserSettings() {
                   value={userData.email || ""}
                   disabled
                   required
-                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                  className="w-full input-field"
                 />
               </div>
               <div className={classNames({
@@ -399,7 +399,7 @@ function UserSettings() {
                 </label>
                 <div className="flex gap-2 items-start">
                   <select
-                    className="w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                    className="w-[100px] h-11 input-field"
                     disabled
                   >
                     <option value="+92">+92</option>
@@ -427,7 +427,7 @@ function UserSettings() {
                       pattern="[0-9]*"
                       maxLength={10}
                       placeholder="3XXXXXXXXX"
-                      className={`w-full px-3 py-2 border rounded-md disabled:bg-gray-100 focus:outline-none focus:ring-2 ${ phoneError ? "border-brand-error focus:ring-red-500" : "border-gray-300 focus:ring-gray-400" }`}
+                      className={`w-full input-field focus:outline-none focus:ring-2 ${ phoneError ? "border-brand-error focus:ring-red-500" : "border-gray-300 focus:ring-gray-400" }`}
                       aria-invalid={phoneError ? "true" : "false"}
                       aria-describedby={phoneError ? "phone-error" : undefined}
                     />
@@ -461,7 +461,7 @@ function UserSettings() {
                   required
                   maxLength={15}
                   placeholder="12345-1234567-1"
-                  className={`w-full px-3 py-2 border rounded-md disabled:bg-gray-100 ${ cnicError ? "border-brand-error focus:ring-red-500" : "" }`}
+                  className={`w-full input-field ${ cnicError ? "border-brand-error focus:ring-red-500" : "" }`}
                   aria-invalid={cnicError ? "true" : "false"}
                   aria-describedby={cnicError ? "cnic-error" : undefined}
                 />
@@ -484,7 +484,7 @@ function UserSettings() {
                   onChange={(e) => isEditing && setEditData({ ...editData, city: e.target.value })}
                   disabled={!isEditing}
                   required
-                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                  className="w-full input-field"
                 />
               </div>
               <div className={classNames({
@@ -507,7 +507,7 @@ function UserSettings() {
                   }}
                   disabled={!isEditing}
                   required
-                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100 bg-white"
+                  className="w-full input-field bg-white"
                 >
                   <option value="" disabled>Select status</option>
                   {employmentOptions.map((opt) => (
@@ -535,7 +535,7 @@ function UserSettings() {
                     placeholder={
                       employmentOptions.find(o => o.value === (isEditing ? editData.employmentStatus : (userData as any).employmentStatus))?.placeholder || ""
                     }
-                    className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                    className="w-full input-field"
                   />
                 </div>
               )}
@@ -550,7 +550,7 @@ function UserSettings() {
                   onChange={(e) => isEditing && setEditData({ ...editData, socialLink: e.target.value })}
                   disabled={!isEditing}
                   placeholder="@username or instagram.com/username"
-                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                  className="w-full input-field"
                 />
               </div>
               <div className={classNames({
@@ -569,7 +569,7 @@ function UserSettings() {
                   }
                   disabled={!isEditing}
                   required
-                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100 bg-white"
+                  className="w-full input-field bg-white"
                 >
                   <option value="" disabled>Select gender</option>
                   <option value="male">Male</option>
@@ -586,7 +586,7 @@ function UserSettings() {
                   name="referralID"
                   value={userData.referralID || ""}
                   disabled
-                  className="w-full px-3 py-2 border rounded-md bg-gray-100"
+                  className="w-full input-field"
                 />
               </div>
               <div>
@@ -602,7 +602,7 @@ function UserSettings() {
                       : 0
                   }
                   disabled
-                  className="w-full px-3 py-2 border rounded-md bg-gray-100"
+                  className="w-full input-field"
                 />
               </div>
               <div>
@@ -614,7 +614,7 @@ function UserSettings() {
                   name="verificationStatus"
                   value={verificationLabel}
                   disabled
-                  className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                  className="w-full input-field"
                 />
               </div>
         </form>

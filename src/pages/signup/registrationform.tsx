@@ -165,7 +165,7 @@ export default function RegistrationForm() {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className="w-full input-field"
                   placeholder="Enter your full name"
                 />
                 {fullName && (
@@ -189,7 +189,7 @@ export default function RegistrationForm() {
               </label>
               <div className="flex gap-2 items-start">
                 <select
-                  className="w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className="w-[100px] h-11 input-field"
                 >
                   <option value="+92">+92</option>
                 </select>
@@ -244,7 +244,7 @@ export default function RegistrationForm() {
               </label>
               <div className="flex gap-2 items-start">
                 <select
-                  className={`w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 ${ showWhatsapp ? 'bg-gray-100 cursor-not-allowed' : 'bg-white' }`}
+                  className={`w-[100px] h-11 input-field ${ showWhatsapp ? 'bg-gray-100 cursor-not-allowed' : 'bg-white' }`}
                   disabled={showWhatsapp}
                 >
                   <option value="+92">+92</option>

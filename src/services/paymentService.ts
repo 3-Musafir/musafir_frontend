@@ -42,7 +42,12 @@ export class PaymentService {
   static async createPayment(payment: ICreatePayment) {
     const formData = new FormData();
     formData.append("registration", payment.registration);
-    formData.append("bankAccount", payment.bankAccount);
+    if (payment.bankAccount) {
+      formData.append("bankAccount", payment.bankAccount);
+    }
+    if (payment.bankAccountLabel) {
+      formData.append("bankAccountLabel", payment.bankAccountLabel);
+    }
     formData.append("paymentType", payment.paymentType);
     formData.append("amount", payment.amount.toString());
     formData.append("discount", payment.discount?.toString() || "0");

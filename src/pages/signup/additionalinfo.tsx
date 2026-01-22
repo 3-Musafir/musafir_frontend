@@ -265,7 +265,7 @@ export default function AdditionalInfo() {
                   value={city}
                   required={true}
                   onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className="w-full input-field"
                   placeholder="Enter City of residence"
                   disabled={isLoading}
                 />
@@ -278,7 +278,7 @@ export default function AdditionalInfo() {
               </h2>
               <div className="space-y-2">
                 <select
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white"
+                  className="w-full input-field bg-white"
                   value={employmentStatus}
                   onChange={(e) => {
                     setEmploymentStatus(e.target.value);
@@ -316,7 +316,7 @@ export default function AdditionalInfo() {
                     value={university}
                     required
                     onChange={(e) => setUniversity(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                    className="w-full input-field"
                     placeholder={employmentPlaceholder}
                     disabled={isLoading}
                   />
@@ -345,7 +345,7 @@ export default function AdditionalInfo() {
                 onChange={(e) => setSocial(e.target.value)}
                 required={true}
                 placeholder="Instagram"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="w-full input-field"
                 disabled={isLoading}
               />
             </div>

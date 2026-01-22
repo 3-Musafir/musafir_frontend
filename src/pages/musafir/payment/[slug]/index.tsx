@@ -27,7 +27,7 @@ const bankDetails = {
     iban: "—",
   },
   "alfalah-hameez-rizwan": {
-    id: "manual-alfalah-hameez",
+    id: "68f2c0e3a1b2c3d4e5f60718",
     title: "Alfalah Bank (Muhammad Hameez Rizwan)",
     accountNumber: "55015000960473",
     iban: "—",
@@ -246,10 +246,24 @@ export default function TripPayment() {
               ? (crypto as any).randomUUID()
               : `${Date.now()}-${Math.random()}`)
           : undefined;
+      const selectedBankAccountId =
+        cashAmount > 0 ? bankDetails[selectedBank]?.id : undefined;
+      const selectedBankLabel =
+        cashAmount > 0 ? bankDetails[selectedBank]?.title : undefined;
+
+      if (cashAmount > 0 && !selectedBankAccountId && !selectedBankLabel) {
+        toast({
+          title: "Select a bank account",
+          description: "Please choose a bank account before submitting.",
+          variant: "destructive",
+        });
+        return;
+      }
 
       const res: any = await PaymentService.createPayment({
         registration: registrationId,
-        bankAccount: "680929fef52e643c2a724217",
+        bankAccount: selectedBankAccountId,
+        bankAccountLabel: selectedBankLabel,
         paymentType: paymentType === "full" ? "fullPayment" : "partialPayment",
         amount: cashAmount,
         discount: discountAmount,
@@ -258,12 +272,15 @@ export default function TripPayment() {
         screenshot: cashAmount > 0 ? file ?? undefined : undefined,
       });
 
+      const successMessage =
+        res?.message ||
+        (res?.data?.pendingApproval
+          ? "Payment submitted for approval."
+          : "Payment submitted successfully!");
+
       toast({
         title: "Success",
-        description:
-          res?.statusCode === 200
-            ? "Wallet credits applied successfully!"
-            : "Payment submitted successfully!",
+        description: successMessage,
       });
 
       setTimeout(() => {

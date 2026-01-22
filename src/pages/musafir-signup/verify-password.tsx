@@ -95,7 +95,7 @@ export default function MusafirSignupVerifyPassword() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Enter the password from your email"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
+                                    className="w-full input-field"
                                     disabled={isLoading}
                                     required
                                 />

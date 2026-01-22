@@ -10,7 +10,20 @@ const AlertContainer = () => {
     setMounted(true); // Ensures component is mounted on client
 
     const handleShowAlert = (event: CustomEvent) => {
-      setAlerts((prevAlerts) => [...prevAlerts, event.detail]);
+      setAlerts((prevAlerts) => {
+        const nextAlert = event.detail as { message: string; type: 'success' | 'error' };
+        if (
+          nextAlert.type === 'error' &&
+          prevAlerts.some(
+            (alert) =>
+              alert.type === 'error' &&
+              alert.message === nextAlert.message
+          )
+        ) {
+          return prevAlerts;
+        }
+        return [...prevAlerts, nextAlert];
+      });
 
       // Auto-remove the alert after 3 seconds
       setTimeout(() => {
@@ -26,7 +39,7 @@ const AlertContainer = () => {
 
   return typeof document !== 'undefined'
     ? ReactDOM.createPortal(
-        <div className="fixed top-5 right-5 space-y-2 z-50">
+        <div className="fixed top-5 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-[420px] -translate-x-1/2 flex-col gap-2">
           {alerts.map((alert, index) => (
             <Alert key={index} message={alert.message} type={alert.type} />
           ))}

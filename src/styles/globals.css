@@ -52,6 +52,16 @@
            transition-colors;
   }
 
+
+  /* Input Fields */
+  .input-field {
+    @apply px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed;
+  }
+
+  .textarea-field {
+    @apply input-field resize-none;
+  }
+
   /* Warning Button */
   .btn-warning {
     @apply bg-brand-warning hover:bg-brand-warning-hover disabled:opacity-60

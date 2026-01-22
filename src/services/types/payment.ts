@@ -3,7 +3,8 @@ import { IFlagship } from "./flagship";
 import { IUser } from "./user";
 
 export interface ICreatePayment {
-  bankAccount: string;
+  bankAccount?: string;
+  bankAccountLabel?: string;
   paymentType: string;
   registration: string;
   amount: number;
@@ -24,11 +25,15 @@ export interface IBankAccount {
 export interface IPayment {
   _id: string;
   registration: IRegistration | string;
-  bankAccount: IBankAccount | string;
+  bankAccount: IBankAccount | string | null;
+  bankAccountLabel?: string;
   paymentType: string;
+  paymentMethod?: "bank_transfer" | "wallet_only" | "wallet_plus_bank";
   amount: number;
   discount?: number;
-  screenshot: string;
+  walletApplied?: number;
+  walletRequested?: number;
+  screenshot?: string;
   status: string;
   createdAt: string;
   updatedAt: string;

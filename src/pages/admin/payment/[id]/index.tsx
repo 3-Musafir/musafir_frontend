@@ -139,13 +139,31 @@ export default function PaymentDetailsPage() {
       : 0;
   const paymentDiscount = payment.discount || 0;
   const discountDelta = Math.max(0, paymentDiscount - registrationDiscountApplied);
+  const paymentWalletRequested =
+    typeof payment.walletRequested === "number" ? payment.walletRequested : 0;
   const projectedRemainingDue =
     typeof registrationAmountDue === "number"
-      ? Math.max(0, registrationAmountDue - payment.amount - discountDelta)
+      ? Math.max(
+          0,
+          registrationAmountDue - payment.amount - discountDelta - paymentWalletRequested
+        )
       : undefined;
   // Type guard to check if bankAccount is an IBankAccount object
   const bankAccount =
     typeof payment.bankAccount === "string" ? null : payment.bankAccount;
+  const walletApplied =
+    typeof payment.walletApplied === "number" ? payment.walletApplied : 0;
+  const walletRequested =
+    typeof payment.walletRequested === "number" ? payment.walletRequested : 0;
+  const bankLabel = bankAccount?.bankName || payment.bankAccountLabel;
+  const paymentSourceLabel =
+    payment.paymentMethod === "wallet_only"
+      ? "Wallet"
+      : payment.paymentMethod === "wallet_plus_bank"
+        ? bankLabel
+          ? `${bankLabel} + Wallet`
+          : "Bank + Wallet"
+        : bankLabel || "Bank transfer";
 
   console.log(payment);
   return (
@@ -196,6 +214,22 @@ export default function PaymentDetailsPage() {
                 Rs. {payment.amount.toLocaleString()}
               </span>
             </div>
+            {walletRequested > 0 && walletApplied <= 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Wallet Requested</span>
+                <span className="font-medium">
+                  Rs. {walletRequested.toLocaleString()}
+                </span>
+              </div>
+            )}
+            {walletApplied > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Wallet Applied</span>
+                <span className="font-medium">
+                  Rs. {walletApplied.toLocaleString()}
+                </span>
+              </div>
+            )}
             {payment.discount && payment.discount > 0 && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Discount Applied</span>
@@ -204,6 +238,10 @@ export default function PaymentDetailsPage() {
                 </span>
               </div>
             )}
+            <div className="flex justify-between">
+              <span className="text-gray-600">Payment Source</span>
+              <span className="font-medium">{paymentSourceLabel}</span>
+            </div>
             {bankAccount ? (
               <>
                 <div className="flex justify-between">
@@ -223,7 +261,11 @@ export default function PaymentDetailsPage() {
               </>
             ) : (
               <div className="text-gray-500">
-                Bank account details not available
+                {payment.paymentMethod === "wallet_only"
+                  ? "Paid from wallet"
+                  : bankLabel
+                    ? `Bank: ${bankLabel}`
+                    : "Bank account details not available"}
               </div>
             )}
             <div className="flex justify-between">
@@ -323,14 +365,20 @@ export default function PaymentDetailsPage() {
           <h2 className="text-xl font-semibold">Payment Screenshot</h2>
         </CardHeader>
         <CardContent>
-          <div className="relative aspect-video w-full">
-            <Image
-              src={payment.screenshot}
-              alt="Payment Screenshot"
-              fill
-              className="object-contain"
-            />
-          </div>
+          {payment.screenshot ? (
+            <div className="relative aspect-video w-full">
+              <Image
+                src={payment.screenshot}
+                alt="Payment Screenshot"
+                fill
+                className="object-contain"
+              />
+            </div>
+          ) : (
+            <div className="text-gray-500 text-sm">
+              No screenshot was submitted for this payment.
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -54,7 +54,7 @@ export default function SetPassword() {
                 placeholder='Enter your password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400'
+                className='w-full input-field'
               />
               <p className='text-sm text-gray-500'>Password must be at least 8 characters</p>
             </div>
@@ -69,7 +69,7 @@ export default function SetPassword() {
                 placeholder='Confirm password'
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400'
+                className='w-full input-field'
               />
             </div>
 

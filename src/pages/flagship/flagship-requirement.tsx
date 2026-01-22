@@ -160,7 +160,7 @@ function FlagshipRequirements() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (fromDetailsPage && !policiesAccepted) {
-      showAlert('Please confirm you've read the policies before continuing.', 'error');
+      showAlert('Please confirm you have read the policies before continuing.', 'error');
       return;
     }
     if (flagship._id) {
@@ -538,7 +538,7 @@ function FlagshipRequirements() {
                   value={groupMembers}
                   onChange={(e) => setGroupMembers(e.target.value)}
                   placeholder="Hameez, Ahmed, Ali"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className="w-full input-field"
                 />
               </div>
             )}
@@ -558,7 +558,7 @@ function FlagshipRequirements() {
                   value={groupMembers}
                   onChange={(e) => setGroupMembers(e.target.value)}
                   placeholder="no nicknames, please :)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className="w-full input-field"
                 />
               </div>
             )}
@@ -582,7 +582,7 @@ function FlagshipRequirements() {
                 onChange={handleExpectationsChange}
                 rows={3}
                 placeholder="What are you hoping to experience on this trip?"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 resize-none"
+                className="w-full input-field resize-none"
               />
             </div>
 
@@ -676,7 +676,7 @@ function FlagshipRequirements() {
               type="submit"
               className="btn-primary w-full mt-8"
             >
-              {fromDetailsPage ? "Make Payment" : "Get Verified"}
+              {fromDetailsPage ? "Submit Form" : "Get Verified"}
             </button>
           </form>
         </div>
@@ -686,4 +686,3 @@ function FlagshipRequirements() {
 }
 
 export default withAuth(FlagshipRequirements, { allowedRoles: [ROLES.MUSAFIR] });
-

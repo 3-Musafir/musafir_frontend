@@ -164,7 +164,7 @@ function ResetPassword() {
                         type="email"
                         value={userData.email || ""}
                         disabled
-                        className="w-full px-3 py-2 border rounded-md disabled:bg-gray-100"
+                        className="w-full input-field"
                       />
                     </div>
 
@@ -177,7 +177,7 @@ function ResetPassword() {
                           type={showCurrentPassword ? "text" : "password"}
                           value={currentPassword}
                           onChange={(e) => setCurrentPassword(e.target.value)}
-                          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full input-field focus:ring-blue-500"
                           placeholder="Enter your current password"
                           required
                         />
@@ -206,7 +206,7 @@ function ResetPassword() {
                           type={showNewPassword ? "text" : "password"}
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
-                          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full input-field focus:ring-blue-500"
                           placeholder="Enter your new password"
                           required
                         />
@@ -301,7 +301,7 @@ function ResetPassword() {
                           type={showConfirmPassword ? "text" : "password"}
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full input-field focus:ring-blue-500"
                           placeholder="Confirm your new password"
                           required
                         />

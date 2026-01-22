@@ -89,7 +89,7 @@ export default function EmailVerification() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter Password"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className="w-full input-field"
                 />
                 <button
                   type="button"

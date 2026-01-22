@@ -74,10 +74,21 @@ export function PaymentsContainer({
 
   const getSafeBankName = (item: IPayment): string => {
     const bankAccount = item.bankAccount;
-    if (typeof bankAccount === 'string') {
-      return 'N/A';
+    if (typeof bankAccount === 'string' || !bankAccount) {
+      return item.bankAccountLabel || 'N/A';
     }
-    return bankAccount?.bankName || 'N/A';
+    return bankAccount?.bankName || item.bankAccountLabel || 'N/A';
+  };
+
+  const getPaymentSourceLabel = (item: IPayment): string => {
+    const bankName = getSafeBankName(item);
+    if (item.paymentMethod === "wallet_only") {
+      return "Wallet";
+    }
+    if (item.paymentMethod === "wallet_plus_bank") {
+      return bankName !== "N/A" ? `${bankName} + Wallet` : "Bank + Wallet";
+    }
+    return bankName;
   };
 
   const handleViewDetails = (paymentId: string) => {
@@ -156,10 +167,28 @@ export function PaymentsContainer({
                     Rs. {item.amount?.toLocaleString() || 'N/A'}
                   </span>
                 </div>
+                {typeof item.walletRequested === "number" &&
+                  item.walletRequested > 0 &&
+                  (!item.walletApplied || item.walletApplied <= 0) && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Wallet Requested</span>
+                      <span className="font-medium">
+                        Rs. {item.walletRequested.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                {typeof item.walletApplied === "number" && item.walletApplied > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Wallet Applied</span>
+                    <span className="font-medium">
+                      Rs. {item.walletApplied.toLocaleString()}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-gray-600">Bank</span>
                   <span className="font-medium">
-                    {getSafeBankName(item)}
+                    {getPaymentSourceLabel(item)}
                   </span>
                 </div>
                 <div className="flex justify-between">
