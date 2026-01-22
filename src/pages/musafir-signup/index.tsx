@@ -52,7 +52,7 @@ export default function MusafirSignup() {
     };
 
     return (
-        <div className="min-h-screen w-full bg-white md:flex md:items-center md:justify-center p-0">
+        <div className="min-h-screen w-full bg-white p-0">
             <div className="bg-white max-w-md mx-auto rounded-lg h-screen p-3 w-full">
                 {/* Header */}
                 <header className="flex items-center p-4 border-b">
@@ -86,8 +86,7 @@ export default function MusafirSignup() {
                                 value={emailOrPhone}
                                 onChange={(e) => setEmailOrPhone(e.target.value)}
                                 placeholder="Enter your email or phone number"
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 ${error ? 'border-brand-error' : 'border-gray-300'
-                                    }`}
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 ${error ? 'border-brand-error' : 'border-gray-300' }`}
                                 disabled={isLoading}
                                 required
                             />

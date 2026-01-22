@@ -23,7 +23,7 @@ export default function TermsAndConditionsBy3Musafir() {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Header setSidebarOpen={() => {}} showMenuButton={false} />
 
-      <main className="mx-auto w-full max-w-md px-4 pt-16 md:pt-6 pb-24 space-y-4">
+      <main className="mx-auto w-full max-w-md px-4 pt-16 pb-24 space-y-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold text-heading">
             3Musafir Trip Registration Terms and Conditions

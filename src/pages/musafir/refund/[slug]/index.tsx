@@ -419,11 +419,7 @@ export default function RefundForm() {
                     className="focus:outline-none"
                   >
                     <Star
-                      className={`h-6 w-6 ${
-                        rating >= star
-                          ? "fill-brand-warning text-brand-warning"
-                          : "text-text-light"
-                      }`}
+                      className={`h-6 w-6 ${ rating >= star ? "fill-brand-warning text-brand-warning" : "text-text-light" }`}
                     />
                   </button>
                 ))}

@@ -33,7 +33,7 @@ export default function RemainingSeats() {
   // const [discountCode, setDiscountCode] = useState("3Musafir@786");
 
   return (
-    <div className="min-h-screen bg-gray-50 md:flex md:items-center md:justify-center p-0 m4">
+    <div className="min-h-screen bg-gray-50 p-0 m4">
       <div className="bg-white min-h-screen w-full max-w-md mx-auto rounded-lg shadow-sm p-3">
         <h2 className="text-xl font-bold text-center pt-2 mb-4">
           Flagship Registration

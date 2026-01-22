@@ -203,7 +203,7 @@ function FlagshipRequirements() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 md:flex md:items-center md:justify-center">
+    <div className="min-h-screen bg-gray-50">
       <div className="bg-white w-full max-w-md mx-auto shadow-sm p-3">
         {/* Header */}
         <div className="">
@@ -282,8 +282,7 @@ function FlagshipRequirements() {
                 {imageUrls.map((_: string, index: number) => (
                   <div
                     key={index}
-                    className={`h-1.5 rounded-full transition-all ${currentImageIndex === index ? 'w-4 bg-white' : 'w-1.5 bg-white/60'
-                      }`}
+                    className={`h-1.5 rounded-full transition-all ${currentImageIndex === index ? 'w-4 bg-white' : 'w-1.5 bg-white/60' }`}
                   />
                 ))}
               </div>
@@ -330,11 +329,7 @@ function FlagshipRequirements() {
                   return location.enabled && (
                     <label
                       key={index}
-                      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
-                        city === location.name
-                          ? "bg-brand-primary/10 border-brand-primary-light"
-                          : "hover:bg-gray-50 border-gray-200"
-                      }`}
+                      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${ city === location.name ? "bg-brand-primary/10 border-brand-primary-light" : "hover:bg-gray-50 border-gray-200" }`}
                     >
                       <div className="flex items-center space-x-3">
                         <input
@@ -375,11 +370,7 @@ function FlagshipRequirements() {
                   return (
                     <label
                       key={index}
-                      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
-                        tiers === tier.name
-                          ? "bg-brand-primary/10 border-brand-primary-light"
-                          : "hover:bg-gray-50 border-gray-200"
-                      }`}
+                      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${ tiers === tier.name ? "bg-brand-primary/10 border-brand-primary-light" : "hover:bg-gray-50 border-gray-200" }`}
                     >
                       <div className="flex items-center space-x-3">
                         <input
@@ -430,11 +421,7 @@ function FlagshipRequirements() {
                 Room sharing preference
               </label>
               <label
-                className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
-                  roomSharing === "default"
-                    ? "bg-brand-primary/10 border-brand-primary-light"
-                    : "hover:bg-gray-50 border-gray-200"
-                }`}
+                className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${ roomSharing === "default" ? "bg-brand-primary/10 border-brand-primary-light" : "hover:bg-gray-50 border-gray-200" }`}
               >
                 <div className="flex items-center space-x-3">
                   <input
@@ -460,11 +447,7 @@ function FlagshipRequirements() {
                 return (
                   <label
                     key={index}
-                    className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
-                      roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default")
-                        ? "bg-brand-primary/10 border-brand-primary-light"
-                        : "hover:bg-gray-50 border-gray-200"
-                    }`}
+                    className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${ roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default") ? "bg-brand-primary/10 border-brand-primary-light" : "hover:bg-gray-50 border-gray-200" }`}
                   >
                     <div className="flex items-center space-x-3">
                       <input
@@ -497,8 +480,7 @@ function FlagshipRequirements() {
                 Who are you joining with
               </label>
               <label
-                className={`flex items-center space-x-2 ${tripType == "solo" ? "text-black" : "text-gray-600"
-                  }`}
+                className={`flex items-center space-x-2 ${tripType == "solo" ? "text-black" : "text-gray-600" }`}
               >
                 <input
                   type="radio"
@@ -512,8 +494,7 @@ function FlagshipRequirements() {
                 <span>Solo</span>
               </label>
               <label
-                className={`flex items-center space-x-2 ${tripType == "group" ? "text-black" : "text-gray-600"
-                  }`}
+                className={`flex items-center space-x-2 ${tripType == "group" ? "text-black" : "text-gray-600" }`}
               >
                 <input
                   type="radio"
@@ -527,8 +508,7 @@ function FlagshipRequirements() {
                 <span>Group</span>
               </label>
               <label
-                className={`flex items-center space-x-2 ${tripType == "partner" ? "text-black" : "text-gray-600"
-                  }`}
+                className={`flex items-center space-x-2 ${tripType == "partner" ? "text-black" : "text-gray-600" }`}
               >
                 <input
                   type="radio"

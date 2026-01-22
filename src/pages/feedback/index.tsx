@@ -71,7 +71,7 @@ function Feedback() {
   }, []);
 
   return (
-    <div className='min-h-screen w-full bg-white md:flex md:items-center md:justify-center p-0'>
+    <div className='min-h-screen w-full bg-white p-0'>
       <div className='bg-white w-full max-w-md mx-auto rounded-lg pb-20'>
         {/* Header */}
         <header className='flex items-center p-4'>
@@ -118,28 +118,19 @@ function Feedback() {
                 `}</style>
                 <button
                   onClick={() => setTravellerType('solo-female')}
-                  className={`flex-shrink-0 rounded-full px-4 py-2 text-md font-medium whitespace-nowrap ${travellerType === 'solo-female'
-                    ? 'bg-black text-white'
-                    : 'bg-gray-100 text-gray-900'
-                    }`}
+                  className={`flex-shrink-0 rounded-full px-4 py-2 text-md font-medium whitespace-nowrap ${travellerType === 'solo-female' ? 'bg-black text-white' : 'bg-gray-100 text-gray-900' }`}
                 >
                   Solo Female
                 </button>
                 <button
                   onClick={() => setTravellerType('no-male')}
-                  className={`flex-shrink-0 rounded-full px-4 py-2 text-md font-medium whitespace-nowrap ${travellerType === 'no-male'
-                    ? 'bg-black text-white'
-                    : 'bg-gray-100 text-gray-900'
-                    }`}
+                  className={`flex-shrink-0 rounded-full px-4 py-2 text-md font-medium whitespace-nowrap ${travellerType === 'no-male' ? 'bg-black text-white' : 'bg-gray-100 text-gray-900' }`}
                 >
                   No, Male
                 </button>
                 <button
                   onClick={() => setTravellerType('female-with-family')}
-                  className={`flex-shrink-0 rounded-full px-4 py-2 text-md font-medium whitespace-nowrap ${travellerType === 'female-with-family'
-                    ? 'bg-black text-white'
-                    : 'bg-gray-100 text-gray-900'
-                    }`}
+                  className={`flex-shrink-0 rounded-full px-4 py-2 text-md font-medium whitespace-nowrap ${travellerType === 'female-with-family' ? 'bg-black text-white' : 'bg-gray-100 text-gray-900' }`}
                 >
                   Female But Came with other musafirs
                 </button>

@@ -118,7 +118,7 @@ function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-white md:flex md:items-center md:justify-center p-0">
+    <div className="min-h-screen w-full bg-white p-0">
       <div className="bg-white w-full max-w-md mx-auto rounded-lg h-screen">
         <Navigation />
 

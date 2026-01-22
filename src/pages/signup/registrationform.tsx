@@ -77,7 +77,7 @@ export default function RegistrationForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 md:flex md:items-center md:justify-center p-0">
+    <div className="min-h-screen bg-gray-50 p-0">
       <div className="bg-white w-full max-w-md mx-auto shadow-sm p-3">
         {/* Header */}
         <div className="p-4 border-b">
@@ -136,8 +136,7 @@ export default function RegistrationForm() {
                 {['male', 'female', 'other'].map((value) => (
                   <label
                     key={value}
-                    className={`px-4 py-2 rounded-full cursor-pointer ${gender === value ? 'bg-black text-white' : 'bg-gray-100 text-gray-900'
-                      }`}
+                    className={`px-4 py-2 rounded-full cursor-pointer ${gender === value ? 'bg-black text-white' : 'bg-gray-100 text-gray-900' }`}
                   >
                     <input
                       type="radio"
@@ -211,9 +210,7 @@ export default function RegistrationForm() {
                       }
                     }}
                     placeholder="3XXXXXXXXX"
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                      phoneError ? 'border-brand-error focus:ring-red-500' : 'border-gray-300 focus:ring-gray-400'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${ phoneError ? 'border-brand-error focus:ring-red-500' : 'border-gray-300 focus:ring-gray-400' }`}
                     aria-invalid={phoneError ? 'true' : 'false'}
                     aria-describedby={phoneError ? 'phone-error' : undefined}
                   />
@@ -247,9 +244,7 @@ export default function RegistrationForm() {
               </label>
               <div className="flex gap-2 items-start">
                 <select
-                  className={`w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 ${
-                    showWhatsapp ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'
-                  }`}
+                  className={`w-[100px] h-11 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 ${ showWhatsapp ? 'bg-gray-100 cursor-not-allowed' : 'bg-white' }`}
                   disabled={showWhatsapp}
                 >
                   <option value="+92">+92</option>
@@ -272,13 +267,7 @@ export default function RegistrationForm() {
                     }}
                     placeholder="3XXXXXXXXX"
                     disabled={showWhatsapp}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                      showWhatsapp 
-                        ? 'bg-gray-100 cursor-not-allowed' 
-                        : whatsappError 
-                          ? 'border-brand-error focus:ring-red-500' 
-                          : 'border-gray-300 focus:ring-gray-400'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${ showWhatsapp ? 'bg-gray-100 cursor-not-allowed' : whatsappError ? 'border-brand-error focus:ring-red-500' : 'border-gray-300 focus:ring-gray-400' }`}
                     aria-invalid={whatsappError ? 'true' : 'false'}
                     aria-describedby={whatsappError ? 'whatsapp-error' : undefined}
                   />

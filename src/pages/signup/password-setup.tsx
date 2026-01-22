@@ -27,7 +27,7 @@ export default function SetPassword() {
   };
 
   return (
-    <div className='min-h-screen bg-white md:flex md:items-center md:justify-center p-4'>
+    <div className='min-h-screen bg-white p-4'>
       <div className='bg-white w-full max-w-md mx-auto rounded-lg'>
         {/* Header */}
         <header className='flex items-center p-4 border-b'>

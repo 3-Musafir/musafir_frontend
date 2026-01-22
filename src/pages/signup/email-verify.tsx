@@ -59,7 +59,7 @@ export default function EmailVerification() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 md:flex md:items-center md:justify-center p-0">
+    <div className="min-h-screen bg-gray-50 p-0">
       <div className="min-h-screen bg-white w-full max-w-md mx-auto rounded-lg shadow-sm p-6">
 
         {/* header */}

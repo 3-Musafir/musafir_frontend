@@ -64,9 +64,7 @@ export default function FlagshipRequirementsDark() {
                       checked={tripType === 'solo'}
                       onChange={() => setTripType('solo')}
                     />
-                    <div className={`absolute h-4 w-4 rounded-full border ${
-                      tripType === 'solo' ? 'border-brand-primary' : 'border-gray-600'
-                    }`}>
+                    <div className={`absolute h-4 w-4 rounded-full border ${ tripType === 'solo' ? 'border-brand-primary' : 'border-gray-600' }`}>
                       {tripType === 'solo' && (
                         <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-primary" />
                       )}
@@ -82,9 +80,7 @@ export default function FlagshipRequirementsDark() {
                       checked={tripType === 'group'}
                       onChange={() => setTripType('group')}
                     />
-                    <div className={`absolute h-4 w-4 rounded-full border ${
-                      tripType === 'group' ? 'border-brand-primary' : 'border-gray-600'
-                    }`}>
+                    <div className={`absolute h-4 w-4 rounded-full border ${ tripType === 'group' ? 'border-brand-primary' : 'border-gray-600' }`}>
                       {tripType === 'group' && (
                         <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-primary" />
                       )}

@@ -68,9 +68,7 @@ export default function PasswordSetup() {
                   id="confirmPassword"
                   value={confirmPassword}
                   onChange={handleConfirmPasswordChange}
-                  className={`w-full rounded-lg border ${
-                    showError ? 'border-brand-error' : 'border-gray-600'
-                  } bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none`}
+                  className={`w-full rounded-lg border ${ showError ? 'border-brand-error' : 'border-gray-600' } bg-transparent px-4 py-3 text-white focus:border-brand-primary focus:outline-none`}
                   placeholder="Confirm your password"
                 />
                 {showError && (

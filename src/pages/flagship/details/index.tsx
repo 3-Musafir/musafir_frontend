@@ -250,11 +250,7 @@ export default function FlagshipDetails() {
               {imageUrls.map((_: string, index: number) => (
                 <div
                   key={index}
-                  className={`h-1.5 rounded-full transition-all ${
-                    currentImageIndex === index
-                      ? "w-4 bg-white"
-                      : "w-1.5 bg-white/60"
-                  }`}
+                  className={`h-1.5 rounded-full transition-all ${ currentImageIndex === index ? "w-4 bg-white" : "w-1.5 bg-white/60" }`}
                 />
               ))}
             </div>
@@ -404,9 +400,7 @@ export default function FlagshipDetails() {
                     >
                       <span className="font-medium">{faq.question}</span>
                       <HiChevronDown
-                        className={`w-5 h-5 transition-transform ${
-                          expandedFAQ === index ? "transform rotate-180" : ""
-                        }`}
+                        className={`w-5 h-5 transition-transform ${ expandedFAQ === index ? "transform rotate-180" : "" }`}
                       />
                     </button>
                     {expandedFAQ === index && (

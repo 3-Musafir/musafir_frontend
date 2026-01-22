@@ -283,9 +283,9 @@ function UserSettings() {
       <style>{blinkStyle}</style>
       <Header setSidebarOpen={() => { }} showMenuButton={false} />
 
-      <main className="flex-1 overflow-y-auto bg-white h-full px-2 md:px-4 pb-24 pt-4">
+      <main className="flex-1 overflow-y-auto bg-white h-full px-2 pb-24 pt-4">
         {(forceEdit || missingFields.length > 0) && (
-          <div className="mb-4 mx-2 md:mx-6 p-4 bg-brand-warning-light text-yellow-800 rounded-md flex flex-col gap-2">
+          <div className="mb-4 mx-2 p-4 bg-brand-warning-light text-yellow-800 rounded-md flex flex-col gap-2">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="font-semibold">
@@ -312,7 +312,7 @@ function UserSettings() {
         <header className="flex items-center justify-center p-2 mt-2">
           <h1 className="text-2xl font-semibold">User Settings</h1>
         </header>
-        <form className="space-y-6 h-full p-4 md:p-6">
+        <form className="space-y-6 h-full p-4">
           <div className="flex items-center gap-4">
             {(() => {
               const previewImg = isEditing ? editData.profileImg : (editData.profileImg || userData.profileImg || "");
@@ -427,9 +427,7 @@ function UserSettings() {
                       pattern="[0-9]*"
                       maxLength={10}
                       placeholder="3XXXXXXXXX"
-                      className={`w-full px-3 py-2 border rounded-md disabled:bg-gray-100 focus:outline-none focus:ring-2 ${
-                        phoneError ? "border-brand-error focus:ring-red-500" : "border-gray-300 focus:ring-gray-400"
-                      }`}
+                      className={`w-full px-3 py-2 border rounded-md disabled:bg-gray-100 focus:outline-none focus:ring-2 ${ phoneError ? "border-brand-error focus:ring-red-500" : "border-gray-300 focus:ring-gray-400" }`}
                       aria-invalid={phoneError ? "true" : "false"}
                       aria-describedby={phoneError ? "phone-error" : undefined}
                     />
@@ -463,9 +461,7 @@ function UserSettings() {
                   required
                   maxLength={15}
                   placeholder="12345-1234567-1"
-                  className={`w-full px-3 py-2 border rounded-md disabled:bg-gray-100 ${
-                    cnicError ? "border-brand-error focus:ring-red-500" : ""
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md disabled:bg-gray-100 ${ cnicError ? "border-brand-error focus:ring-red-500" : "" }`}
                   aria-invalid={cnicError ? "true" : "false"}
                   aria-describedby={cnicError ? "cnic-error" : undefined}
                 />

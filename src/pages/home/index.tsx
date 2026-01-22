@@ -65,14 +65,14 @@ function Home() {
     <div className='min-h-screen w-full bg-gray-50 flex flex-col'>
       <Header setSidebarOpen={() => {}} showMenuButton={false} />
 
-      <main className='flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50 space-y-6'>
-        <section className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#515778] via-[#3e425f] to-[#2c3047] p-6 sm:p-8 shadow-sm'>
+      <main className='flex-1 overflow-y-auto p-4 bg-gray-50 space-y-6'>
+        <section className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#515778] via-[#3e425f] to-[#2c3047] p-6 shadow-sm'>
           <div className='absolute inset-0 pointer-events-none'>
             <div className='absolute -left-10 -top-16 h-40 w-40 rounded-full bg-white/10 blur-2xl' />
             <div className='absolute right-0 -bottom-20 h-48 w-48 rounded-full bg-orange-400/20 blur-3xl' />
           </div>
-          <div className='relative flex flex-col items-center text-center space-y-4 sm:space-y-5'>
-            <div className='w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center overflow-hidden bg-transparent shadow-none'>
+          <div className='relative flex flex-col items-center text-center space-y-4'>
+            <div className='w-24 h-24 rounded-full flex items-center justify-center overflow-hidden bg-transparent shadow-none'>
               {profileLoading ? (
                 <Skeleton className='h-16 w-16 rounded-full' />
               ) : companyProfile?.logoUrl ? (
@@ -100,10 +100,10 @@ function Home() {
               </div>
             ) : (
               <div className='space-y-2 max-w-3xl'>
-                <h1 className='text-3xl sm:text-4xl font-bold text-white leading-tight'>
+                <h1 className='text-3xl font-bold text-white leading-tight'>
                   {companyProfile?.name || '3Musafir'}
                 </h1>
-                <p className='text-base sm:text-lg text-white/90'>
+                <p className='text-base text-white/90'>
                   {companyProfile?.description ||
                     'A Founder Institute certified platform making community-led travel safe and sustainable for Asians globally.'}
                 </p>
@@ -112,7 +112,7 @@ function Home() {
           </div>
         </section>
 
-        <section className='space-y-4 pb-16 md:pb-6'>
+        <section className='space-y-4 pb-16'>
           <div className='space-y-4'>
             {flagships.length > 0 ? (
               flagships.map((event) => {
@@ -125,7 +125,7 @@ function Home() {
             ) : (
               <div className='text-center text-gray-500 py-8'>
                 <p className='text-xl font-medium mb-2'>No Flagships Available Yet</p>
-                <p className='text-lg '>
+                <p className='text-lg'>
                   Stay tuned! We&apos;re working on bringing exciting new flagships your way.
                 </p>
               </div>

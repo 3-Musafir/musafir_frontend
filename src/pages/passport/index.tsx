@@ -96,21 +96,13 @@ function Passport() {
 
       <div className="border-b border-border flex justify-between mt-4">
         <button
-          className={`w-1/2 py-3 text-sm font-medium text-center ${
-            activeTab === "past"
-              ? "border-b-2 border-heading text-heading"
-              : "text-muted-foreground border-b-2 border-border"
-          }`}
+          className={`w-1/2 py-3 text-sm font-medium text-center ${ activeTab === "past" ? "border-b-2 border-heading text-heading" : "text-muted-foreground border-b-2 border-border" }`}
           onClick={() => setActiveTab("past")}
         >
           Past
         </button>
         <button
-          className={`w-1/2 py-3 text-sm font-medium text-center ${
-            activeTab === "upcoming"
-              ? "border-b-2 border-heading text-heading"
-              : "text-muted-foreground border-b-2 border-border"
-          }`}
+          className={`w-1/2 py-3 text-sm font-medium text-center ${ activeTab === "upcoming" ? "border-b-2 border-heading text-heading" : "text-muted-foreground border-b-2 border-border" }`}
           onClick={() => setActiveTab("upcoming")}
         >
           Upcoming

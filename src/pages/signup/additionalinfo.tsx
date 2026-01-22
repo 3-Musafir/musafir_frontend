@@ -168,7 +168,7 @@ export default function AdditionalInfo() {
     }
   };
   return (
-    <div className="min-h-screen bg-gray-50 md:flex md:items-center md:justify-center p-0">
+    <div className="min-h-screen bg-gray-50 p-0">
       <div className="bg-white min-h-screen w-full max-w-md mx-auto rounded-lg shadow-sm p-3">
         {/* Header */}
         <div className="p-4 border-b">
@@ -211,7 +211,7 @@ export default function AdditionalInfo() {
 
             {/* Step 3 */}
             <div className="flex flex-col items-center z-10">
-              <div className="w-10 h-10 rounded-full bg-black text-white  flex items-center justify-center text-sm">
+              <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center text-sm">
                 {flagshipId ? 3 : 2}
               </div>
               <span className="mt-2 text-sm text-gray-600">Background</span>
@@ -239,11 +239,7 @@ export default function AdditionalInfo() {
                   pattern="[0-9-]*"
                   maxLength={15} // allows 13 digits + 2 dashes (xxxxx-xxxxxxx-x)
                   onChange={(e) => handleCnicChange(e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                    cnicError
-                      ? "border-brand-error focus:ring-red-500"
-                      : "border-gray-300 focus:ring-gray-400"
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${ cnicError ? "border-brand-error focus:ring-red-500" : "border-gray-300 focus:ring-gray-400" }`}
                   placeholder="Enter CNIC number"
                   disabled={isLoading}
                   aria-invalid={cnicError ? "true" : "false"}

@@ -17,7 +17,7 @@ export default function LaunchScreen() {
     }
   }, [router.query]);
   return (
-    <div className="min-h-screen bg-white md:flex md:items-center md:justify-center p-4">
+    <div className="min-h-screen bg-white p-4">
       <div className="bg-white w-full max-w-md mx-auto rounded-lg shadow-sm">
         {/* Login Button at Top */}
         <div className="flex justify-between items-center p-4 mt-4">
@@ -38,7 +38,7 @@ export default function LaunchScreen() {
           </div>
 
           {/* Question Text */}
-          <h1 className="mb-12 text-center text-3xl font-bold leading-tight md:text-4xl">
+          <h1 className="mb-12 text-center text-3xl font-bold leading-tight">
             Have you ever registered for a 3Musafir flagship before?
           </h1>
 

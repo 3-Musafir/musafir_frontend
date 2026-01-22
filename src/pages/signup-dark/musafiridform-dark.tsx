@@ -49,11 +49,7 @@ export default function MusafirForm() {
                   <button
                     key={option}
                     type="button"
-                    className={`rounded-md px-4 py-2 text-sm transition-colors ${
-                      gender === option.toLowerCase()
-                        ? 'bg-brand-primary text-white'
-                        : 'text-gray-400 hover:text-white'
-                    }`}
+                    className={`rounded-md px-4 py-2 text-sm transition-colors ${ gender === option.toLowerCase() ? 'bg-brand-primary text-white' : 'text-gray-400 hover:text-white' }`}
                     onClick={() => setGender(option.toLowerCase())}
                   >
                     {option}

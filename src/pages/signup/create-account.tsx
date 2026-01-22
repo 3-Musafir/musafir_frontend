@@ -69,7 +69,7 @@ export default function CreateAccount() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 md:flex md:items-center md:justify-center p-0">
+    <div className="min-h-screen w-full bg-gray-50 p-0">
       <div className="bg-white w-full max-w-md mx-auto rounded-lg shadow-sm h-screen p-3">
         {/* Header */}
         <header className="flex items-center p-4 border-b">
