@@ -14,24 +14,30 @@ import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
 
 const bankDetails = {
-  "standard-chartered": {
+  "faysal-bank": {
     id: "67fe5f79662980c34fa1bc2b",
-    title: "Standard Chartered Bank",
-    accountNumber: "1234567890",
-    iban: "PK36SCBL0000001234567890",
+    title: "Faysal Bank (Ahmed Bin Abrar)",
+    accountNumber: "PK32FAYS3077436000006884",
+    iban: "—",
   },
-  "dubai-islamic": {
+  "alfalah-ali-hassan": {
     id: "67fe5f79662980c34fa1bc2c",
-    title: "Dubai Islamic Bank",
-    accountNumber: "0987654321",
-    iban: "PK36DIBL0000000987654321",
+    title: "Alfalah Bank (Ali Hassan)",
+    accountNumber: "PK34ALFH5617005002276965",
+    iban: "—",
+  },
+  "alfalah-hameez-rizwan": {
+    id: "manual-alfalah-hameez",
+    title: "Alfalah Bank (Muhammad Hameez Rizwan)",
+    accountNumber: "55015000960473",
+    iban: "—",
   },
 };
 
 export default function TripPayment() {
   const { toast } = useToast();
   const [selectedBank, setSelectedBank] =
-    useState<string>("standard-chartered");
+    useState<string>("faysal-bank");
   const router = useRouter();
   const params = useParams();
   const registrationId = params?.slug as string;
@@ -579,7 +585,9 @@ export default function TripPayment() {
                       </div>
                       <div className="flex flex-col space-y-1">
                         <span className="text-sm text-muted-foreground">
-                          Account Number
+                          {String(details.accountNumber || "").startsWith("PK")
+                            ? "IBAN"
+                            : "Account Number"}
                         </span>
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-heading">
@@ -595,20 +603,22 @@ export default function TripPayment() {
                           </Button>
                         </div>
                       </div>
-                      <div className="flex flex-col space-y-1">
-                        <span className="text-sm text-muted-foreground">IBAN</span>
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-heading">{details.iban}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-2"
-                            onClick={() => handleCopy(details.iban)}
-                          >
-                            <Copy className="h-4 w-4" />
-                          </Button>
+                      {details.iban && details.iban !== "—" ? (
+                        <div className="flex flex-col space-y-1">
+                          <span className="text-sm text-muted-foreground">IBAN</span>
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-heading">{details.iban}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-2"
+                              onClick={() => handleCopy(details.iban)}
+                            >
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
-                      </div>
+                      ) : null}
                     </div>
                   )}
                 </div>

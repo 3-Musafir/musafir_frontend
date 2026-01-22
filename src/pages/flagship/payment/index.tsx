@@ -28,19 +28,27 @@ function PaymentOptions() {
   const bankAccounts = [
     {
       id: '1',
-      name: 'Standard Chartered',
+      name: 'Faysal Bank',
       logo: '/sc.png',
-      accountNumber: '1234-5678-9012-3456',
-      accountTitle: 'John Doe',
-      branch: 'Main Branch, City Center',
+      accountNumber: 'PK32FAYS3077436000006884',
+      accountTitle: 'Ahmed Bin Abrar',
+      branch: '—',
     },
     {
       id: '2',
-      name: "Ali's Standard Charte",
+      name: 'Alfalah Bank',
       logo: '/db.png',
-      accountNumber: '9876-5432-1098-7654',
-      accountTitle: 'Ali Ahmed',
-      branch: 'Downtown Branch',
+      accountNumber: 'PK34ALFH5617005002276965',
+      accountTitle: 'Ali Hassan',
+      branch: '—',
+    },
+    {
+      id: '3',
+      name: 'Alfalah Bank',
+      logo: '/placeholder.svg',
+      accountNumber: '55015000960473',
+      accountTitle: 'Muhammad Hameez Rizwan',
+      branch: '—',
     },
   ];
 
@@ -166,7 +174,9 @@ function PaymentOptions() {
                   >
                     <div className='p-4 bg-gray-50 space-y-3'>
                       <div>
-                        <p className='text-sm text-gray-500'>Account Number</p>
+                        <p className='text-sm text-gray-500'>
+                          {bank.accountNumber.startsWith('PK') ? 'IBAN' : 'Account Number'}
+                        </p>
                         <p className='font-medium'>{bank.accountNumber}</p>
                       </div>
                       <div>

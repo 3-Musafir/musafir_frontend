@@ -50,15 +50,19 @@ const withAuth = <P extends object>(
     };
 
     useEffect(() => {
+      if (!router.isReady) return;
       if (status === "loading") return; // Avoid redirecting while checking session
 
       // If NextAuth has definitively determined there's no session, just route
       // to login (do not signOut here to avoid callback loops during OAuth
       // hydration).
       if (status === "unauthenticated" && !session) {
+        if (router.pathname === "/login") return;
         const callbackUrl = typeof router.asPath === "string" ? router.asPath : "/";
-        router.replace(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
-        return;
+        const timer = setTimeout(() => {
+          router.replace(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+        }, 250);
+        return () => clearTimeout(timer);
       }
 
       if (!session) return; // Wait for session to hydrate
