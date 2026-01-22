@@ -9,7 +9,7 @@ import { formatDate } from "@/utils/formatDate";
 import useUserHandler from "@/hooks/useUserHandler";
 
 function Passport() {
-  const [activeTab, setActiveTab] = useState<"past" | "upcoming">("past");
+  const [activeTab, setActiveTab] = useState<"past" | "upcoming">("upcoming");
   const [pastEvents, setPastEvents] = useState<any[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
   const [userVerificationStatus, setUserVerificationStatus] = useState<string | undefined>(undefined);
@@ -96,46 +96,20 @@ function Passport() {
 
       <div className="border-b border-border flex justify-between mt-4">
         <button
-          className={`w-1/2 py-3 text-sm font-medium text-center ${ activeTab === "past" ? "border-b-2 border-heading text-heading" : "text-muted-foreground border-b-2 border-border" }`}
-          onClick={() => setActiveTab("past")}
-        >
-          Past
-        </button>
-        <button
           className={`w-1/2 py-3 text-sm font-medium text-center ${ activeTab === "upcoming" ? "border-b-2 border-heading text-heading" : "text-muted-foreground border-b-2 border-border" }`}
           onClick={() => setActiveTab("upcoming")}
         >
           Upcoming
         </button>
+        <button
+          className={`w-1/2 py-3 text-sm font-medium text-center ${ activeTab === "past" ? "border-b-2 border-heading text-heading" : "text-muted-foreground border-b-2 border-border" }`}
+          onClick={() => setActiveTab("past")}
+        >
+          Past
+        </button>
       </div>
 
       <main className="space-y-4 p-4 pb-24">
-        {activeTab === "past" && pastEvents.length > 0
-          ? pastEvents.map((event) => (
-              <PassportPastCard
-                key={event._id}
-                registrationId={event._id}
-                title={event.flagshipId.tripName}
-                date={formatDate(
-                  event.flagshipId.startDate,
-                  event.flagshipId.endDate
-                )}
-                location={event.flagshipId.destination}
-                rating={event.ratingId?.rating}
-                price={event.price}
-                status={event.status}
-              />
-            ))
-          : activeTab === "past" && (
-              <div className="flex flex-col items-center justify-center h-60 text-muted-foreground">
-                <p className="text-center text-lg mb-2">
-                  You haven't been on any trips yet.
-                </p>
-                <p className="text-center">
-                  Time for an adventure - book your first trip now!
-                </p>
-              </div>
-            )}
         {activeTab === "upcoming" && upcomingEvents.length > 0
           ? upcomingEvents.map((event) => (
               <PassportUpcomingCard
@@ -172,6 +146,32 @@ function Passport() {
                 </p>
                 <p className="text-center">
                   Explore our trips and plan your next adventure.
+                </p>
+              </div>
+            )}
+        {activeTab === "past" && pastEvents.length > 0
+          ? pastEvents.map((event) => (
+              <PassportPastCard
+                key={event._id}
+                registrationId={event._id}
+                title={event.flagshipId.tripName}
+                date={formatDate(
+                  event.flagshipId.startDate,
+                  event.flagshipId.endDate
+                )}
+                location={event.flagshipId.destination}
+                rating={event.ratingId?.rating}
+                price={event.price}
+                status={event.status}
+              />
+            ))
+          : activeTab === "past" && (
+              <div className="flex flex-col items-center justify-center h-60 text-muted-foreground">
+                <p className="text-center text-lg mb-2">
+                  You haven't been on any trips yet.
+                </p>
+                <p className="text-center">
+                  Time for an adventure - book your first trip now!
                 </p>
               </div>
             )}
