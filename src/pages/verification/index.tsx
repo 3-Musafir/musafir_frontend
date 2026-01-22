@@ -144,6 +144,40 @@ function GetVerified() {
     }
   };
 
+  const requestCameraPermission = async () => {
+    if (typeof window === 'undefined') return false;
+    if (!window.isSecureContext) {
+      showAlert('Camera access requires a secure (HTTPS) connection.', 'error');
+      return false;
+    }
+    if (!navigator?.mediaDevices?.getUserMedia) {
+      showAlert('Camera access is not supported in this browser.', 'error');
+      return false;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      stream.getTracks().forEach((track) => track.stop());
+      return true;
+    } catch (error) {
+      const err = error as { name?: string };
+      switch (err?.name) {
+        case 'NotAllowedError':
+          showAlert('Camera permission denied. Please allow access and try again.', 'error');
+          break;
+        case 'NotFoundError':
+          showAlert('No camera device found. Please connect a camera and try again.', 'error');
+          break;
+        case 'NotReadableError':
+          showAlert('Camera is in use by another application.', 'error');
+          break;
+        default:
+          showAlert('Could not access camera. Please check permissions.', 'error');
+      }
+      return false;
+    }
+  };
+
   const handleRecordVideo = async () => {
     try {
       setIsRecording(true);
@@ -152,8 +186,12 @@ function GetVerified() {
       setReferral2('');
       setRequestCall(false);
       setVideoLink('');
-      
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+      const granted = await requestCameraPermission();
+      if (!granted) {
+        return;
+      }
+
       // Here you would implement the actual video recording functionality
       // For now, just showing that this method was selected
     } catch (error) {
