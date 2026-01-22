@@ -18,8 +18,8 @@ export function Navigation() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0">
-      <div className="mx-auto w-full max-w-md px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
-        <div className="rounded-t-2xl border border-border bg-white/95 shadow-sm backdrop-blur">
+      <div className="mx-auto w-full max-w-md px-3 pb-[env(safe-area-inset-bottom)]">
+        <div className="border-t border-border bg-white">
           <ul className="flex justify-between px-1 pt-2 pb-1">
         {links.map(({ href, label, icon: Icon }) => {
           const isHomeLink = href === "/home"
