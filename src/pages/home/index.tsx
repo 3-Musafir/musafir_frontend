@@ -5,19 +5,27 @@ import { useRouter } from 'next/router';
 import { Navigation } from '../navigation';
 import Header from '../../components/header';
 import HomeEventCard from '@/components/cards/HomeEventCard';
+import PassportUpcomingCard from '@/components/cards/PassportUpcomingCard';
 import useFlagshipHook from '../../hooks/useFlagshipHandler';
+import useRegistrationHook from '@/hooks/useRegistrationHandler';
 import useCompanyProfile from '@/hooks/useCompanyProfile';
+import useUserHandler from '@/hooks/useUserHandler';
 import { CompanyProfile } from '@/services/types/companyProfile';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatDate } from '@/utils/formatDate';
 
 function Home() {
   const router = useRouter();
   const actionFlagship = useFlagshipHook();
+  const registrationHook = useRegistrationHook();
+  const userHandler = useUserHandler();
   const { getProfile } = useCompanyProfile();
   const [flagships, setFlagships] = useState<any[]>([]);
+  const [upcomingRegistrations, setUpcomingRegistrations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [userVerificationStatus, setUserVerificationStatus] = useState<string | undefined>(undefined);
   const fallbackLogo = '/3mwinterlogo.png';
 
   const fetchFlagships = async () => {
@@ -45,9 +53,31 @@ function Home() {
     }
   };
 
+  const fetchUpcomingRegistrations = async () => {
+    try {
+      const data = await registrationHook.getUpcomingPassport();
+      if (data) {
+        setUpcomingRegistrations(data);
+      }
+    } catch (error) {
+      console.error('Error fetching upcoming registrations:', error);
+    }
+  };
+
+  const fetchUserVerificationStatus = async () => {
+    try {
+      const status = await userHandler.getVerificationStatus();
+      setUserVerificationStatus(status);
+    } catch (error) {
+      console.error('Error fetching verification status:', error);
+    }
+  };
+
   useEffect(() => {
     fetchFlagships();
     fetchCompanyProfile();
+    fetchUpcomingRegistrations();
+    fetchUserVerificationStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -60,6 +90,14 @@ function Home() {
       localStorage.removeItem('flagshipId');
     }
   }, [router.isReady, router.query]);
+
+  const actionableRegistrations = upcomingRegistrations.filter((event) => {
+    if (!event?.flagship) return false;
+    const dueAmount = Number(event.amountDue || 0);
+    if (event.status === 'pending' || event.status === 'notReserved') return true;
+    if (event.status === 'confirmed' && dueAmount > 0) return true;
+    return false;
+  });
 
   return (
     <div className='min-h-screen w-full bg-gray-50 flex flex-col'>
@@ -111,6 +149,42 @@ function Home() {
             )}
           </div>
         </section>
+
+        {actionableRegistrations.length > 0 && (
+          <section className='space-y-4'>
+            <div className='flex items-center justify-between'>
+              <h2 className='text-xl font-semibold text-gray-900'>Complete your payment</h2>
+              <span className='text-sm text-gray-500'>Finish payment to confirm your seat</span>
+            </div>
+            <div className='space-y-4'>
+              {actionableRegistrations.map((event) => (
+                <PassportUpcomingCard
+                  key={event._id}
+                  registrationId={event._id}
+                  title={event.flagship?.tripName}
+                  date={formatDate(event.flagship?.startDate, event.flagship?.endDate)}
+                  appliedDate={new Date(event.createdAt).toLocaleDateString()}
+                  location={event.flagship?.destination}
+                  image={event.flagship?.images?.[0]}
+                  status={event.status}
+                  paymentInfo={{
+                    price: event.price,
+                    dueAmount: event.amountDue,
+                    discountApplied: event.discountApplied,
+                  }}
+                  detailedPlan={event.flagship?.detailedPlan}
+                  userVerificationStatus={userVerificationStatus}
+                  hasPaymentSubmitted={Boolean(event.paymentId)}
+                  paymentStatus={
+                    event.paymentId && typeof event.paymentId === 'object'
+                      ? event.paymentId.status
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className='space-y-4 pb-16'>
           <div className='space-y-4'>
