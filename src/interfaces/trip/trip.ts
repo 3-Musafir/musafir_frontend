@@ -6,6 +6,12 @@ export interface IRegistration {
   user: IUser | string;
   payment?: IPayment | string;
   paymentId?: IPayment | string;
+  amountDue?: number;
+  discountApplied?: number;
+  cancelledAt?: string;
+  refundStatus?: string;
+  waitlistOfferStatus?: string;
+  waitlistOfferExpiresAt?: string;
   status: string;
   comment: string;
   createdAt: string;
@@ -39,6 +45,9 @@ export interface IVerification {
   RequestCall: boolean;
   videoLink?: string;
   referralIDs?: string[];
+  verificationDate?: string;
+  verificationRequestDate?: string;
+  method?: string;
 }
 
 export interface IPayment {

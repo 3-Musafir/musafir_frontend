@@ -137,6 +137,8 @@ function Passport() {
                     ? event.paymentId.status
                     : undefined
                 }
+                refundStatus={event.refundStatus}
+                cancelledAt={event.cancelledAt}
               />
             ))
           : activeTab === "upcoming" && (
@@ -163,6 +165,7 @@ function Passport() {
                 rating={event.ratingId?.rating}
                 price={event.price}
                 status={event.status}
+                refundStatus={event.refundStatus}
               />
             ))
           : activeTab === "past" && (

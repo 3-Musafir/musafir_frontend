@@ -49,17 +49,22 @@ export const RegistrationStatsContainer = () => {
   }
 
   // Calculate percentages for the progress bars
-  const total = stats.totalRegistrations;
-  const pendingPercentage = (stats.pendingCount / total) * 100;
-  const acceptedPercentage = (stats.acceptedCount / total) * 100;
-  const rejectedPercentage = (stats.rejectedCount / total) * 100;
-  const paidPercentage = (stats.paidCount / total) * 100;
-  const remainingPercentage =
+  const totalRegistrations = stats.totalRegistrations;
+  const total = Math.max(1, totalRegistrations);
+  const newPercentage = (stats.newCount / total) * 100;
+  const onboardingPercentage = (stats.onboardingCount / total) * 100;
+  const paymentPercentage = (stats.paymentCount / total) * 100;
+  const waitlistedPercentage = (stats.waitlistedCount / total) * 100;
+  const confirmedPercentage = (stats.confirmedCount / total) * 100;
+  const remainingPercentage = Math.max(
+    0,
     100 -
-    (pendingPercentage +
-      acceptedPercentage +
-      rejectedPercentage +
-      paidPercentage);
+      (newPercentage +
+        onboardingPercentage +
+        paymentPercentage +
+        waitlistedPercentage +
+        confirmedPercentage),
+  );
 
   // Calculate gender percentages
   const malePercentage = (stats.maleCount / total) * 100;
@@ -105,19 +110,23 @@ export const RegistrationStatsContainer = () => {
         <div className="h-6 flex rounded-sm overflow-hidden mb-4">
           <div
             className="bg-emerald-500"
-            style={{ width: `${paidPercentage}%` }}
-          ></div>
-          <div
-            className="bg-red-500"
-            style={{ width: `${rejectedPercentage}%` }}
+            style={{ width: `${confirmedPercentage}%` }}
           ></div>
           <div
             className="bg-blue-700"
-            style={{ width: `${acceptedPercentage}%` }}
+            style={{ width: `${paymentPercentage}%` }}
           ></div>
           <div
-            className="bg-brand-primary"
-            style={{ width: `${pendingPercentage}%` }}
+            className="bg-amber-500"
+            style={{ width: `${onboardingPercentage}%` }}
+          ></div>
+          <div
+            className="bg-rose-500"
+            style={{ width: `${waitlistedPercentage}%` }}
+          ></div>
+          <div
+            className="bg-gray-400"
+            style={{ width: `${newPercentage}%` }}
           ></div>
           <div
             className="bg-gray-200"
@@ -126,24 +135,29 @@ export const RegistrationStatsContainer = () => {
         </div>
         <div className="space-y-2">
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-brand-primary mr-2"></div>
-            <div className="flex-1">Pending</div>
-            <div className="font-medium">{stats.pendingCount}</div>
+            <div className="w-4 h-4 bg-gray-400 mr-2"></div>
+            <div className="flex-1">New</div>
+            <div className="font-medium">{stats.newCount}</div>
+          </div>
+          <div className="flex items-center">
+            <div className="w-4 h-4 bg-amber-500 mr-2"></div>
+            <div className="flex-1">Onboarding</div>
+            <div className="font-medium">{stats.onboardingCount}</div>
           </div>
           <div className="flex items-center">
             <div className="w-4 h-4 bg-blue-700 mr-2"></div>
-            <div className="flex-1">Accepted</div>
-            <div className="font-medium">{stats.acceptedCount}</div>
-          </div>
-          <div className="flex items-center">
-            <div className="w-4 h-4 bg-red-500 mr-2"></div>
-            <div className="flex-1">Rejected</div>
-            <div className="font-medium">{stats.rejectedCount}</div>
+            <div className="flex-1">Payment</div>
+            <div className="font-medium">{stats.paymentCount}</div>
           </div>
           <div className="flex items-center">
             <div className="w-4 h-4 bg-emerald-500 mr-2"></div>
-            <div className="flex-1">Paid</div>
-            <div className="font-medium">{stats.paidCount}</div>
+            <div className="flex-1">Confirmed</div>
+            <div className="font-medium">{stats.confirmedCount}</div>
+          </div>
+          <div className="flex items-center">
+            <div className="w-4 h-4 bg-rose-500 mr-2"></div>
+            <div className="flex-1">Waitlisted</div>
+            <div className="font-medium">{stats.waitlistedCount}</div>
           </div>
         </div>
       </div>

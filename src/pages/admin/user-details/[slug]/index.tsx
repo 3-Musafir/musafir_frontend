@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Phone, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FlagshipService } from "@/services/flagshipService";
@@ -20,11 +20,6 @@ export default function UserDetails() {
   const [registeredUser, setRegisteredUser] = useState<IRegistration>();
   const [loading, setLoading] = useState(true);
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"approve" | "reject" | "didntPick" | null>(null);
-  const [comment, setComment] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-
   const router = useRouter();
   const { slug } = router.query;
 
@@ -35,43 +30,23 @@ export default function UserDetails() {
     }));
   };
 
-  const openModal = (type: "approve" | "reject" | "didntPick") => {
-    setModalType(type);
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-    setComment("");
-    setModalType(null);
-  };
-
-  const handleSubmit = async () => {
-    if (!slug) return;
-
-    setSubmitting(true);
-    try {
-      if (modalType === "approve") {
-        await FlagshipService.approveRegistration(slug as string, comment);
-        alert("Registration Approved Successfully");
-        await fetchUsers();
-      } else if (modalType === "reject") {
-        await FlagshipService.rejectRegistration(slug as string, comment);
-        alert("Registration Rejected");
-        await fetchUsers();
-      } else if (modalType === "didntPick") {
-        await FlagshipService.didntPickRegistration(slug as string, comment);
-        alert("Marked as Didn't Pick");
-        await fetchUsers();
-      }
-      closeModal();
-    } catch (error) {
-      console.error(`Error ${modalType}ing registration:`, error);
-      toast.error(`Failed to ${modalType} registration`);
-    } finally {
-      setSubmitting(false);
+  const getStatusLabel = (status?: string) => {
+    switch (status) {
+      case "new":
+        return "New";
+      case "onboarding":
+        return "Onboarding";
+      case "payment":
+        return "Payment";
+      case "waitlisted":
+        return "Waitlisted";
+      case "confirmed":
+        return "Confirmed";
+      default:
+        return status || "Unknown";
     }
   };
+
 
   const fetchUsers = async () => {
     try {
@@ -97,48 +72,30 @@ export default function UserDetails() {
     return <p className="p-4">Loading...</p>;
   }
 
+  const registrationStatus = registeredUser?.status;
+  const statusLabel = getStatusLabel(registrationStatus);
+  const userId =
+    typeof registeredUser?.user === "string"
+      ? registeredUser?.user
+      : (registeredUser?.user as IUser)?._id;
+  const paymentObject =
+    typeof registeredUser?.paymentId === "string"
+      ? null
+      : (registeredUser?.paymentId as any);
+  const paymentId =
+    typeof registeredUser?.paymentId === "string"
+      ? registeredUser?.paymentId
+      : paymentObject?._id;
+  const paymentStatus = paymentObject?.status;
+  const verification = (registeredUser?.user as IUser)?.verification;
+  const verificationDate =
+    verification?.verificationDate || (verification as any)?.VerificationDate;
+  const formattedVerificationDate = verificationDate
+    ? new Date(verificationDate).toLocaleDateString()
+    : "N/A";
+
   return (
     <div className="max-w-md mx-auto pb-8 bg-white">
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-96 relative">
-            <button
-              onClick={closeModal}
-              className="absolute top-2 right-2 text-gray-500"
-              disabled={submitting}
-              aria-busy={submitting || undefined}
-            >
-              <X />
-            </button>
-            <h2 className="text-lg font-bold mb-4 capitalize">
-              {modalType === 'didntPick' ? "Mark as Didn't Pick" : `${modalType} User`}
-            </h2>
-            <textarea
-              placeholder="Optional Comment"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 mb-4 resize-none"
-              rows={4}
-              disabled={submitting}
-            />
-            <button
-              onClick={handleSubmit}
-              className={`w-full text-white py-2 rounded-lg ${modalType === "approve"
-                ? "bg-brand-primary hover:bg-brand-primary-hover"
-                : modalType === 'didntPick'
-                  ? "bg-gray-700 hover:bg-gray-800"
-                  : "bg-red-800 hover:bg-red-900"
-                } ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
-              disabled={submitting}
-              aria-busy={submitting || undefined}
-            >
-              {submitting
-                ? (modalType === "approve" ? "Approving..." : modalType === 'didntPick' ? "Marking..." : "Rejecting...")
-                : (modalType === "approve" ? "Confirm Approval" : modalType === 'didntPick' ? "Confirm Mark as Didn't Pick" : "Confirm Rejection")}
-            </button>
-          </div>
-        </div>
-      )}
 
       <header className="sticky top-0 bg-white z-10">
         <div className="p-4 border-b flex items-center">
@@ -414,56 +371,52 @@ export default function UserDetails() {
 
               <div className="flex justify-between">
                 <span className="text-gray-500">Verification Date</span>
-                <span className="font-medium">Dec 10, 2024</span>
+                <span className="font-medium">{formattedVerificationDate}</span>
               </div>
 
-              {(registeredUser?.status === "pending" || registeredUser?.status === "didntPick") && (
-                <>
-                  <div className="grid grid-cols-2 gap-4 mt-4">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openModal('didntPick');
-                      }}
-                      className="border border-gray-300 rounded-lg py-3 px-4 font-medium"
-                    >
-                      Didn&apos;t Pick
-                    </button>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Registration Status</span>
+                <span className="font-medium">{statusLabel}</span>
+              </div>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openModal("reject");
-                      }}
-                      className="bg-red-800 text-white rounded-lg py-3 px-4 font-medium"
-                    >
-                      Reject
-                    </button>
-                  </div>
+              {paymentStatus && (
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Payment Status</span>
+                  <span className="font-medium capitalize">{paymentStatus}</span>
+                </div>
+              )}
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openModal("approve");
-                    }}
-                    className="w-full bg-brand-primary text-white rounded-lg py-3 px-4 font-medium"
+              <div className="mt-4 space-y-3">
+                {registrationStatus === "onboarding" && userId && (
+                  <Link
+                    href={`/admin/user/${userId}`}
+                    className="w-full block text-center bg-brand-primary text-white rounded-lg py-3 px-4 font-medium"
                   >
-                    Approve
-                  </button>
-                </>
-              )}
+                    Review Verification
+                  </Link>
+                )}
 
-              {registeredUser?.status === "accepted" && (
-                <div className="mt-4 p-3 bg-brand-primary/10 text-green-800 rounded-lg text-center font-medium">
-                  Registration Accepted
-                </div>
-              )}
+                {registrationStatus === "payment" && paymentId && (
+                  <Link
+                    href={`/admin/payment/${paymentId}`}
+                    className="w-full block text-center bg-blue-700 text-white rounded-lg py-3 px-4 font-medium"
+                  >
+                    Review Payment
+                  </Link>
+                )}
 
-              {registeredUser?.status === "rejected" && (
-                <div className="mt-4 p-3 bg-brand-error-light text-red-800 rounded-lg text-center font-medium">
-                  Registration Rejected
-                </div>
-              )}
+                {registrationStatus === "payment" && !paymentId && (
+                  <p className="text-sm text-gray-600">Awaiting payment submission.</p>
+                )}
+
+                {registrationStatus === "waitlisted" && (
+                  <p className="text-sm text-gray-600">User is on the waitlist.</p>
+                )}
+
+                {registrationStatus === "confirmed" && (
+                  <p className="text-sm text-gray-600">Seat confirmed.</p>
+                )}
+              </div>
             </div>
           )}
         </div>

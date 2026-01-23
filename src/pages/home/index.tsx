@@ -93,8 +93,10 @@ function Home() {
 
   const actionableRegistrations = upcomingRegistrations.filter((event) => {
     if (!event?.flagship) return false;
+    if (event?.cancelledAt) return false;
+    if (event?.refundStatus && event.refundStatus !== 'none') return false;
     const dueAmount = Number(event.amountDue || 0);
-    if (event.status === 'pending' || event.status === 'notReserved') return true;
+    if (event.status === 'payment') return true;
     if (event.status === 'confirmed' && dueAmount > 0) return true;
     return false;
   });
@@ -180,6 +182,8 @@ function Home() {
                       ? event.paymentId.status
                       : undefined
                   }
+                  refundStatus={event.refundStatus}
+                  cancelledAt={event.cancelledAt}
                 />
               ))}
             </div>

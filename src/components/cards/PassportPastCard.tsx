@@ -9,10 +9,21 @@ interface PassportPastCardProps {
   rating?: number;
   price: number;
   status: string;
+  refundStatus?: string;
 }
 
-const PassportPastCard: React.FC<PassportPastCardProps> = ({ registrationId, title, date, location, rating, price, status }) => {
+const PassportPastCard: React.FC<PassportPastCardProps> = ({
+  registrationId,
+  title,
+  date,
+  location,
+  rating,
+  price,
+  status,
+  refundStatus,
+}) => {
   const router = useRouter();
+  const isRefunded = refundStatus === "refunded" || status === "refunded";
 
   return (
     <div className="w-full rounded-xl bg-green-800 px-4 py-5 text-white">
@@ -25,7 +36,7 @@ const PassportPastCard: React.FC<PassportPastCardProps> = ({ registrationId, tit
           You Rated {rating} out of 10
         </p>
       ) : (
-        status === "refunded" ? (
+        isRefunded ? (
           <p className="mt-2 text-sm">
             Refunded
           </p>

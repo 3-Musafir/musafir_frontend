@@ -13,6 +13,23 @@ export const RegistrationsList = () => {
   const router = useRouter();
   const { slug } = router.query;
 
+  const getStatusLabel = (status?: string) => {
+    switch (status) {
+      case "new":
+        return "New";
+      case "onboarding":
+        return "Onboarding";
+      case "payment":
+        return "Payment";
+      case "waitlisted":
+        return "Waitlisted";
+      case "confirmed":
+        return "Confirmed";
+      default:
+        return status || "Unknown";
+    }
+  };
+
   const fetchUsers = async (query: string = "") => {
     try {
       const response = await FlagshipService.getRegisteredUsers(
@@ -68,9 +85,7 @@ export const RegistrationsList = () => {
                 <p className="text-sm text-gray-500">{`Joining from ${
                   (r.user as IUser).city
                 }`}</p>
-                {(r.status === "rejected" || r.status === "accepted" || r.status === "didntPick") && (<p className="text-sm text-gray-500">{`Status: ${
-                  r.status === "rejected"? "Rejected": r.status === "accepted"? "Accepted": r.status === "didntPick"? "Didn't Pick": ""
-                }`}</p>)}
+                <p className="text-sm text-gray-500">{`Status: ${getStatusLabel(r.status)}`}</p>
               </div>
               <div className="absolute top-4 right-4">
                 <Image

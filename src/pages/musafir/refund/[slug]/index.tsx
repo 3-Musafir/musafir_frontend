@@ -173,10 +173,14 @@ export default function RefundForm() {
   }
 
   const status = String(registration?.status || "");
-  const needsCancellation = status === "confirmed";
-  const canSubmit = status === "cancelled";
-  const isUnderReview = status === "refundProcessing";
-  const isRefunded = status === "refunded";
+  const cancelledAt = Boolean(registration?.cancelledAt);
+  const registrationRefundStatus = String(registration?.refundStatus || "none");
+  const needsCancellation = status === "confirmed" && !cancelledAt;
+  const isUnderReview =
+    registrationRefundStatus === "pending" ||
+    registrationRefundStatus === "processing";
+  const isRefunded = registrationRefundStatus === "refunded";
+  const canSubmit = cancelledAt && !isUnderReview && !isRefunded;
 
   const refund = refundStatus?.refund;
   const settlement = refundStatus?.settlement;

@@ -73,6 +73,12 @@ export interface IRegistrationStats {
   acceptedCount: number;
   rejectedCount: number;
   paidCount: number;
+  newCount: number;
+  onboardingCount: number;
+  paymentCount: number;
+  waitlistedCount: number;
+  confirmedCount: number;
+  cancelledCount: number;
   teamSeats: number;
   lahoreSeats: number;
   islamabadSeats: number;
