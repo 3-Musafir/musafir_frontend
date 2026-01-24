@@ -226,6 +226,16 @@ function UserSettings() {
     try {
       setIsLoading(true);
       const response = await userHandler.getMe();
+      if (!response) {
+        setUserData({} as User);
+        setIsLoading(false);
+        toast({
+          title: "Load Failed",
+          description: "User data is unavailable. Please refresh the page.",
+          variant: "destructive",
+        });
+        return;
+      }
       setUserData(response);
       setEditData({
         fullName: response.fullName || "",
