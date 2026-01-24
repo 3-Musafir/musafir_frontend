@@ -7,16 +7,37 @@ import Image from 'next/image';
 import useUserHandler from '@/hooks/useUserHandler';
 import { useNotificationsContext } from '@/context/NotificationsProvider';
 import NotificationList from '../notifications/NotificationList';
+import { TabType } from '@/context/DashboardContext';
 
-export default function Header({ notificationCount = 0, setSidebarOpen, showMenuButton = true, onTabChange, activeTab: externalActiveTab }) {
+interface HeaderProps {
+  notificationCount?: number;
+  setSidebarOpen?: (open: boolean) => void;
+  showMenuButton?: boolean;
+  onTabChange?: (tab: TabType) => void;
+  activeTab?: TabType;
+}
+
+interface User {
+  fullName?: string;
+  email?: string;
+  profileImg?: string;
+}
+
+export default function Header({
+  notificationCount = 0,
+  setSidebarOpen,
+  showMenuButton = true,
+  onTabChange,
+  activeTab: externalActiveTab
+}: HeaderProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [user, setUser] = useState(null);
-  const dropdownRef = useRef(null);
-  const notificationWrapperRef = useRef(null);
+  const [user, setUser] = useState<User | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const notificationWrapperRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const { getMe } = useUserHandler();
   const {
     notifications,
@@ -27,11 +48,11 @@ export default function Header({ notificationCount = 0, setSidebarOpen, showMenu
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    function handleClickOutside(event) {
-      const inUserDropdown = dropdownRef.current && dropdownRef.current.contains(event.target);
+    function handleClickOutside(event: MouseEvent) {
+      const inUserDropdown = dropdownRef.current && dropdownRef.current.contains(event.target as Node);
       const inNotifications =
         notificationWrapperRef.current &&
-        notificationWrapperRef.current.contains(event.target);
+        notificationWrapperRef.current.contains(event.target as Node);
 
       if (!inUserDropdown) setShowDropdown(false);
       if (!inNotifications) setShowNotifications(false);
@@ -83,10 +104,9 @@ export default function Header({ notificationCount = 0, setSidebarOpen, showMenu
     setShowDropdown((prev) => !prev);
   };
 
-  const isHome = pathname === '/home';
   const showAuthCta = status !== 'authenticated'; // Show login/signup buttons when not authenticated on ANY page
 
-  const navLinks = [
+  const navLinks: { href: string; label: string; icon: typeof Home; tabId: TabType }[] = [
     { href: '/home', label: 'Home', icon: Home, tabId: 'home' },
     { href: '/passport', label: 'Passport', icon: Flag, tabId: 'passport' },
     { href: '/wallet', label: 'Wallet', icon: Wallet, tabId: 'wallet' },

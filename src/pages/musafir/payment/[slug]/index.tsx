@@ -32,12 +32,14 @@ const bankDetails = {
     accountNumber: "55015000960473",
     iban: "—",
   },
-};
+} as const;
+
+type BankKey = keyof typeof bankDetails;
 
 export default function TripPayment() {
   const { toast } = useToast();
   const [selectedBank, setSelectedBank] =
-    useState<string>("faysal-bank");
+    useState<BankKey>("faysal-bank");
   const router = useRouter();
   const params = useParams();
   const registrationId = params?.slug as string;
@@ -554,7 +556,7 @@ export default function TripPayment() {
 
             <RadioGroup
               value={selectedBank}
-              onValueChange={setSelectedBank}
+              onValueChange={(value) => setSelectedBank(value as BankKey)}
               className="space-y-3"
             >
               {Object.entries(bankDetails).map(([bankId, details]) => (
