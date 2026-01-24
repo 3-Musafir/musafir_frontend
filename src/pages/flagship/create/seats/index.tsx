@@ -11,6 +11,7 @@ import { showAlert } from '@/pages/alert';
 import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
 import { Flagship } from '@/interfaces/flagship';
 import withAuth from '@/hoc/withAuth';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import ProgressBar from '@/components/progressBar';
 
 function SeatsAllocation() {
@@ -272,6 +273,7 @@ function SeatsAllocation() {
       }
     } catch (error) {
       console.error('API Error:', error);
+      showAlert(mapErrorToUserMessage(error), 'error');
     }
   };
 

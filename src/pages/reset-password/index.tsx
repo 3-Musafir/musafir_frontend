@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { showAlert } from "@/pages/alert";
+import { mapErrorToUserMessage } from "@/utils/errorMessages";
 
 interface PasswordValidation {
   length: boolean;
@@ -85,7 +86,7 @@ export default function ResetPassword() {
       }
     } catch (error) {
       console.error("Reset password error:", error);
-      showAlert("Failed to reset password. Please try again.", "error");
+      showAlert(mapErrorToUserMessage(error), "error");
     } finally {
       setIsLoading(false);
     }

@@ -9,6 +9,7 @@ import { showAlert } from '@/pages/alert';
 import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
 import dayjs from 'dayjs';
 import withAuth from '@/hoc/withAuth';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import ProgressBar from '@/components/progressBar';
 
 function ImportantDates() {
@@ -135,6 +136,7 @@ function ImportantDates() {
       }
     } catch (error) {
       console.error('Network error', error);
+      showAlert(mapErrorToUserMessage(error), 'error');
     }
   };
 

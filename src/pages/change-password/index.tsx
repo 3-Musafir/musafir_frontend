@@ -6,6 +6,7 @@ import useUserHandler from "@/hooks/useUserHandler";
 import { ArrowLeft, Eye, EyeOff, Check, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { User } from "@/interfaces/login";
+import { mapErrorToUserMessage } from "@/utils/errorMessages";
 
 interface PasswordValidation {
   length: boolean;
@@ -43,7 +44,7 @@ function ResetPassword() {
       setUserData(response);
     } catch (err) {
       console.error("Error fetching user data:", err);
-      setError("Failed to load user data");
+      setError(mapErrorToUserMessage(err));
     } finally {
       setUserLoading(false);
     }
@@ -96,9 +97,7 @@ function ResetPassword() {
       setSuccess("Password reset successfully!");
       // setTimeout removed from here
     } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to reset password";
-      setError(errorMessage);
+      setError(mapErrorToUserMessage(err));
     } finally {
       setIsLoading(false);
     }

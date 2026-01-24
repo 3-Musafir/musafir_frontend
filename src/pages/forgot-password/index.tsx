@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import axios from "axios";
 import { showAlert } from "@/pages/alert";
+import { mapErrorToUserMessage } from "@/utils/errorMessages";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -23,7 +24,7 @@ export default function ForgotPassword() {
       }
     } catch (error) {
       console.error("Forgot password error:", error);
-      showAlert("Something went wrong. Please try again.", "error");
+      showAlert(mapErrorToUserMessage(error), "error");
     } finally {
       setIsLoading(false);
     }

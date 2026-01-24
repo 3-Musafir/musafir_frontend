@@ -4,6 +4,7 @@ import withAuth from '@/hoc/withAuth';
 import { useRouter } from 'next/router';
 import useFeedbackHook from '@/hooks/useFeedbackHandler';
 import { showAlert } from '../alert';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 
 function Feedback() {
   const router = useRouter();
@@ -45,13 +46,17 @@ function Feedback() {
       registrationId: registrationId as string,
     };
 
-    const response = await createFeedback(feedback, registrationId as string);
+    try {
+      const response = await createFeedback(feedback, registrationId as string);
 
-    if (response.statusCode === 200) {
-      showAlert("Feedback submitted successfully", "success");
-      router.push("/passport");
-    } else {
-      showAlert(response.message || "Failed to submit feedback", "error");
+      if (response.statusCode === 200) {
+        showAlert("Feedback submitted successfully", "success");
+        router.push("/passport");
+      } else {
+        showAlert(response.message || "Failed to submit feedback", "error");
+      }
+    } catch (error) {
+      showAlert(mapErrorToUserMessage(error), "error");
     }
   };
 

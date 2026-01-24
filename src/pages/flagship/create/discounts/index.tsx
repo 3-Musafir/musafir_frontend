@@ -12,6 +12,7 @@ import { showAlert } from "@/pages/alert";
 import { HttpStatusCode } from "axios";
 import withAuth from "@/hoc/withAuth";
 import ProgressBar from "@/components/progressBar";
+import { mapErrorToUserMessage } from "@/utils/errorMessages";
 
 function DiscountsPage() {
   const activeStep = 5;
@@ -235,6 +236,7 @@ function DiscountsPage() {
       }
     } catch (error) {
       console.error("API Error:", error);
+      showAlert(mapErrorToUserMessage(error), "error");
     }
   };
 

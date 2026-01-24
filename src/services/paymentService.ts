@@ -1,10 +1,10 @@
-import axios from "axios";
 import api from "@/pages/api";
+import { mapErrorToUserMessage } from "@/utils/errorMessages";
 import {
   ICreatePayment,
   IPayment,
-  IRequestRefund,
   IRefund,
+  IRequestRefund,
 } from "./types/payment";
 
 export class PaymentService {
@@ -97,91 +97,47 @@ export class PaymentService {
     try {
       return api.get(`/payment/get-refunds`, params || {});
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(
-            error.response.data.message || "Failed to fetch refunds"
-          );
-        } else if (error.request) {
-          throw new Error("No response received from server");
-        }
-      }
-      throw new Error("Failed to fetch refunds");
+      throw new Error(mapErrorToUserMessage(error));
     }
   }
 
   static async approveRefund(id: string): Promise<void> {
     try {
       await api.patch(`/payment/approve-refund/${id}`);
-    } catch (error: any) {
-      if (error.response) {
-        throw new Error(
-          error.response.data?.message || "Failed to approve refund"
-        );
-      } else if (error.request) {
-        throw new Error("No response received from server");
-      }
-      throw new Error("Failed to approve refund");
+    } catch (error) {
+      throw new Error(mapErrorToUserMessage(error));
     }
   }
 
   static async approveRefundNoCredit(id: string): Promise<void> {
     try {
       await api.patch(`/payment/approve-refund-no-credit/${id}`);
-    } catch (error: any) {
-      if (error.response) {
-        throw new Error(
-          error.response.data?.message || "Failed to approve refund"
-        );
-      } else if (error.request) {
-        throw new Error("No response received from server");
-      }
-      throw new Error("Failed to approve refund");
+    } catch (error) {
+      throw new Error(mapErrorToUserMessage(error));
     }
   }
 
   static async postRefundCredit(id: string): Promise<void> {
     try {
       await api.patch(`/payment/post-refund-credit/${id}`);
-    } catch (error: any) {
-      if (error.response) {
-        throw new Error(
-          error.response.data?.message || "Failed to post refund credit"
-        );
-      } else if (error.request) {
-        throw new Error("No response received from server");
-      }
-      throw new Error("Failed to post refund credit");
+    } catch (error) {
+      throw new Error(mapErrorToUserMessage(error));
     }
   }
 
   static async postRefundBank(id: string): Promise<void> {
     try {
       await api.patch(`/payment/post-refund-bank/${id}`);
-    } catch (error: any) {
-      if (error.response) {
-        throw new Error(
-          error.response.data?.message || "Failed to post bank refund"
-        );
-      } else if (error.request) {
-        throw new Error("No response received from server");
-      }
-      throw new Error("Failed to post bank refund");
+    } catch (error) {
+      throw new Error(mapErrorToUserMessage(error));
     }
   }
 
   static async rejectRefund(id: string): Promise<void> {
     try {
       await api.patch(`/payment/reject-refund/${id}`);
-    } catch (error: any) {
-      if (error.response) {
-        throw new Error(
-          error.response.data?.message || "Failed to reject refund"
-        );
-      } else if (error.request) {
-        throw new Error("No response received from server");
-      }
-      throw new Error("Failed to reject refund");
+    } catch (error) {
+      throw new Error(mapErrorToUserMessage(error));
     }
   }
 

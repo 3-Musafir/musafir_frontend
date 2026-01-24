@@ -9,6 +9,7 @@ import { Navigation } from '../navigation';
 import { ROLES } from '@/config/constants';
 import withAuth from '@/hoc/withAuth';
 import useUserHandler from '@/hooks/useUserHandler';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 
 function GetVerified() {
   const router = useRouter();
@@ -136,11 +137,14 @@ function GetVerified() {
         }
         flagshipId ? router.push('flagship/seats') : router.push('/home');
       } else {
-        showAlert('Verification request failed. Please try again.', 'error');
+        // Use userMessage if available, otherwise fall back to mapped message
+        const errorMsg = res?.userMessage || mapErrorToUserMessage({ response: { data: res } });
+        showAlert(errorMsg, 'error');
       }
     } catch (error) {
       console.error('Verification request failed:', error);
-      showAlert('Verification request failed. Please try again.', 'error');
+      // Use the centralized error message mapping
+      showAlert(mapErrorToUserMessage(error), 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -244,7 +248,7 @@ function GetVerified() {
       </header>
 
       {/* Main Content */}
-      <main className='p-4 max-w-md mx-auto'>
+      <main className='p-4 md:px-6 lg:px-8 xl:px-10 max-w-3xl lg:max-w-4xl mx-auto'>
         {verificationStatus === 'pending' && (
           <section className='mb-8 rounded-lg border border-gray-200 bg-gray-50 p-4'>
             <h2 className='text-lg font-semibold text-gray-900'>Verification in review</h2>

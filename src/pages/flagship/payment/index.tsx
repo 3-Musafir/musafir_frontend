@@ -13,6 +13,7 @@ import { useRecoilValue } from 'recoil';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
 import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 
 function PaymentOptions() {
   const activeStep = 6;
@@ -95,7 +96,7 @@ function PaymentOptions() {
       }
     } catch (error) {
       console.error('API Error:', error);
-      alert('There was an error processing your payment. Please try again.');
+      showAlert(mapErrorToUserMessage(error), 'error');
     }
   };
 

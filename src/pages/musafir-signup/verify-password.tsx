@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { showAlert } from '../../pages/alert';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 
 export default function MusafirSignupVerifyPassword() {
     const router = useRouter();
@@ -53,7 +54,7 @@ export default function MusafirSignupVerifyPassword() {
             }
         } catch (error) {
             console.error('Login error:', error);
-            showAlert('Something went wrong. Please try again.', 'error');
+            showAlert(mapErrorToUserMessage(error), 'error');
         } finally {
             setIsLoading(false);
         }

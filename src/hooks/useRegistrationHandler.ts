@@ -2,6 +2,7 @@ import api from '../pages/api';
 import apiEndpoints from '../config/apiEndpoints';
 import { BaseRegistration } from '@/interfaces/registration';
 import { showAlert } from '@/pages/alert';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 
 const useRegistrationHook = () => {
   const { REGISTRATION } = apiEndpoints;
@@ -36,7 +37,8 @@ const useRegistrationHook = () => {
       showAlert(res.message, 'success');
       return true;
     }
-    showAlert(res.message, 'error');
+    const errorMsg = res?.userMessage || mapErrorToUserMessage({ response: { data: res } });
+    showAlert(errorMsg, 'error');
     return false;
   };
 
@@ -54,7 +56,8 @@ const useRegistrationHook = () => {
       showAlert(res.message, 'success');
       return res.data;
     }
-    showAlert(res.message, 'error');
+    const errorMsg = res?.userMessage || mapErrorToUserMessage({ response: { data: res } });
+    showAlert(errorMsg, 'error');
     return false;
   };
 

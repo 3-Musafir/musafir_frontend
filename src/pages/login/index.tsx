@@ -6,6 +6,7 @@ import { signIn, useSession } from "next-auth/react";
 import { User } from "@/interfaces/login";
 import useLoginHook from "@/hooks/useLoginHandler";
 import { ROLES, ROUTES_CONSTANTS } from "@/config/constants";
+import { mapErrorToUserMessage } from "@/utils/errorMessages";
 
 export default function Login() {
   const { data: session } = useSession();
@@ -89,7 +90,7 @@ export default function Login() {
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError("Something went wrong. Please try again.");
+      setError(mapErrorToUserMessage(error));
     } finally {
       setIsLoading(false);
     }

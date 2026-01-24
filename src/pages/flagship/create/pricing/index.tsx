@@ -12,6 +12,7 @@ import { showAlert } from '@/pages/alert';
 import { ROLES, ROUTES_CONSTANTS, steps, CITIES } from '@/config/constants';
 import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 
 function PricingPage() {
   const activeStep = 2;
@@ -236,7 +237,7 @@ function PricingPage() {
         router.push(ROUTES_CONSTANTS.FLAGSHIP.SEATS);
       }
     } catch (error) {
-      alert('There was an error updating the pricing details.');
+      showAlert(mapErrorToUserMessage(error), 'error');
     }
   };
 

@@ -11,6 +11,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
 import { HttpStatusCode } from 'axios';
 import withAuth from '@/hoc/withAuth';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 
 function SuccessPage() {
   const [flagshipData, setFlagshipData] = useRecoilState(currentFlagship);
@@ -48,7 +49,7 @@ function SuccessPage() {
       setToggleError('');
     } catch (error) {
       console.error('API Error:', error);
-      setToggleError('Unable to update public status.');
+      setToggleError(mapErrorToUserMessage(error));
     }
   };
 

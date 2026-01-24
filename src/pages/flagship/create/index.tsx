@@ -11,6 +11,7 @@ import { HttpStatusCode } from 'axios';
 import ProgressBar from '@/components/progressBar';
 import { currentFlagship } from '@/store';
 import { useRecoilValue } from 'recoil';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 
 function CreateFlagship() {
   const activeStep = 0;
@@ -130,11 +131,7 @@ function CreateFlagship() {
       }
     } catch (error: any) {
       console.error('Error:', error);
-      // Extract the actual error message from the API response
-      const errorMessage = error?.response?.data?.message 
-        || error?.message 
-        || 'Something went wrong while creating the flagship.';
-      showAlert(errorMessage, 'error');
+      showAlert(mapErrorToUserMessage(error), 'error');
     } finally {
       setLoading(false);
     }

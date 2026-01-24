@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '../../pages/api';
 import apiEndpoints from '../../config/apiEndpoints';
-import { showAlert } from '../../pages/alert';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 
 export default function MusafirSignup() {
     const router = useRouter();
@@ -34,9 +34,7 @@ export default function MusafirSignup() {
                 // User not found
                 setError('Email and phone number both not found.');
             } else {
-                // Show the actual error message from backend if available
-                const errorMessage = error || 'Something went wrong. Please try again.';
-                setError(errorMessage);
+                setError(mapErrorToUserMessage(error));
             }
         } finally {
             setIsLoading(false);

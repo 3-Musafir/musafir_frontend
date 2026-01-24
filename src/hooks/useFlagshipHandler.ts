@@ -1,12 +1,11 @@
-// import { useRecoilState } from 'recoil';
-// import { currentUser } from '../../store';
-import { BaseFlagShip, IFlagshipFilter, IUpdateFlagship } from '@/interfaces/flagship';
-import { useRecoilState } from 'recoil';
-import { currentFlagship, filterFlagships } from '@/store/flagship';
-import { HttpStatusCode } from 'axios';
-import api from '../pages/api';
-import apiEndpoints from '../config/apiEndpoints';
+import { BaseFlagShip, IFlagshipFilter } from '@/interfaces/flagship';
 import { showAlert } from '@/pages/alert';
+import { currentFlagship, filterFlagships } from '@/store/flagship';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
+import { HttpStatusCode } from 'axios';
+import { useRecoilState } from 'recoil';
+import apiEndpoints from '../config/apiEndpoints';
+import api from '../pages/api';
 
 const useFlagshipHook = () => {
   // const [user, setUser] = useRecoilState(currentUser);
@@ -70,7 +69,7 @@ const useFlagshipHook = () => {
       }
     } catch (error) {
       console.error('Error fetching flagships:', error);
-      showAlert('Failed to fetch flagships', 'error');
+      showAlert(mapErrorToUserMessage(error), 'error');
     }
   }
 

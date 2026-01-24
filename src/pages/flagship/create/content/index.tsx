@@ -27,6 +27,7 @@ import { useRouter } from 'next/navigation';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
 import { HttpStatusCode } from 'axios';
 import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { currentFlagship } from '@/store';
 import { useRecoilValue } from 'recoil';
 import withAuth from '@/hoc/withAuth';
@@ -157,11 +158,7 @@ function ContentPage() {
       }
     } catch (error: any) {
       console.error('Error:', error);
-      // Extract the actual error message from the API response
-      const errorMessage = error?.response?.data?.message 
-        || error?.message 
-        || 'Something went wrong while updating the flagship.';
-      showAlert(errorMessage, 'error');
+      showAlert(mapErrorToUserMessage(error), 'error');
     }
   };
 

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import useSignUpHook from "@/hooks/useSignUp";
 import { showAlert } from "@/pages/alert";
+import { mapErrorToUserMessage } from "@/utils/errorMessages";
 
 export default function CreateAccount() {
   const router = useRouter();
@@ -45,8 +46,8 @@ export default function CreateAccount() {
       };
       localStorage.setItem("formData", JSON.stringify(formData));
       router.push("/signup/registrationform");
-    } catch {
-      showAlert("Something went wrong. Please try again.", "error");
+    } catch (error) {
+      showAlert(mapErrorToUserMessage(error), "error");
     } finally {
       setIsLoading(false);
     }

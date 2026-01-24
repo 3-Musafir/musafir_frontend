@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import api from '../../pages/api';
 import apiEndpoints from '../../config/apiEndpoints';
 import { showAlert } from '../../pages/alert';
+import { mapErrorToUserMessage } from '@/utils/errorMessages';
 
 interface UserData {
     user: {
@@ -65,7 +66,7 @@ export default function MusafirSignupConfirm() {
             router.push('/musafir-signup/verify-password');
         } catch (error: any) {
             console.error('Error verifying email:', error);
-            showAlert('Failed to send verification email. Please try again.', 'error');
+            showAlert(mapErrorToUserMessage(error), 'error');
         } finally {
             setIsLoading(false);
         }
