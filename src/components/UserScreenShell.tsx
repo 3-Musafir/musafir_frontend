@@ -10,11 +10,11 @@ export default function UserScreenShell({ children }: UserScreenShellProps) {
   return (
     <div className="min-h-screen w-full bg-gray-50">
       {/*
-        Mobile (0-767px): Full width, no max constraint
-        Tablet (768px+): Centered with max-w-3xl (768px)
-        Desktop (1024px+): Centered with max-w-6xl (1152px)
+        Full width on all screen sizes.
+        Content uses responsive padding (px-4 md:px-6 lg:px-8 xl:px-10) for breathing room.
+        No max-width constraint - content fills the available space.
       */}
-      <div className="min-h-screen w-full md:max-w-3xl lg:max-w-6xl mx-auto">
+      <div className="min-h-screen w-full">
         {children}
       </div>
     </div>

@@ -94,24 +94,24 @@ function Passport() {
     <div className="min-h-screen w-full bg-background text-foreground flex flex-col">
       <Header setSidebarOpen={() => { }} showMenuButton={false} />
 
-      <div className="border-b border-border flex justify-between mt-4">
+      <div className="border-b border-border flex justify-between mt-4 px-4 md:px-6 lg:px-8 xl:px-10">
         <button
-          className={`w-1/2 py-3 text-sm font-medium text-center ${ activeTab === "upcoming" ? "border-b-2 border-heading text-heading" : "text-muted-foreground border-b-2 border-border" }`}
+          className={`w-1/2 py-3 lg:py-4 text-sm lg:text-base font-medium text-center ${ activeTab === "upcoming" ? "border-b-2 border-heading text-heading" : "text-muted-foreground border-b-2 border-border" }`}
           onClick={() => setActiveTab("upcoming")}
         >
           Upcoming
         </button>
         <button
-          className={`w-1/2 py-3 text-sm font-medium text-center ${ activeTab === "past" ? "border-b-2 border-heading text-heading" : "text-muted-foreground border-b-2 border-border" }`}
+          className={`w-1/2 py-3 lg:py-4 text-sm lg:text-base font-medium text-center ${ activeTab === "past" ? "border-b-2 border-heading text-heading" : "text-muted-foreground border-b-2 border-border" }`}
           onClick={() => setActiveTab("past")}
         >
           Past
         </button>
       </div>
 
-      <main className="p-4 pb-20 lg:pb-6">
+      <main className="px-4 py-4 md:px-6 lg:px-8 xl:px-10 pb-20 lg:pb-6">
         {activeTab === "upcoming" && upcomingEvents.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
             {upcomingEvents.map((event) => (
               <PassportUpcomingCard
                 key={event._id}
@@ -155,7 +155,7 @@ function Passport() {
           </div>
         )}
         {activeTab === "past" && pastEvents.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
             {pastEvents.map((event) => (
               <PassportPastCard
                 key={event._id}

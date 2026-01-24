@@ -105,7 +105,7 @@ function Home() {
     <div className='min-h-screen w-full bg-gray-50 flex flex-col'>
       <Header setSidebarOpen={() => {}} showMenuButton={false} />
 
-      <main className='flex-1 overflow-y-auto p-4 bg-gray-50 space-y-6'>
+      <main className='flex-1 overflow-y-auto px-4 py-4 md:px-6 lg:px-8 xl:px-10 bg-gray-50 space-y-6 lg:space-y-8'>
         <section className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#515778] via-[#3e425f] to-[#2c3047] p-6 shadow-sm'>
           <div className='absolute inset-0 pointer-events-none'>
             <div className='absolute -left-10 -top-16 h-40 w-40 rounded-full bg-white/10 blur-2xl' />
@@ -193,7 +193,7 @@ function Home() {
         <section className='space-y-4 pb-20 lg:pb-6'>
           {flagships.length > 0 ? (
             <>
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6'>
                 {flagships.map((event) => {
                   return <HomeEventCard key={event._id} {...event} />;
                 })}
