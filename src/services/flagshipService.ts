@@ -55,6 +55,15 @@ export class FlagshipService {
     return api.get(`/flagship/registration/${registrationID}`);
   }
 
+  static async deleteRegistration(
+    registrationId: string,
+    reason?: string,
+  ): Promise<void> {
+    return api.delete(`/registration/admin/${registrationId}`, {
+      data: reason ? { reason } : undefined,
+    });
+  }
+
   static async getPastTrips(): Promise<IFlagship[]> {
     return api.get(`/flagship/past-trips`);
   }

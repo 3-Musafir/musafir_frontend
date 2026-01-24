@@ -1,7 +1,7 @@
 import { ROLES } from '@/config/constants';
 import withAuth from '@/hoc/withAuth';
 import useCustomHook from '@/hooks/useFlagshipHandler';
-import useRegistrationHook from '@/hooks/useRegistrationHandler';
+import useRegistrationHook, { RegistrationCreationResponse } from '@/hooks/useRegistrationHandler';
 import { BaseRegistration } from '@/interfaces/registration';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
@@ -178,8 +178,15 @@ function FlagshipRequirements() {
       };
 
       if (fromDetailsPage) {
-        const { registrationId, message } = await registrationAction.create(registration) as { registrationId: string, message: string };
+        const response = await registrationAction.create(registration) as RegistrationCreationResponse;
+        const registrationId = response.registrationId;
         localStorage.setItem("registrationId", JSON.stringify(registrationId));
+        if (response?.alreadyRegistered) {
+          const alertMessage = response.isPaid
+            ? "You already have a confirmed registration for this flagship."
+            : "You already registered. Continue on the payment page to secure your seat.";
+          showAlert(alertMessage, response.isPaid ? 'success' : 'info');
+        }
         router.push(`/flagship/seats`);
       } else {
         localStorage.setItem("registration", JSON.stringify(registration));

@@ -2,7 +2,7 @@
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/tabs";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -85,68 +85,77 @@ function AdminMainPage() {
   const ensureArray = <T,>(value: T[] | null | undefined): T[] =>
     Array.isArray(value) ? value : [];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [
-          pastTrips,
-          liveTrips,
-          upcomingTrips,
-          unverifiedUsers,
-          pendingUsers,
-          verifiedUsersResponse,
-          pendingPayments,
-          completedPayments,
-        ] = await Promise.all([
-          FlagshipService.getPastTrips(),
-          FlagshipService.getLiveTrips(),
-          FlagshipService.getUpcomingTrips(),
-          UserService.getUnverifiedUsers(),
-          UserService.getPendingVerificationUsers(),
-          UserService.getVerifiedUsers(undefined, verifiedUsersPagination.page, verifiedUsersPagination.limit),
-          PaymentService.getPendingPayments(),
-          PaymentService.getCompletedPayments(),
-        ]);
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [
+        pastTrips,
+        liveTrips,
+        upcomingTrips,
+        unverifiedUsers,
+        pendingUsers,
+        verifiedUsersResponse,
+        pendingPayments,
+        completedPayments,
+      ] = await Promise.all([
+        FlagshipService.getPastTrips(),
+        FlagshipService.getLiveTrips(),
+        FlagshipService.getUpcomingTrips(),
+        UserService.getUnverifiedUsers(),
+        UserService.getPendingVerificationUsers(),
+        UserService.getVerifiedUsers(undefined, verifiedUsersPagination.page, verifiedUsersPagination.limit),
+        PaymentService.getPendingPayments(),
+        PaymentService.getCompletedPayments(),
+      ]);
 
-        setTrips({
-          past: ensureArray(pastTrips),
-          live: ensureArray(liveTrips),
-          upcoming: ensureArray(upcomingTrips),
+      setTrips({
+        past: ensureArray(pastTrips),
+        live: ensureArray(liveTrips),
+        upcoming: ensureArray(upcomingTrips),
+      });
+
+      // Check if verifiedUsersResponse is paginated
+      const isPaginated = verifiedUsersResponse && 'data' in verifiedUsersResponse;
+
+      setUsers({
+        unverified: unverifiedUsers,
+        pendingVerification: pendingUsers,
+        verified: isPaginated ? verifiedUsersResponse.data : verifiedUsersResponse,
+      });
+
+      // Update pagination info if response is paginated
+      if (isPaginated) {
+        setVerifiedUsersPagination({
+          page: verifiedUsersResponse.page,
+          limit: verifiedUsersResponse.limit,
+          total: verifiedUsersResponse.total,
+          totalPages: verifiedUsersResponse.totalPages,
         });
-
-        // Check if verifiedUsersResponse is paginated
-        const isPaginated = verifiedUsersResponse && 'data' in verifiedUsersResponse;
-
-        setUsers({
-          unverified: unverifiedUsers,
-          pendingVerification: pendingUsers,
-          verified: isPaginated ? verifiedUsersResponse.data : verifiedUsersResponse,
-        });
-
-        // Update pagination info if response is paginated
-        if (isPaginated) {
-          setVerifiedUsersPagination({
-            page: verifiedUsersResponse.page,
-            limit: verifiedUsersResponse.limit,
-            total: verifiedUsersResponse.total,
-            totalPages: verifiedUsersResponse.totalPages,
-          });
-        }
-
-        setPayments({
-          pending: pendingPayments,
-          completed: completedPayments,
-        });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
       }
+
+      setPayments({
+        pending: pendingPayments,
+        completed: completedPayments,
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [verifiedUsersPagination.page, verifiedUsersPagination.limit]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchData();
     };
 
-    fetchData();
-  }, [verifiedUsersPagination.page]);
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [fetchData]);
 
   useEffect(() => {
     const timeoutId = setTimeout(async () => {

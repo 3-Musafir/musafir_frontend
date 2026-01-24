@@ -4,15 +4,21 @@ import { BaseRegistration } from '@/interfaces/registration';
 import { showAlert } from '@/pages/alert';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 
+export interface RegistrationCreationResponse {
+  registrationId: string;
+  message: string;
+  alreadyRegistered?: boolean;
+  isPaid?: boolean;
+  status?: string;
+  amountDue?: number;
+}
+
 const useRegistrationHook = () => {
   const { REGISTRATION } = apiEndpoints;
 
-  const create = async (data: BaseRegistration): Promise<unknown> => {
+  const create = async (data: BaseRegistration): Promise<RegistrationCreationResponse> => {
     const res = await api.post(`${REGISTRATION.CREATE}`, data);
-    if (res) {
-      return res;
-    }
-    return false;
+    return res as RegistrationCreationResponse;
   };
 
   const getPastPassport = async (): Promise<any> => {

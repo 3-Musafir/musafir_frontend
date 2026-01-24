@@ -30,34 +30,35 @@ export default function PaymentDetailsPage() {
   const [flagship, setFlagship] = useState<IFlagship | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const data = await PaymentService.getPayment(paymentId);
-        setPayment(data);
-        setLoading(false);
+  const fetchData = async () => {
+    if (!paymentId) return;
+    try {
+      setLoading(true);
+      const data = await PaymentService.getPayment(paymentId);
+      setPayment(data);
 
-        // Fetch flagship details if it's a string (ID)
-        if (typeof (data.registration as IRegistration).flagship === "string") {
-          const flagshipData = await FlagshipService.getFlagshipByID(
-            (data.registration as IRegistration).flagship as string
-          );
-          setFlagship(flagshipData);
-        } else {
-          // If it's already an IFlagship object
-          setFlagship(
-            (data.registration as IRegistration).flagship as IFlagship
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching payment details:", error);
-        setLoading(false);
+      // Fetch flagship details if it's a string (ID)
+      if (typeof (data.registration as IRegistration).flagship === "string") {
+        const flagshipData = await FlagshipService.getFlagshipByID(
+          (data.registration as IRegistration).flagship as string
+        );
+        setFlagship(flagshipData);
+      } else {
+        // If it's already an IFlagship object
+        setFlagship(
+          (data.registration as IRegistration).flagship as IFlagship
+        );
       }
-    };
+    } catch (error) {
+      console.error("Error fetching payment details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
-  }, [id]);
+  }, [paymentId]);
 
   const handleApprovePayment = async () => {
     if (!paymentId) return;
@@ -67,9 +68,7 @@ export default function PaymentDetailsPage() {
         title: "Success",
         description: "Payment approved successfully",
       });
-      setTimeout(() => {
-        router.push("/admin");
-      }, 2000); // Wait 2 seconds before redirecting
+      await fetchData();
     } catch (error) {
       console.error("Error approving payment:", error);
       toast({
@@ -88,9 +87,7 @@ export default function PaymentDetailsPage() {
         title: "Success",
         description: "Payment rejected successfully",
       });
-      setTimeout(() => {
-        router.push("/admin");
-      }, 2000); // Wait 2 seconds before redirecting
+      await fetchData();
     } catch (error) {
       console.error("Error rejecting payment:", error);
       toast({
