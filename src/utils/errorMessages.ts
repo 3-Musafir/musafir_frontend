@@ -18,11 +18,11 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   // ============================================
   // AUTHENTICATION & AUTHORIZATION
   // ============================================
-  AUTH_UNAUTHORIZED: 'Please log in to continue.',
-  AUTH_SESSION_EXPIRED: 'Your session has expired. Please log in again.',
+  AUTH_UNAUTHORIZED: 'Please log in to continue your journey.',
+  AUTH_SESSION_EXPIRED: 'Your session has timed out. Please log in again to continue.',
+  AUTH_PERMISSION_DENIED: 'You don’t have access to this action on Musafir.',
   AUTH_TOKEN_INVALID: 'Your session is invalid. Please log in again.',
   AUTH_TOKEN_MISSING: 'Please log in to access this feature.',
-  AUTH_PERMISSION_DENIED: 'You do not have permission to perform this action.',
   AUTH_INSUFFICIENT_ROLE: 'You do not have the required role for this action.',
   AUTH_USER_LOGGED_OUT: 'You have been logged out. Please log in again.',
   AUTH_BAD_REQUEST: 'Authentication failed. Please try again.',
@@ -55,25 +55,36 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   // ============================================
   // VERIFICATION & REFERRALS
   // ============================================
-  REFERRAL_CODES_REQUIRED: 'Please provide two referral codes from verified Musafirs to complete verification.',
-  REFERRAL_CODES_MUST_DIFFER: 'Both referral codes must be from different people. Please use codes from two different verified Musafirs.',
-  REFERRAL_CANNOT_USE_OWN: 'You cannot use your own referral code for verification. Please ask other verified Musafirs for their codes.',
+  REFERRAL_CODES_REQUIRED: 'To get verified as a Musafir, please add referral codes from two verified Musafirs.',
+  REFERRAL_CODES_MUST_DIFFER:
+    'Both referral codes need to be from different Musafirs. Please use two different verified Musafirs.',
+  REFERRAL_CANNOT_USE_OWN:
+    'You can’t use your own referral code. Ask other verified Musafirs from the community to vouch for you.',
+  REFERRAL_GENDER_REQUIREMENT:
+    'For community safety, you’ll need referral codes from at least one male and one female verified Musafir.',
+  VERIFICATION_REQUIRED:
+    'Please complete your Musafir verification to continue.',
+  VERIFICATION_PENDING:
+    'Your Musafir verification is under review. We’ll notify you once it’s approved.',
+
   REFERRAL_USER_NOT_VERIFIED: 'Invalid referral codes. Please ask verified Musafirs for their codes.',
   REFERRAL_SAME_USER: 'Both referral codes belong to the same person. Please use codes from two different verified Musafirs.',
   REFERRAL_CANNOT_VERIFY_SELF: 'You cannot use your own account to verify yourself. Please ask other verified Musafirs for their codes.',
-  REFERRAL_GENDER_REQUIREMENT: 'For verification, you need referral codes from at least one male and one female verified Musafir.',
   REFERRAL_NOT_FOUND: 'Referral code not found. Please check the code and try again.',
 
   VERIFICATION_NOT_FOUND: 'Verification record not found.',
-  VERIFICATION_PENDING: 'Your verification is pending review. Please wait for approval.',
   VERIFICATION_REJECTED: 'Your verification was not approved. Please re-submit with different details.',
-  VERIFICATION_REQUIRED: 'Please complete verification to continue.',
   VERIFICATION_VIDEO_UPLOAD_FAILED: 'Failed to upload verification video. Please try again.',
 
   // ============================================
   // FLAGSHIP / TRIPS
   // ============================================
-  FLAGSHIP_NOT_FOUND: 'Trip not found. It may have been removed or is no longer available.',
+  FLAGSHIP_NOT_FOUND:
+    'We couldn’t find this trip. It might have been updated, filled, or removed.',
+  WAITLIST_SEATS_FULL:
+    'Seats filled up before you could confirm. You’ll stay on the waitlist for the next opening.',
+  CANCEL_NOT_ELIGIBLE:
+    'Only confirmed seats can be cancelled. Please check your trip status.',
   FLAGSHIP_INVALID_DATE_RANGE: 'Invalid date range. Start date must be before end date.',
   FLAGSHIP_FILE_UPLOAD_FAILED: 'Failed to upload file. Please try again.',
   FLAGSHIP_QUERY_SEND_FAILED: 'Failed to send your query. Please try again later.',
@@ -92,14 +103,12 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   WAITLIST_OFFER_MISSING: 'No active waitlist offer found for this registration.',
   WAITLIST_OFFER_EXPIRED: 'This waitlist offer has expired.',
   WAITLIST_OFFER_STATE_CHANGED: 'This offer has changed. Please refresh and try again.',
-  WAITLIST_SEATS_FULL: 'Sorry, seats filled before you could respond. You remain on the waitlist.',
   WAITLIST_NOT_OWNER: 'You can only respond to your own waitlist offers.',
 
   // ============================================
   // CANCELLATION
   // ============================================
   CANCEL_AUTH_REQUIRED: 'Please log in to cancel your seat.',
-  CANCEL_NOT_ELIGIBLE: 'Only confirmed seats can be cancelled.',
   CANCEL_STATE_CHANGED: 'Unable to cancel. Please refresh and try again.',
   CANCEL_NOT_OWNER: 'You can only cancel your own seat.',
 
