@@ -109,9 +109,10 @@ function Passport() {
         </button>
       </div>
 
-      <main className="space-y-4 p-4 pb-24">
-        {activeTab === "upcoming" && upcomingEvents.length > 0
-          ? upcomingEvents.map((event) => (
+      <main className="p-4 pb-20 lg:pb-6">
+        {activeTab === "upcoming" && upcomingEvents.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {upcomingEvents.map((event) => (
               <PassportUpcomingCard
                 key={event._id}
                 registrationId={event._id}
@@ -140,19 +141,22 @@ function Passport() {
                 refundStatus={event.refundStatus}
                 cancelledAt={event.cancelledAt}
               />
-            ))
-          : activeTab === "upcoming" && (
-              <div className="flex flex-col items-center justify-center h-60 text-muted-foreground">
-                <p className="text-center text-lg mb-2">
-                  No upcoming trips scheduled!
-                </p>
-                <p className="text-center">
-                  Explore our trips and plan your next adventure.
-                </p>
-              </div>
-            )}
-        {activeTab === "past" && pastEvents.length > 0
-          ? pastEvents.map((event) => (
+            ))}
+          </div>
+        )}
+        {activeTab === "upcoming" && upcomingEvents.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-60 text-muted-foreground">
+            <p className="text-center text-lg mb-2">
+              No upcoming trips scheduled!
+            </p>
+            <p className="text-center">
+              Explore our trips and plan your next adventure.
+            </p>
+          </div>
+        )}
+        {activeTab === "past" && pastEvents.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {pastEvents.map((event) => (
               <PassportPastCard
                 key={event._id}
                 registrationId={event._id}
@@ -167,17 +171,19 @@ function Passport() {
                 status={event.status}
                 refundStatus={event.refundStatus}
               />
-            ))
-          : activeTab === "past" && (
-              <div className="flex flex-col items-center justify-center h-60 text-muted-foreground">
-                <p className="text-center text-lg mb-2">
-                  You haven't been on any trips yet.
-                </p>
-                <p className="text-center">
-                  Time for an adventure - book your first trip now!
-                </p>
-              </div>
-            )}
+            ))}
+          </div>
+        )}
+        {activeTab === "past" && pastEvents.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-60 text-muted-foreground">
+            <p className="text-center text-lg mb-2">
+              You haven't been on any trips yet.
+            </p>
+            <p className="text-center">
+              Time for an adventure - book your first trip now!
+            </p>
+          </div>
+        )}
       </main>
 
       <Navigation />

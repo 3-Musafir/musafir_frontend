@@ -330,16 +330,16 @@ export default function TripPayment() {
   };
 
   return (
-    <div className="flex justify-center min-h-screen bg-background text-foreground">
-      {registrationId && <div className="w-full max-w-md">
-        <div className="flex flex-col min-h-screen bg-card border border-border">
+    <div className="min-h-screen bg-background text-foreground">
+      {registrationId && <div className="w-full">
+        <div className="flex flex-col min-h-screen bg-card lg:my-6 lg:rounded-xl lg:min-h-0 lg:border lg:border-border">
           {/* Header */}
-          <div className="px-4 py-2 text-center">
-            <h1 className="text-2xl font-bold text-heading">Trip Payment</h1>
+          <div className="px-4 py-2 lg:py-4 text-center">
+            <h1 className="text-2xl lg:text-3xl font-bold text-heading">Trip Payment</h1>
           </div>
 
-          {/* Avocado Illustration */}
-          <div className="w-full h-48 bg-muted rounded-lg mx-auto mb-4 overflow-hidden">
+          {/* Trip Image */}
+          <div className="h-48 lg:h-64 bg-muted rounded-lg mx-4 mb-4 overflow-hidden">
             <Image
               src={registration?.flagship?.images.length > 0 ? registration?.flagship?.images[0] : "/payments-cover.png"}
               alt="Payments Cover"
@@ -350,13 +350,13 @@ export default function TripPayment() {
           </div>
 
           {/* Event Details */}
-          <div className="px-4 mb-6">
-            <h2 className="text-2xl font-bold text-heading">{registration?.flagship?.tripName}</h2>
-            <p className="text-muted-foreground">{formatDate(registration?.flagship?.startDate, registration?.flagship?.endDate)}</p>
+          <div className="px-4 lg:px-6 mb-6">
+            <h2 className="text-2xl lg:text-3xl font-bold text-heading">{registration?.flagship?.tripName}</h2>
+            <p className="text-muted-foreground lg:text-lg">{formatDate(registration?.flagship?.startDate, registration?.flagship?.endDate)}</p>
           </div>
 
           {/* Price and Payment Type */}
-          <div className="bg-card border border-border rounded-lg mx-4 p-4 mb-6">
+          <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
             <div className="space-y-2 mb-4">
               <div className="flex justify-between items-center">
                 <span className="text-text">Trip Price</span>
@@ -455,7 +455,7 @@ export default function TripPayment() {
           </div>
 
           {/* Discount Section */}
-          <div className="bg-card border border-border rounded-lg mx-4 p-4 mb-6">
+          <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Discount Available:</span>
@@ -489,7 +489,7 @@ export default function TripPayment() {
           </div>
 
           {/* Wallet Credits */}
-          <div className="rounded-lg mx-4 p-4 mb-6 border border-border bg-card">
+          <div className="rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6 border border-border bg-card">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-heading">Use Wallet</h3>
               <Link href="/wallet" className="text-sm text-brand-primary hover:underline">
@@ -545,8 +545,8 @@ export default function TripPayment() {
           {requiresScreenshot ? (
             <>
               {/* Step 1: Transfer Amount */}
-              <div className="px-4 mb-6">
-                <h3 className="text-xl font-bold mb-2 text-heading">Step 1: Transfer Amount</h3>
+              <div className="px-4 lg:px-6 mb-6">
+                <h3 className="text-xl lg:text-2xl font-bold mb-2 text-heading">Step 1: Transfer Amount</h3>
                 <p className="text-muted-foreground text-sm mb-4">
                   Transfer to one of these Bank accounts and share your receipt
                   below
@@ -644,8 +644,8 @@ export default function TripPayment() {
               </div>
 
               {/* Step 2: Upload Screenshot */}
-              <div className="px-4 mb-10">
-                <h3 className="text-xl font-bold mb-2">
+              <div className="px-4 lg:px-6 mb-10">
+                <h3 className="text-xl lg:text-2xl font-bold mb-2">
                   Step 2: Upload Screenshot
                 </h3>
                 <p className="text-muted-foreground text-sm mb-4">
@@ -695,15 +695,15 @@ export default function TripPayment() {
               </div>
             </>
           ) : (
-            <div className="mx-4 mb-6 rounded-lg border border-border bg-card p-4">
-              <p className="text-sm text-text">
-                No bank transfer is required. You’re paying using wallet credits.
+            <div className="mx-4 lg:mx-6 mb-6 rounded-lg border border-border bg-card p-4 lg:p-6">
+              <p className="text-sm lg:text-base text-text">
+                No bank transfer is required. You're paying using wallet credits.
               </p>
             </div>
           )}
 
           {/* Confirm Payment */}
-          <div className="px-4 mt-auto mb-6">
+          <div className="px-4 lg:px-6 mt-auto mb-6">
             <Button
               className="w-full py-6 bg-brand-primary hover:bg-brand-primary-hover text-btn-secondary-text disabled:bg-brand-primary-disabled disabled:cursor-not-allowed"
               disabled={submitDisabled}

@@ -15,10 +15,17 @@ export default {
         outfit: ['Outfit', 'sans-serif'],
       },
 		fontSize: {
-        'main-heading': ['28px', '36px'],
-        'sub-heading': ['16px', '20px'],
-        'body': ['16px', '24px'],
-        'button': ['18px', 'normal'],
+        // Responsive font sizes for mobile-first scaling
+        'main-heading': ['28px', { lineHeight: '36px' }],
+        'main-heading-lg': ['36px', { lineHeight: '44px' }],
+        'sub-heading': ['16px', { lineHeight: '20px' }],
+        'sub-heading-lg': ['20px', { lineHeight: '28px' }],
+        'body': ['16px', { lineHeight: '24px' }],
+        'body-lg': ['18px', { lineHeight: '28px' }],
+        'button': ['14px', { lineHeight: 'normal' }],
+        'button-lg': ['16px', { lineHeight: 'normal' }],
+        'caption': ['12px', { lineHeight: '16px' }],
+        'caption-lg': ['14px', { lineHeight: '20px' }],
       },
       fontWeight: {
         normal: '400',

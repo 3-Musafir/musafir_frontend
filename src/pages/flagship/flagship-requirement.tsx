@@ -204,7 +204,7 @@ function FlagshipRequirements() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white w-full max-w-md mx-auto shadow-sm p-3">
+      <div className="bg-white w-full max-w-lg lg:max-w-3xl mx-auto shadow-sm p-3 lg:p-8 lg:my-6 lg:rounded-xl">
         {/* Header */}
         <div className="">
           {/* Progress Steps */}
@@ -255,7 +255,7 @@ function FlagshipRequirements() {
           </div>}
         </div>
 
-        <div className="relative h-52 w-full">
+        <div className="relative h-52 lg:h-72 w-full lg:rounded-xl lg:overflow-hidden">
           <Image
             src={imageUrls[currentImageIndex]}
             alt={flagship?.tripName || 'Event image'}
@@ -291,8 +291,8 @@ function FlagshipRequirements() {
         </div>
 
         {/* Form Content */}
-        <div className="p-4">
-          <h2 className="text-2xl font-bold mb-1">
+        <div className="p-4 lg:p-6">
+          <h2 className="text-2xl lg:text-3xl font-bold mb-1">
             {flagship?.tripName || ""}
           </h2>
           {flagship?.startDate && flagship?.endDate && (

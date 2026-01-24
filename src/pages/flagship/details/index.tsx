@@ -183,10 +183,10 @@ export default function FlagshipDetails() {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white min-h-screen pb-8 relative">
+    <div className="w-full bg-white min-h-screen pb-8 relative">
       {/* Sticky Register Button */}
       {isButtonVisible && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-white max-w-md mx-auto">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white lg:hidden">
           <div className="p-1">
             <button
               onClick={() => router.push(`/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`)}
@@ -222,8 +222,9 @@ export default function FlagshipDetails() {
         </h1>
       </div>
 
-      {/* Hero Image */}
-      <div className="relative h-52 w-full">
+      {/* Hero Image - Full width on desktop */}
+      <div className="relative h-52 md:h-72 lg:h-[450px] w-full lg:px-8">
+        <div className="relative h-full w-full lg:rounded-xl lg:overflow-hidden">
         <Image
           src={imageUrls[currentImageIndex]}
           alt={flagship.tripName || "Event image"}
@@ -256,84 +257,93 @@ export default function FlagshipDetails() {
             </div>
           </>
         )}
+        </div>
       </div>
 
-      {/* Trip Info */}
-      <div className="px-4 py-4 pb-10" ref={contentRef}>
-        <h2 className="text-2xl font-bold mb-4">{flagship.tripName}</h2>
-        <div className="space-y-3 mb-5">
-          <div className="flex items-center">
-            <IoLocationOutline className="w-5 h-5 text-gray-500 mr-2" />
-            <span>{flagship.destination}</span>
+      {/* Trip Info - Full width on desktop */}
+      <div className="px-4 py-4 pb-10 lg:px-8" ref={contentRef}>
+        <h2 className="text-2xl lg:text-3xl font-bold mb-4">{flagship.tripName}</h2>
+
+        {/* Desktop: Info and buttons in grid | Mobile: Stacked */}
+        <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
+          <div className="space-y-3 mb-5 lg:mb-0">
+            <div className="flex items-center">
+              <IoLocationOutline className="w-5 h-5 lg:w-6 lg:h-6 text-gray-500 mr-2" />
+              <span className="lg:text-lg">{flagship.destination}</span>
+            </div>
+
+            <div className="flex items-center">
+              <HiOutlineCalendar className="w-5 h-5 lg:w-6 lg:h-6 text-gray-500 mr-2" />
+              <span className="lg:text-lg">{formatDate(flagship.startDate, flagship.endDate)}</span>
+            </div>
+
+            <div className="flex items-center">
+              <HiOutlineCurrencyDollar className="w-5 h-5 lg:w-6 lg:h-6 text-gray-500 mr-2" />
+              <span className="lg:text-lg">Starts Rs.{flagship.basePrice}</span>
+            </div>
           </div>
 
-          <div className="flex items-center">
-            <HiOutlineCalendar className="w-5 h-5 text-gray-500 mr-2" />
-            <span>{formatDate(flagship.startDate, flagship.endDate)}</span>
-          </div>
+          {/* Buttons - side by side on desktop */}
+          <div className="space-y-3 lg:space-y-0 lg:flex lg:gap-4">
+            {/* Register Button */}
+            <button
+              onClick={() => router.push(`/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`)}
+              className="w-full lg:flex-1 py-3 lg:py-4 bg-brand-primary text-heading font-semibold rounded-md hover:bg-brand-primary-hover transition-colors"
+            >
+              Register
+            </button>
 
-          <div className="flex items-center">
-            <HiOutlineCurrencyDollar className="w-5 h-5 text-gray-500 mr-2" />
-            <span>Starts Rs.{flagship.basePrice}</span>
+            {/* View Detailed Plan Button */}
+            <button
+              onClick={() => setShowPdfModal(true)}
+              className="w-full lg:flex-1 py-3 lg:py-4 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 transition-colors"
+            >
+              View Detailed Travel Plans
+            </button>
           </div>
         </div>
 
-        {/* Register Button */}
-        <button
-          onClick={() => router.push(`/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`)}
-          className="w-full py-3 bg-brand-primary text-heading font-semibold rounded-md mb-3"
-        >
-          Register
-        </button>
-
-        {/* View Detailed Plan Button */}
-        <button
-          onClick={() => setShowPdfModal(true)}
-          className="w-full py-3 bg-gray-200 text-gray-800 font-semibold rounded-md"
-        >
-          View Detailed Travel Plans
-        </button>
-
         {/* Countdown Timer */}
-        <div className="mt-6">
-          <h3 className="text-lg font-medium mb-2">Time left to register</h3>
-          <div className="flex justify-center gap-x-4">
+        <div className="mt-6 lg:mt-10">
+          <h3 className="text-lg lg:text-xl font-medium mb-2 lg:mb-4 lg:text-center">Time left to register</h3>
+          <div className="flex justify-center gap-x-4 lg:gap-x-8">
             <div className="flex flex-col items-center">
-              <div className="bg-black text-white w-20 h-20 rounded-full flex items-center justify-center text-xl font-bold">
+              <div className="bg-black text-white w-20 h-20 lg:w-28 lg:h-28 rounded-full flex items-center justify-center text-xl lg:text-3xl font-bold">
                 {timeLeft.days}
               </div>
-              <span className="text-sm mt-1">Days</span>
+              <span className="text-sm lg:text-base mt-1 lg:mt-2">Days</span>
             </div>
 
             <div className="flex flex-col items-center">
-              <div className="bg-white text-black w-20 h-20 rounded-full flex items-center justify-center text-xl font-bold border border-black">
+              <div className="bg-white text-black w-20 h-20 lg:w-28 lg:h-28 rounded-full flex items-center justify-center text-xl lg:text-3xl font-bold border border-black">
                 {timeLeft.hours}
               </div>
-              <span className="text-sm mt-1">Hrs</span>
+              <span className="text-sm lg:text-base mt-1 lg:mt-2">Hrs</span>
             </div>
 
             <div className="flex flex-col items-center">
-              <div className="bg-white text-black w-20 h-20 rounded-full flex items-center justify-center text-xl font-bold border border-black">
+              <div className="bg-white text-black w-20 h-20 lg:w-28 lg:h-28 rounded-full flex items-center justify-center text-xl lg:text-3xl font-bold border border-black">
                 {timeLeft.minutes}
               </div>
-              <span className="text-sm mt-1">Min</span>
+              <span className="text-sm lg:text-base mt-1 lg:mt-2">Min</span>
             </div>
 
             <div className="flex flex-col items-center">
-              <div className="bg-white text-black w-20 h-20 rounded-full flex items-center justify-center text-xl font-bold border border-black">
+              <div className="bg-white text-black w-20 h-20 lg:w-28 lg:h-28 rounded-full flex items-center justify-center text-xl lg:text-3xl font-bold border border-black">
                 {timeLeft.seconds}
               </div>
-              <span className="text-sm mt-1">Sec</span>
+              <span className="text-sm lg:text-base mt-1 lg:mt-2">Sec</span>
             </div>
           </div>
         </div>
 
         {/* Past Reviews */}
         {rating.length > 0 && (
-          <div className="mt-6">
-            <h3 className="text-lg font-medium mb-3">Past Reviews</h3>
+          <div className="mt-6 lg:mt-10">
+            <h3 className="text-lg lg:text-xl font-medium mb-3 lg:mb-4">Past Reviews</h3>
+            {/* Mobile: Horizontal scroll | Desktop: Grid */}
             <div
-              className="flex overflow-x-auto space-x-4"
+              className="flex overflow-x-auto space-x-4 lg:grid lg:grid-cols-3 lg:gap-6 lg:space-x-0 lg:overflow-visible"
               style={{
                 msOverflowStyle: "none",
                 scrollbarWidth: "none",
@@ -345,7 +355,7 @@ export default function FlagshipDetails() {
                 }
               `}</style>
               {rating.map((review: Review, index: number) => (
-                <div key={index} className="flex-shrink-0 w-72">
+                <div key={index} className="flex-shrink-0 w-72 lg:w-auto">
                   <ReviewCard
                     name={review?.userId?.fullName ?? ""}
                     location={review?.flagshipId?.destination ?? ""}
@@ -360,9 +370,9 @@ export default function FlagshipDetails() {
         )}
 
         {/* Starting Prices */}
-        <div className="mt-6">
-          <h3 className="text-lg font-bold mb-3">Starting prices</h3>
-          <div className="overflow-hidden">
+        <div className="mt-6 lg:mt-10">
+          <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4">Starting prices</h3>
+          <div className="overflow-hidden lg:grid lg:grid-cols-2 lg:gap-3">
             {flagship.locations &&
               flagship.locations.map(
                 (
@@ -372,10 +382,10 @@ export default function FlagshipDetails() {
                   location.enabled && (
                     <div
                       key={index}
-                      className="bg-brand-error-light px-4 py-3 flex justify-between mb-[3px]"
+                      className="bg-brand-error-light px-4 py-3 lg:px-6 lg:py-4 flex justify-between mb-[3px] lg:mb-0 lg:rounded-lg"
                     >
-                      <span className="font-medium">From {location.name}</span>
-                      <span className="font-medium">
+                      <span className="font-medium lg:text-lg">From {location.name}</span>
+                      <span className="font-medium lg:text-lg">
                         {formatLocationPrice(location.price)}
                       </span>
                     </div>
@@ -385,26 +395,26 @@ export default function FlagshipDetails() {
         </div>
 
         {/* FAQ Section */}
-        <div className="mt-6">
+        <div className="mt-6 lg:mt-10">
           {faq.length > 0 && (
             <>
-              <h3 className="text-lg font-bold mb-3">
+              <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4">
                 Frequently Asked Questions
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-2 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
                 {faq.map((faq: FaqItem, index: number) => (
-                  <div key={index} className="border-b border-gray-200">
+                  <div key={index} className="border-b border-gray-200 lg:border lg:rounded-lg lg:border-gray-200">
                     <button
-                      className="w-full py-4 px-2 flex justify-between items-center text-left"
+                      className="w-full py-4 px-2 lg:px-4 flex justify-between items-center text-left"
                       onClick={() => toggleFAQ(index)}
                     >
-                      <span className="font-medium">{faq.question}</span>
+                      <span className="font-medium lg:text-lg">{faq.question}</span>
                       <HiChevronDown
                         className={`w-5 h-5 transition-transform ${ expandedFAQ === index ? "transform rotate-180" : "" }`}
                       />
                     </button>
                     {expandedFAQ === index && (
-                      <div className="px-2 pb-4 text-gray-600">
+                      <div className="px-2 lg:px-4 pb-4 text-gray-600">
                         {faq.answer}
                       </div>
                     )}
@@ -415,8 +425,8 @@ export default function FlagshipDetails() {
           )}
 
           {/* Ask a Question */}
-          <div className="mt-6">
-            <h3 className="text-lg font-bold mb-2">
+          <div className="mt-6 lg:mt-10 lg:max-w-2xl">
+            <h3 className="text-lg lg:text-xl font-bold mb-2 lg:mb-4">
               Still have a question? Ask away
             </h3>
             {showQueryInput && (
@@ -427,14 +437,14 @@ export default function FlagshipDetails() {
                     value={queryText}
                     onChange={(e) => setQueryText(e.target.value)}
                     placeholder="Enter your question here..."
-                    className="flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="flex-grow p-2 lg:p-3 lg:text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   />
                 </div>
               </div>
             )}
             <button
               onClick={() => handleSubmitQuery()}
-              className={`w-full py-3 border-2 text-black font-semibold rounded-lg ${queryText.length > 0 ? "bg-brand-primary text-heading" : "border-black"}`}
+              className={`w-full py-3 lg:py-4 border-2 text-black font-semibold rounded-lg transition-colors ${queryText.length > 0 ? "bg-brand-primary text-heading hover:bg-brand-primary-hover" : "border-black hover:bg-gray-100"}`}
             >
               {queryText.length > 0 ? "Send Trip Query" : "Trip Query Button"}
             </button>

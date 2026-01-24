@@ -72,7 +72,7 @@ function Referrals() {
     <div className='min-h-screen w-full bg-gray-50 flex flex-col'>
       <Header setSidebarOpen={() => { }} showMenuButton={false} />
 
-      <main className='px-4 pb-24 pt-4 space-y-6'>
+      <main className='px-4 pb-20 lg:pb-6 pt-4 space-y-6'>
         <h1 className='text-2xl font-semibold'>Referrals</h1>
 
         <div className='p-4 border rounded-xl bg-gray-50'>

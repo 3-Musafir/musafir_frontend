@@ -7,67 +7,110 @@
 @layer base {
   body {
     font-family: 'Outfit', sans-serif;
+    /* Fluid base font size: 16px on mobile, scales up to 18px on desktop */
+    font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  }
+
+  /* Fluid typography scale for headings */
+  h1 {
+    font-size: clamp(1.75rem, 1.5rem + 1.25vw, 2.5rem);
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 1.25rem + 1vw, 2rem);
+    line-height: 1.25;
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+    line-height: 1.3;
+  }
+
+  h4 {
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
+    line-height: 1.4;
+  }
+
+  p {
+    font-size: clamp(0.9375rem, 0.875rem + 0.25vw, 1.0625rem);
+    line-height: 1.6;
   }
 }
 
 @layer components {
-  /* Primary Button */
+  /* Primary Button - Responsive sizing */
   .btn-primary {
     @apply bg-brand-primary hover:bg-brand-primary-hover disabled:bg-brand-primary-disabled
            text-white disabled:cursor-not-allowed
-           px-4 py-3 rounded-md text-sm font-medium
+           px-4 py-3 lg:px-6 lg:py-4 rounded-md text-sm lg:text-base font-medium
            transition-colors;
   }
 
-  /* Secondary Button */
+  /* Secondary Button - Responsive sizing */
   .btn-secondary {
     @apply bg-btn-secondary hover:bg-opacity-90 disabled:bg-opacity-60
            text-btn-secondary-text disabled:cursor-not-allowed
-           px-4 py-3 rounded-md text-sm font-medium
+           px-4 py-3 lg:px-6 lg:py-4 rounded-md text-sm lg:text-base font-medium
            transition-colors;
   }
 
-  /* Error/Destructive Button */
+  /* Error/Destructive Button - Responsive sizing */
   .btn-error {
     @apply bg-brand-error hover:bg-brand-error-hover disabled:opacity-60
            text-white disabled:cursor-not-allowed
-           px-4 py-3 rounded-md text-sm font-medium
+           px-4 py-3 lg:px-6 lg:py-4 rounded-md text-sm lg:text-base font-medium
            transition-colors;
   }
 
-  /* Outline Button */
+  /* Outline Button - Responsive sizing */
   .btn-outline {
     @apply border-2 border-brand-primary text-brand-primary
            hover:bg-brand-primary hover:text-white disabled:opacity-60
            disabled:cursor-not-allowed
-           px-4 py-3 rounded-md text-sm font-medium
+           px-4 py-3 lg:px-6 lg:py-4 rounded-md text-sm lg:text-base font-medium
            transition-colors;
   }
 
-  /* Ghost Button */
+  /* Ghost Button - Responsive sizing */
   .btn-ghost {
     @apply text-heading hover:bg-gray-100 disabled:opacity-60
            disabled:cursor-not-allowed
-           px-4 py-3 rounded-md text-sm font-medium
+           px-4 py-3 lg:px-6 lg:py-4 rounded-md text-sm lg:text-base font-medium
            transition-colors;
   }
 
 
-  /* Input Fields */
+  /* Input Fields - Responsive sizing */
   .input-field {
-    @apply px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed;
+    @apply px-3 py-2 lg:px-4 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:bg-gray-100 disabled:cursor-not-allowed;
   }
 
   .textarea-field {
     @apply input-field resize-none;
   }
 
-  /* Warning Button */
+  /* Warning Button - Responsive sizing */
   .btn-warning {
     @apply bg-brand-warning hover:bg-brand-warning-hover disabled:opacity-60
            text-heading disabled:cursor-not-allowed
-           px-4 py-3 rounded-md text-sm font-medium
+           px-4 py-3 lg:px-6 lg:py-4 rounded-md text-sm lg:text-base font-medium
            transition-colors;
+  }
+
+  /* Card component - Responsive padding and spacing */
+  .card-responsive {
+    @apply p-4 md:p-5 lg:p-6 rounded-lg lg:rounded-xl;
+  }
+
+  /* Section spacing - Responsive */
+  .section-spacing {
+    @apply space-y-4 md:space-y-5 lg:space-y-6;
+  }
+
+  /* Page padding - Responsive */
+  .page-padding {
+    @apply px-4 md:px-6 lg:px-8;
   }
 }
 

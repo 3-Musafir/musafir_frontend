@@ -18,7 +18,6 @@ export default function App({ Component, pageProps }: AppProps) {
       "/dashboard",
       "/flagship/create",
       "/flagship/payment",
-      "/flagship/seats",
     ];
     return !adminPrefixes.some((prefix) => pathname.startsWith(prefix));
   }, [router.pathname]);

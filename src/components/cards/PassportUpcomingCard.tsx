@@ -354,9 +354,9 @@ const PassportUpcomingCard: React.FC<any> = ({
   );
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-card shadow-sm border border-border">
-      {/* Image */}
-      <div className="relative h-[140px] w-full overflow-hidden">
+    <div className="overflow-hidden rounded-2xl bg-card shadow-sm border border-border h-full flex flex-col">
+      {/* Image - Responsive height */}
+      <div className="relative h-[140px] lg:h-[180px] w-full overflow-hidden">
         <Image
           src={image || "/norwayUpcomming.jpg"}
           alt={title}
@@ -365,12 +365,12 @@ const PassportUpcomingCard: React.FC<any> = ({
         />
       </div>
 
-      {/* Content */}
-      <div className="space-y-2 p-4">
-        <div className="flex items-start justify-between">
-          <h3 className="text-lg font-semibold text-heading">{title}</h3>
+      {/* Content - Responsive padding and text */}
+      <div className="space-y-2 lg:space-y-3 p-4 lg:p-5 flex-1 flex flex-col">
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="text-lg lg:text-xl font-semibold text-heading">{title}</h3>
           <span
-            className={`rounded-md px-2 py-1 text-md font-medium border ${getStatusStyles(
+            className={`rounded-md px-2 py-1 lg:px-3 lg:py-1.5 text-sm lg:text-base font-medium border whitespace-nowrap ${getStatusStyles(
               displayStatus
             )}`}
           >
@@ -378,11 +378,11 @@ const PassportUpcomingCard: React.FC<any> = ({
           </span>
         </div>
 
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm lg:text-base text-muted-foreground">
           {date} @ {location}
         </p>
 
-        <div className="space-y-2 pt-1">
+        <div className="space-y-2 lg:space-y-3 pt-1 flex-1 flex flex-col">
           <StatusInfo
             status={displayStatus}
             paymentInfo={paymentInfo}
@@ -391,11 +391,11 @@ const PassportUpcomingCard: React.FC<any> = ({
             paymentStatus={paymentStatus}
             userVerificationStatus={userVerificationStatus}
           />
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-auto pt-2">
             <button
               onClick={actionButton.onClick}
               disabled={Boolean((actionButton as any)?.disabled)}
-              className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+              className={`rounded-full border px-4 py-2 lg:px-5 lg:py-2.5 text-sm lg:text-base font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                 actionButton.css
                   ? actionButton.css
                   : "bg-background text-btn-text border-border hover:bg-muted"
@@ -406,7 +406,7 @@ const PassportUpcomingCard: React.FC<any> = ({
             {displayStatus === "confirmed" && (
               <button
                 onClick={handleCancelAndRefund}
-                className="ml-2 p-2 text-muted-foreground hover:text-brand-error transition-colors"
+                className="ml-2 p-2 lg:p-3 text-muted-foreground hover:text-brand-error transition-colors"
                 aria-label="Cancel seat"
               >
                 <DeleteIcon />

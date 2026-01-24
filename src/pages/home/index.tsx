@@ -190,25 +190,39 @@ function Home() {
           </section>
         )}
 
-        <section className='space-y-4 pb-16'>
-          <div className='space-y-4'>
-            {flagships.length > 0 ? (
-              flagships.map((event) => {
-                return <HomeEventCard key={event._id} {...event} />;
-              })
-            ) : isLoading ? (
-              <div className='text-center text-gray-500 py-8'>
-                <p className='text-xl font-medium mb-2'>Loading Flagships For You</p>
+        <section className='space-y-4 pb-20 lg:pb-6'>
+          {flagships.length > 0 ? (
+            <>
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                {flagships.map((event) => {
+                  return <HomeEventCard key={event._id} {...event} />;
+                })}
               </div>
-            ) : (
-              <div className='text-center text-gray-500 py-8'>
-                <p className='text-xl font-medium mb-2'>No Flagships Available Yet</p>
-                <p className='text-lg'>
-                  Stay tuned! We&apos;re working on bringing exciting new flagships your way.
-                </p>
-              </div>
-            )}
-          </div>
+
+              {/* Coming Soon placeholder when there are few flagships */}
+              {flagships.length < 3 && (
+                <div className='mt-6 p-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50/50'>
+                  <div className='text-center'>
+                    <p className='text-lg font-medium text-gray-600 mb-1'>More Adventures Coming Soon</p>
+                    <p className='text-sm text-gray-500'>
+                      We&apos;re planning exciting new destinations. Stay tuned for updates!
+                    </p>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : isLoading ? (
+            <div className='text-center text-gray-500 py-8'>
+              <p className='text-xl font-medium mb-2'>Loading Flagships For You</p>
+            </div>
+          ) : (
+            <div className='text-center text-gray-500 py-8'>
+              <p className='text-xl font-medium mb-2'>No Flagships Available Yet</p>
+              <p className='text-lg'>
+                Stay tuned! We&apos;re working on bringing exciting new flagships your way.
+              </p>
+            </div>
+          )}
         </section>
       </main>
 

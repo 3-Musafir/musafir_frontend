@@ -43,9 +43,9 @@ export default function HomeEventCard({
   return (
     <div
       onClick={handleClick}
-      className="cursor-pointer bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-300"
+      className="cursor-pointer bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-300 h-full flex flex-col"
     >
-      <div className="relative h-48">
+      <div className="relative h-48 sm:h-52 lg:h-56">
         <Image
           src={imageUrls[currentImageIndex]}
           alt={tripName || 'Event image'}
@@ -80,9 +80,9 @@ export default function HomeEventCard({
           </>
         )}
       </div>
-      <div className="space-y-2 p-4">
-        <h3 className="text-lg font-semibold text-gray-900">{tripName}</h3>
-        <p className="text-sm text-gray-600">
+      <div className="space-y-2 lg:space-y-3 p-4 lg:p-5 flex-1">
+        <h3 className="text-lg lg:text-xl font-semibold text-gray-900">{tripName}</h3>
+        <p className="text-sm lg:text-base text-gray-600">
           {new Date(startDate).getDate()} - {new Date(endDate).getDate()}th {new Date(endDate).toLocaleString('default', { month: 'short' })} @ {destination}
         </p>
       </div>
