@@ -3,11 +3,12 @@ import { signOut, useSession } from 'next-auth/react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import useUserHandler from '@/hooks/useUserHandler';
 import { useNotificationsContext } from '@/context/NotificationsProvider';
 import NotificationList from '../notifications/NotificationList';
 
-export default function Header({ notificationCount = 0, setSidebarOpen, showMenuButton = true }) {
+export default function Header({ notificationCount = 0, setSidebarOpen, showMenuButton = true, onTabChange, activeTab: externalActiveTab }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [user, setUser] = useState(null);
@@ -86,10 +87,10 @@ export default function Header({ notificationCount = 0, setSidebarOpen, showMenu
   const showAuthCta = status !== 'authenticated'; // Show login/signup buttons when not authenticated on ANY page
 
   const navLinks = [
-    { href: '/home', label: 'Home', icon: Home },
-    { href: '/passport', label: 'Passport', icon: Flag },
-    { href: '/wallet', label: 'Wallet', icon: Wallet },
-    { href: '/referrals', label: 'Referrals', icon: Users },
+    { href: '/home', label: 'Home', icon: Home, tabId: 'home' },
+    { href: '/passport', label: 'Passport', icon: Flag, tabId: 'passport' },
+    { href: '/wallet', label: 'Wallet', icon: Wallet, tabId: 'wallet' },
+    { href: '/referrals', label: 'Referrals', icon: Users, tabId: 'referrals' },
   ];
 
   return (
@@ -104,17 +105,37 @@ export default function Header({ notificationCount = 0, setSidebarOpen, showMenu
       {/* Desktop navigation - visible only on lg screens and above */}
       {status === 'authenticated' && (
         <nav className='hidden lg:flex items-center space-x-8 ml-6'>
-          {navLinks.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`text-base font-medium transition-colors ${
-                pathname === href ? 'text-brand-primary' : 'text-gray-600 hover:text-brand-primary'
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
+          {navLinks.map(({ href, label, tabId }) => {
+            const isActive = onTabChange ? externalActiveTab === tabId : pathname === href;
+
+            if (onTabChange) {
+              // Tab mode - use button for instant switching
+              return (
+                <button
+                  key={tabId}
+                  onClick={() => onTabChange(tabId)}
+                  className={`text-base font-medium transition-colors ${
+                    isActive ? 'text-brand-primary' : 'text-gray-600 hover:text-brand-primary'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            }
+
+            // Link mode - use Next.js Link for page navigation
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`text-base font-medium transition-colors ${
+                  isActive ? 'text-brand-primary' : 'text-gray-600 hover:text-brand-primary'
+                }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </nav>
       )}
 
