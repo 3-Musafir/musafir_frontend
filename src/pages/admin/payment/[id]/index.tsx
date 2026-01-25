@@ -68,6 +68,13 @@ export default function PaymentDetailsPage() {
         title: "Success",
         description: "Payment approved successfully",
       });
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("paymentStatusChanged", {
+            detail: { paymentId, status: "approved" },
+          }),
+        );
+      }
       await fetchData();
     } catch (error) {
       console.error("Error approving payment:", error);
@@ -87,6 +94,13 @@ export default function PaymentDetailsPage() {
         title: "Success",
         description: "Payment rejected successfully",
       });
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("paymentStatusChanged", {
+            detail: { paymentId, status: "rejected" },
+          }),
+        );
+      }
       await fetchData();
     } catch (error) {
       console.error("Error rejecting payment:", error);

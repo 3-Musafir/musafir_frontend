@@ -6,9 +6,10 @@ import { Tabs, TabsList, TabsTrigger } from "../../../../components/tabs";
 import { cn } from "../../../../lib/utils";
 import { RegistrationStatsContainer } from "../../../../containers/registrationStats";
 import { PaymentStatsContainer } from "../../../../containers/paymentsStats";
-import { VerificationList } from "../../../../containers/verification";
+import { IdentityVerificationList } from "../../../../containers/verification";
 import { PaidListContainer } from "../../../../containers/paidList";
 import { RegistrationsList } from "@/containers/registeredList";
+import { PaymentVerificationList } from "@/containers/paymentVerification";
 import { useRouter } from "next/router";
 import { FlagshipService } from "@/services/flagshipService";
 import { format } from "date-fns";
@@ -60,7 +61,9 @@ export default function Dashboard() {
           <div className="flex items-baseline justify-between">
             <p className="text-lg font-semibold text-gray-900">{flagship.tripName}</p>
             <div className="text-right text-sm text-gray-500">
-              <p className="font-medium text-gray-700">{flagship.location || flagship.city || ""}</p>
+              <p className="font-medium text-gray-700">
+                {flagship.locations?.[0]?.name || flagship.destination || ""}
+              </p>
             </div>
           </div>
           <div className="flex items-center justify-between text-xs uppercase tracking-wide text-gray-500">
@@ -116,15 +119,15 @@ export default function Dashboard() {
               >
                 Registration
               </TabsTrigger>
-              <TabsTrigger
-                value="verification"
-                className={cn(
-                  "py-3 flex justify-center",
-                  activeTab === "verification" && "border-b-2 border-black"
-                )}
-              >
-                Verification
-              </TabsTrigger>
+          <TabsTrigger
+            value="verification"
+            className={cn(
+              "py-3 flex justify-center",
+              activeTab === "verification" && "border-b-2 border-black"
+            )}
+          >
+            Payment Verification
+          </TabsTrigger>
               <TabsTrigger
                 value="paid"
                 className={cn(
@@ -167,8 +170,21 @@ export default function Dashboard() {
       {activeTab === "stats" && activeSection === "payments" && (
         <PaymentStatsContainer />
       )}
-      {activeTab === "registration" && <RegistrationsList />}
-      {activeTab === "verification" && <VerificationList />}
+      {activeTab === "registration" && (
+        <>
+          <RegistrationsList />
+          <div className="pt-6 border-t border-gray-200">
+            <div className="flex flex-col gap-1 mb-3">
+              <p className="text-sm font-semibold text-gray-900">Identity Verification</p>
+              <p className="text-xs text-gray-500">
+                Pending identity verifications (users must be verified before payments can be processed).
+              </p>
+            </div>
+            <IdentityVerificationList />
+          </div>
+        </>
+      )}
+      {activeTab === "verification" && <PaymentVerificationList />}
       {activeTab === "paid" && <PaidListContainer />}
     </div>
   );

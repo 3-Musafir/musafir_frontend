@@ -8,7 +8,7 @@ import { IRegistration } from "@/interfaces/trip/trip";
 import Link from "next/link";
 import { IUser } from "@/services/types/user";
 
-export const VerificationList = () => {
+export const IdentityVerificationList = () => {
   const [verificationUsers, setVerificationUsers] = useState<IRegistration[]>(
     []
   );

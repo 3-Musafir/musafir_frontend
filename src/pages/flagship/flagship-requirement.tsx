@@ -185,7 +185,7 @@ function FlagshipRequirements() {
           const alertMessage = response.isPaid
             ? "You already have a confirmed registration for this flagship."
             : "You already registered. Continue on the payment page to secure your seat.";
-          showAlert(alertMessage, response.isPaid ? 'success' : 'info');
+          showAlert(alertMessage, response.isPaid ? 'success' : 'success');
         }
         router.push(`/flagship/seats`);
       } else {

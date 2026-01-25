@@ -1,13 +1,20 @@
 import api from "@/pages/api";
-import { IRegistration } from "@/interfaces/trip/trip";
+import { IRegistration, IPendingPaymentVerificationResponse } from "@/interfaces/trip/trip";
 import { IFlagship, IRegistrationStats } from "./types/flagship";
 
 export class FlagshipService {
   static async getRegisteredUsers(
     flagshipId: string,
-    search: string = ""
+    params?: {
+      search?: string;
+      verificationStatus?: string;
+      rejectedOnly?: boolean;
+      excludeVerificationStatus?: string;
+      limit?: number;
+      page?: number;
+    },
   ): Promise<IRegistration[]> {
-    return api.get(`/flagship/registered/${flagshipId}`, { search });
+    return api.get(`/flagship/registered/${flagshipId}`, params || {});
   }
 
   static async getPendingVerificationUsers(
@@ -21,6 +28,17 @@ export class FlagshipService {
     paymentType: string
   ): Promise<IRegistration[]> {
     return api.get(`/flagship/paid/${flagshipId}`, { paymentType });
+  }
+
+  static async getPendingPaymentVerifications(
+    flagshipId: string,
+    params?: {
+      limit?: number;
+      page?: number;
+      paymentType?: string;
+    }
+  ): Promise<IPendingPaymentVerificationResponse> {
+    return api.get(`/flagship/pending-payment-verification/${flagshipId}`, params || {});
   }
 
   static async approveRegistration(registrationId: string, comment: string) {

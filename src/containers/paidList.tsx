@@ -35,6 +35,18 @@ export const PaidListContainer = () => {
     fetchPaymentUsers(paymentFilter);
   }, [paymentFilter]);
 
+  useEffect(() => {
+    const handlePaymentChanged = () => fetchPaymentUsers(paymentFilter);
+    if (typeof window !== "undefined") {
+      window.addEventListener("paymentStatusChanged", handlePaymentChanged);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("paymentStatusChanged", handlePaymentChanged);
+      }
+    };
+  }, [paymentFilter]);
+
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "do MMMM yyyy"); // Example: 17th July 2025
   };

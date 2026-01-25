@@ -18,6 +18,11 @@ export interface IRegistration {
   updatedAt: string;
   type: string;
   id: string;
+  latestPaymentId?: string;
+  latestPaymentStatus?: 'pendingApproval' | 'approved' | 'rejected' | 'none';
+  latestPaymentCreatedAt?: string;
+  latestPaymentType?: string;
+  latestPaymentAmount?: number;
 }
 
 export interface IUser {
@@ -62,4 +67,37 @@ export interface IPayment {
   createdAt: string;
   updatedAt: string;
   id: string;
+  paymentMethod?: string;
+  screenshot?: string;
+  rejectionReason?: string;
+}
+
+export interface IPendingPaymentVerificationItem {
+  _id: string;
+  paymentType: string;
+  paymentMethod?: string;
+  amount: number;
+  screenshot?: string;
+  status: string;
+  rejectionReason?: string;
+  createdAt: string;
+  registration: {
+    _id: string;
+    status?: string;
+    joiningFromCity?: string;
+    tier?: string;
+    bedPreference?: string;
+    price?: number;
+    type?: string;
+    createdAt?: string;
+    user?: IUser;
+  };
+}
+
+export interface IPendingPaymentVerificationResponse {
+  payments: IPendingPaymentVerificationItem[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
