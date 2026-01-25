@@ -1,17 +1,17 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import useRegistrationHook from "@/hooks/useRegistrationHandler";
+import { PaymentService } from "@/services/paymentService";
+import { formatDate } from "@/utils/formatDate";
 import { Camera, ChevronDown, ChevronUp, Copy } from "lucide-react";
 import Image from "next/image";
-import { PaymentService } from "@/services/paymentService";
-import { useToast } from "@/hooks/use-toast";
-import { useParams } from "next/navigation";
-import useRegistrationHook from "@/hooks/useRegistrationHandler";
-import { useRouter } from "next/router";
-import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
 
 const bankDetails = {
   "faysal-bank": {
@@ -245,8 +245,8 @@ export default function TripPayment() {
       const walletUseId =
         effectiveWalletToUse > 0
           ? (typeof crypto !== "undefined" && "randomUUID" in crypto
-              ? (crypto as any).randomUUID()
-              : `${Date.now()}-${Math.random()}`)
+            ? (crypto as any).randomUUID()
+            : `${Date.now()}-${Math.random()}`)
           : undefined;
       const selectedBankAccountId =
         cashAmount > 0 ? bankDetails[selectedBank]?.id : undefined;
@@ -553,96 +553,95 @@ export default function TripPayment() {
                   Transfer to one of these Bank accounts and share your receipt
                   below
                 </p>
-
-            <RadioGroup
-              value={selectedBank}
-              onValueChange={(value) => setSelectedBank(value as BankKey)}
-              className="space-y-3"
-            >
-              {Object.entries(bankDetails).map(([bankId, details]) => (
-                <div
-                  key={bankId}
-                  className="border border-border bg-card rounded-lg overflow-hidden"
+                <RadioGroup
+                  value={selectedBank}
+                  onValueChange={(value) => setSelectedBank(value as BankKey)}
+                  className="space-y-3"
                 >
-                  <div
-                    className="flex items-center justify-between p-4 cursor-pointer"
-                    onClick={() =>
-                      setExpandedBank(expandedBank === bankId ? null : bankId)
-                    }
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value={bankId} id={bankId} />
-                      <Label htmlFor={bankId} className="flex items-center">
-                        <Image
-                          src={
-                            bankId === "standard-chartered"
-                              ? "/sc.png"
-                              : "/db.png"
-                          }
-                          alt={details.title}
-                          width={24}
-                          height={24}
-                          className="mr-3"
-                        />
-                        <span>{details.title}</span>
-                      </Label>
-                    </div>
-                    {expandedBank === bankId ? (
-                      <ChevronUp className="h-5 w-5" />
-                    ) : (
-                      <ChevronDown className="h-5 w-5" />
-                    )}
-                  </div>
+                  {Object.entries(bankDetails).map(([bankId, details]) => (
+                    <div
+                      key={bankId}
+                      className="border border-border bg-card rounded-lg overflow-hidden"
+                    >
+                      <div
+                        className="flex items-center justify-between p-4 cursor-pointer"
+                        onClick={() =>
+                          setExpandedBank(expandedBank === bankId ? null : bankId)
+                        }
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value={bankId} id={bankId} />
+                          <Label htmlFor={bankId} className="flex items-center">
+                            <Image
+                              src={
+                                bankId === "standard-chartered"
+                                  ? "/sc.png"
+                                  : "/db.png"
+                              }
+                              alt={details.title}
+                              width={24}
+                              height={24}
+                              className="mr-3"
+                            />
+                            <span>{details.title}</span>
+                          </Label>
+                        </div>
+                        {expandedBank === bankId ? (
+                          <ChevronUp className="h-5 w-5" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5" />
+                        )}
+                      </div>
 
-                  {expandedBank === bankId && (
-                    <div className="px-4 pb-4 space-y-3">
-                      <div className="flex flex-col space-y-1">
-                        <span className="text-sm text-muted-foreground">
-                          Account Title
-                        </span>
-                        <span className="font-medium text-heading">{details.title}</span>
-                      </div>
-                      <div className="flex flex-col space-y-1">
-                        <span className="text-sm text-muted-foreground">
-                          {String(details.accountNumber || "").startsWith("PK")
-                            ? "IBAN"
-                            : "Account Number"}
-                        </span>
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-heading">
-                            {details.accountNumber}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-2"
-                            onClick={() => handleCopy(details.accountNumber)}
-                          >
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      {details.iban && details.iban !== "—" ? (
-                        <div className="flex flex-col space-y-1">
-                          <span className="text-sm text-muted-foreground">IBAN</span>
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium text-heading">{details.iban}</span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 px-2"
-                              onClick={() => handleCopy(details.iban)}
-                            >
-                              <Copy className="h-4 w-4" />
-                            </Button>
+                      {expandedBank === bankId && (
+                        <div className="px-4 pb-4 space-y-3">
+                          <div className="flex flex-col space-y-1">
+                            <span className="text-sm text-muted-foreground">
+                              Account Title
+                            </span>
+                            <span className="font-medium text-heading">{details.title}</span>
                           </div>
+                          <div className="flex flex-col space-y-1">
+                            <span className="text-sm text-muted-foreground">
+                              {String(details.accountNumber || "").startsWith("PK")
+                                ? "IBAN"
+                                : "Account Number"}
+                            </span>
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-heading">
+                                {details.accountNumber}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 px-2"
+                                onClick={() => handleCopy(details.accountNumber)}
+                              >
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                          {details.iban && details.iban !== "—" ? (
+                            <div className="flex flex-col space-y-1">
+                              <span className="text-sm text-muted-foreground">IBAN</span>
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium text-heading">{details.iban}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 px-2"
+                                  onClick={() => handleCopy(details.iban)}
+                                >
+                                  <Copy className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ) : null}
                         </div>
-                      ) : null}
+                      )}
                     </div>
-                  )}
-                </div>
-              ))}
-            </RadioGroup>
+                  ))}
+                </RadioGroup>
               </div>
 
               {/* Step 2: Upload Screenshot */}
@@ -655,45 +654,45 @@ export default function TripPayment() {
                   below
                 </p>
 
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="image/*"
-              className="hidden"
-            />
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  className="hidden"
+                />
 
-            <div
-              className="bg-muted rounded-lg p-6 flex flex-col items-center justify-center mb-3 cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-            >
-              {file ? (
-                <div className="text-center">
-                  <p className="text-text mb-2">File uploaded:</p>
-                  <p className="font-medium text-heading">{fileName}</p>
+                <div
+                  className="bg-muted rounded-lg p-6 flex flex-col items-center justify-center mb-3 cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                >
+                  {file ? (
+                    <div className="text-center">
+                      <p className="text-text mb-2">File uploaded:</p>
+                      <p className="font-medium text-heading">{fileName}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-muted-foreground mb-2">
+                        Drop files here to upload...
+                      </p>
+                      <Button variant="outline" className="bg-background">
+                        Browse files
+                      </Button>
+                    </>
+                  )}
                 </div>
-              ) : (
-                <>
-                  <p className="text-muted-foreground mb-2">
-                    Drop files here to upload...
-                  </p>
-                  <Button variant="outline" className="bg-background">
-                    Browse files
-                  </Button>
-                </>
-              )}
-            </div>
 
-            <Button
-              variant="outline"
-              className="w-full flex items-center justify-center py-6"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Camera className="mr-2 h-5 w-5" />
-              <span>Or take a picture</span>
-            </Button>
+                <Button
+                  variant="outline"
+                  className="w-full flex items-center justify-center py-6"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Camera className="mr-2 h-5 w-5" />
+                  <span>Or take a picture</span>
+                </Button>
               </div>
             </>
           ) : (
