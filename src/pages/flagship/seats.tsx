@@ -3,12 +3,17 @@ import Navigation from "@/pages/navigation";
 import useFlagshipHook from "@/hooks/useFlagshipHandler";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { currentUser } from "@/store/signup";
 
 export default function RemainingSeats() {
   const [flagship, setFlagship] = useState<any>({});
   const action = useFlagshipHook();
   const router = useRouter();
   const [registrationId, setRegistrationId] = useState<string>('');
+  const user = useRecoilValue(currentUser);
+  const verificationStatus = (user as any)?.verification?.status;
+  const isVerified = verificationStatus === "verified";
 
   const getFlagship = async (flagshipId: any) => {
     const response = await action.getFlagship(flagshipId);
@@ -52,16 +57,46 @@ export default function RemainingSeats() {
               <div className="text-lg text-gray-600 mb-2 text-center">
                 Remaining Tickets
               </div>
-              <div className="text-6xl font-bold text-center">{flagship.totalSeats ? flagship.totalSeats : 0}</div>
+              <div className="text-6xl font-bold text-center">
+                {(() => {
+                  const total = Number(flagship?.totalSeats || 0);
+                  const confirmedMale = Number(flagship?.confirmedMaleCount || 0);
+                  const confirmedFemale = Number(flagship?.confirmedFemaleCount || 0);
+                  const remaining = Math.max(0, total - (confirmedMale + confirmedFemale));
+                  return remaining;
+                })()}
+              </div>
             </div>
           </div>
 
-          <button
-            onClick={handleSubmit}
-            className="btn-primary w-full"
-          >
-            Make Payment
-          </button>
+          {isVerified ? (
+            <button
+              onClick={handleSubmit}
+              className="btn-primary w-full"
+            >
+              Make Payment
+            </button>
+          ) : (
+            <>
+              <p className="text-center text-sm text-gray-500 mb-4">
+                Your identity needs verification before completing the payment.
+              </p>
+              <button
+                onClick={() => {
+                  if (registrationId) {
+                    localStorage.setItem(
+                      "verificationReturnTo",
+                      `/musafir/payment/${registrationId}`,
+                    );
+                  }
+                  router.push("/verification");
+                }}
+                className="btn-primary w-full bg-amber-500 hover:bg-amber-600 border-0"
+              >
+                Get Verified
+              </button>
+            </>
+          )}
         </main>
       </div>
       <Navigation />
