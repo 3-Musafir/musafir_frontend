@@ -1,12 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactStrictMode: true,
-  distDir: "next-build",
+
+  // IMPORTANT: let Next.js use the default `.next` directory
+  // so Amplify can find required-server-files.json
+
   eslint: {
     ignoreDuringBuilds: true,
   },
+
   images: {
     remotePatterns: [
       {
