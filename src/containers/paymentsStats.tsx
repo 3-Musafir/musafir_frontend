@@ -27,7 +27,7 @@ export const PaymentStatsContainer = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4">
         <Card className="p-4 bg-gray-50">
-          <div className="text-sm text-gray-600">Team Seats</div>
+          <div className="text-sm text-gray-600">Total Seats</div>
           <div className="text-3xl font-bold">05</div>
         </Card>
         <Card className="p-4 bg-gray-50">
