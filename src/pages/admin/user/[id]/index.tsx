@@ -27,6 +27,10 @@ export default function UserDetailsPage() {
   const router = useRouter();
   const { id } = router.query;
   const userId = id as string;
+  const registrationId =
+    typeof router.query.registrationId === "string"
+      ? router.query.registrationId
+      : undefined;
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -65,7 +69,9 @@ export default function UserDetailsPage() {
 
     setProcessing(true);
     try {
-      await UserService.approveUser(user._id);
+      await UserService.updateVerificationStatus(user._id, "verified", {
+        registrationId,
+      });
       toast({
         title: "Success",
         description: "User approved successfully",
@@ -119,7 +125,8 @@ export default function UserDetailsPage() {
     try {
       const updatedUser = await UserService.updateVerificationStatus(
         user._id,
-        nextStatus
+        nextStatus,
+        { registrationId }
       );
       const normalizedUser = {
         ...updatedUser,

@@ -53,9 +53,17 @@ export class UserService {
 
   static async updateVerificationStatus(
     userId: string,
-    status: "verified" | "unverified"
+    status: "verified" | "unverified",
+    options?: { registrationId?: string; comment?: string }
   ): Promise<IUser> {
-    const res = await api.patch(`/user/verification-status/${userId}`, { status });
+    const payload: any = { status };
+    if (options?.comment) {
+      payload.comment = options.comment;
+    }
+    if (options?.registrationId) {
+      payload.registrationId = options.registrationId;
+    }
+    const res = await api.patch(`/user/verification-status/${userId}`, payload);
     // Backend wraps payload as { data, message, statusCode }
     return (res as any)?.data ?? res;
   }

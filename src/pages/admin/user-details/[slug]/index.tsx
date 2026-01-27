@@ -389,7 +389,8 @@ export default function UserDetails() {
               <div className="mt-4 space-y-3">
                 {registrationStatus === "onboarding" && userId && (
                   <Link
-                    href={`/admin/user/${userId}`}
+                    href={`/admin/user/${userId}${registeredUser?._id ? `?registrationId=${registeredUser._id}` : ""
+                      }`}
                     className="w-full block text-center bg-brand-primary text-white rounded-lg py-3 px-4 font-medium"
                   >
                     Review Verification
