@@ -154,6 +154,10 @@ export class PaymentService {
     return api.post(`/wallet/topup-request`, { packageAmount });
   }
 
+  static async getUserPayments(params?: { limit?: number; cursor?: string }) {
+    return api.get(`/payment/user-payments`, params || {});
+  }
+
   // Wallet (admin)
   static async adminListWallets(params?: {
     page?: number;

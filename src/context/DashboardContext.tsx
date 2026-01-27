@@ -33,7 +33,12 @@ interface DashboardContextType {
   walletTransactions: any[];
   walletLoading: boolean;
   walletNextCursor: string | null;
+  walletPayments: any[];
+  walletPaymentsLoading: boolean;
+  walletPaymentsCursor: string | null;
   loadMoreTransactions: () => Promise<void>;
+  refreshWalletPayments: () => Promise<void>;
+  loadMoreWalletPayments: () => Promise<void>;
   requestTopup: (amount: number) => Promise<void>;
   creatingTopup: number | null;
 
@@ -48,7 +53,6 @@ interface DashboardContextType {
   // Refresh functions
   refreshHome: () => Promise<void>;
   refreshPassport: () => Promise<void>;
-  refreshWallet: () => Promise<void>;
   refreshReferrals: () => Promise<void>;
 }
 
@@ -81,6 +85,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [walletTransactions, setWalletTransactions] = useState<any[]>([]);
   const [walletLoading, setWalletLoading] = useState(true);
   const [walletNextCursor, setWalletNextCursor] = useState<string | null>(null);
+  const [walletPayments, setWalletPayments] = useState<any[]>([]);
+  const [walletPaymentsLoading, setWalletPaymentsLoading] = useState(true);
+  const [walletPaymentsCursor, setWalletPaymentsCursor] = useState<string | null>(null);
   const [creatingTopup, setCreatingTopup] = useState<number | null>(null);
 
   // Referrals state
@@ -131,7 +138,20 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const refreshWallet = useCallback(async () => {
+  const refreshWalletPayments = useCallback(async () => {
+    setWalletPaymentsLoading(true);
+    try {
+      const res = await PaymentService.getUserPayments({ limit: 20 });
+      setWalletPayments(res?.payments || []);
+      setWalletPaymentsCursor(res?.nextCursor || null);
+    } catch (error) {
+      console.error("Error fetching wallet payments:", error);
+    } finally {
+      setWalletPaymentsLoading(false);
+    }
+  }, []);
+
+  const fetchWalletData = useCallback(async () => {
     setWalletLoading(true);
     try {
       const [summaryRes, txRes] = await Promise.all([
@@ -171,6 +191,20 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setWalletNextCursor(res?.nextCursor || null);
   }, [walletNextCursor]);
 
+  const loadMoreWalletPayments = useCallback(async () => {
+    if (!walletPaymentsCursor) return;
+    try {
+      const res = await PaymentService.getUserPayments({
+        limit: 20,
+        cursor: walletPaymentsCursor,
+      });
+      setWalletPayments((prev) => [...prev, ...(res?.payments || [])]);
+      setWalletPaymentsCursor(res?.nextCursor || null);
+    } catch (error) {
+      console.error("Error loading more wallet payments:", error);
+    }
+  }, [walletPaymentsCursor]);
+
   const requestTopup = useCallback(async (amount: number) => {
     setCreatingTopup(amount);
     try {
@@ -179,11 +213,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       if (url) {
         window.open(url, "_blank", "noopener,noreferrer");
       }
-      await refreshWallet();
+      await Promise.all([fetchWalletData(), refreshWalletPayments()]);
     } finally {
       setCreatingTopup(null);
     }
-  }, [refreshWallet]);
+  }, [fetchWalletData, refreshWalletPayments]);
 
   // Load data on initial mount and when tab changes
   useEffect(() => {
@@ -198,13 +232,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Load tab data when switching to it (lazy loading)
   useEffect(() => {
     if (activeTab === "wallet" && !loadedTabs.has("wallet")) {
-      refreshWallet();
+      Promise.all([fetchWalletData(), refreshWalletPayments()]);
       setLoadedTabs((prev) => new Set([...prev, "wallet"]));
     } else if (activeTab === "referrals" && !loadedTabs.has("referrals")) {
       refreshReferrals();
       setLoadedTabs((prev) => new Set([...prev, "referrals"]));
     }
-  }, [activeTab, loadedTabs, refreshWallet, refreshReferrals]);
+  }, [activeTab, loadedTabs, fetchWalletData, refreshWalletPayments, refreshReferrals]);
 
   // Refresh verification status when passport tab is active
   useEffect(() => {
@@ -229,7 +263,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     walletTransactions,
     walletLoading,
     walletNextCursor,
+    walletPayments,
+    walletPaymentsLoading,
+    walletPaymentsCursor,
     loadMoreTransactions,
+    refreshWalletPayments,
+    loadMoreWalletPayments,
     requestTopup,
     creatingTopup,
     referralCode,

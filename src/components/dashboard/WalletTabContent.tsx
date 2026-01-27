@@ -12,7 +12,12 @@ export default function WalletTabContent() {
     walletTransactions,
     walletLoading,
     walletNextCursor,
+    walletPayments,
+    walletPaymentsLoading,
+    walletPaymentsCursor,
     loadMoreTransactions,
+    loadMoreWalletPayments,
+    refreshWalletPayments,
     requestTopup,
     creatingTopup,
   } = useDashboard();
@@ -118,6 +123,73 @@ export default function WalletTabContent() {
           Top-ups are processed by admin after confirmation. You&apos;ll be redirected to WhatsApp with a
           prefilled message.
         </p>
+      </section>
+
+      {/* Payments */}
+      <section className="rounded-xl border border-border bg-card p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-heading">Flagship payments</h2>
+          {walletPayments?.length > 0 && (
+            <button
+              type="button"
+              onClick={refreshWalletPayments}
+              className="text-xs text-brand-primary hover:underline"
+            >
+              Refresh
+            </button>
+          )}
+        </div>
+        {walletPaymentsLoading ? (
+          <div className="text-sm text-text-light">Loading…</div>
+        ) : walletPayments.length === 0 ? (
+          <div className="text-sm text-text-light">No payments yet.</div>
+        ) : (
+          <div className="divide-y divide-border">
+            {walletPayments.map((payment: any) => {
+              const registration = payment.registration || {};
+              const flagship = registration.flagship || {};
+              const registrationId =
+                registration._id || registration.id || registration.registrationId;
+              const paymentLink = registrationId ? `/musafir/payment/${registrationId}` : "/wallet";
+              const statusLabel =
+                payment.status === "pendingApproval"
+                  ? "Pending approval"
+                  : payment.status === "approved"
+                    ? "Approved"
+                    : "Rejected";
+              return (
+                <Link
+                  href={paymentLink}
+                  key={payment._id}
+                  className="block"
+                  target={paymentLink !== "/wallet" ? "_blank" : undefined}
+                >
+                  <div className="py-3 flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium text-heading truncate">
+                        {flagship.tripName || "Flagship payment"}
+                      </div>
+                      <div className="text-xs text-text-light">
+                        {statusLabel} • {new Date(payment.createdAt).toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-text-light">{payment.paymentType || payment.paymentMethod}</div>
+                      <div className="text-lg font-semibold text-heading">
+                        Rs.{Number(payment.amount || 0).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+        {walletPaymentsCursor && (
+          <Button variant="outline" className="w-full" onClick={loadMoreWalletPayments}>
+            Load more payments
+          </Button>
+        )}
       </section>
 
       {/* History */}
