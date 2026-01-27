@@ -73,6 +73,16 @@ export class FlagshipService {
     return api.get(`/flagship/registration/${registrationID}`);
   }
 
+  static async sendPaymentReminders(
+    flagshipId: string,
+    registrationIds?: string[],
+  ) {
+    const payload = Array.isArray(registrationIds) && registrationIds.length > 0
+      ? { registrationIds }
+      : {};
+    return api.post(`/flagship/payment-reminders/${flagshipId}`, payload);
+  }
+
   static async deleteRegistration(
     registrationId: string,
     reason?: string,

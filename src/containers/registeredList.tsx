@@ -18,6 +18,7 @@ export const RegistrationsList = () => {
   const [hideIdentityPending, setHideIdentityPending] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [sendingReminders, setSendingReminders] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const [deletingRegistrationId, setDeletingRegistrationId] = useState<string | null>(null);
@@ -87,6 +88,32 @@ export const RegistrationsList = () => {
     setCurrentPage((prev) => prev + 1);
   };
 
+  const handleSendPaymentReminders = async () => {
+    if (!slug) return;
+    const confirmed = window.confirm(
+      "Send payment reminders to all eligible registrations for this trip? This respects the 24h cooldown.",
+    );
+    if (!confirmed) return;
+    try {
+      setSendingReminders(true);
+      const result = await FlagshipService.sendPaymentReminders(slug as string);
+      const summary = `Eligible: ${result?.totalEligible || 0}. Notifications: ${result?.notificationsSent || 0}. Emails: ${result?.emailsSent || 0}. Skipped: ${result?.skipped || 0}.`;
+      toast({
+        title: result?.totalEligible ? "Payment reminders sent" : "No eligible registrations",
+        description: summary,
+      });
+    } catch (error: any) {
+      console.error("Failed to send payment reminders:", error);
+      toast({
+        title: "Reminder send failed",
+        description: error?.message || "Unable to send payment reminders right now.",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingReminders(false);
+    }
+  };
+
   const handleDeleteRegistration = async (registration: IRegistration) => {
     if (!registration?._id) return;
     const fullName = (registration.user as IUser)?.fullName || "this user";
@@ -129,13 +156,23 @@ export const RegistrationsList = () => {
   return (
     <div className="space-y-4 p-4">
       {/* Search Field */}
-      <input
-        type="text"
-        value={searchQuery}
-        onChange={handleSearch}
-        placeholder="Search by name..."
-        className="w-full border rounded-md p-2 mb-4"
-      />
+      <div className="flex flex-wrap items-center gap-3">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={handleSearch}
+          placeholder="Search by name..."
+          className="flex-1 min-w-[220px] border rounded-md p-2"
+        />
+        <button
+          type="button"
+          onClick={handleSendPaymentReminders}
+          disabled={sendingReminders || loading || !slug}
+          className="rounded-md border border-gray-900 px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-900 hover:text-white disabled:opacity-50"
+        >
+          {sendingReminders ? "Sending reminders..." : "Send payment reminders"}
+        </button>
+      </div>
       <div className="flex flex-wrap items-center gap-4 mb-3 text-sm text-gray-600">
         <label className="flex items-center gap-2">
           <span className="font-medium text-gray-800">Verification</span>

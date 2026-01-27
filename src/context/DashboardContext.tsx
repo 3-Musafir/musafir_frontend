@@ -277,7 +277,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     userVerificationStatus,
     refreshHome,
     refreshPassport,
-    refreshWallet,
     refreshReferrals,
   };
 
