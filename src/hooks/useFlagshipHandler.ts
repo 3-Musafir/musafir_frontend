@@ -5,7 +5,7 @@ import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { HttpStatusCode } from 'axios';
 import { useRecoilState } from 'recoil';
 import apiEndpoints from '../config/apiEndpoints';
-import api from '../pages/api';
+import api from '@/lib/api';
 
 const useFlagshipHook = () => {
   // const [user, setUser] = useRecoilState(currentUser);

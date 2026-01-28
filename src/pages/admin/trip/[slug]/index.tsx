@@ -14,13 +14,18 @@ import { useRouter } from "next/router";
 import { FlagshipService } from "@/services/flagshipService";
 import { format } from "date-fns";
 import { IFlagship } from "@/services/types/flagship";
+import useFlagshipHook from "@/hooks/useFlagshipHandler";
+import { mapErrorToUserMessage } from "@/utils/errorMessages";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("stats");
   const [activeSection, setActiveSection] = useState("registrations");
   const [flagship, setFlagship] = useState<IFlagship | null>(null);
+  const [visibilityUpdating, setVisibilityUpdating] = useState(false);
+  const [visibilityError, setVisibilityError] = useState("");
   const router = useRouter();
   const { slug } = router.query as { slug?: string };
+  const flagshipAction = useFlagshipHook();
 
   const dateRange = useMemo(() => {
     if (!flagship) return "";
@@ -54,10 +59,28 @@ export default function Dashboard() {
     fetch();
   }, [slug]);
 
+  const handleVisibilityToggle = async () => {
+    if (!flagship?._id) return;
+    const nextVisibility = flagship.visibility === "private" ? "public" : "private";
+    setVisibilityUpdating(true);
+    setVisibilityError("");
+    try {
+      const res: any = await flagshipAction.update(flagship._id, {
+        visibility: nextVisibility,
+      });
+      const updatedFlagship = res?.data || { ...flagship, visibility: nextVisibility };
+      setFlagship(updatedFlagship);
+    } catch (error) {
+      setVisibilityError(mapErrorToUserMessage(error));
+    } finally {
+      setVisibilityUpdating(false);
+    }
+  };
+
   return (
     <div className="max-w-md mx-auto pb-8">
       {flagship && (
-        <div className="bg-white rounded-[20px] border border-gray-200 shadow-sm px-4 py-5 mb-4 flex flex-col gap-2">
+        <div className="bg-white rounded-[20px] border border-gray-200 shadow-sm px-4 py-5 mb-4 flex flex-col gap-3">
           <div className="flex items-baseline justify-between">
             <p className="text-lg font-semibold text-gray-900">{flagship.tripName}</p>
             <div className="text-right text-sm text-gray-500">
@@ -70,6 +93,28 @@ export default function Dashboard() {
             <span>{dateRange || "Dates TBA"}</span>
             <span>{basePrice ? `From PKR ${basePrice}` : "Price TBD"}</span>
           </div>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Visibility: {flagship.visibility || "unknown"}
+            </span>
+            <button
+              type="button"
+              onClick={handleVisibilityToggle}
+              disabled={visibilityUpdating}
+              className={cn(
+                "px-3 py-2 rounded-full text-xs font-semibold border transition",
+                flagship.visibility === "private"
+                  ? "border-green-600 text-green-700"
+                  : "border-red-600 text-red-700",
+                visibilityUpdating && "opacity-60 cursor-not-allowed",
+              )}
+            >
+              {flagship.visibility === "private" ? "Show to users" : "Hide from users"}
+            </button>
+          </div>
+          {visibilityError && (
+            <p className="text-xs text-red-600">{visibilityError}</p>
+          )}
         </div>
       )}
       <div className="sticky top-0 bg-white z-10">

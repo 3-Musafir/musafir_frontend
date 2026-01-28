@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '../../pages/api';
+import api from '@/lib/api';
 import apiEndpoints from '../../config/apiEndpoints';
 import { showAlert } from '../../pages/alert';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';

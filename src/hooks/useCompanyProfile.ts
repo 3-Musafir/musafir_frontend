@@ -1,5 +1,5 @@
 import { HttpStatusCode } from 'axios';
-import api from '@/pages/api';
+import api from '@/lib/api';
 import apiEndpoints from '@/config/apiEndpoints';
 import { showAlert } from '@/pages/alert';
 import { CompanyProfile } from '@/services/types/companyProfile';

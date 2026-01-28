@@ -5,7 +5,7 @@ import { signOut } from "next-auth/react";
 import useCustomHook from "@/hooks/useSignUp";
 import { BaseUser } from "@/interfaces/signup";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
-import api from "@/pages/api";
+import api from "@/lib/api";
 import apiEndpoints from "@/config/apiEndpoints";
 import { cnicDigits, formatCnicInput, validateCnicFormat } from "@/utils/cnic";
 

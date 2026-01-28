@@ -1,4 +1,4 @@
-import api from '../pages/api';
+import api from '@/lib/api';
 import apiEndpoints from '../config/apiEndpoints';
 
 const useRatingHook = () => {

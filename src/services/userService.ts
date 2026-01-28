@@ -1,4 +1,4 @@
-import api from "@/pages/api";
+import api from "@/lib/api";
 import { IUser } from "./types/user";
 
 export interface PaginatedResponse<T> {

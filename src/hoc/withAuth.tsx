@@ -3,7 +3,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { currentUser, currentUserRoleState } from "@/store";
-import api from "@/pages/api";
+import api from "@/lib/api";
 import apiEndpoints from "@/config/apiEndpoints";
 
 interface WithAuthOptions {

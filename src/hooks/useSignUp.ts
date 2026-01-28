@@ -2,7 +2,7 @@
 import { BaseUser, SignupUser } from '@/interfaces/signup';
 import { useRouter } from 'next/router';
 import apiEndpoints from '../config/apiEndpoints';
-import api from '../pages/api';
+import api from '@/lib/api';
 
 const useSignUpHook = () => {
   // const [user, setUser] = useRecoilState(currentUser);

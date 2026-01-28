@@ -80,7 +80,7 @@ export const GoogleSheetConnectionCard: React.FC<GoogleSheetConnectionCardProps>
           </Button>
         ) : (
           <Button
-            variant="primary"
+            variant="default"
             size="sm"
             onClick={onConnect}
             isLoading={actionLoading}

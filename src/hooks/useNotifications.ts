@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { getSession } from 'next-auth/react';
-import api from '@/pages/api';
+import api from '@/lib/api';
 import apiEndpoints from '@/config/apiEndpoints';
 import constants from '@/config/constants';
 import { NotificationItem, NotificationListPayload } from '@/interfaces/notifications';

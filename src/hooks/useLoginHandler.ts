@@ -1,7 +1,7 @@
 import { useRecoilState } from 'recoil';
 import { useRouter } from 'next/router';
 import { currentUser } from '../store';
-import api from '../pages/api';
+import api from '@/lib/api';
 import apiEndpoints from '../config/apiEndpoints';
 import { SignupGoogleUser } from '@/interfaces/signup';
 import { User } from '@/interfaces/login';

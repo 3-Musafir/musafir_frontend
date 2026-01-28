@@ -1,4 +1,4 @@
-import api from "@/pages/api";
+import api from "@/lib/api";
 import { IRegistration, IPendingPaymentVerificationResponse } from "@/interfaces/trip/trip";
 import { IFlagship, IRegistrationStats } from "./types/flagship";
 
@@ -106,5 +106,23 @@ export class FlagshipService {
 
   static async getFlagshipByID(flagshipId: string): Promise<IFlagship> {
     return api.get(`/flagship/${flagshipId}`);
+  }
+
+  static async getGoogleSheetStatus(flagshipId: string) {
+    return api.get(`/integrations/google-sheets/status`, { flagshipId });
+  }
+
+  static async connectGoogleSheet(flagshipId: string, sheetId: string, sheetName?: string) {
+    return api.post(`/integrations/google-sheets/connect`, {
+      flagshipId,
+      sheetId,
+      sheetName,
+    });
+  }
+
+  static async disconnectGoogleSheet(flagshipId: string) {
+    return api.delete(`/integrations/google-sheets/disconnect`, {
+      params: { flagshipId },
+    });
   }
 }
