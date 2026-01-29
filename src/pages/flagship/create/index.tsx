@@ -14,6 +14,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
+import { ensureSilentUpdate } from '@/lib/flagshipWizard';
 
 function CreateFlagship() {
   const activeStep = 0;
@@ -151,10 +152,12 @@ function CreateFlagship() {
 
     try {
       if (isEditMode && editId) {
-        const res: any = await action.update(editId, {
+        const updatePayload = {
           ...payload,
           updatedAt: flagshipData?.updatedAt,
-        });
+        };
+        ensureSilentUpdate(updatePayload);
+        const res: any = await action.update(editId, updatePayload);
         if (res.statusCode === HttpStatusCode.Ok) {
           router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.CONTENT, editId));
         }

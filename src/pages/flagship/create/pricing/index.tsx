@@ -15,6 +15,7 @@ import ProgressBar from '@/components/progressBar';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
+import { ensureSilentUpdate } from '@/lib/flagshipWizard';
 
 function PricingPage() {
   const activeStep = 2;
@@ -256,6 +257,7 @@ function PricingPage() {
       earlyBirdPrice: earlyBirdPrice ? Number(earlyBirdPrice) : undefined,
       updatedAt: flagshipData?.updatedAt,
     };
+    ensureSilentUpdate(formData);
     try {
       const flagshipId = flagshipData?._id;
       const res: any = await action.update(flagshipId, formData);

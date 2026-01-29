@@ -147,18 +147,23 @@ function SuccessPage() {
           </div>
 
           {/* Public Toggle */}
-          <div className='flex items-center justify-between mb-8'>
-            <h3 className='text-xl font-bold'>Make trip open to public</h3>
-            <button
-              onClick={handleToggle}
-              className={`w-14 h-7 rounded-full p-1 transition-colors duration-200 ${isPublic ? 'bg-black' : 'bg-gray-300'
-                }`}
-            >
-              <div
-                className={`w-5 h-5 rounded-full bg-white transform transition-transform duration-200 ${isPublic ? 'translate-x-7' : ''
+          <div className='flex flex-col gap-2 mb-8'>
+            <div className='flex items-center justify-between'>
+              <h3 className='text-xl font-bold'>Publish trip (open to registrations)</h3>
+              <button
+                onClick={handleToggle}
+                className={`w-14 h-7 rounded-full p-1 transition-colors duration-200 ${isPublic ? 'bg-black' : 'bg-gray-300'
                   }`}
-              />
-            </button>
+              >
+                <div
+                  className={`w-5 h-5 rounded-full bg-white transform transition-transform duration-200 ${isPublic ? 'translate-x-7' : ''
+                    }`}
+                />
+              </button>
+            </div>
+            <p className='text-xs text-muted-foreground'>
+              Publishing sets the trip status live; visibility on the marketplace is still controlled from the admin trip panel.
+            </p>
           </div>
           {toggleError && <p className='text-brand-error text-sm mb-4'>{toggleError}</p>}
         </div>

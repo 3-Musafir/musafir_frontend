@@ -15,6 +15,7 @@ import ProgressBar from "@/components/progressBar";
 import { mapErrorToUserMessage } from "@/utils/errorMessages";
 import { FlagshipService } from "@/services/flagshipService";
 import { getEditIdFromSearch, withEditId } from "@/lib/flagship-edit";
+import { ensureSilentUpdate } from "@/lib/flagshipWizard";
 
 function DiscountsPage() {
   const activeStep = 5;
@@ -258,6 +259,7 @@ function DiscountsPage() {
       },
       updatedAt: flagshipData?.updatedAt,
     };
+    ensureSilentUpdate(formData);
     try {
       const flagshipId = flagshipData._id || "";
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

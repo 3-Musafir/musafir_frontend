@@ -13,6 +13,7 @@ import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import ProgressBar from '@/components/progressBar';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
+import { ensureSilentUpdate } from '@/lib/flagshipWizard';
 
 function ImportantDates() {
   const activeStep = 4;
@@ -154,6 +155,7 @@ function ImportantDates() {
       earlyBirdDeadline: new Date(earlyBirdDeadline),
       updatedAt: flagshipData?.updatedAt,
     };
+    ensureSilentUpdate(formData);
 
     try {
       const flagshipId = flagshipData._id || '';

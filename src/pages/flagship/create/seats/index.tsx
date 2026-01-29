@@ -15,6 +15,7 @@ import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import ProgressBar from '@/components/progressBar';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
+import { ensureSilentUpdate } from '@/lib/flagshipWizard';
 
 function SeatsAllocation() {
   const activeStep = 3;
@@ -269,6 +270,7 @@ function SeatsAllocation() {
       mattressPriceDelta: mattressSplitEnabled && mattressPriceDelta ? Number(mattressPriceDelta) : null,
       updatedAt: flagshipData?.updatedAt,
     };
+    ensureSilentUpdate(formData);
 
     if (genderSplitEnabled) {
       formData.femaleSeats = Number(femaleSeats);

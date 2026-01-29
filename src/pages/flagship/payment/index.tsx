@@ -111,7 +111,11 @@ function PaymentOptions() {
     }
 
     // Build payload (if additional data is required, add here)
-    const formData = { selectedBank, updatedAt: flagshipData?.updatedAt };
+    const formData = {
+      selectedBank,
+      updatedAt: flagshipData?.updatedAt,
+      silentUpdate: isEditMode ? true : undefined,
+    };
     console.log(formData, 'payload');
 
     try {

@@ -34,6 +34,7 @@ import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
+import { ensureSilentUpdate } from '@/lib/flagshipWizard';
 
 function ContentPage() {
   const activeStep = 1;
@@ -232,6 +233,7 @@ function ContentPage() {
       if (flagshipData?.updatedAt) {
         formData.append('updatedAt', String(flagshipData.updatedAt));
       }
+      ensureSilentUpdate(formData);
       files.forEach((file, index) => {
         formData.append(`files`, file);
       });
