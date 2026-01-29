@@ -93,15 +93,15 @@ export class FlagshipService {
   }
 
   static async getPastTrips(): Promise<IFlagship[]> {
-    return api.get(`/flagship/past-trips`);
+    return api.get(`/flagship/past-trips`, { signImages: false });
   }
 
   static async getLiveTrips(): Promise<IFlagship[]> {
-    return api.get(`/flagship/live-trips`);
+    return api.get(`/flagship/live-trips`, { signImages: false });
   }
 
   static async getUpcomingTrips(): Promise<IFlagship[]> {
-    return api.get(`/flagship/upcoming-trips`);
+    return api.get(`/flagship/upcoming-trips`, { signImages: false });
   }
 
   static async getFlagshipByID(flagshipId: string): Promise<IFlagship> {

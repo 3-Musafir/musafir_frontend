@@ -112,8 +112,11 @@ export default function Login() {
       process.env.NEXT_PUBLIC_AUTH_URL && process.env.NEXT_PUBLIC_AUTH_URL.trim().length > 0
         ? process.env.NEXT_PUBLIC_AUTH_URL
         : "";
-    const defaultCallback = base ? `${base}/login` : "/login";
-    const callbackUrl = requestedCallback ?? (isSafePath ? requestedCallbackParam! : defaultCallback);
+    const defaultCallback = base ? `${base}/auth-callback` : "/auth-callback";
+    const nextPath = requestedCallback ?? (isSafePath ? requestedCallbackParam! : undefined);
+    const callbackUrl = nextPath
+      ? `${defaultCallback}?next=${encodeURIComponent(nextPath)}`
+      : defaultCallback;
 
     await signIn("google", { callbackUrl });
   };

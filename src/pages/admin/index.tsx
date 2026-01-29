@@ -64,6 +64,12 @@ function AdminMainPage() {
   });
   const [loading, setLoading] = useState(false);
   const [loadingCreateFlagship, setLoadingCreateFlagship] = useState(false);
+  const [tripsLoading, setTripsLoading] = useState(false);
+  const [tripsLoaded, setTripsLoaded] = useState({
+    past: false,
+    live: false,
+    upcoming: false,
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<{
     unverified: IUser[];
@@ -89,30 +95,18 @@ function AdminMainPage() {
     try {
       setLoading(true);
       const [
-        pastTrips,
-        liveTrips,
-        upcomingTrips,
         unverifiedUsers,
         pendingUsers,
         verifiedUsersResponse,
         pendingPayments,
         completedPayments,
       ] = await Promise.all([
-        FlagshipService.getPastTrips(),
-        FlagshipService.getLiveTrips(),
-        FlagshipService.getUpcomingTrips(),
         UserService.getUnverifiedUsers(),
         UserService.getPendingVerificationUsers(),
         UserService.getVerifiedUsers(undefined, verifiedUsersPagination.page, verifiedUsersPagination.limit),
         PaymentService.getPendingPayments(),
         PaymentService.getCompletedPayments(),
       ]);
-
-      setTrips({
-        past: ensureArray(pastTrips),
-        live: ensureArray(liveTrips),
-        upcoming: ensureArray(upcomingTrips),
-      });
 
       // Check if verifiedUsersResponse is paginated
       const isPaginated = verifiedUsersResponse && 'data' in verifiedUsersResponse;
@@ -144,18 +138,51 @@ function AdminMainPage() {
     }
   }, [verifiedUsersPagination.page, verifiedUsersPagination.limit]);
 
+  const fetchTrips = useCallback(async (section: "past" | "live" | "upcoming", force = false) => {
+    if (!force && tripsLoaded[section]) return;
+    try {
+      setTripsLoading(true);
+      const data =
+        section === "past"
+          ? await FlagshipService.getPastTrips()
+          : section === "live"
+            ? await FlagshipService.getLiveTrips()
+            : await FlagshipService.getUpcomingTrips();
+      setTrips((prev) => ({ ...prev, [section]: ensureArray(data) }));
+      setTripsLoaded((prev) => ({ ...prev, [section]: true }));
+    } catch (error) {
+      console.error("Error fetching trips:", error);
+    } finally {
+      setTripsLoading(false);
+    }
+  }, [tripsLoaded]);
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
+  const activeTripSection =
+    activeSection === "past" || activeSection === "live" || activeSection === "upcoming"
+      ? activeSection
+      : "past";
+
+  useEffect(() => {
+    if (activeTab !== "trips") return;
+    fetchTrips(activeTripSection);
+  }, [activeTab, activeTripSection, fetchTrips]);
+
   useEffect(() => {
     const handleFocus = () => {
+      if (activeTab === "trips") {
+        fetchTrips(activeTripSection, true);
+        return;
+      }
       fetchData();
     };
 
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
-  }, [fetchData]);
+  }, [activeTab, activeTripSection, fetchData, fetchTrips]);
 
   useEffect(() => {
     const timeoutId = setTimeout(async () => {
@@ -469,20 +496,20 @@ function AdminMainPage() {
       </header>
 
       <main className="p-4 space-y-6">
-        {loading ? (
+        {(activeTab === "trips" ? tripsLoading : loading) ? (
           <LoadingSkeleton />
         ) : (
           <>
             {activeTab === "trips" && (
               <TripsContainer
                 trips={
-                  activeSection === "past"
+                  activeTripSection === "past"
                     ? trips.past
-                    : activeSection === "live"
+                    : activeTripSection === "live"
                       ? trips.live
                       : trips.upcoming
                 }
-                activeSection={activeSection}
+                activeSection={activeTripSection}
               />
             )}
 
