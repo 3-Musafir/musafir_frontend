@@ -6,19 +6,24 @@ import { useRouter } from "next/navigation";
 import useFlagshipHook from "@/hooks/useFlagshipHandler";
 import { currentFlagship } from "@/store";
 import { Flagship } from "@/interfaces/flagship";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { ROLES, ROUTES_CONSTANTS, steps } from "@/config/constants";
 import { showAlert } from "@/pages/alert";
 import { HttpStatusCode } from "axios";
 import withAuth from "@/hoc/withAuth";
 import ProgressBar from "@/components/progressBar";
 import { mapErrorToUserMessage } from "@/utils/errorMessages";
+import { FlagshipService } from "@/services/flagshipService";
+import { getEditIdFromSearch, withEditId } from "@/lib/flagship-edit";
 
 function DiscountsPage() {
   const activeStep = 5;
   const router = useRouter();
   const action = useFlagshipHook();
   const flagshipData: Flagship = useRecoilValue(currentFlagship);
+  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [editId, setEditId] = useState<string | null | undefined>(undefined);
+  const isEditMode = Boolean(editId);
   // Total values
   const [totalSeats, setTotalSeats] = useState("");
   const [totalDiscountsValue, setTotalDiscountsValue] = useState("");
@@ -60,6 +65,29 @@ function DiscountsPage() {
   });
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    setEditId(getEditIdFromSearch(window.location.search));
+  }, []);
+
+  useEffect(() => {
+    const loadFlagship = async () => {
+      if (!editId) return;
+      if (flagshipData?._id === editId) return;
+      try {
+        const data = await FlagshipService.getFlagshipByID(editId);
+        setCurrentFlagship(data);
+      } catch (error) {
+        console.error("Failed to load flagship for edit:", error);
+        showAlert(mapErrorToUserMessage(error), "error");
+        router.push(ROUTES_CONSTANTS.ADMIN_DASHBOARD);
+      }
+    };
+    loadFlagship();
+  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+
+  useEffect(() => {
+    if (editId === undefined) return;
+    if (isEditMode) return;
     if (!flagshipData._id || !flagshipData.startDate) {
       showAlert("Create a Flagship", "error");
       router.push(ROUTES_CONSTANTS.FLAGSHIP.CREATE);
@@ -70,11 +98,14 @@ function DiscountsPage() {
     }
     setTotalSeats(`${flagshipData.totalSeats ?? ""}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [flagshipData?._id, flagshipData?.startDate, flagshipData?.totalSeats, isEditMode]);
 
   // useEffect to update state on page load if flagshipData is available
   useEffect(() => {
     if (flagshipData) {
+      if (flagshipData.totalSeats) {
+        setTotalSeats(`${flagshipData.totalSeats}`);
+      }
       // Handle discount fields similarly...
       if (flagshipData.discounts) {
         setTotalDiscountsValue(
@@ -225,6 +256,7 @@ function DiscountsPage() {
             }
           : undefined,
       },
+      updatedAt: flagshipData?.updatedAt,
     };
     try {
       const flagshipId = flagshipData._id || "";
@@ -232,7 +264,7 @@ function DiscountsPage() {
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert("Discounts Added!", "success");
-        router.push(ROUTES_CONSTANTS.FLAGSHIP.PAYMENT);
+        router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.PAYMENT, editId));
       }
     } catch (error) {
       console.error("API Error:", error);
@@ -258,7 +290,9 @@ function DiscountsPage() {
       <div className="bg-white max-w-md mx-auto rounded-lg h-screen p-3 w-full">
         {/* Title */}
         <div className="text-center py-4">
-          <h1 className="text-2xl font-bold">Create a Flagship</h1>
+          <h1 className="text-2xl font-bold">
+            {isEditMode ? "Edit a Flagship" : "Create a Flagship"}
+          </h1>
         </div>
 
         {/* Progress bar */}

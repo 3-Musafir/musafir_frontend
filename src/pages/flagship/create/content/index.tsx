@@ -29,17 +29,25 @@ import { HttpStatusCode } from 'axios';
 import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { currentFlagship } from '@/store';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
+import { FlagshipService } from '@/services/flagshipService';
+import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
 
 function ContentPage() {
   const activeStep = 1;
   const router = useRouter();
   const action = useFlagshipHook();
   const flagshipData = useRecoilValue(currentFlagship);
+  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [editId, setEditId] = useState<string | null | undefined>(undefined);
+  const isEditMode = Boolean(editId);
   const [files, setFiles] = useState<File[]>([]);
   const [detailedPlan, setDetailedPlan] = useState<File | null>(null);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [removedImages, setRemovedImages] = useState<string[]>([]);
+  const [removeExistingDetailedPlan, setRemoveExistingDetailedPlan] = useState(false);
   const [errors, setErrors] = useState({ travelPlan: false, files: false });
   const [previewOpen, setPreviewOpen] = useState(false);
 
@@ -78,11 +86,60 @@ function ContentPage() {
   });
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setEditId(getEditIdFromSearch(window.location.search));
+  }, []);
+
+  useEffect(() => {
+    const loadFlagship = async () => {
+      if (!editId) return;
+      if (flagshipData?._id === editId) return;
+      try {
+        const data = await FlagshipService.getFlagshipByID(editId);
+        setCurrentFlagship(data);
+      } catch (error) {
+        console.error('Failed to load flagship for edit:', error);
+        showAlert(mapErrorToUserMessage(error), 'error');
+        router.push(ROUTES_CONSTANTS.ADMIN_DASHBOARD);
+      }
+    };
+    loadFlagship();
+  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+
+  useEffect(() => {
+    if (editId === undefined) return;
+    if (isEditMode) return;
     if (!flagshipData._id || !flagshipData.tripName) {
       showAlert('Create a Flagship', 'error');
       router.push(ROUTES_CONSTANTS.FLAGSHIP.CREATE);
     }
-  }, []);
+  }, [flagshipData?._id, flagshipData?.tripName, isEditMode, router]);
+
+  useEffect(() => {
+    if (flagshipData?.images && Array.isArray(flagshipData.images)) {
+      setExistingImages(flagshipData.images);
+    }
+  }, [flagshipData?.images]);
+
+  useEffect(() => {
+    if (travelPlanEditor && flagshipData?.travelPlan !== undefined) {
+      const current = travelPlanEditor.getHTML();
+      const next = flagshipData.travelPlan || '';
+      if (next && current !== next) {
+        travelPlanEditor.commands.setContent(next);
+      }
+    }
+  }, [flagshipData?.travelPlan, travelPlanEditor]);
+
+  useEffect(() => {
+    if (tocsEditor && flagshipData?.tocs !== undefined) {
+      const current = tocsEditor.getHTML();
+      const next = flagshipData.tocs || '';
+      if (next && current !== next) {
+        tocsEditor.commands.setContent(next);
+      }
+    }
+  }, [flagshipData?.tocs, tocsEditor]);
 
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -114,6 +171,33 @@ function ContentPage() {
     setFiles(files.filter((file) => file.name !== fileName));
   };
 
+  const extractImageKey = (value: string) => {
+    try {
+      const parsed = new URL(value);
+      return decodeURIComponent(parsed.pathname).replace(/^\/+/, '');
+    } catch {
+      return value;
+    }
+  };
+
+  const formatImageLabel = (value: string) => {
+    if (!value) return 'Image';
+    try {
+      const parsed = new URL(value);
+      const segments = parsed.pathname.split('/');
+      return decodeURIComponent(segments[segments.length - 1] || value);
+    } catch {
+      const segments = value.split('/');
+      return segments[segments.length - 1] || value;
+    }
+  };
+
+  const removeExistingImage = (image: string) => {
+    setExistingImages((prev) => prev.filter((item) => item !== image));
+    const key = extractImageKey(image);
+    setRemovedImages((prev) => (prev.includes(key) ? prev : [...prev, key]));
+  };
+
   const removeDetailedPlan = () => {
     setDetailedPlan(null);
   };
@@ -129,7 +213,7 @@ function ContentPage() {
     }
 
     const travelPlanEmpty = !travelPlanEditor.getHTML() || travelPlanEditor.getHTML() === '<p></p>';
-    const filesEmpty = files.length === 0;
+    const filesEmpty = files.length === 0 && existingImages.length === 0;
     setErrors({ travelPlan: travelPlanEmpty, files: filesEmpty });
     return !travelPlanEmpty && !filesEmpty;
   };
@@ -144,17 +228,27 @@ function ContentPage() {
       const flagshipId = flagshipData?._id;
       const formData = new FormData();
       formData.append('travelPlan', travelPlanEditor?.getHTML() || '');
+      formData.append('tocs', tocsEditor?.getHTML() || '');
+      if (flagshipData?.updatedAt) {
+        formData.append('updatedAt', String(flagshipData.updatedAt));
+      }
       files.forEach((file, index) => {
         formData.append(`files`, file);
       });
+      if (removedImages.length > 0) {
+        formData.append('removeImages', JSON.stringify(removedImages));
+      }
       if (detailedPlan) {
         formData.append('detailedPlanDoc', detailedPlan);
+      }
+      if (removeExistingDetailedPlan) {
+        formData.append('removeDetailedPlan', 'true');
       }
 
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Content Added!', 'success');
-        router.push(ROUTES_CONSTANTS.FLAGSHIP.PRICING);
+        router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.PRICING, editId));
       }
     } catch (error: any) {
       console.error('Error:', error);
@@ -277,7 +371,9 @@ function ContentPage() {
       <div className='bg-white max-w-md mx-auto rounded-lg h-screen p-3 w-full'>
         {/* Title */}
         <div className='text-center py-4'>
-          <h1 className='text-2xl font-bold'>Create a Flagship</h1>
+          <h1 className='text-2xl font-bold'>
+            {isEditMode ? 'Edit a Flagship' : 'Create a Flagship'}
+          </h1>
         </div>
 
         {/* Progress bar */}
@@ -313,6 +409,16 @@ function ContentPage() {
             </div>
             {errors.travelPlan && <p className='text-brand-error text-sm'>Travel Plan is required.</p>}
 
+            {/* TOCs Section */}
+            <h3 className='text-2xl font-bold mb-4 mt-8'>TOCs & Inclusions</h3>
+            <div className='border rounded-lg overflow-hidden mb-4'>
+              <MenuBar editor={tocsEditor} />
+              <EditorContent
+                editor={tocsEditor}
+                className='min-h-[160px] p-4 focus:outline-none prose max-w-none richtext'
+              />
+            </div>
+
             {/* File Upload Area */}
             <h3 className='text-2xl font-bold mb-4'>Upload Images</h3>
             <div
@@ -337,10 +443,38 @@ function ContentPage() {
                   multiple
                 />
               </div>
-              {errors.files && (
-                <p className='text-brand-error text-sm'>Please upload at least one file.</p>
-              )}
-            </div>
+            {errors.files && (
+              <p className='text-brand-error text-sm'>Please upload at least one file.</p>
+            )}
+          </div>
+
+            {existingImages.length > 0 && (
+              <div className='mt-4 space-y-2'>
+                {existingImages.map((image) => (
+                  <div
+                    key={image}
+                    className='flex items-center justify-between p-4 bg-gray-50 rounded-lg'
+                  >
+                    <div className='flex items-center space-x-3'>
+                      <div className='p-2 bg-white rounded-lg'>
+                        <File className='w-6 h-6' />
+                      </div>
+                      <div>
+                        <p className='font-medium'>{formatImageLabel(image)}</p>
+                        <p className='text-sm text-gray-500'>Existing image</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => removeExistingImage(image)}
+                      className='p-1 hover:bg-gray-200 rounded-full'
+                      type='button'
+                    >
+                      <X className='w-5 h-5' />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* File List */}
             <div className='mt-4 space-y-2'>
@@ -398,6 +532,26 @@ function ContentPage() {
 
           {/* File List */}
           <div className='mt-4 space-y-2'>
+            {flagshipData?.detailedPlan && !detailedPlan && !removeExistingDetailedPlan && (
+              <div className='flex items-center justify-between p-4 bg-gray-50 rounded-lg'>
+                <div className='flex items-center space-x-3'>
+                  <div className='p-2 bg-white rounded-lg'>
+                    <File className='w-6 h-6' />
+                  </div>
+                  <div>
+                    <p className='font-medium'>Existing detailed plan</p>
+                    <p className='text-sm text-gray-500'>Attached</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setRemoveExistingDetailedPlan(true)}
+                  className='p-1 hover:bg-gray-200 rounded-full'
+                  type='button'
+                >
+                  <X className='w-5 h-5' />
+                </button>
+              </div>
+            )}
             {detailedPlan && (
               <div
                 className='flex items-center justify-between p-4 bg-gray-50 rounded-lg'

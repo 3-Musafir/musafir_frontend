@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
 
 interface Step {
   label: string;
@@ -12,6 +13,8 @@ interface ProgressBarProps {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ steps, activeStep }) => {
   const router = useRouter();
+  const editId =
+    typeof window !== 'undefined' ? getEditIdFromSearch(window.location.search) : null;
   return (
     <div className='w-full flex px-4 space-x-1 mb-8'>
       {steps.map((step, index) => {
@@ -25,7 +28,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ steps, activeStep }) => {
           //   <Link key={index} href={step.route}>
           <div
             key={index}
-            onClick={() => router.push(step.route)}
+            onClick={() => router.push(withEditId(step.route, editId))}
             className={`h-2 flex-1 rounded-sm cursor-pointer ${bgClass}`}
             title={step.label}
           ></div>

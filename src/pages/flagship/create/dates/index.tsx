@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
 import { Flagship } from '@/interfaces/flagship';
 import { currentFlagship } from '@/store';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { HttpStatusCode } from 'axios';
 import { showAlert } from '@/pages/alert';
 import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
@@ -11,12 +11,17 @@ import dayjs from 'dayjs';
 import withAuth from '@/hoc/withAuth';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import ProgressBar from '@/components/progressBar';
+import { FlagshipService } from '@/services/flagshipService';
+import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
 
 function ImportantDates() {
   const activeStep = 4;
   const router = useRouter();
   const action = useFlagshipHook();
   const flagshipData: Flagship = useRecoilValue(currentFlagship);
+  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [editId, setEditId] = useState<string | null | undefined>(undefined);
+  const isEditMode = Boolean(editId);
   // Date states
   const [tripDates, setTripDates] = useState('');
   const [registrationDeadline, setRegistrationDeadline] = useState('');
@@ -38,12 +43,35 @@ function ImportantDates() {
   });
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setEditId(getEditIdFromSearch(window.location.search));
+  }, []);
+
+  useEffect(() => {
+    const loadFlagship = async () => {
+      if (!editId) return;
+      if (flagshipData?._id === editId) return;
+      try {
+        const data = await FlagshipService.getFlagshipByID(editId);
+        setCurrentFlagship(data);
+      } catch (error) {
+        console.error('Failed to load flagship for edit:', error);
+        showAlert(mapErrorToUserMessage(error), 'error');
+        router.push(ROUTES_CONSTANTS.ADMIN_DASHBOARD);
+      }
+    };
+    loadFlagship();
+  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+
+  useEffect(() => {
+    if (editId === undefined) return;
+    if (isEditMode) return;
     if (!flagshipData._id || !flagshipData.startDate) {
       showAlert('Create a Flagship', 'error');
       router.push(ROUTES_CONSTANTS.FLAGSHIP.CREATE);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [flagshipData?._id, flagshipData?.startDate, isEditMode]);
 
   useEffect(() => {
     if (flagshipData) {
@@ -124,6 +152,7 @@ function ImportantDates() {
       registrationDeadline: new Date(registrationDeadline),
       advancePaymentDeadline: new Date(advancePaymentDeadline),
       earlyBirdDeadline: new Date(earlyBirdDeadline),
+      updatedAt: flagshipData?.updatedAt,
     };
 
     try {
@@ -132,7 +161,7 @@ function ImportantDates() {
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Dates Added!', 'success');
-        router.push(ROUTES_CONSTANTS.FLAGSHIP.DISCOUNTS);
+        router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.DISCOUNTS, editId));
       }
     } catch (error) {
       console.error('Network error', error);
@@ -145,7 +174,9 @@ function ImportantDates() {
       <div className='bg-white max-w-md mx-auto rounded-lg h-screen p-3 w-full'>
         {/* Title */}
         <div className='text-center py-4'>
-          <h1 className='text-2xl font-bold'>Create a Flagship</h1>
+          <h1 className='text-2xl font-bold'>
+            {isEditMode ? 'Edit a Flagship' : 'Create a Flagship'}
+          </h1>
         </div>
 
         {/* Progress bar */}

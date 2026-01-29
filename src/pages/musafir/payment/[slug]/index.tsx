@@ -8,6 +8,7 @@ import { PaymentService } from "@/services/paymentService";
 import { formatDate } from "@/utils/formatDate";
 import { Camera, ChevronDown, ChevronUp, Copy } from "lucide-react";
 import Image from "next/image";
+import { resolveImageSrc } from "@/lib/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -343,7 +344,7 @@ export default function TripPayment() {
           {/* Trip Image */}
           <div className="h-48 lg:h-64 bg-muted rounded-lg mx-4 mb-4 overflow-hidden">
             <Image
-              src={registration?.flagship?.images.length > 0 ? registration?.flagship?.images[0] : "/payments-cover.png"}
+              src={resolveImageSrc(registration?.flagship?.images?.[0], "/payments-cover.png")}
               alt="Payments Cover"
               height={192}
               width={768}

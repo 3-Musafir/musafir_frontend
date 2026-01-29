@@ -10,14 +10,19 @@ import withAuth from '@/hoc/withAuth';
 import { HttpStatusCode } from 'axios';
 import ProgressBar from '@/components/progressBar';
 import { currentFlagship } from '@/store';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
+import { FlagshipService } from '@/services/flagshipService';
+import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
 
 function CreateFlagship() {
   const activeStep = 0;
   const router = useRouter();
   const action = useFlagshipHook();
   const flagshipData = useRecoilValue(currentFlagship);
+  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [editId, setEditId] = useState<string | null>(null);
+  const isEditMode = Boolean(editId);
   // Basic fields state
   const [tripName, setTripName] = useState('');
   const [category, setCategory] = useState('flagship');
@@ -36,6 +41,27 @@ function CreateFlagship() {
     category: '',
     visibility: '',
   });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setEditId(getEditIdFromSearch(window.location.search));
+  }, []);
+
+  useEffect(() => {
+    const loadFlagship = async () => {
+      if (!editId) return;
+      if (flagshipData?._id === editId) return;
+      try {
+        const data = await FlagshipService.getFlagshipByID(editId);
+        setCurrentFlagship(data);
+      } catch (error) {
+        console.error('Failed to load flagship for edit:', error);
+        showAlert(mapErrorToUserMessage(error), 'error');
+        router.push(ROUTES_CONSTANTS.ADMIN_DASHBOARD);
+      }
+    };
+    loadFlagship();
+  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
 
   // useEffect to update state on page load if flagshipData is available
   useEffect(() => {
@@ -124,10 +150,20 @@ function CreateFlagship() {
     };
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: any = await action.create(payload);
-      if (res.statusCode === HttpStatusCode.Created) {
-        router.push(ROUTES_CONSTANTS.FLAGSHIP.CONTENT);
+      if (isEditMode && editId) {
+        const res: any = await action.update(editId, {
+          ...payload,
+          updatedAt: flagshipData?.updatedAt,
+        });
+        if (res.statusCode === HttpStatusCode.Ok) {
+          router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.CONTENT, editId));
+        }
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res: any = await action.create(payload);
+        if (res.statusCode === HttpStatusCode.Created) {
+          router.push(ROUTES_CONSTANTS.FLAGSHIP.CONTENT);
+        }
       }
     } catch (error: any) {
       console.error('Error:', error);
@@ -142,7 +178,9 @@ function CreateFlagship() {
       <div className='bg-white max-w-md mx-auto rounded-lg h-screen p-3 w-full'>
         {/* Header */}
         <div className='text-center py-4'>
-          <h1 className='text-2xl font-bold'>Create a Flagship</h1>
+          <h1 className='text-2xl font-bold'>
+            {isEditMode ? 'Edit a Flagship' : 'Create a Flagship'}
+          </h1>
         </div>
 
         {/* Progress bar */}

@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { useRecoilValue } from "recoil";
 import Image from "next/image";
+import { resolveImageSrc } from "@/lib/image";
 import { flagshipState } from "@/recoil/flagshipState";
 import useFlagshipHook from "@/hooks/useFlagshipHandler";
 import { IoLocationOutline } from "react-icons/io5";
@@ -148,10 +149,9 @@ export default function FlagshipDetails() {
     }
   };
   const defaultImage = "/flowerFields.jpg";
-  const imageUrls =
-    flagship.images && flagship.images.length > 0
-      ? flagship.images
-      : [defaultImage];
+  const imageUrls = (flagship.images && flagship.images.length > 0
+    ? flagship.images
+    : [defaultImage]).map((image) => resolveImageSrc(image, defaultImage));
 
   const parseAmount = (value: string | number | undefined | null) => {
     if (value === undefined || value === null) return 0;

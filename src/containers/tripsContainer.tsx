@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { IFlagship } from "@/services/types/flagship";
 import { useRouter } from "next/navigation";
+import { resolveImageSrc } from "@/lib/image";
 
 interface TripsContainerProps {
   trips: IFlagship[];
@@ -30,7 +31,7 @@ export function TripsContainer({ trips, activeSection }: TripsContainerProps) {
 
   const getCoverImage = (images?: string[]) => {
     const primary = images?.find((img) => Boolean(img));
-    return primary || "/flowerFields.jpg";
+    return resolveImageSrc(primary, "/flowerFields.jpg");
   };
 
   const handleViewTripDetails = (tripId: string) => {

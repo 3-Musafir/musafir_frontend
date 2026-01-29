@@ -7,40 +7,75 @@ import { showAlert } from '@/pages/alert';
 import { useRouter } from 'next/router';
 import { Flagship } from '@/interfaces/flagship';
 import { currentFlagship } from '@/store';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
 import { HttpStatusCode } from 'axios';
 import withAuth from '@/hoc/withAuth';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
+import { FlagshipService } from '@/services/flagshipService';
+import { getEditIdFromSearch } from '@/lib/flagship-edit';
 
 function SuccessPage() {
   const [flagshipData, setFlagshipData] = useRecoilState(currentFlagship);
+  const setCurrentFlagship = useSetRecoilState(currentFlagship);
   const router = useRouter();
   const action = useFlagshipHook();
   const [isPublic, setIsPublic] = useState(false);
   const [copied, setCopied] = useState(false);
   const [toggleError, setToggleError] = useState('');
   const [shareLink, setShareLink] = useState('');
+  const [editId, setEditId] = useState<string | null | undefined>(undefined);
+  const isEditMode = Boolean(editId);
 
   // Progress steps
   // const steps = ["Success", "Step 2", "Step 3", "Step 4", "Step 5"]
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setEditId(getEditIdFromSearch(window.location.search));
+  }, []);
+
+  useEffect(() => {
+    const loadFlagship = async () => {
+      if (!editId) return;
+      if (flagshipData?._id === editId) return;
+      try {
+        const data = await FlagshipService.getFlagshipByID(editId);
+        setCurrentFlagship(data);
+      } catch (error) {
+        console.error('Failed to load flagship for edit:', error);
+        showAlert(mapErrorToUserMessage(error), 'error');
+        router.push(ROUTES_CONSTANTS.ADMIN_DASHBOARD);
+      }
+    };
+    loadFlagship();
+  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+
+  useEffect(() => {
+    if (editId === undefined) return;
+    if (isEditMode) return;
     if (!flagshipData._id || !flagshipData.startDate) {
       showAlert('Create a Flagship', 'error');
       router.push(ROUTES_CONSTANTS.FLAGSHIP.CREATE);
     }
-
-    // Share link
-    setShareLink(`3Mapp.playstore/${flagshipData._id}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [flagshipData?._id, flagshipData?.startDate, isEditMode]);
+
+  useEffect(() => {
+    if (flagshipData?._id) {
+      setShareLink(`3Mapp.playstore/${flagshipData._id}`);
+    }
+  }, [flagshipData?._id]);
 
   // API call to update public status
   const updatePublicStatus = async (fStatus: boolean) => {
     try {
       const flagshipId = flagshipData._id || '';
-      const formData = { status: FLAGSHIP_STATUS.PUBLISHED, publish: fStatus };
+      const formData = {
+        status: FLAGSHIP_STATUS.PUBLISHED,
+        publish: fStatus,
+        updatedAt: flagshipData?.updatedAt,
+      };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
@@ -81,7 +116,9 @@ function SuccessPage() {
       <div className='bg-white w-full max-w-md mx-auto rounded-lg h-screen p-3'>
         {/* Title */}
         <div className='text-center py-4'>
-          <h1 className='text-2xl font-bold'>Flagship Created</h1>
+          <h1 className='text-2xl font-bold'>
+            {isEditMode ? 'Flagship Updated' : 'Flagship Created'}
+          </h1>
         </div>
 
         {/* Main Content */}

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import { resolveImageSrc } from "@/lib/image";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
 import { ROUTES_CONSTANTS } from "@/config/constants";
 import { useRouter } from "next/navigation";
@@ -358,7 +359,7 @@ const PassportUpcomingCard: React.FC<any> = ({
       {/* Image - Responsive height */}
       <div className="relative h-[140px] lg:h-[180px] w-full overflow-hidden">
         <Image
-          src={image || "/norwayUpcomming.jpg"}
+          src={resolveImageSrc(image, "/norwayUpcomming.jpg")}
           alt={title}
           fill
           className="object-cover"

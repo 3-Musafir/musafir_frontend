@@ -2,6 +2,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { resolveImageSrc } from '@/lib/image';
 
 interface HomeEventCardProps {
   _id: string;
@@ -28,7 +29,9 @@ export default function HomeEventCard({
     router.push(`/flagship/details?id=${_id}`);
   };
 
-  const imageUrls = images && images.length > 0 ? images : [defaultImage];
+  const imageUrls = (images && images.length > 0 ? images : [defaultImage]).map(
+    (image) => resolveImageSrc(image, defaultImage),
+  );
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();

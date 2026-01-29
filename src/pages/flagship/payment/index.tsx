@@ -9,17 +9,22 @@ import { Flagship } from '@/interfaces/flagship';
 import { showAlert } from '@/pages/alert';
 import { currentFlagship } from '@/store';
 import { HttpStatusCode } from 'axios';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
 import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
+import { FlagshipService } from '@/services/flagshipService';
+import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
 
 function PaymentOptions() {
   const activeStep = 6;
   const router = useRouter();
   const action = useFlagshipHook();
   const flagshipData: Flagship = useRecoilValue(currentFlagship);
+  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [editId, setEditId] = useState<string | null | undefined>(undefined);
+  const isEditMode = Boolean(editId);
   // Selected bank and expanded states
   const [selectedBank, setSelectedBank] = useState<string | null>(null);
   const [expandedBank, setExpandedBank] = useState<string | null>(null);
@@ -59,12 +64,35 @@ function PaymentOptions() {
   };
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setEditId(getEditIdFromSearch(window.location.search));
+  }, []);
+
+  useEffect(() => {
+    const loadFlagship = async () => {
+      if (!editId) return;
+      if (flagshipData?._id === editId) return;
+      try {
+        const data = await FlagshipService.getFlagshipByID(editId);
+        setCurrentFlagship(data);
+      } catch (error) {
+        console.error('Failed to load flagship for edit:', error);
+        showAlert(mapErrorToUserMessage(error), 'error');
+        router.push(ROUTES_CONSTANTS.ADMIN_DASHBOARD);
+      }
+    };
+    loadFlagship();
+  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+
+  useEffect(() => {
+    if (editId === undefined) return;
+    if (isEditMode) return;
     if (!flagshipData._id || !flagshipData.startDate) {
       showAlert('Create a Flagship', 'error');
       // router.push(ROUTES_CONSTANTS.FLAGSHIP.CREATE);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [flagshipData?._id, flagshipData?.startDate, isEditMode]);
 
   useEffect(() => {
     if (flagshipData && flagshipData.selectedBank) {
@@ -83,7 +111,7 @@ function PaymentOptions() {
     }
 
     // Build payload (if additional data is required, add here)
-    const formData = { selectedBank };
+    const formData = { selectedBank, updatedAt: flagshipData?.updatedAt };
     console.log(formData, 'payload');
 
     try {
@@ -92,7 +120,7 @@ function PaymentOptions() {
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Bank Selected!', 'success');
-        router.push(ROUTES_CONSTANTS.FLAGSHIP.SUCCESS);
+        router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.SUCCESS, editId));
       }
     } catch (error) {
       console.error('API Error:', error);
@@ -105,7 +133,9 @@ function PaymentOptions() {
       <div className='bg-white max-w-md mx-auto rounded-lg h-screen p-3 w-full'>
         {/* Title */}
         <div className='text-center py-4'>
-          <h1 className='text-2xl font-bold'>Create a Flagship</h1>
+          <h1 className='text-2xl font-bold'>
+            {isEditMode ? 'Edit a Flagship' : 'Create a Flagship'}
+          </h1>
         </div>
 
         {/* Progress bar */}

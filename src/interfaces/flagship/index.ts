@@ -6,6 +6,7 @@ export interface Flagship {
   endDate: Date;
   category: string;
   visibility: string;
+  updatedAt?: string;
   days?: number;
   status?: 'live' | 'completed';
 
@@ -25,6 +26,10 @@ export interface Flagship {
     price: string;
   }[];
   earlyBirdPrice?: number;
+  images?: string[];
+  travelPlan?: string;
+  tocs?: string;
+  detailedPlan?: string;
 
   // Seats Allocation
   totalSeats?: number;

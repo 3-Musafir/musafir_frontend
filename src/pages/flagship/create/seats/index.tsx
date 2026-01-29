@@ -5,7 +5,7 @@ import { Minus, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
 import { currentFlagship } from '@/store';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { HttpStatusCode } from 'axios';
 import { showAlert } from '@/pages/alert';
 import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
@@ -13,12 +13,17 @@ import { Flagship } from '@/interfaces/flagship';
 import withAuth from '@/hoc/withAuth';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import ProgressBar from '@/components/progressBar';
+import { FlagshipService } from '@/services/flagshipService';
+import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
 
 function SeatsAllocation() {
   const activeStep = 3;
   const router = useRouter();
   const action = useFlagshipHook();
   const flagshipData: Flagship = useRecoilValue(currentFlagship);
+  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [editId, setEditId] = useState<string | null | undefined>(undefined);
+  const isEditMode = Boolean(editId);
   const flagshipLocations = flagshipData.locations || [];
   // Total capacity state
   const [totalSeats, setTotalSeats] = useState('');
@@ -55,6 +60,29 @@ function SeatsAllocation() {
   // When locations change, update citySeats for enabled locations
   useEffect(() => {
     setMounted(true);
+    if (typeof window === 'undefined') return;
+    setEditId(getEditIdFromSearch(window.location.search));
+  }, []);
+
+  useEffect(() => {
+    const loadFlagship = async () => {
+      if (!editId) return;
+      if (flagshipData?._id === editId) return;
+      try {
+        const data = await FlagshipService.getFlagshipByID(editId);
+        setCurrentFlagship(data);
+      } catch (error) {
+        console.error('Failed to load flagship for edit:', error);
+        showAlert(mapErrorToUserMessage(error), 'error');
+        router.push(ROUTES_CONSTANTS.ADMIN_DASHBOARD);
+      }
+    };
+    loadFlagship();
+  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+
+  useEffect(() => {
+    if (editId === undefined) return;
+    if (isEditMode) return;
     if (!flagshipData._id || !flagshipData.tripName) {
       showAlert('Create a Flagship', 'error');
       router.push(ROUTES_CONSTANTS.FLAGSHIP.CREATE);
@@ -64,7 +92,7 @@ function SeatsAllocation() {
       router.push(ROUTES_CONSTANTS.FLAGSHIP.PRICING);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [flagshipData?._id, flagshipData?.tripName, flagshipData?.locations?.length, isEditMode]);
 
   // useEffect to update state on page load if flagshipData is available
   useEffect(() => {
@@ -239,6 +267,7 @@ function SeatsAllocation() {
       genderSplitEnabled,
       mattressSplitEnabled,
       mattressPriceDelta: mattressSplitEnabled && mattressPriceDelta ? Number(mattressPriceDelta) : null,
+      updatedAt: flagshipData?.updatedAt,
     };
 
     if (genderSplitEnabled) {
@@ -269,7 +298,7 @@ function SeatsAllocation() {
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Seats info Added!', 'success');
-        router.push(ROUTES_CONSTANTS.FLAGSHIP.IMP_DATES);
+        router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.IMP_DATES, editId));
       }
     } catch (error) {
       console.error('API Error:', error);
@@ -284,7 +313,9 @@ function SeatsAllocation() {
       <div className='bg-white max-w-md mx-auto rounded-lg h-screen p-3 w-full'>
         {/* Title */}
         <div className='text-center py-4'>
-          <h1 className='text-2xl font-bold'>Create a Flagship</h1>
+          <h1 className='text-2xl font-bold'>
+            {isEditMode ? 'Edit a Flagship' : 'Create a Flagship'}
+          </h1>
         </div>
 
         {/* Progress bar */}

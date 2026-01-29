@@ -67,6 +67,8 @@ export default function Dashboard() {
     try {
       const res: any = await flagshipAction.update(flagship._id, {
         visibility: nextVisibility,
+        silentUpdate: true,
+        updatedAt: flagship?.updatedAt,
       });
       const updatedFlagship = res?.data || { ...flagship, visibility: nextVisibility };
       setFlagship(updatedFlagship);
@@ -93,23 +95,35 @@ export default function Dashboard() {
             <span>{dateRange || "Dates TBA"}</span>
             <span>{basePrice ? `From PKR ${basePrice}` : "Price TBD"}</span>
           </div>
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Visibility: {flagship.visibility || "unknown"}
-            </span>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Visibility: {flagship.visibility || "unknown"}
+              </span>
+              <button
+                type="button"
+                onClick={handleVisibilityToggle}
+                disabled={visibilityUpdating}
+                className={cn(
+                  "px-3 py-2 rounded-full text-xs font-semibold border transition",
+                  flagship.visibility === "private"
+                    ? "border-green-600 text-green-700"
+                    : "border-red-600 text-red-700",
+                  visibilityUpdating && "opacity-60 cursor-not-allowed",
+                )}
+              >
+                {flagship.visibility === "private" ? "Show to users" : "Hide from users"}
+              </button>
+            </div>
             <button
               type="button"
-              onClick={handleVisibilityToggle}
-              disabled={visibilityUpdating}
-              className={cn(
-                "px-3 py-2 rounded-full text-xs font-semibold border transition",
-                flagship.visibility === "private"
-                  ? "border-green-600 text-green-700"
-                  : "border-red-600 text-red-700",
-                visibilityUpdating && "opacity-60 cursor-not-allowed",
-              )}
+              onClick={() => {
+                if (!flagship?._id) return;
+                router.push(`/flagship/create?editId=${flagship._id}`);
+              }}
+              className="w-full px-3 py-2 rounded-lg text-xs font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50"
             >
-              {flagship.visibility === "private" ? "Show to users" : "Hide from users"}
+              Edit trip
             </button>
           </div>
           {visibilityError && (

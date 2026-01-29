@@ -5,6 +5,7 @@ import useRegistrationHook, { RegistrationCreationResponse } from '@/hooks/useRe
 import { BaseRegistration } from '@/interfaces/registration';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
+import { resolveImageSrc } from '@/lib/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -197,7 +198,10 @@ function FlagshipRequirements() {
     }
   };
 
-  const imageUrls = flagship?.images && flagship?.images?.length > 0 ? flagship?.images : [];
+  const fallbackImage = "/flowerFields.jpg";
+  const imageUrls = (flagship?.images && flagship?.images?.length > 0
+    ? flagship?.images
+    : [fallbackImage]).map((image: string) => resolveImageSrc(image, fallbackImage));
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { currentFlagship } from '@/store';
 import { HttpStatusCode } from 'axios';
 import { showAlert } from '@/pages/alert';
@@ -13,12 +13,17 @@ import { ROLES, ROUTES_CONSTANTS, steps, CITIES } from '@/config/constants';
 import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
+import { FlagshipService } from '@/services/flagshipService';
+import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
 
 function PricingPage() {
   const activeStep = 2;
   const router = useRouter();
   const action = useFlagshipHook();
   const flagshipData = useRecoilValue(currentFlagship);
+  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [editId, setEditId] = useState<string | null | undefined>(undefined);
+  const isEditMode = Boolean(editId);
   // Base price state
   const [basePrice, setBasePrice] = useState('');
   const [earlyBirdPrice, setEarlyBirdPrice] = useState('');
@@ -64,12 +69,35 @@ function PricingPage() {
   const [isDirty, setIsDirty] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setEditId(getEditIdFromSearch(window.location.search));
+  }, []);
+
+  useEffect(() => {
+    const loadFlagship = async () => {
+      if (!editId) return;
+      if (flagshipData?._id === editId) return;
+      try {
+        const data = await FlagshipService.getFlagshipByID(editId);
+        setCurrentFlagship(data);
+      } catch (error) {
+        console.error('Failed to load flagship for edit:', error);
+        showAlert(mapErrorToUserMessage(error), 'error');
+        router.push(ROUTES_CONSTANTS.ADMIN_DASHBOARD);
+      }
+    };
+    loadFlagship();
+  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+
+  useEffect(() => {
+    if (editId === undefined) return;
+    if (isEditMode) return;
     if (!flagshipData._id || !flagshipData.tripName) {
       showAlert('Create a Flagship', 'error');
       router.push(ROUTES_CONSTANTS.FLAGSHIP.CREATE);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [flagshipData?._id, flagshipData?.tripName, isEditMode]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -226,6 +254,7 @@ function PricingPage() {
       mattressTiers: mattressTierEnabled ? mattressTiers.map(({ id, ...rest }) => rest) : [],
       roomSharingPreference: roomSharingEnabled ? roomSharingPreference.map(({ id, ...rest }) => rest) : [],
       earlyBirdPrice: earlyBirdPrice ? Number(earlyBirdPrice) : undefined,
+      updatedAt: flagshipData?.updatedAt,
     };
     try {
       const flagshipId = flagshipData?._id;
@@ -234,7 +263,7 @@ function PricingPage() {
         setIsSubmitted(true);
         setIsDirty(false);
         showAlert('Pricing Added!', 'success');
-        router.push(ROUTES_CONSTANTS.FLAGSHIP.SEATS);
+        router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.SEATS, editId));
       }
     } catch (error) {
       showAlert(mapErrorToUserMessage(error), 'error');
@@ -319,7 +348,9 @@ function PricingPage() {
       <div className='bg-white max-w-md mx-auto rounded-lg h-screen p-3 w-full'>
         {/* Title */}
         <div className='text-center py-4'>
-          <h1 className='text-2xl font-bold'>Create a Flagship</h1>
+          <h1 className='text-2xl font-bold'>
+            {isEditMode ? 'Edit a Flagship' : 'Create a Flagship'}
+          </h1>
         </div>
 
         {/* Progress bar */}

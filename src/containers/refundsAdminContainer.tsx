@@ -72,6 +72,7 @@ export const RefundsAdminContainer = ({ flagshipId }: { flagshipId?: string }) =
           group: activeTab,
           page,
           limit,
+          flagshipId,
         });
         const payload = res?.data ?? res;
         const list = payload?.refunds ?? payload;

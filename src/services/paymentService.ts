@@ -93,6 +93,7 @@ export class PaymentService {
     group?: "all" | "pending" | "approved_not_credited" | "credited" | "rejected";
     page?: number;
     limit?: number;
+    flagshipId?: string;
   }): Promise<IRefund[] | { refunds: IRefund[]; page: number; limit: number; total: number; totalPages: number }> {
     try {
       return api.get(`/payment/get-refunds`, params || {});
