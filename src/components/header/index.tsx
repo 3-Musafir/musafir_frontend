@@ -6,7 +6,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import useUserHandler from '@/hooks/useUserHandler';
 import { useNotificationsContext } from '@/context/NotificationsProvider';
-import NotificationList from '../notifications/NotificationList';
 import { TabType } from '@/context/DashboardContext';
 
 interface HeaderProps {
@@ -30,38 +29,35 @@ export default function Header({
   onTabChange,
   activeTab: externalActiveTab
 }: HeaderProps) {
+  const previousPathRef = useRef<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const notificationWrapperRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
   const { status } = useSession();
   const { getMe } = useUserHandler();
-  const {
-    notifications,
-    unreadCount,
-    markAsRead,
-    markAllAsRead,
-  } = useNotificationsContext();
+  const { unreadCount } = useNotificationsContext();
 
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const inUserDropdown = dropdownRef.current && dropdownRef.current.contains(event.target as Node);
-      const inNotifications =
-        notificationWrapperRef.current &&
-        notificationWrapperRef.current.contains(event.target as Node);
 
       if (!inUserDropdown) setShowDropdown(false);
-      if (!inNotifications) setShowNotifications(false);
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (!pathname) return;
+    if (!pathname.startsWith('/notifications')) {
+      previousPathRef.current = pathname;
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (status !== 'authenticated') {
@@ -81,6 +77,12 @@ export default function Header({
     fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.prefetch('/notifications');
+    }
+  }, [status, router]);
 
   const initials = useMemo(() => {
     if (!user) return 'U';
@@ -179,8 +181,19 @@ export default function Header({
 
         {/* Notification Bell */}
         {status === 'authenticated' && (
-          <div className='relative mr-2 lg:mr-3' ref={notificationWrapperRef}>
-            <button onClick={() => setShowNotifications((prev) => !prev)}>
+          <div className='relative mr-2 lg:mr-3'>
+            <button
+              onClick={() => {
+                if (pathname?.startsWith('/notifications')) {
+                  const target = previousPathRef.current || '/home';
+                  router.push(target);
+                  return;
+                }
+
+                router.push('/notifications');
+              }}
+              aria-label='View notifications'
+            >
               <Bell className='w-6 h-6 lg:w-7 lg:h-7 text-gray-500' />
               {(unreadCount || notificationCount) > 0 && (
                 <span className='absolute -top-1 -right-1 bg-blue-500 text-white text-xs lg:text-sm rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center'>
@@ -188,18 +201,6 @@ export default function Header({
                 </span>
               )}
             </button>
-            {showNotifications && (
-              <div
-                className='absolute right-0 mt-3 w-80 lg:w-96 bg-white border border-gray-200 rounded-md shadow-lg z-20 p-3 lg:p-4'
-              >
-                <NotificationList
-                  notifications={notifications}
-                  onMarkRead={markAsRead}
-                  onMarkAll={markAllAsRead}
-                  isCompact
-                />
-              </div>
-            )}
           </div>
         )}
 

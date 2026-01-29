@@ -6,6 +6,8 @@ import apiEndpoints from '@/config/apiEndpoints';
 import constants from '@/config/constants';
 import { NotificationItem, NotificationListPayload } from '@/interfaces/notifications';
 
+const NOTIFICATIONS_CACHE_KEY = 'musafir.notifications.v1';
+
 const normalizeList = (res: any): NotificationListPayload => {
   const payload = res?.data ?? res;
   return {
@@ -19,6 +21,20 @@ const useNotifications = () => {
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [connected, setConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = window.localStorage.getItem(NOTIFICATIONS_CACHE_KEY);
+      if (!raw) return;
+      const cached = JSON.parse(raw) as NotificationListPayload | null;
+      if (!cached?.items) return;
+      setNotifications(cached.items);
+      setUnreadCount(cached.unreadCount ?? 0);
+    } catch (error) {
+      console.warn('Failed to read notifications cache', error);
+    }
+  }, []);
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -114,6 +130,19 @@ const useNotifications = () => {
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const payload: NotificationListPayload = {
+        items: notifications,
+        unreadCount,
+      };
+      window.localStorage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify(payload));
+    } catch (error) {
+      console.warn('Failed to write notifications cache', error);
+    }
+  }, [notifications, unreadCount]);
 
   useEffect(() => {
     connectSocket();
