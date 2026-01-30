@@ -108,7 +108,7 @@ export default function Header({
 
   const showAuthCta = status !== 'authenticated'; // Show login/signup buttons when not authenticated on ANY page
 
-  const navLinks: { href: string; label: string; icon: typeof Home; tabId: TabType }[] = [
+  const tabLinks: { href: string; label: string; icon: typeof Home; tabId: TabType }[] = [
     { href: '/home', label: 'Home', icon: Home, tabId: 'home' },
     { href: '/passport', label: 'Passport', icon: Flag, tabId: 'passport' },
     { href: '/wallet', label: 'Wallet', icon: Wallet, tabId: 'wallet' },
@@ -125,9 +125,17 @@ export default function Header({
       )}
 
       {/* Desktop navigation - visible only on lg screens and above */}
-      {status === 'authenticated' && (
+      {(status === 'authenticated' || !onTabChange) && (
         <nav className='hidden lg:flex items-center space-x-8 ml-6'>
-          {navLinks.map(({ href, label, tabId }) => {
+          <Link
+            href='/explore'
+            className={`text-base font-medium transition-colors ${
+              pathname === '/explore' ? 'text-brand-primary' : 'text-gray-600 hover:text-brand-primary'
+            }`}
+          >
+            Explore
+          </Link>
+          {status === 'authenticated' && tabLinks.map(({ href, label, tabId }) => {
             const isActive = onTabChange ? externalActiveTab === tabId : pathname === href;
 
             if (onTabChange) {
