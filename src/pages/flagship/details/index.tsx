@@ -160,7 +160,30 @@ export default function FlagshipDetails() {
     return Number.isFinite(parsed) ? parsed : 0;
   };
 
-  const baseAmount = parseAmount(flagship.earlyBirdPrice ?? flagship.basePrice);
+  const resolveBasePrice = (data?: IFlagship | null) => {
+    const basePrice = parseAmount(data?.basePrice);
+    const earlyBirdPrice = parseAmount(data?.earlyBirdPrice);
+    const deadlineValue = data?.earlyBirdDeadline;
+    if (earlyBirdPrice > 0 && deadlineValue) {
+      const deadline = new Date(deadlineValue);
+      if (!Number.isNaN(deadline.getTime()) && new Date() <= deadline) {
+        return earlyBirdPrice;
+      }
+    }
+    return basePrice;
+  };
+
+  const baseAmount = resolveBasePrice(flagship);
+
+  const isEarlyBirdExpired = (data?: IFlagship | null) => {
+    const earlyBirdPrice = parseAmount(data?.earlyBirdPrice);
+    const deadlineValue = data?.earlyBirdDeadline;
+    if (earlyBirdPrice <= 0 || !deadlineValue) return false;
+    const deadline = new Date(deadlineValue);
+    if (Number.isNaN(deadline.getTime())) return false;
+    return new Date() > deadline;
+  };
+
   const formatLocationPrice = (locationPrice: string | number) => {
     const surcharge = parseAmount(locationPrice);
     // If base is missing, fall back to whatever was provided.
@@ -279,7 +302,14 @@ export default function FlagshipDetails() {
 
             <div className="flex items-center">
               <HiOutlineCurrencyDollar className="w-5 h-5 lg:w-6 lg:h-6 text-gray-500 mr-2" />
-              <span className="lg:text-lg">Starts Rs.{flagship.basePrice}</span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="lg:text-lg">Starts Rs.{baseAmount.toLocaleString()}</span>
+                {isEarlyBirdExpired(flagship) && (
+                  <span className="text-xs font-semibold uppercase tracking-wide text-red-600">
+                    Early bird expired
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

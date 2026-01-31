@@ -32,21 +32,50 @@ function FlagshipRequirements() {
   const [selectedRoomSharingPrice, setSelectedRoomSharingPrice] = useState(0);
   const registrationAction = useRegistrationHook();
 
+  const parseAmount = (value: unknown) => {
+    if (value === undefined || value === null) return 0;
+    const numeric = value.toString().replace(/[^0-9.-]/g, "");
+    const parsed = Number(numeric);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  const resolveBasePrice = (data?: any) => {
+    const basePrice = parseAmount(data?.basePrice);
+    const earlyBirdPrice = parseAmount(data?.earlyBirdPrice);
+    const deadlineValue = data?.earlyBirdDeadline;
+    if (earlyBirdPrice > 0 && deadlineValue) {
+      const deadline = new Date(deadlineValue);
+      if (!Number.isNaN(deadline.getTime()) && new Date() <= deadline) {
+        return earlyBirdPrice;
+      }
+    }
+    return basePrice;
+  };
+
+  const getTwinSharingPrice = (data?: any) => {
+    const preference = data?.roomSharingPreference?.find(
+      (pref: any) => pref.name === "Twin Sharing"
+    );
+    return Number(preference?.price) || 0;
+  };
+
   const recalculateTotalPrice = () => {
-    const basePrice = Number(flagship?.basePrice) || 0;
+    const basePrice = resolveBasePrice(flagship);
     const locationPrice = selectedLocationPrice;
     const tierPrice = selectedTierPrice;
-    const roomSharingPrice = selectedRoomSharingPrice;
+    const isCoupleTrip = tripType === "partner";
+    const twinSharingPrice = isCoupleTrip ? getTwinSharingPrice(flagship) : 0;
+    const roomSharingPrice = isCoupleTrip && roomSharing === "twin" ? 0 : selectedRoomSharingPrice;
     const mattressPrice = sleepPreference === 'bed' ? Number(flagship?.mattressTiers?.[0]?.price || 0) : 0;
 
-    const totalPrice = basePrice + locationPrice + tierPrice + roomSharingPrice + mattressPrice;
+    const totalPrice = basePrice + locationPrice + tierPrice + roomSharingPrice + mattressPrice + twinSharingPrice;
 
     return totalPrice;
   };
 
   const getFlagship = async (flagshipId: any) => {
     const response = await action.getFlagship(flagshipId);
-    const basePrice = Number(response.basePrice) || 0;
+    const basePrice = resolveBasePrice(response);
 
     setFlagship(response);
 
@@ -109,7 +138,7 @@ function FlagshipRequirements() {
         if (registration.price && Number(registration.price) > 0) {
           setPrice(Number(registration.price));
         } else {
-          const basePrice = Number(flagship?.basePrice) || 0;
+          const basePrice = resolveBasePrice(flagship);
           const locationPrice = registration.joiningFromCity ?
             Number(flagship?.locations?.find((loc: any) => loc.name === registration.joiningFromCity)?.price) || 0 : 0;
           setPrice(basePrice + locationPrice);
@@ -138,7 +167,7 @@ function FlagshipRequirements() {
       const newPrice = recalculateTotalPrice();
       setPrice(newPrice);
     }
-  }, [selectedLocationPrice, selectedTierPrice, selectedRoomSharingPrice, sleepPreference, flagship]);
+  }, [selectedLocationPrice, selectedTierPrice, selectedRoomSharingPrice, roomSharing, sleepPreference, flagship, tripType]);
 
   useEffect(() => {
     if (flagship && city && !selectedLocationPrice) {
@@ -212,6 +241,9 @@ function FlagshipRequirements() {
     e.stopPropagation();
     setCurrentImageIndex((prev) => (prev === 0 ? imageUrls?.length - 1 : prev - 1));
   };
+
+  const isCoupleTrip = tripType === "partner";
+  const twinSharingPrice = getTwinSharingPrice(flagship);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -333,7 +365,7 @@ function FlagshipRequirements() {
                   location: { enabled: boolean; name: string; price: string },
                   index: number
                 ) => {
-                  const basePrice = Number(flagship?.basePrice) || 0;
+                  const basePrice = resolveBasePrice(flagship);
                   const locationAddOn = Number(location.price) || 0;
                   const totalPrice = basePrice + locationAddOn;
 
@@ -426,65 +458,6 @@ function FlagshipRequirements() {
               )}
             </div>
 
-            {/* Room sharing preference */}
-            <div className="space-y-4">
-              <label htmlFor="package" className="block text-sm font-medium">
-                Room sharing preference
-              </label>
-              <label
-                className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${ roomSharing === "default" ? "bg-brand-primary/10 border-brand-primary-light" : "hover:bg-gray-50 border-gray-200" }`}
-              >
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="radio"
-                    name="roomSharing"
-                    value="default"
-                    checked={roomSharing === "default"}
-                    onChange={() => {
-                      setRoomSharing('default');
-                      setSelectedRoomSharingPrice(0);
-                    }}
-                    className="sr-only peer"
-                  />
-                  <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
-                  <span className={roomSharing === "default" ? "font-semibold" : ""}>Default (3-4 sharing)</span>
-                </div>
-                <span className={`text-sm ${roomSharing === "default" ? "font-bold text-black" : "text-gray-600"}`}>
-                  Included
-                </span>
-              </label>
-              {flagship?.roomSharingPreference?.map((preference: { name: string; price: string }, index: number) => {
-                const prefPrice = Number(preference.price) || 0;
-                return (
-                  <label
-                    key={index}
-                    className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${ roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default") ? "bg-brand-primary/10 border-brand-primary-light" : "hover:bg-gray-50 border-gray-200" }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="radio"
-                        name="roomSharing"
-                        value={preference.name}
-                        checked={roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default")}
-                        onChange={() => {
-                          setRoomSharing(preference.name === "Twin Sharing" ? "twin" : "default");
-                          setSelectedRoomSharingPrice(prefPrice);
-                        }}
-                        className="sr-only peer"
-                      />
-                      <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
-                      <span className={roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default") ? "font-semibold" : ""}>
-                        {preference.name}
-                      </span>
-                    </div>
-                    <span className={`text-sm ${roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default") ? "font-bold text-black" : "text-gray-600"}`}>
-                      + Rs.{prefPrice.toLocaleString()}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-
             {/* Solo/Group Selection */}
             <div className="space-y-4">
               <label htmlFor="package" className="block text-sm font-medium">
@@ -574,6 +547,67 @@ function FlagshipRequirements() {
               </div>
             )}
 
+            {/* Room sharing preference */}
+            <div className="space-y-4">
+              <label htmlFor="package" className="block text-sm font-medium">
+                Room sharing preference
+              </label>
+              <label
+                className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${ roomSharing === "default" ? "bg-brand-primary/10 border-brand-primary-light" : "hover:bg-gray-50 border-gray-200" }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="radio"
+                    name="roomSharing"
+                    value="default"
+                    checked={roomSharing === "default"}
+                    onChange={() => {
+                      setRoomSharing('default');
+                      setSelectedRoomSharingPrice(0);
+                    }}
+                    className="sr-only peer"
+                  />
+                  <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
+                  <span className={roomSharing === "default" ? "font-semibold" : ""}>Default (3-4 sharing)</span>
+                </div>
+                <span className={`text-sm ${roomSharing === "default" ? "font-bold text-black" : "text-gray-600"}`}>
+                  Included
+                </span>
+              </label>
+              {flagship?.roomSharingPreference
+                ?.filter((preference: { name: string }) => !(isCoupleTrip && preference.name === "Twin Sharing"))
+                .map((preference: { name: string; price: string }, index: number) => {
+                  const prefPrice = Number(preference.price) || 0;
+                  return (
+                    <label
+                      key={index}
+                      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${ roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default") ? "bg-brand-primary/10 border-brand-primary-light" : "hover:bg-gray-50 border-gray-200" }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="radio"
+                          name="roomSharing"
+                          value={preference.name}
+                          checked={roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default")}
+                          onChange={() => {
+                            setRoomSharing(preference.name === "Twin Sharing" ? "twin" : "default");
+                            setSelectedRoomSharingPrice(prefPrice);
+                          }}
+                          className="sr-only peer"
+                        />
+                        <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
+                        <span className={roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default") ? "font-semibold" : ""}>
+                          {preference.name}
+                        </span>
+                      </div>
+                      <span className={`text-sm ${roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default") ? "font-bold text-black" : "text-gray-600"}`}>
+                        + Rs.{prefPrice.toLocaleString()}
+                      </span>
+                    </label>
+                  );
+                })}
+            </div>
+
             {/* Expectations */}
             <div className="space-y-4">
               <div className="flex justify-between">
@@ -613,7 +647,7 @@ function FlagshipRequirements() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-700">Base Price:</span>
-                  <span className="font-medium">Rs. {Number(flagship?.basePrice || 0).toLocaleString()}</span>
+                  <span className="font-medium">Rs. {resolveBasePrice(flagship).toLocaleString()}</span>
                 </div>
                 {selectedLocationPrice > 0 && (
                   <div className="flex justify-between text-gray-600">
@@ -627,10 +661,16 @@ function FlagshipRequirements() {
                     <span>Rs. {selectedTierPrice.toLocaleString()}</span>
                   </div>
                 )}
-                {selectedRoomSharingPrice > 0 && (
+                {selectedRoomSharingPrice > 0 && (!isCoupleTrip || roomSharing !== "twin") && (
                   <div className="flex justify-between text-gray-600">
                     <span>+ Room Sharing:</span>
                     <span>Rs. {selectedRoomSharingPrice.toLocaleString()}</span>
+                  </div>
+                )}
+                {isCoupleTrip && twinSharingPrice > 0 && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>+ Twin Room (Couple):</span>
+                    <span>Rs. {twinSharingPrice.toLocaleString()}</span>
                   </div>
                 )}
                 {sleepPreference === 'bed' && (

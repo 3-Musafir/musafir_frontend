@@ -14,6 +14,7 @@ export interface IFlagship {
   packages: Package[];
   basePrice: string;
   earlyBirdPrice?: number;
+  earlyBirdDeadline?: string;
   locations: Location[];
   tiers: Tier[];
   mattressTiers: MattressTier[];
