@@ -6,7 +6,7 @@ export interface BaseRegistration {
     tier: string;
     bedPreference: string;
     roomSharing: string;
-    groupMembers: string;
+    groupMembers?: string[];
     expectations: string;
     tripType: string;
     price: number;

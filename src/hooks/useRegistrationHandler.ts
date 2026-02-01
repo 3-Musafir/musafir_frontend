@@ -11,6 +11,12 @@ export interface RegistrationCreationResponse {
   isPaid?: boolean;
   status?: string;
   amountDue?: number;
+  linkConflicts?: { email: string; reason: 'already_in_another_group' }[];
+  groupDiscount?: {
+    status: 'applied' | 'not_eligible' | 'budget_exhausted' | 'disabled';
+    perMember: number;
+    groupSize: number;
+  };
 }
 
 const useRegistrationHook = () => {

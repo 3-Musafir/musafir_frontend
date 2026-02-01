@@ -19,7 +19,11 @@ function FlagshipRequirements() {
   const [tiers, setTiers] = useState('');
   const [sleepPreference, setSleepPreference] = useState<'mattress' | 'bed'>('mattress');
   const [roomSharing, setRoomSharing] = useState<'default' | 'twin'>('default');
-  const [groupMembers, setGroupMembers] = useState('')
+  const [groupMembers, setGroupMembers] = useState<string[]>([]);
+  const [groupMemberInput, setGroupMemberInput] = useState('');
+  const [partnerEmail, setPartnerEmail] = useState('');
+  const [linkConflictEmails, setLinkConflictEmails] = useState<string[]>([]);
+  const [groupDiscountInfo, setGroupDiscountInfo] = useState<RegistrationCreationResponse['groupDiscount'] | null>(null);
   const [expectations, setExpectations] = useState('')
   const action = useCustomHook();
   const [flagship, setFlagship] = useState<any>();
@@ -73,6 +77,62 @@ function FlagshipRequirements() {
     return totalPrice;
   };
 
+  const normalizeEmailList = (value: string) => {
+    return value
+      .split(/[\s,;]+/)
+      .map((entry) => entry.trim().toLowerCase())
+      .filter(Boolean);
+  };
+
+  const coerceEmailList = (value: unknown) => {
+    if (Array.isArray(value)) {
+      return value.flatMap((entry) =>
+        typeof entry === 'string' ? normalizeEmailList(entry) : []
+      );
+    }
+    if (typeof value === 'string') {
+      return normalizeEmailList(value);
+    }
+    return [];
+  };
+
+  const addGroupMembers = (value: string) => {
+    const next = normalizeEmailList(value);
+    if (!next.length) return;
+    setGroupMembers((prev) => {
+      const seen = new Set(prev.map((email) => email.toLowerCase()));
+      const merged = [...prev];
+      next.forEach((email) => {
+        const key = email.toLowerCase();
+        if (!seen.has(key)) {
+          seen.add(key);
+          merged.push(email);
+        }
+      });
+      return merged;
+    });
+  };
+
+  const removeGroupMember = (email: string) => {
+    setGroupMembers((prev) =>
+      prev.filter((entry) => entry.toLowerCase() !== email.toLowerCase())
+    );
+  };
+
+  const buildGroupMembersPayload = () => {
+    if (tripType === 'partner') {
+      return normalizeEmailList(partnerEmail).slice(0, 1);
+    }
+    if (tripType === 'group') {
+      const merged = [
+        ...groupMembers,
+        ...normalizeEmailList(groupMemberInput),
+      ];
+      return Array.from(new Set(merged));
+    }
+    return [];
+  };
+
   const getFlagship = async (flagshipId: any) => {
     const response = await action.getFlagship(flagshipId);
     const basePrice = resolveBasePrice(response);
@@ -115,7 +175,14 @@ function FlagshipRequirements() {
         setSleepPreference(registration.bedPreference);
         setRoomSharing(registration.roomSharing);
         setTripType(registration.tripType);
-        setGroupMembers(registration.groupMembers);
+        const storedGroupMembers = coerceEmailList(registration.groupMembers);
+        setGroupMembers(storedGroupMembers);
+        if (registration.tripType === 'partner') {
+          setPartnerEmail(storedGroupMembers[0] || '');
+        } else {
+          setPartnerEmail('');
+        }
+        setGroupMemberInput('');
         setExpectations(registration.expectations);
 
         if (registration.joiningFromCity && flagship?.locations) {
@@ -150,6 +217,11 @@ function FlagshipRequirements() {
   }, [searchParams]);
 
   useEffect(() => {
+    setLinkConflictEmails([]);
+    setGroupDiscountInfo(null);
+  }, [tripType]);
+
+  useEffect(() => {
     if (flagship && !tiers) {
       if (flagship.tiers && flagship.tiers.length > 0) {
         const firstTier = flagship.tiers[0];
@@ -170,6 +242,18 @@ function FlagshipRequirements() {
   }, [selectedLocationPrice, selectedTierPrice, selectedRoomSharingPrice, roomSharing, sleepPreference, flagship, tripType]);
 
   useEffect(() => {
+    if (tripType === "partner") {
+      setRoomSharing("twin");
+      setSelectedRoomSharingPrice(0);
+      return;
+    }
+    if (roomSharing === "twin") {
+      setRoomSharing("default");
+      setSelectedRoomSharingPrice(0);
+    }
+  }, [tripType, roomSharing]);
+
+  useEffect(() => {
     if (flagship && city && !selectedLocationPrice) {
       const locationPrice = Number(flagship.locations?.find((loc: any) => loc.name === city)?.price) || 0;
       if (locationPrice > 0) {
@@ -187,6 +271,34 @@ function FlagshipRequirements() {
     }
   };
 
+  const getGroupDiscountFeedback = (
+    info: NonNullable<RegistrationCreationResponse['groupDiscount']>
+  ) => {
+    switch (info.status) {
+      case 'applied':
+        return {
+          message: `Group discount applied: PKR ${info.perMember} off each (${info.groupSize} members).`,
+          type: 'success' as const,
+        };
+      case 'not_eligible':
+        return {
+          message: `Group discount unlocks at 4 members. Current group size: ${info.groupSize}.`,
+          type: 'error' as const,
+        };
+      case 'budget_exhausted':
+        return {
+          message: 'Your group qualifies, but the group discount budget is exhausted for this trip.',
+          type: 'error' as const,
+        };
+      case 'disabled':
+      default:
+        return {
+          message: 'Group discount is not enabled for this trip.',
+          type: 'error' as const,
+        };
+    }
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (fromDetailsPage && !policiesAccepted) {
@@ -194,6 +306,7 @@ function FlagshipRequirements() {
       return;
     }
     if (flagship._id) {
+      const resolvedGroupMembers = buildGroupMembersPayload();
       const registration: BaseRegistration = {
         flagshipId: flagship._id,
         isPaid: false,
@@ -202,7 +315,7 @@ function FlagshipRequirements() {
         bedPreference: sleepPreference,
         roomSharing,
         tripType,
-        groupMembers,
+        groupMembers: resolvedGroupMembers,
         expectations,
         price,
       };
@@ -211,6 +324,25 @@ function FlagshipRequirements() {
         const response = await registrationAction.create(registration) as RegistrationCreationResponse;
         const registrationId = response.registrationId;
         localStorage.setItem("registrationId", JSON.stringify(registrationId));
+        const conflictEmails = response?.linkConflicts?.map((conflict) => conflict.email) || [];
+        if (conflictEmails.length) {
+          setLinkConflictEmails(conflictEmails);
+          showAlert(`These members are already linked to another group: ${conflictEmails.join(', ')}`, 'error');
+        }
+        if (!response?.alreadyRegistered && tripType === 'group' && response?.groupDiscount) {
+          setGroupDiscountInfo(response.groupDiscount);
+          const feedback = getGroupDiscountFeedback(response.groupDiscount);
+          showAlert(feedback.message, feedback.type);
+        }
+        const feedbackPayload = {
+          linkConflicts: response?.linkConflicts || [],
+          groupDiscount: response?.groupDiscount || null,
+        };
+        if ((feedbackPayload.linkConflicts || []).length || feedbackPayload.groupDiscount) {
+          localStorage.setItem("registrationFeedback", JSON.stringify(feedbackPayload));
+        } else {
+          localStorage.removeItem("registrationFeedback");
+        }
         if (response?.alreadyRegistered) {
           const alertMessage = response.isPaid
             ? "You already have a confirmed registration for this flagship."
@@ -244,6 +376,9 @@ function FlagshipRequirements() {
 
   const isCoupleTrip = tripType === "partner";
   const twinSharingPrice = getTwinSharingPrice(flagship);
+  const groupDiscountFeedback = groupDiscountInfo
+    ? getGroupDiscountFeedback(groupDiscountInfo)
+    : null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -514,16 +649,76 @@ function FlagshipRequirements() {
                   htmlFor="groupMembers"
                   className="block text-sm font-small text-gray-500"
                 >
-                  Their names
+                  Group member emails
                 </label>
-                <input
-                  type="text"
-                  id="groupMembers"
-                  value={groupMembers}
-                  onChange={(e) => setGroupMembers(e.target.value)}
-                  placeholder="Hameez, Ahmed, Ali"
-                  className="w-full input-field"
-                />
+                <div className="flex flex-wrap gap-2 rounded-lg border border-gray-200 p-2">
+                  {groupMembers.map((email) => (
+                    <span
+                      key={email}
+                      className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700"
+                    >
+                      {email}
+                      <button
+                        type="button"
+                        onClick={() => removeGroupMember(email)}
+                        className="text-gray-500 hover:text-gray-800"
+                        aria-label={`Remove ${email}`}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    type="text"
+                    id="groupMembers"
+                    value={groupMemberInput}
+                    onChange={(e) => setGroupMemberInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ',') {
+                        e.preventDefault();
+                        addGroupMembers(groupMemberInput);
+                        setGroupMemberInput('');
+                      }
+                    }}
+                    onBlur={() => {
+                      if (groupMemberInput.trim()) {
+                        addGroupMembers(groupMemberInput);
+                        setGroupMemberInput('');
+                      }
+                    }}
+                    onPaste={(e) => {
+                      const text = e.clipboardData.getData('text');
+                      if (!text) return;
+                      e.preventDefault();
+                      addGroupMembers(text);
+                      setGroupMemberInput('');
+                    }}
+                    placeholder="Add emails and press Enter"
+                    className="min-w-[180px] flex-1 border-0 bg-transparent p-1 text-sm text-gray-700 outline-none"
+                  />
+                </div>
+                <p className="text-xs text-gray-500">
+                  Enter multiple emails separated by commas or spaces.
+                </p>
+                {linkConflictEmails.length > 0 && (
+                  <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                    Some members are already linked to another group: {linkConflictEmails.join(', ')}.
+                  </div>
+                )}
+                {groupDiscountFeedback && (
+                  <div
+                    className={`rounded-md border px-3 py-2 text-xs ${
+                      groupDiscountFeedback.type === 'success'
+                        ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                        : 'border-amber-200 bg-amber-50 text-amber-800'
+                    }`}
+                  >
+                    {groupDiscountFeedback.message}
+                  </div>
+                )}
+                <p className="text-xs text-gray-500">
+                  Group discounts unlock at 4 linked members and depend on remaining discount budget.
+                </p>
               </div>
             )}
 
@@ -531,19 +726,24 @@ function FlagshipRequirements() {
             {tripType === "partner" && (
               <div className="space-y-2">
                 <label
-                  htmlFor="groupMembers"
+                  htmlFor="partnerEmail"
                   className="block text-sm font-small text-gray-500"
                 >
-                  Your partner&apos;s name
+                  Partner email
                 </label>
                 <input
-                  type="text"
-                  id="groupMembers"
-                  value={groupMembers}
-                  onChange={(e) => setGroupMembers(e.target.value)}
-                  placeholder="no nicknames, please :)"
+                  type="email"
+                  id="partnerEmail"
+                  value={partnerEmail}
+                  onChange={(e) => setPartnerEmail(e.target.value)}
+                  placeholder="partner@email.com"
                   className="w-full input-field"
                 />
+                {linkConflictEmails.length > 0 && (
+                  <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                    This partner is already linked to another group.
+                  </div>
+                )}
               </div>
             )}
 
@@ -552,30 +752,34 @@ function FlagshipRequirements() {
               <label htmlFor="package" className="block text-sm font-medium">
                 Room sharing preference
               </label>
-              <label
-                className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${ roomSharing === "default" ? "bg-brand-primary/10 border-brand-primary-light" : "hover:bg-gray-50 border-gray-200" }`}
-              >
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="radio"
-                    name="roomSharing"
-                    value="default"
-                    checked={roomSharing === "default"}
-                    onChange={() => {
-                      setRoomSharing('default');
-                      setSelectedRoomSharingPrice(0);
-                    }}
-                    className="sr-only peer"
-                  />
-                  <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
-                  <span className={roomSharing === "default" ? "font-semibold" : ""}>Default (3-4 sharing)</span>
-                </div>
-                <span className={`text-sm ${roomSharing === "default" ? "font-bold text-black" : "text-gray-600"}`}>
-                  Included
-                </span>
-              </label>
+              {!isCoupleTrip && (
+                <label
+                  className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${ roomSharing === "default" ? "bg-brand-primary/10 border-brand-primary-light" : "hover:bg-gray-50 border-gray-200" }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      name="roomSharing"
+                      value="default"
+                      checked={roomSharing === "default"}
+                      onChange={() => {
+                        setRoomSharing('default');
+                        setSelectedRoomSharingPrice(0);
+                      }}
+                      className="sr-only peer"
+                    />
+                    <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
+                    <span className={roomSharing === "default" ? "font-semibold" : ""}>Default (3-4 sharing)</span>
+                  </div>
+                  <span className={`text-sm ${roomSharing === "default" ? "font-bold text-black" : "text-gray-600"}`}>
+                    Included
+                  </span>
+                </label>
+              )}
               {flagship?.roomSharingPreference
-                ?.filter((preference: { name: string }) => !(isCoupleTrip && preference.name === "Twin Sharing"))
+                ?.filter((preference: { name: string }) =>
+                  isCoupleTrip ? preference.name === "Twin Sharing" : true
+                )
                 .map((preference: { name: string; price: string }, index: number) => {
                   const prefPrice = Number(preference.price) || 0;
                   return (

@@ -4,9 +4,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signOut } from "next-auth/react";
 import useCustomHook from "@/hooks/useSignUp";
 import { BaseUser } from "@/interfaces/signup";
-import useRegistrationHook from "@/hooks/useRegistrationHandler";
+import useRegistrationHook, { RegistrationCreationResponse } from "@/hooks/useRegistrationHandler";
 import api from "@/lib/api";
 import apiEndpoints from "@/config/apiEndpoints";
+import { showAlert } from "@/pages/alert";
 import { cnicDigits, formatCnicInput, validateCnicFormat } from "@/utils/cnic";
 
 export default function AdditionalInfo() {
@@ -32,6 +33,35 @@ export default function AdditionalInfo() {
     { value: "selfEmployed", label: "Business/Self Employed", placeholder: "Business Name" },
     { value: "unemployed", label: "Living in my unemployment era", placeholder: "" },
   ];
+
+
+  const getGroupDiscountFeedback = (
+    info: NonNullable<RegistrationCreationResponse['groupDiscount']>
+  ) => {
+    switch (info.status) {
+      case 'applied':
+        return {
+          message: `Group discount applied: PKR ${info.perMember} off each (${info.groupSize} members).`,
+          type: 'success' as const,
+        };
+      case 'not_eligible':
+        return {
+          message: `Group discount unlocks at 4 members. Current group size: ${info.groupSize}.`,
+          type: 'error' as const,
+        };
+      case 'budget_exhausted':
+        return {
+          message: 'Your group qualifies, but the group discount budget is exhausted for this trip.',
+          type: 'error' as const,
+        };
+      case 'disabled':
+      default:
+        return {
+          message: 'Group discount is not enabled for this trip.',
+          type: 'error' as const,
+        };
+    }
+  };
 
   const employmentPlaceholder =
     employmentOptions.find((o) => o.value === employmentStatus)?.placeholder || "";
@@ -136,13 +166,31 @@ export default function AdditionalInfo() {
           );
           registration.userId = userId;
           if (registration) {
-            const { registrationId } = (await registrationAction.create(
+            const response = (await registrationAction.create(
               registration
-            )) as { registrationId: string; message: string };
+            )) as RegistrationCreationResponse;
+            const registrationId = response.registrationId;
             localStorage.setItem(
               "registrationId",
               JSON.stringify(registrationId)
             );
+            const conflictEmails = response?.linkConflicts?.map((conflict) => conflict.email) || [];
+            if (conflictEmails.length) {
+              showAlert(`These members are already linked to another group: ${conflictEmails.join(', ')}`, 'error');
+            }
+            if (registration?.tripType === 'group' && response?.groupDiscount) {
+              const feedback = getGroupDiscountFeedback(response.groupDiscount);
+              showAlert(feedback.message, feedback.type);
+            }
+            const feedbackPayload = {
+              linkConflicts: response?.linkConflicts || [],
+              groupDiscount: response?.groupDiscount || null,
+            };
+            if ((feedbackPayload.linkConflicts || []).length || feedbackPayload.groupDiscount) {
+              localStorage.setItem("registrationFeedback", JSON.stringify(feedbackPayload));
+            } else {
+              localStorage.removeItem("registrationFeedback");
+            }
           }
         }
         const storeData = {

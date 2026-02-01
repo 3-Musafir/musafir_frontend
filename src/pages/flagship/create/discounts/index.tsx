@@ -511,6 +511,12 @@ function DiscountsPage() {
               </div>
             </div>
 
+            <p className="text-sm text-gray-500 mb-4">
+              Applies per-member discounts by group size (4:500, 5:600, 6:800, 7+:1000).
+              Total Value is the overall budget, and Number of such discounts is the total discounted seats.
+              Discounts are allocated to earliest groups and recalculated on cancellations.
+            </p>
+
             {groupEnabled && (
               <>
                 <div className="mb-4">
