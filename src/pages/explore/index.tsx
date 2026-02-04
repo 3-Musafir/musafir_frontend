@@ -98,6 +98,13 @@ export default function Explore() {
                 href: '/community',
                 primary: true,
               },
+              {
+                title: 'Read Musafir reviews',
+                description:
+                  'See the real questions people asked — and how their first experiences were described.',
+                href: '/reviews',
+                primary: true,
+              },
             ].map((item) => (
               <Link
                 key={item.title}
