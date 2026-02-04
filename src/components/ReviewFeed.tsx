@@ -19,13 +19,13 @@ const INTENSE_THRESHOLD = 0.75;
 
 const breatherMessages = [
   "Most Musafirs join alone.",
-  "It\u2019s okay to be nervous. Many were.",
+  "Its okay to be nervous. Many were.",
   "Some people come for the trip. Most stay for the people.",
 ];
 
 const completenessMessages = [
-  "You\u2019re seeing a mix of common experiences.",
-  "These aren\u2019t rare stories.",
+  "Youre seeing a mix of common experiences.",
+  "These arent rare stories.",
 ];
 
 const breatherThresholds = [5, 6, 7];
@@ -229,7 +229,7 @@ export default function ReviewFeed() {
 
   const contextLine =
     selectedQuestionId === EXPLORING_ID
-      ? "Here\u2019s how people describe their first experience:"
+      ? "Heres how people describe their first experience:"
       : "People who asked this said:";
 
   const showClosestExperiencesLabel = rankResult.usedAdjacentTags;
@@ -276,10 +276,10 @@ export default function ReviewFeed() {
       <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 xl:px-10">
         <header className="pt-10 lg:pt-12">
           <h1 className="text-3xl font-semibold text-heading sm:text-4xl">
-            If you\u2019re wondering\u2026
+            If youre wondering\u2026
           </h1>
           <p className="mt-2 text-base text-text sm:text-lg">
-            You\u2019re probably not the first. Here\u2019s what real Musafirs said.
+            Youre probably not the first. Heres what real Musafirs said.
           </p>
           <p className="mt-3 text-sm text-text-light">
             These questions came from real Musafirs before their first trip.

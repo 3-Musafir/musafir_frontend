@@ -453,20 +453,20 @@ const contexts = [
 const quotePool = [
   "I was nervous at first, but I found my rhythm.",
   "Not everything was perfect, but I felt supported.",
-  "I didn\u2019t know anyone. It got easier quickly.",
-  "I worried it would feel awkward. It didn\u2019t.",
+  "I didnt know anyone. It got easier quickly.",
+  "I worried it would feel awkward. It didnt.",
   "I felt safe because things were clearly organized.",
   "It felt worth the money for the care and planning.",
   "I could be quiet and still feel included.",
   "I came alone and left with real connections.",
   "I expected a tour. It felt more human.",
   "I was nervous about being myself. It felt okay.",
-  "It wasn\u2019t flawless, but it felt honest.",
+  "It wasnt flawless, but it felt honest.",
   "I was nervous at first, then it felt calm.",
 ];
 
 const storyPool = [
-  "Small group moments made it easier to talk. I didn\u2019t feel rushed.",
+  "Small group moments made it easier to talk. I didnt feel rushed.",
   "The team explained the plan clearly, which eased my nerves.",
   "I liked that people checked in without being pushy.",
   "There were quiet moments and that was okay.",
