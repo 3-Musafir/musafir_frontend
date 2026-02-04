@@ -272,9 +272,9 @@ export default function ReviewFeed() {
   };
 
   return (
-    <section className="min-h-screen bg-canvas-base pb-16">
-      <div className="mx-auto max-w-5xl px-4">
-        <header className="pt-12">
+    <section className="min-h-screen bg-gray-50 pb-16">
+      <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 xl:px-10">
+        <header className="pt-10 lg:pt-12">
           <h1 className="text-3xl font-semibold text-heading sm:text-4xl">
             If you\u2019re wondering\u2026
           </h1>
@@ -297,7 +297,7 @@ export default function ReviewFeed() {
         />
       </div>
 
-      <div className="mx-auto mt-6 max-w-5xl px-4">
+      <div className="mx-auto mt-6 max-w-6xl px-4 md:px-6 lg:px-8 xl:px-10">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-text-light">{contextLine}</p>
           {showClosestExperiencesLabel ? (

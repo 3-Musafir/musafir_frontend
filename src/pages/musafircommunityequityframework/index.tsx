@@ -11,29 +11,30 @@ import { Navigation } from "../navigation";
 
 export default function MusafirCommunityEquityFramework() {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen bg-gray-50 text-foreground flex flex-col">
       <Header setSidebarOpen={() => {}} showMenuButton={false} />
 
-      <main className="mx-auto w-full max-w-md px-4 pt-16 pb-24 space-y-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold text-heading">
-            Musafir Community Equity Framework
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            A community commitment to inclusivity, safety, respect, and accountability.
-          </p>
-        </div>
+      <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
+        <div className="mx-auto w-full max-w-6xl space-y-8 lg:space-y-10">
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold text-heading">
+              Musafir Community Equity Framework
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              A community commitment to inclusivity, safety, respect, and accountability.
+            </p>
+          </div>
 
         {/* Summary */}
-        <section className="rounded-xl border border-border bg-card p-4 space-y-3">
-          <div className="space-y-1">
+        <section className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 space-y-5">
+          <div className="space-y-2">
             <p className="text-sm font-medium text-heading">What this is</p>
             <p className="text-sm text-muted-foreground">
               This framework sets expectations for conduct, outlines prohibited behaviors/items, and explains how concerns are reported, investigated, and resolved.
             </p>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-2">
             <p className="text-sm font-medium text-heading">Core goals</p>
             <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
               <li>Respect for diversity and a harassment-free environment.</li>
@@ -46,9 +47,9 @@ export default function MusafirCommunityEquityFramework() {
         </section>
 
         {/* Detailed (expandable) */}
-        <section className="rounded-xl border border-border bg-card p-4">
+        <section className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8">
           <Accordion type="single" collapsible>
-            <AccordionItem value="framework" className="border-border">
+            <AccordionItem value="framework" className="border-gray-200/70">
               <AccordionTrigger className="text-sm text-brand-primary">
                 View complete framework
               </AccordionTrigger>
@@ -280,6 +281,7 @@ export default function MusafirCommunityEquityFramework() {
             </AccordionItem>
           </Accordion>
         </section>
+        </div>
       </main>
 
       <Navigation />

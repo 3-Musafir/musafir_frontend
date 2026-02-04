@@ -47,22 +47,23 @@ export default function RefundPolicyBy3Musafir() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen bg-gray-50 text-foreground flex flex-col">
       <Header setSidebarOpen={() => {}} showMenuButton={false} />
 
-      <main className="mx-auto w-full max-w-md px-4 pt-16 pb-24 space-y-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold text-heading">
-            3Musafir Trip Cancellation, Refund, Wallet Credit &amp; Transfer Policy
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Last Updated: 21st January 2021
-          </p>
-        </div>
+      <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
+        <div className="mx-auto w-full max-w-6xl space-y-8 lg:space-y-10">
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold text-heading">
+              3Musafir Trip Cancellation, Refund, Wallet Credit &amp; Transfer Policy
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Last Updated: 21st January 2021
+            </p>
+          </div>
 
         {/* Summary */}
-        <section className="rounded-xl border border-border bg-card p-4 space-y-4">
-          <div className="space-y-1">
+        <section className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 space-y-5">
+          <div className="space-y-2">
             <p className="text-sm font-medium text-heading">How cancellations work</p>
             <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
               <li>
@@ -74,7 +75,7 @@ export default function RefundPolicyBy3Musafir() {
             </ul>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-2">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-medium text-heading">Processing fee</p>
@@ -84,14 +85,14 @@ export default function RefundPolicyBy3Musafir() {
             </div>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-2">
             <p className="text-sm font-medium text-heading">Default refund method</p>
             <p className="text-sm text-muted-foreground">
               Wallet Credit is the preferred/default method; refunds to the original payment method may be available.
             </p>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-2">
             <p className="text-sm font-medium text-heading">Wallet credit expiry</p>
             <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
               <li>Valid up to 12 months from issuance.</li>
@@ -101,13 +102,13 @@ export default function RefundPolicyBy3Musafir() {
             </ul>
           </div>
 
-          <div className="border-t border-border pt-4 space-y-2">
+          <div className="border-t border-gray-200 pt-4 space-y-3">
             <p className="text-sm font-medium text-heading">Standard cancellation tiers</p>
             <div className="space-y-2">
               {standardTiers.map((tier) => (
                 <div
                   key={tier.label}
-                  className="rounded-lg border border-border bg-background px-3 py-2"
+                  className="rounded-lg border border-gray-200 bg-white px-3 py-2"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
@@ -121,7 +122,7 @@ export default function RefundPolicyBy3Musafir() {
             </div>
           </div>
 
-          <div className="border-t border-border pt-4 space-y-2">
+          <div className="border-t border-gray-200 pt-4 space-y-3">
             <p className="text-sm font-medium text-heading">OG Musafir tiers</p>
             <p className="text-xs text-muted-foreground">
               OG Musafir = completed five (5) or more flagship multi-night trips.
@@ -130,7 +131,7 @@ export default function RefundPolicyBy3Musafir() {
               {ogTiers.map((tier) => (
                 <div
                   key={tier.label}
-                  className="rounded-lg border border-border bg-background px-3 py-2"
+                  className="rounded-lg border border-gray-200 bg-white px-3 py-2"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
@@ -146,9 +147,9 @@ export default function RefundPolicyBy3Musafir() {
         </section>
 
         {/* Detailed (expandable) */}
-        <section className="rounded-xl border border-border bg-card p-4">
+        <section className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8">
           <Accordion type="single" collapsible>
-            <AccordionItem value="policy" className="border-border">
+            <AccordionItem value="policy" className="border-gray-200/70">
               <AccordionTrigger className="text-sm text-brand-primary">
                 View detailed policy
               </AccordionTrigger>
@@ -387,6 +388,7 @@ export default function RefundPolicyBy3Musafir() {
             </AccordionItem>
           </Accordion>
         </section>
+        </div>
       </main>
 
       <Navigation />

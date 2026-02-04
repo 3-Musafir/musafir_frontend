@@ -21,7 +21,7 @@ export default function Explore() {
         </div>
       </header>
 
-      <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-8 md:py-10 lg:py-14">
+      <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
         <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
           <section className="rounded-2xl bg-gradient-to-br from-[#515778] via-[#3e425f] to-[#2c3047] text-white p-6 md:p-8 lg:p-12 shadow-sm">
             <div className="max-w-3xl space-y-4">
@@ -72,7 +72,7 @@ export default function Explore() {
             <div className="max-w-2xl space-y-2">
               <h2 className="text-2xl font-semibold text-heading">How 3Musafir works</h2>
             </div>
-            <div className="grid gap-4 lg:gap-6 lg:grid-cols-3">
+            <div className="grid gap-4 lg:gap-6 md:grid-cols-2 lg:grid-cols-3">
               {[
                 {
                   title: 'It starts with the community',
@@ -90,10 +90,22 @@ export default function Explore() {
                     'Travel doesn’t end on the last day. Musafirs stay connected through meetups, conversations, and future journeys together.',
                 },
               ].map((item) => (
-                <div key={item.title} className="rounded-2xl border border-gray-200 bg-white p-5 md:p-6 shadow-sm">
-                  <h3 className="text-base font-semibold text-heading">{item.title}</h3>
-                  <p className="text-sm text-text mt-2 leading-relaxed">{item.description}</p>
-                </div>
+                <details
+                  key={item.title}
+                  className="group rounded-2xl border border-gray-200 bg-white shadow-sm"
+                >
+                  <summary className="list-none cursor-pointer p-5 md:p-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                    <div className="flex items-start justify-between gap-4">
+                      <h3 className="text-base font-semibold text-heading">{item.title}</h3>
+                      <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">
+                        +
+                      </span>
+                    </div>
+                  </summary>
+                  <div className="px-5 md:px-6 pb-5 md:pb-6">
+                    <p className="text-sm text-text leading-relaxed">{item.description}</p>
+                  </div>
+                </details>
               ))}
             </div>
           </section>
@@ -129,17 +141,28 @@ export default function Explore() {
                   href: '/reviews',
                 },
               ].map((item) => (
-                <Link
+                <details
                   key={item.title}
-                  href={item.href}
-                  className="group rounded-2xl border border-gray-200 bg-white p-5 md:p-6 transition hover:border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary shadow-sm"
+                  className="group rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:border-brand-primary"
                 >
-                  <h3 className="text-base font-semibold text-heading">{item.title}</h3>
-                  <p className="text-sm text-text mt-2 leading-relaxed">{item.description}</p>
-                  <span className="mt-4 inline-flex items-center text-sm font-semibold text-brand-primary">
-                    Go →
-                  </span>
-                </Link>
+                  <summary className="list-none cursor-pointer p-5 md:p-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                    <div className="flex items-start justify-between gap-4">
+                      <h3 className="text-base font-semibold text-heading">{item.title}</h3>
+                      <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">
+                        +
+                      </span>
+                    </div>
+                  </summary>
+                  <div className="px-5 md:px-6 pb-5 md:pb-6 space-y-4">
+                    <p className="text-sm text-text leading-relaxed">{item.description}</p>
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center text-sm font-semibold text-brand-primary hover:text-brand-primary-hover transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                    >
+                      Go →
+                    </Link>
+                  </div>
+                </details>
               ))}
             </div>
             <div className="grid gap-4 lg:gap-6 md:grid-cols-2">
@@ -151,23 +174,40 @@ export default function Explore() {
                   href: '/careers',
                 },
                 {
+                  title: 'Trust & verification',
+                  description:
+                    'See how 3Musafir designs safety systems and accountability for group travel in Pakistan.',
+                  href: '/trust-and-verification',
+                },
+                {
                   title: 'Why 3Musafir exists',
                   description:
                     'Learn about the purpose, values, and long-term vision behind building a more human way to travel together.',
                   href: '/why',
                 },
               ].map((item) => (
-                <Link
+                <details
                   key={item.title}
-                  href={item.href}
-                  className="group rounded-2xl border border-gray-200/70 bg-white/70 p-5 md:p-6 text-text/90 transition hover:border-brand-primary/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                  className="group rounded-2xl border border-gray-200/70 bg-white/70 text-text/90 transition hover:border-brand-primary/70"
                 >
-                  <h3 className="text-base font-semibold text-heading/90">{item.title}</h3>
-                  <p className="text-sm text-text/80 mt-2 leading-relaxed">{item.description}</p>
-                  <span className="mt-4 inline-flex items-center text-sm font-semibold text-brand-primary/80">
-                    Learn more →
-                  </span>
-                </Link>
+                  <summary className="list-none cursor-pointer p-5 md:p-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                    <div className="flex items-start justify-between gap-4">
+                      <h3 className="text-base font-semibold text-heading/90">{item.title}</h3>
+                      <span className="mt-1 text-brand-primary/80 text-lg transition group-open:rotate-45">
+                        +
+                      </span>
+                    </div>
+                  </summary>
+                  <div className="px-5 md:px-6 pb-5 md:pb-6 space-y-4">
+                    <p className="text-sm text-text/80 leading-relaxed">{item.description}</p>
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center text-sm font-semibold text-brand-primary/80 hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                    >
+                      Learn more →
+                    </Link>
+                  </div>
+                </details>
               ))}
             </div>
           </section>
@@ -187,18 +227,6 @@ export default function Explore() {
             </p>
           </section>
 
-          <section id="why" className="space-y-3 max-w-3xl">
-            <h2 className="text-2xl font-semibold text-heading">Why 3Musafir exists</h2>
-            <p className="text-sm text-text leading-relaxed">
-              3Musafir was created to make travel feel safer, more intentional, and more human — especially in group settings where trust and comfort matter most. We believe meaningful journeys are built through shared values, clear expectations, and communities that look out for each other.
-            </p>
-            <Link
-              href="/why"
-              className="inline-flex items-center text-sm font-semibold text-brand-primary hover:text-brand-primary-hover transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-            >
-              Read our story →
-            </Link>
-          </section>
         </div>
       </main>
     </div>

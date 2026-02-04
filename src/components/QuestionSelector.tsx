@@ -16,8 +16,8 @@ export default function QuestionSelector({
   onToggleShowAll,
 }: QuestionSelectorProps) {
   return (
-    <div className="frosted border-y border-canvas-line px-4 py-4">
-      <div className="mx-auto flex max-w-5xl flex-col gap-3">
+    <div className="frosted border-y border-canvas-line px-4 md:px-6 lg:px-8 xl:px-10 py-4">
+      <div className="mx-auto flex max-w-6xl flex-col gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"

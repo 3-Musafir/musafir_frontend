@@ -1,12 +1,23 @@
 "use client";
 
 import { ReactNode } from "react";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
+import Footer from "@/components/Footer";
 
 interface UserScreenShellProps {
   children: ReactNode;
 }
 
 export default function UserScreenShell({ children }: UserScreenShellProps) {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const pathname = router.pathname || "";
+  const excludedPaths = ["/home", "/login"];
+  const isExcludedPath = excludedPaths.some((path) => pathname.startsWith(path));
+  const isLoggedIn = Boolean(session?.user);
+  const shouldShowFooter = !isLoggedIn && !isExcludedPath;
+
   return (
     <div className="min-h-screen w-full bg-gray-50">
       {/*
@@ -16,6 +27,7 @@ export default function UserScreenShell({ children }: UserScreenShellProps) {
       */}
       <div className="min-h-screen w-full">
         {children}
+        {shouldShowFooter ? <Footer /> : null}
       </div>
     </div>
   );
