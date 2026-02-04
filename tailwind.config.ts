@@ -11,6 +11,10 @@ export default {
   ],
   theme: {
   	extend: {
+		boxShadow: {
+			card: "0 16px 40px rgba(43, 45, 66, 0.08)",
+			soft: "0 8px 20px rgba(43, 45, 66, 0.06)",
+		},
 		fontFamily: {
         outfit: ['Outfit', 'sans-serif'],
       },
@@ -48,6 +52,11 @@ export default {
 				warning: '#F6BC2F',
 				'warning-hover': '#DDA929',
 				'warning-light': '#FFF4D5',
+			},
+			canvas: {
+				base: '#FFF9F2',
+				soft: '#FFF2E1',
+				line: '#F3E6D6',
 			},
 
 			// Semantic Colors
