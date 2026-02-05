@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useRecoilValue } from "recoil";
 import Image from "next/image";
@@ -53,6 +54,42 @@ export default function FlagshipDetails() {
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [showPdfModal, setShowPdfModal] = useState(false);
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const basePath = "/flagship/details";
+  const idParam = typeof id === "string" ? id : undefined;
+  const canonicalUrl = idParam
+    ? `${siteUrl}${basePath}?id=${encodeURIComponent(idParam)}`
+    : `${siteUrl}${basePath}`;
+  const title = flagship?.tripName
+    ? `${flagship.tripName} — 3Musafir`
+    : "Flagship details — 3Musafir";
+  const description =
+    flagship?.detailedPlan ||
+    (flagship?.destination
+      ? `Explore a community-led journey to ${flagship.destination} with 3Musafir.`
+      : "Explore a 3Musafir flagship journey designed around safety, comfort, and community-led travel.");
+  const ogImage = resolveImageSrc(flagship?.images?.[0], "/flowerFields.jpg");
+  const ogImageUrl = ogImage.startsWith("http")
+    ? ogImage
+    : `${siteUrl}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`;
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: `${siteUrl}/home`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Flagship details",
+        item: canonicalUrl,
+      },
+    ],
+  };
 
   const fetchFaq = async () => {
     const faqItems = (await getFaq()) as unknown as FaqItem[];
@@ -206,6 +243,21 @@ export default function FlagshipDetails() {
   };
 
   return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} key="canonical" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={ogImageUrl} />
+        <meta name="twitter:image" content={ogImageUrl} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </Head>
     <div className="w-full bg-white min-h-screen pb-8 relative">
       {/* Sticky Register Button */}
       {isButtonVisible && (
@@ -509,5 +561,6 @@ export default function FlagshipDetails() {
       {/* Navigation */}
       <Navigation />
     </div>
+    </>
   );
 }

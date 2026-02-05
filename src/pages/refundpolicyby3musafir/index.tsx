@@ -1,5 +1,6 @@
 "use client";
 
+import Head from "next/head";
 import Header from "@/components/header";
 import {
   Accordion,
@@ -45,8 +46,36 @@ export default function RefundPolicyBy3Musafir() {
       detail: "75% refund minus PKR 500 processing fee",
     },
   ];
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const canonicalUrl = `${siteUrl}/refundpolicyby3musafir`;
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Explore",
+        item: `${siteUrl}/explore`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Refund & Cancellation Policy",
+        item: canonicalUrl,
+      },
+    ],
+  };
 
   return (
+    <>
+      <Head>
+        <link rel="canonical" href={canonicalUrl} key="canonical" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </Head>
     <div className="min-h-screen bg-gray-50 text-foreground flex flex-col">
       <Header setSidebarOpen={() => {}} showMenuButton={false} />
 
@@ -393,5 +422,6 @@ export default function RefundPolicyBy3Musafir() {
 
       <Navigation />
     </div>
+    </>
   );
 }

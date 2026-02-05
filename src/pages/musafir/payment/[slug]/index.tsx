@@ -1,4 +1,5 @@
 "use client";
+import Head from "next/head";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -43,6 +44,15 @@ export default function TripPayment() {
     useState<BankKey>("faysal-bank");
   const router = useRouter();
   const params = useParams();
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const path =
+    typeof window === "undefined"
+      ? "/musafir/payment"
+      : (router.asPath.split("?")[0] || "/musafir/payment").split("#")[0];
+  const canonicalUrl = `${siteUrl}${path}`;
+  const title = "Trip payment — 3Musafir";
+  const description =
+    "Complete your trip payment securely with 3Musafir and confirm your seat.";
   const registrationId = params?.slug as string;
   const [expandedBank, setExpandedBank] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -333,6 +343,15 @@ export default function TripPayment() {
   };
 
   return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} key="canonical" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
+      </Head>
     <div className="min-h-screen bg-background text-foreground">
       {registrationId && <div className="w-full">
         <div className="flex flex-col min-h-screen bg-card lg:my-6 lg:rounded-xl lg:min-h-0 lg:border lg:border-border">
@@ -719,5 +738,6 @@ export default function TripPayment() {
         </div>
       </div>}
     </div>
+    </>
   );
 }

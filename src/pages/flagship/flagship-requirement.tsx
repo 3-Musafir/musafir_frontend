@@ -157,8 +157,8 @@ function FlagshipRequirements() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const flagshipId = searchParams.get("id");
-      const fromDetailsPage = searchParams.get("fromDetailsPage") === "true";
+      const flagshipId = searchParams?.get("id");
+      const fromDetailsPage = searchParams?.get("fromDetailsPage") === "true";
       setFromDetailsPage(fromDetailsPage);
 
       if (flagshipId) {

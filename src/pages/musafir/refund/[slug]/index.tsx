@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Head from "next/head";
 import { ArrowLeft, Check, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -13,7 +14,21 @@ import useRegistrationHook from "@/hooks/useRegistrationHandler";
 
 const SuccessComponent = ({ refundAmount }: { refundAmount?: number }) => {
   const router = useRouter();
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const title = "Refund request submitted — 3Musafir";
+  const description =
+    "Your refund request has been submitted. Track updates and next steps within 3Musafir.";
+  const canonicalUrl = `${siteUrl}/musafir/refund`;
   return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} key="canonical" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
+      </Head>
     <div className="max-w-md mx-auto bg-background text-foreground min-h-screen flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
         <div className="relative mb-6">
@@ -49,6 +64,7 @@ const SuccessComponent = ({ refundAmount }: { refundAmount?: number }) => {
         </Button>
       </div>
     </div>
+    </>
   );
 };
 
@@ -66,6 +82,15 @@ export default function RefundForm() {
   const [retryAt, setRetryAt] = useState<string | null>(null);
   const router = useRouter();
   const { slug } = router.query;
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const path =
+    typeof window === "undefined"
+      ? "/musafir/refund"
+      : (router.asPath.split("?")[0] || "/musafir/refund").split("#")[0];
+  const canonicalUrl = `${siteUrl}${path}`;
+  const title = "Refund request — 3Musafir";
+  const description =
+    "Submit a refund request for your 3Musafir trip and track the status securely.";
   const registrationHook = useRegistrationHook();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -206,6 +231,15 @@ export default function RefundForm() {
   })();
 
   return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} key="canonical" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
+      </Head>
     <div className="max-w-md mx-auto bg-background text-foreground min-h-screen pb-8">
       <header className="sticky top-0 bg-background z-10 border-b border-border">
         <div className="p-4 flex items-center">
@@ -217,7 +251,7 @@ export default function RefundForm() {
           >
             <ArrowLeft className="h-6 w-6" />
           </button>
-          <h1 className="text-xl font-bold flex-1 text-center">Refund Request</h1>
+          <h2 className="text-xl font-bold flex-1 text-center">Refund Request</h2>
         </div>
       </header>
 
@@ -467,5 +501,6 @@ export default function RefundForm() {
       {/* Bottom spacing for the fixed nav */}
       <div className="h-6" />
     </div>
+    </>
   );
 }

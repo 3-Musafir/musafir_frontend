@@ -1,9 +1,106 @@
 'use client';
 
+import Head from "next/head";
 import Link from 'next/link';
 
 export default function TrustAndVerificationPage() {
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const title = "Trust & Verification — 3Musafir safety framework";
+  const description =
+    "See how 3Musafir builds trust and verification systems to make group travel safer for women in Pakistan.";
+  const canonicalUrl = `${siteUrl}/trust-and-verification`;
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: "Our trust and verification framework",
+      description,
+      inLanguage: "en-PK",
+      mainEntityOfPage: canonicalUrl,
+      publisher: {
+        "@type": "Organization",
+        name: "3Musafir",
+        url: siteUrl,
+        logo: `${siteUrl}/3mwinterlogo.png`,
+      },
+      about: [
+        "Pakistan",
+        "International travellers",
+        "International backpackers in Pakistan",
+        "Asian travel scene",
+        "Women travelers",
+        "Group travel",
+        "Safety",
+        "Trust & verification",
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "How does 3Musafir verify travelers?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text:
+              "3Musafir follows a female-first onboarding model with community referrals, and applies additional verification for solo male travelers to protect group comfort.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How are hotels and vendors vetted?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text:
+              "Hotels and vendors are onboarded through background checks and direct interviews, and staff identification is verified before partnerships begin.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How does 3Musafir prepare travelers for local context in Pakistan?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text:
+              "Musafirs receive guidance on regional norms, expectations, and respectful behavior so that safety is supported through shared awareness.",
+          },
+        },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Explore",
+          item: `${siteUrl}/explore`,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Trust & verification",
+          item: canonicalUrl,
+        },
+      ],
+    },
+  ];
+
   return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} key="canonical" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </Head>
     <div className="min-h-screen w-full bg-gray-50">
       <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
         <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
@@ -233,5 +330,6 @@ export default function TrustAndVerificationPage() {
         </div>
       </main>
     </div>
+    </>
   );
 }

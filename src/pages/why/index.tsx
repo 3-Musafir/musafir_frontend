@@ -1,9 +1,103 @@
 'use client';
 
+import Head from "next/head";
 import Link from 'next/link';
 
 export default function WhyPage() {
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const title = "Why 3Musafir Exists — Safer travel for women in Pakistan";
+  const description =
+    "3Musafir was created to make travel feel safer, more intentional, and more human for women in Pakistan through community-led group travel.";
+  const canonicalUrl = `${siteUrl}/why`;
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: "Why 3Musafir exists",
+      description,
+      inLanguage: "en-PK",
+      mainEntityOfPage: canonicalUrl,
+      publisher: {
+        "@type": "Organization",
+        name: "3Musafir",
+        url: siteUrl,
+        logo: `${siteUrl}/3mwinterlogo.png`,
+      },
+      about: [
+        "Pakistan",
+        "Women travelers",
+        "Group travel",
+        "Safety",
+        "Community-led travel",
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Is 3Musafir safe for women to travel with in Pakistan?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text:
+              "3Musafir is built to make group travel safer for women in Pakistan through community-led groups, clear expectations, and active support before, during, and after trips.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What makes 3Musafir community-led?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text:
+              "Trips begin with people and shared values rather than only destinations, helping travelers build familiarity and trust before they travel together.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Why does group travel feel safer on 3Musafir?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text:
+              "Groups are designed with comfort, safety, and clear structure in mind, which reduces uncertainty and makes travel more predictable and respectful for women.",
+          },
+        },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Explore",
+          item: `${siteUrl}/explore`,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Why 3Musafir exists",
+          item: canonicalUrl,
+        },
+      ],
+    },
+  ];
+
   return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} key="canonical" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </Head>
     <div className="min-h-screen w-full bg-gray-50">
       <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
         <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
@@ -292,5 +386,6 @@ export default function WhyPage() {
         </div>
       </main>
     </div>
+    </>
   );
 }

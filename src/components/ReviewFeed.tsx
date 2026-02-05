@@ -13,8 +13,8 @@ import BreatherCard from "@/components/BreatherCard";
 import PersonalizationPrompt from "@/components/PersonalizationPrompt";
 import ConversionCard from "@/components/ConversionCard";
 
-const INITIAL_COUNT = 6;
-const LOAD_MORE_COUNT = 6;
+const INITIAL_COUNT = 12;
+const LOAD_MORE_COUNT = 8;
 const INTENSE_THRESHOLD = 0.75;
 
 const breatherMessages = [

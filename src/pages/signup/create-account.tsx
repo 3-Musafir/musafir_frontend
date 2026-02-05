@@ -14,7 +14,7 @@ export default function CreateAccount() {
   const useSignUp = useSignUpHook();
   const searchParams = useSearchParams();
   useEffect(() => {
-    const ref = searchParams.get("ref");
+    const ref = searchParams?.get("ref");
     if (ref) {
       const savedData = JSON.parse(localStorage.getItem("formData") || "{}");
       localStorage.setItem(

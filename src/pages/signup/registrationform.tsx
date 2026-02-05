@@ -125,7 +125,7 @@ export default function RegistrationForm() {
         {/* Form Content */}
         <div className="p-4">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold mb-2 text-heading">Lets get to know you first!</h1>
+            <h2 className="text-2xl font-bold mb-2 text-heading">Lets get to know you first!</h2>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -293,4 +293,3 @@ export default function RegistrationForm() {
     </div>
   )
 }
-

@@ -70,7 +70,7 @@ export default function EmailVerification() {
         <div className="p-1">
           {/* details */}
           <div className="space-y-3">
-            <h1 className="text-xl font-bold">Check your email</h1>
+            <h2 className="text-xl font-bold">Check your email</h2>
             <p className="text-sm text-muted-foreground">
               We&apos;ve sent you a passowrd to login to your account. If you can&apos;t find it, check the spam folder.
             </p>
@@ -131,4 +131,3 @@ export default function EmailVerification() {
     </div>
   )
 }
-
