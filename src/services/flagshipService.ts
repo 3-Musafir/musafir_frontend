@@ -105,7 +105,7 @@ export class FlagshipService {
   }
 
   static async getFlagshipByID(flagshipId: string): Promise<IFlagship> {
-    return api.get(`/flagship/${flagshipId}`);
+    return api.get(`/flagship/getByID/${flagshipId}`);
   }
 
   static async getGoogleSheetStatus(flagshipId: string) {

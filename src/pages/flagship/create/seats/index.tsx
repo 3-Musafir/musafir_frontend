@@ -15,7 +15,7 @@ import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import ProgressBar from '@/components/progressBar';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { ensureSilentUpdate } from '@/lib/flagshipWizard';
+import { ensureSilentUpdate, getUpdatedAtToken } from '@/lib/flagshipWizard';
 
 function SeatsAllocation() {
   const activeStep = 3;
@@ -68,7 +68,6 @@ function SeatsAllocation() {
   useEffect(() => {
     const loadFlagship = async () => {
       if (!editId) return;
-      if (flagshipData?._id === editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
         setCurrentFlagship(data);
@@ -268,7 +267,7 @@ function SeatsAllocation() {
       genderSplitEnabled,
       mattressSplitEnabled,
       mattressPriceDelta: mattressSplitEnabled && mattressPriceDelta ? Number(mattressPriceDelta) : null,
-      updatedAt: flagshipData?.updatedAt,
+      updatedAt: getUpdatedAtToken(flagshipData),
     };
     ensureSilentUpdate(formData);
 

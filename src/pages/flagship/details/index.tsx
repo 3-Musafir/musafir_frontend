@@ -20,6 +20,7 @@ import useFaqHook from "@/hooks/useFaqHandler";
 import useRatingHook from "@/hooks/useRatingHandler";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { IFlagship } from "@/services/types/flagship";
+import TrustLinks from "@/components/seo/TrustLinks";
 
 export default function FlagshipDetails() {
   type FaqItem = { question: string; answer: string };
@@ -383,6 +384,9 @@ export default function FlagshipDetails() {
               View Detailed Travel Plans
             </button>
           </div>
+        </div>
+        <div className="mt-4">
+          <TrustLinks />
         </div>
 
         {/* Countdown Timer */}

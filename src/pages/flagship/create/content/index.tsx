@@ -34,7 +34,7 @@ import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { ensureSilentUpdate } from '@/lib/flagshipWizard';
+import { ensureSilentUpdate, getUpdatedAtToken } from '@/lib/flagshipWizard';
 
 function ContentPage() {
   const activeStep = 1;
@@ -94,7 +94,6 @@ function ContentPage() {
   useEffect(() => {
     const loadFlagship = async () => {
       if (!editId) return;
-      if (flagshipData?._id === editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
         setCurrentFlagship(data);
@@ -230,8 +229,9 @@ function ContentPage() {
       const formData = new FormData();
       formData.append('travelPlan', travelPlanEditor?.getHTML() || '');
       formData.append('tocs', tocsEditor?.getHTML() || '');
-      if (flagshipData?.updatedAt) {
-        formData.append('updatedAt', String(flagshipData.updatedAt));
+      const updatedAtToken = getUpdatedAtToken(flagshipData);
+      if (updatedAtToken) {
+        formData.append('updatedAt', updatedAtToken);
       }
       ensureSilentUpdate(formData);
       files.forEach((file, index) => {

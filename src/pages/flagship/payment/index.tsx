@@ -16,6 +16,7 @@ import ProgressBar from '@/components/progressBar';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
+import { getUpdatedAtToken } from '@/lib/flagshipWizard';
 
 function PaymentOptions() {
   const activeStep = 6;
@@ -71,7 +72,6 @@ function PaymentOptions() {
   useEffect(() => {
     const loadFlagship = async () => {
       if (!editId) return;
-      if (flagshipData?._id === editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
         setCurrentFlagship(data);
@@ -113,7 +113,7 @@ function PaymentOptions() {
     // Build payload (if additional data is required, add here)
     const formData = {
       selectedBank,
-      updatedAt: flagshipData?.updatedAt,
+      updatedAt: getUpdatedAtToken(flagshipData),
       silentUpdate: isEditMode ? true : undefined,
     };
     console.log(formData, 'payload');

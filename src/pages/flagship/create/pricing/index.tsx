@@ -15,7 +15,7 @@ import ProgressBar from '@/components/progressBar';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { ensureSilentUpdate } from '@/lib/flagshipWizard';
+import { ensureSilentUpdate, getUpdatedAtToken } from '@/lib/flagshipWizard';
 
 function PricingPage() {
   const activeStep = 2;
@@ -77,7 +77,6 @@ function PricingPage() {
   useEffect(() => {
     const loadFlagship = async () => {
       if (!editId) return;
-      if (flagshipData?._id === editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
         setCurrentFlagship(data);
@@ -255,7 +254,7 @@ function PricingPage() {
       mattressTiers: mattressTierEnabled ? mattressTiers.map(({ id, ...rest }) => rest) : [],
       roomSharingPreference: roomSharingEnabled ? roomSharingPreference.map(({ id, ...rest }) => rest) : [],
       earlyBirdPrice: earlyBirdPrice ? Number(earlyBirdPrice) : undefined,
-      updatedAt: flagshipData?.updatedAt,
+      updatedAt: getUpdatedAtToken(flagshipData),
     };
     ensureSilentUpdate(formData);
     try {

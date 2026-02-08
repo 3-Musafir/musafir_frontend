@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { currentUser } from "@/store/signup";
+import TrustLinks from "@/components/seo/TrustLinks";
 
 export default function RemainingSeats() {
   const [flagship, setFlagship] = useState<any>({});
@@ -104,6 +105,7 @@ export default function RemainingSeats() {
             <h1 className="text-2xl font-bold mb-2 text-gray-700">
               Remaining Seat For <br /> {flagship.tripName}
             </h1>
+            <TrustLinks className="mt-4" />
           </div>
 
           {registrationFeedback && !feedbackDismissed && (

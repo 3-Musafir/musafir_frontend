@@ -15,7 +15,7 @@ import ProgressBar from "@/components/progressBar";
 import { mapErrorToUserMessage } from "@/utils/errorMessages";
 import { FlagshipService } from "@/services/flagshipService";
 import { getEditIdFromSearch, withEditId } from "@/lib/flagship-edit";
-import { ensureSilentUpdate } from "@/lib/flagshipWizard";
+import { ensureSilentUpdate, getUpdatedAtToken } from "@/lib/flagshipWizard";
 
 function DiscountsPage() {
   const activeStep = 5;
@@ -73,7 +73,6 @@ function DiscountsPage() {
   useEffect(() => {
     const loadFlagship = async () => {
       if (!editId) return;
-      if (flagshipData?._id === editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
         setCurrentFlagship(data);
@@ -257,7 +256,7 @@ function DiscountsPage() {
             }
           : undefined,
       },
-      updatedAt: flagshipData?.updatedAt,
+      updatedAt: getUpdatedAtToken(flagshipData),
     };
     ensureSilentUpdate(formData);
     try {

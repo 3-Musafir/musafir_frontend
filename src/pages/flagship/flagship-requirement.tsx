@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { showAlert } from '../alert';
+import TrustLinks from '@/components/seo/TrustLinks';
 
 function FlagshipRequirements() {
   const router = useRouter();
@@ -488,6 +489,7 @@ function FlagshipRequirements() {
               @{flagship.destination}
             </p>
           )}
+          <TrustLinks className="mb-6" />
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* City */}

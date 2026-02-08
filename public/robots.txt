@@ -1,3 +1,8 @@
 User-agent: *
 Allow: /
-Sitemap: /sitemap.xml
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /flagship/create
+Disallow: /flagship/payment
+Disallow: /api
+Sitemap: https://3musafir.com/sitemap.xml

@@ -14,6 +14,7 @@ import withAuth from '@/hoc/withAuth';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch } from '@/lib/flagship-edit';
+import { getUpdatedAtToken } from '@/lib/flagshipWizard';
 
 function SuccessPage() {
   const [flagshipData, setFlagshipData] = useRecoilState(currentFlagship);
@@ -38,7 +39,6 @@ function SuccessPage() {
   useEffect(() => {
     const loadFlagship = async () => {
       if (!editId) return;
-      if (flagshipData?._id === editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
         setCurrentFlagship(data);
@@ -74,7 +74,7 @@ function SuccessPage() {
       const formData = {
         status: FLAGSHIP_STATUS.PUBLISHED,
         publish: fStatus,
-        updatedAt: flagshipData?.updatedAt,
+        updatedAt: getUpdatedAtToken(flagshipData),
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: any = await action.update(flagshipId, formData);

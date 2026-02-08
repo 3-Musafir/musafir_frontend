@@ -30,11 +30,13 @@ import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useRecoilValue, useResetRecoilState } from "recoil";
 import { currentUser } from "@/store/signup";
+import { currentFlagship } from "@/store";
 
 function AdminMainPage() {
   const router = useRouter();
   const userData = useRecoilValue(currentUser);
   const resetCurrentUser = useResetRecoilState(currentUser);
+  const resetCurrentFlagship = useResetRecoilState(currentFlagship);
   const [activeTab, setActiveTab] = useState("trips");
   const [activeSection, setActiveSection] = useState("past");
   const [trips, setTrips] = useState<{
@@ -393,6 +395,7 @@ function AdminMainPage() {
                 className="bg-brand-primary text-btn-secondary-text px-4 py-2 rounded-md w-full hover:bg-background hover:text-heading hover:border-[1px] hover:border-border"
                 onClick={() => {
                   setLoadingCreateFlagship(true);
+                  resetCurrentFlagship();
                   router.push("/flagship/create");
                 }}
                 disabled={loadingCreateFlagship}
