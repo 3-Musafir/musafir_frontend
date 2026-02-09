@@ -41,6 +41,7 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   USER_BLOCKED_TEMPORARY: 'Too many attempts. Please try again in a few hours.',
   USER_INVALID_CREDENTIALS: 'Invalid email or password. Please try again.',
   USER_EMAIL_TAKEN: 'This email is already in use by another account.',
+  PROFILE_INCOMPLETE: 'Please complete your profile (gender, phone, city) to continue.',
 
   // ============================================
   // PASSWORD RESET

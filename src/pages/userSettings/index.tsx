@@ -68,10 +68,16 @@ function UserSettings() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const forceEdit = searchParams?.get("forceEdit") === "true";
+  const returnTo = searchParams?.get("returnTo") || "";
   const profileStatus = (userData as any)?.profileStatus;
   const { toast } = useToast();
   const hasIncompleteProfile = forceEdit; // only force when explicitly requested
-  const missingFields: string[] = profileStatus?.missing || [];
+  const isFlagshipReturn =
+    forceEdit && typeof returnTo === "string" && returnTo.includes("/flagship/flagship-requirement");
+  const requiredFields = isFlagshipReturn
+    ? profileStatus?.requiredFor?.flagshipRegistration
+    : profileStatus?.missing;
+  const missingFields: string[] = requiredFields || [];
   const highlightMissing = forceEdit;
   const initials = useMemo(() => {
     const name = userData.fullName || userData.email || "";
@@ -82,6 +88,8 @@ function UserSettings() {
   }, [userData.fullName, userData.email]);
 
   const isEmpty = (val?: string | null) => !val || val.trim().length === 0;
+  const isSafeReturnTo = (value?: string | null) =>
+    typeof value === "string" && value.startsWith("/") && !value.startsWith("//") && !value.startsWith("/\\");
 
   const handleProfileImgFile = (file?: File | null) => {
     if (!file) return;
@@ -144,32 +152,59 @@ function UserSettings() {
         setIsUpdating(false);
         return;
       }
-      if (!editData.employmentStatus) {
-        setIsUpdating(false);
-        toast({
-          title: "Validation Error",
-          description: "Employment status is required.",
-          variant: "destructive",
-        });
-        return;
-      }
-      const requiresWorkDetail = editData.employmentStatus !== "unemployed";
-      if (requiresWorkDetail && !editData.university) {
-        setIsUpdating(false);
-        toast({
-          title: "Validation Error",
-          description: "Please provide the required detail for your employment status.",
-          variant: "destructive",
-        });
-        return;
-      }
-      const cnicValidationError = validateCnicFormat(editData.cnic);
-      setCnicError(cnicValidationError);
-      if (cnicValidationError) {
-        setIsUpdating(false);
-        return;
+
+      if (isFlagshipReturn) {
+        const missing: string[] = [];
+        if (!editData.city) missing.push("city");
+        if (!editData.gender) missing.push("gender");
+        if (missing.length) {
+          setIsUpdating(false);
+          toast({
+            title: "Validation Error",
+            description: "Please fill in gender and city to continue.",
+            variant: "destructive",
+          });
+          return;
+        }
+        if (editData.cnic) {
+          const cnicValidationError = validateCnicFormat(editData.cnic);
+          setCnicError(cnicValidationError);
+          if (cnicValidationError) {
+            setIsUpdating(false);
+            return;
+          }
+        } else {
+          setCnicError(null);
+        }
+      } else {
+        if (!editData.employmentStatus) {
+          setIsUpdating(false);
+          toast({
+            title: "Validation Error",
+            description: "Employment status is required.",
+            variant: "destructive",
+          });
+          return;
+        }
+        const requiresWorkDetail = editData.employmentStatus !== "unemployed";
+        if (requiresWorkDetail && !editData.university) {
+          setIsUpdating(false);
+          toast({
+            title: "Validation Error",
+            description: "Please provide the required detail for your employment status.",
+            variant: "destructive",
+          });
+          return;
+        }
+        const cnicValidationError = validateCnicFormat(editData.cnic);
+        setCnicError(cnicValidationError);
+        if (cnicValidationError) {
+          setIsUpdating(false);
+          return;
+        }
       }
       
+      const requiresWorkDetail = editData.employmentStatus !== "unemployed";
       const payload = {
         ...editData,
         phone: formatPhoneForApi(editData.phone),
@@ -201,6 +236,12 @@ function UserSettings() {
         description: "Your profile has been updated successfully.",
         variant: "success",
       });
+
+      if (forceEdit && returnTo) {
+        const destination = isSafeReturnTo(returnTo) ? returnTo : "/home";
+        router.replace(destination);
+        return;
+      }
     } catch (err: any) {
       console.error("Error updating user data:", err);
       

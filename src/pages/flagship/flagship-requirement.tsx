@@ -11,6 +11,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { showAlert } from '../alert';
 import TrustLinks from '@/components/seo/TrustLinks';
+import api from '@/lib/api';
+import apiEndpoints from '@/config/apiEndpoints';
+import { getErrorCode, mapErrorToUserMessage } from '@/utils/errorMessages';
 
 function FlagshipRequirements() {
   const router = useRouter();
@@ -118,6 +121,18 @@ function FlagshipRequirements() {
     setGroupMembers((prev) =>
       prev.filter((entry) => entry.toLowerCase() !== email.toLowerCase())
     );
+  };
+
+  const fetchCurrentUser = async () => {
+    const res = await api.get(apiEndpoints.USER.GET_ME);
+    return (res as any)?.data?.data ?? (res as any)?.data;
+  };
+
+  const buildReturnTo = () => {
+    if (typeof window === 'undefined') {
+      return '/flagship/flagship-requirement';
+    }
+    return `${window.location.pathname}${window.location.search}`;
   };
 
   const buildGroupMembersPayload = () => {
@@ -248,10 +263,6 @@ function FlagshipRequirements() {
       setSelectedRoomSharingPrice(0);
       return;
     }
-    if (roomSharing === "twin") {
-      setRoomSharing("default");
-      setSelectedRoomSharingPrice(0);
-    }
   }, [tripType, roomSharing]);
 
   useEffect(() => {
@@ -320,8 +331,23 @@ function FlagshipRequirements() {
         expectations,
         price,
       };
+      localStorage.setItem("registration", JSON.stringify(registration));
 
-      if (fromDetailsPage) {
+      try {
+        const currentUser = await fetchCurrentUser();
+        const isFlagshipReady = Boolean((currentUser as any)?.flagshipProfileComplete);
+        if (!isFlagshipReady) {
+          const returnTo = buildReturnTo();
+          showAlert('Please complete your profile (gender, phone, city) to continue registration.', 'error');
+          router.push(`/userSettings?forceEdit=true&returnTo=${encodeURIComponent(returnTo)}`);
+          return;
+        }
+      } catch (error) {
+        showAlert(mapErrorToUserMessage(error), 'error');
+        return;
+      }
+
+      try {
         const response = await registrationAction.create(registration) as RegistrationCreationResponse;
         const registrationId = response.registrationId;
         localStorage.setItem("registrationId", JSON.stringify(registrationId));
@@ -350,10 +376,17 @@ function FlagshipRequirements() {
             : "You already registered. Continue on the payment page to secure your seat.";
           showAlert(alertMessage, response.isPaid ? 'success' : 'success');
         }
+        localStorage.removeItem("registration");
         router.push(`/flagship/seats`);
-      } else {
-        localStorage.setItem("registration", JSON.stringify(registration));
-        router.push("/signup/additionalinfo");
+      } catch (error) {
+        const code = getErrorCode(error);
+        if (code === 'PROFILE_INCOMPLETE') {
+          const returnTo = buildReturnTo();
+          showAlert('Please complete your profile (gender, phone, city) to continue registration.', 'error');
+          router.push(`/userSettings?forceEdit=true&returnTo=${encodeURIComponent(returnTo)}`);
+          return;
+        }
+        showAlert(mapErrorToUserMessage(error), 'error');
       }
     } else {
       showAlert("Flagship not found.", "error");
