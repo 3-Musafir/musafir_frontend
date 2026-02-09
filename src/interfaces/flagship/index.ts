@@ -2,13 +2,14 @@ export interface Flagship {
   _id?: string;
   tripName: string;
   destination: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
   category: string;
   visibility: string;
   updatedAt?: string;
+  contentVersion?: string;
   days?: number;
-  status?: 'live' | 'completed';
+  status?: string;
 
   // Pricing
   basePrice?: string;
@@ -44,10 +45,10 @@ export interface Flagship {
   mattressPriceDelta?: number;
 
   // Important Dates
-  tripDates: string;
-  registrationDeadline: Date;
-  advancePaymentDeadline: Date;
-  earlyBirdDeadline: Date;
+  tripDates?: string;
+  registrationDeadline?: Date | string;
+  advancePaymentDeadline?: Date | string;
+  earlyBirdDeadline?: Date | string;
 
   // Discounts
   discounts?: {
@@ -75,7 +76,7 @@ export interface Flagship {
     };
   };
 
-  selectedBank: string;
+  selectedBank?: string;
 }
 
 export interface BaseFlagShip {
@@ -139,6 +140,7 @@ export interface FlagshipDiscounts {
 }
 
 export interface IUpdateFlagship {
+  contentVersion?: string;
   // Pricing fields
   basePrice?: string;
   locations?: {

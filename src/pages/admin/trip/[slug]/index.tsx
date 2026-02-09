@@ -68,7 +68,7 @@ export default function Dashboard() {
       const res: any = await flagshipAction.update(flagship._id, {
         visibility: nextVisibility,
         silentUpdate: true,
-        updatedAt: flagship?.updatedAt,
+        contentVersion: flagship?.contentVersion,
       });
       const updatedFlagship = res?.data || { ...flagship, visibility: nextVisibility };
       setFlagship(updatedFlagship);

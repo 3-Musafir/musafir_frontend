@@ -28,20 +28,19 @@ import useFlagshipHook from '@/hooks/useFlagshipHandler';
 import { HttpStatusCode } from 'axios';
 import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
-import { currentFlagship } from '@/store';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { ensureSilentUpdate, getUpdatedAtToken } from '@/lib/flagshipWizard';
+import { ensureSilentUpdate, getContentVersionToken } from '@/lib/flagshipWizard';
+import { Flagship } from '@/interfaces/flagship';
+import { loadDraft, saveDraft } from '@/lib/flagship-draft';
 
 function ContentPage() {
   const activeStep = 1;
   const router = useRouter();
   const action = useFlagshipHook();
-  const flagshipData = useRecoilValue(currentFlagship);
-  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [flagshipData, setFlagshipData] = useState<Flagship>({} as Flagship);
   const [editId, setEditId] = useState<string | null | undefined>(undefined);
   const isEditMode = Boolean(editId);
   const [files, setFiles] = useState<File[]>([]);
@@ -92,11 +91,19 @@ function ContentPage() {
   }, []);
 
   useEffect(() => {
+    if (editId === undefined) return;
+    if (!editId) {
+      const draft = loadDraft<Flagship>('create');
+      if (draft) {
+        setFlagshipData(draft);
+      }
+      return;
+    }
     const loadFlagship = async () => {
-      if (!editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
-        setCurrentFlagship(data);
+        setFlagshipData(data);
+        saveDraft('edit', editId, data);
       } catch (error) {
         console.error('Failed to load flagship for edit:', error);
         showAlert(mapErrorToUserMessage(error), 'error');
@@ -104,7 +111,7 @@ function ContentPage() {
       }
     };
     loadFlagship();
-  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+  }, [editId, router]);
 
   useEffect(() => {
     if (editId === undefined) return;
@@ -226,12 +233,16 @@ function ContentPage() {
 
     try {
       const flagshipId = flagshipData?._id;
+      if (!flagshipId) {
+        showAlert('Create a Flagship first', 'error');
+        return;
+      }
       const formData = new FormData();
       formData.append('travelPlan', travelPlanEditor?.getHTML() || '');
       formData.append('tocs', tocsEditor?.getHTML() || '');
-      const updatedAtToken = getUpdatedAtToken(flagshipData);
-      if (updatedAtToken) {
-        formData.append('updatedAt', updatedAtToken);
+      const contentVersionToken = getContentVersionToken(flagshipData);
+      if (contentVersionToken) {
+        formData.append('contentVersion', contentVersionToken);
       }
       ensureSilentUpdate(formData);
       files.forEach((file, index) => {
@@ -250,6 +261,10 @@ function ContentPage() {
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Content Added!', 'success');
+        if (res?.data) {
+          setFlagshipData(res.data);
+          saveDraft(editId ? 'edit' : 'create', editId ?? null, res.data);
+        }
         router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.PRICING, editId));
       }
     } catch (error: any) {

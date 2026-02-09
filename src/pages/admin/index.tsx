@@ -31,6 +31,7 @@ import { signOut } from "next-auth/react";
 import { useRecoilValue, useResetRecoilState } from "recoil";
 import { currentUser } from "@/store/signup";
 import { currentFlagship } from "@/store";
+import { clearDraft } from "@/lib/flagship-draft";
 
 function AdminMainPage() {
   const router = useRouter();
@@ -396,6 +397,7 @@ function AdminMainPage() {
                 onClick={() => {
                   setLoadingCreateFlagship(true);
                   resetCurrentFlagship();
+                  clearDraft("create");
                   router.push("/flagship/create");
                 }}
                 disabled={loadingCreateFlagship}

@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
 import { Flagship } from '@/interfaces/flagship';
-import { currentFlagship } from '@/store';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { HttpStatusCode } from 'axios';
 import { showAlert } from '@/pages/alert';
 import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
@@ -13,14 +11,14 @@ import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import ProgressBar from '@/components/progressBar';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { ensureSilentUpdate, getUpdatedAtToken } from '@/lib/flagshipWizard';
+import { ensureSilentUpdate, getContentVersionToken } from '@/lib/flagshipWizard';
+import { loadDraft, saveDraft } from '@/lib/flagship-draft';
 
 function ImportantDates() {
   const activeStep = 4;
   const router = useRouter();
   const action = useFlagshipHook();
-  const flagshipData: Flagship = useRecoilValue(currentFlagship);
-  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [flagshipData, setFlagshipData] = useState<Flagship>({} as Flagship);
   const [editId, setEditId] = useState<string | null | undefined>(undefined);
   const isEditMode = Boolean(editId);
   // Date states
@@ -49,11 +47,19 @@ function ImportantDates() {
   }, []);
 
   useEffect(() => {
+    if (editId === undefined) return;
+    if (!editId) {
+      const draft = loadDraft<Flagship>('create');
+      if (draft) {
+        setFlagshipData(draft);
+      }
+      return;
+    }
     const loadFlagship = async () => {
-      if (!editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
-        setCurrentFlagship(data);
+        setFlagshipData(data);
+        saveDraft('edit', editId, data);
       } catch (error) {
         console.error('Failed to load flagship for edit:', error);
         showAlert(mapErrorToUserMessage(error), 'error');
@@ -61,7 +67,7 @@ function ImportantDates() {
       }
     };
     loadFlagship();
-  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+  }, [editId, router]);
 
   useEffect(() => {
     if (editId === undefined) return;
@@ -152,7 +158,7 @@ function ImportantDates() {
       registrationDeadline: new Date(registrationDeadline),
       advancePaymentDeadline: new Date(advancePaymentDeadline),
       earlyBirdDeadline: new Date(earlyBirdDeadline),
-      updatedAt: getUpdatedAtToken(flagshipData),
+      contentVersion: getContentVersionToken(flagshipData),
     };
     ensureSilentUpdate(formData);
 
@@ -162,6 +168,10 @@ function ImportantDates() {
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Dates Added!', 'success');
+        if (res?.data) {
+          setFlagshipData(res.data);
+          saveDraft(editId ? 'edit' : 'create', editId ?? null, res.data);
+        }
         router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.DISCOUNTS, editId));
       }
     } catch (error) {

@@ -6,19 +6,17 @@ import { FLAGSHIP_STATUS, ROLES, ROUTES_CONSTANTS } from '@/config/constants';
 import { showAlert } from '@/pages/alert';
 import { useRouter } from 'next/router';
 import { Flagship } from '@/interfaces/flagship';
-import { currentFlagship } from '@/store';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
 import { HttpStatusCode } from 'axios';
 import withAuth from '@/hoc/withAuth';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch } from '@/lib/flagship-edit';
-import { getUpdatedAtToken } from '@/lib/flagshipWizard';
+import { getContentVersionToken } from '@/lib/flagshipWizard';
+import { clearDraft, loadDraft, saveDraft } from '@/lib/flagship-draft';
 
 function SuccessPage() {
-  const [flagshipData, setFlagshipData] = useRecoilState(currentFlagship);
-  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [flagshipData, setFlagshipData] = useState<Flagship>({} as Flagship);
   const router = useRouter();
   const action = useFlagshipHook();
   const [isPublic, setIsPublic] = useState(false);
@@ -37,11 +35,19 @@ function SuccessPage() {
   }, []);
 
   useEffect(() => {
+    if (editId === undefined) return;
+    if (!editId) {
+      const draft = loadDraft<Flagship>('create');
+      if (draft) {
+        setFlagshipData(draft);
+      }
+      return;
+    }
     const loadFlagship = async () => {
-      if (!editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
-        setCurrentFlagship(data);
+        setFlagshipData(data);
+        saveDraft('edit', editId, data);
       } catch (error) {
         console.error('Failed to load flagship for edit:', error);
         showAlert(mapErrorToUserMessage(error), 'error');
@@ -49,7 +55,7 @@ function SuccessPage() {
       }
     };
     loadFlagship();
-  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+  }, [editId, router]);
 
   useEffect(() => {
     if (editId === undefined) return;
@@ -74,12 +80,16 @@ function SuccessPage() {
       const formData = {
         status: FLAGSHIP_STATUS.PUBLISHED,
         publish: fStatus,
-        updatedAt: getUpdatedAtToken(flagshipData),
+        contentVersion: getContentVersionToken(flagshipData),
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Flagship is Live', 'success');
+        if (res?.data) {
+          setFlagshipData(res.data);
+          saveDraft(editId ? 'edit' : 'create', editId ?? null, res.data);
+        }
       }
       setToggleError('');
     } catch (error) {
@@ -107,7 +117,8 @@ function SuccessPage() {
   };
 
   const handleHome = async () => {
-    setFlagshipData({});
+    setFlagshipData({} as Flagship);
+    clearDraft(editId ? 'edit' : 'create', editId ?? null);
     router.push(ROUTES_CONSTANTS.ADMIN_DASHBOARD);
   };
 

@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import { Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useFlagshipHook from "@/hooks/useFlagshipHandler";
-import { currentFlagship } from "@/store";
 import { Flagship } from "@/interfaces/flagship";
-import { useRecoilValue, useSetRecoilState } from "recoil";
 import { ROLES, ROUTES_CONSTANTS, steps } from "@/config/constants";
 import { showAlert } from "@/pages/alert";
 import { HttpStatusCode } from "axios";
@@ -15,14 +13,14 @@ import ProgressBar from "@/components/progressBar";
 import { mapErrorToUserMessage } from "@/utils/errorMessages";
 import { FlagshipService } from "@/services/flagshipService";
 import { getEditIdFromSearch, withEditId } from "@/lib/flagship-edit";
-import { ensureSilentUpdate, getUpdatedAtToken } from "@/lib/flagshipWizard";
+import { ensureSilentUpdate, getContentVersionToken } from "@/lib/flagshipWizard";
+import { loadDraft, saveDraft } from "@/lib/flagship-draft";
 
 function DiscountsPage() {
   const activeStep = 5;
   const router = useRouter();
   const action = useFlagshipHook();
-  const flagshipData: Flagship = useRecoilValue(currentFlagship);
-  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [flagshipData, setFlagshipData] = useState<Flagship>({} as Flagship);
   const [editId, setEditId] = useState<string | null | undefined>(undefined);
   const isEditMode = Boolean(editId);
   // Total values
@@ -71,11 +69,19 @@ function DiscountsPage() {
   }, []);
 
   useEffect(() => {
+    if (editId === undefined) return;
+    if (!editId) {
+      const draft = loadDraft<Flagship>("create");
+      if (draft) {
+        setFlagshipData(draft);
+      }
+      return;
+    }
     const loadFlagship = async () => {
-      if (!editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
-        setCurrentFlagship(data);
+        setFlagshipData(data);
+        saveDraft("edit", editId, data);
       } catch (error) {
         console.error("Failed to load flagship for edit:", error);
         showAlert(mapErrorToUserMessage(error), "error");
@@ -83,7 +89,7 @@ function DiscountsPage() {
       }
     };
     loadFlagship();
-  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+  }, [editId, router]);
 
   useEffect(() => {
     if (editId === undefined) return;
@@ -256,7 +262,7 @@ function DiscountsPage() {
             }
           : undefined,
       },
-      updatedAt: getUpdatedAtToken(flagshipData),
+      contentVersion: getContentVersionToken(flagshipData),
     };
     ensureSilentUpdate(formData);
     try {
@@ -265,6 +271,10 @@ function DiscountsPage() {
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert("Discounts Added!", "success");
+        if (res?.data) {
+          setFlagshipData(res.data);
+          saveDraft(editId ? "edit" : "create", editId ?? null, res.data);
+        }
         router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.PAYMENT, editId));
       }
     } catch (error) {

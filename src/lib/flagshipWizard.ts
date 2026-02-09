@@ -13,11 +13,11 @@ export const ensureSilentUpdate = (payload?: SilentablePayload) => {
   }
 };
 
-
-export const getUpdatedAtToken = (source?: { updatedAt?: string | Date } | null): string | undefined => {
-  const value = source?.updatedAt;
-  if (!value) return undefined;
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) return undefined;
-  return date.toISOString();
+export const getContentVersionToken = (
+  source?: { contentVersion?: string | null } | null,
+): string | undefined => {
+  const value = source?.contentVersion;
+  if (!value || typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : undefined;
 };

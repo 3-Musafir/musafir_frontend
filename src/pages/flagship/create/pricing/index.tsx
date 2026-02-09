@@ -5,8 +5,6 @@ import { useEffect, useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { currentFlagship } from '@/store';
 import { HttpStatusCode } from 'axios';
 import { showAlert } from '@/pages/alert';
 import { ROLES, ROUTES_CONSTANTS, steps, CITIES } from '@/config/constants';
@@ -15,14 +13,15 @@ import ProgressBar from '@/components/progressBar';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { ensureSilentUpdate, getUpdatedAtToken } from '@/lib/flagshipWizard';
+import { ensureSilentUpdate, getContentVersionToken } from '@/lib/flagshipWizard';
+import { Flagship } from '@/interfaces/flagship';
+import { loadDraft, saveDraft } from '@/lib/flagship-draft';
 
 function PricingPage() {
   const activeStep = 2;
   const router = useRouter();
   const action = useFlagshipHook();
-  const flagshipData = useRecoilValue(currentFlagship);
-  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [flagshipData, setFlagshipData] = useState<Flagship>({} as Flagship);
   const [editId, setEditId] = useState<string | null | undefined>(undefined);
   const isEditMode = Boolean(editId);
   // Base price state
@@ -75,11 +74,19 @@ function PricingPage() {
   }, []);
 
   useEffect(() => {
+    if (editId === undefined) return;
+    if (!editId) {
+      const draft = loadDraft<Flagship>('create');
+      if (draft) {
+        setFlagshipData(draft);
+      }
+      return;
+    }
     const loadFlagship = async () => {
-      if (!editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
-        setCurrentFlagship(data);
+        setFlagshipData(data);
+        saveDraft('edit', editId, data);
       } catch (error) {
         console.error('Failed to load flagship for edit:', error);
         showAlert(mapErrorToUserMessage(error), 'error');
@@ -87,7 +94,7 @@ function PricingPage() {
       }
     };
     loadFlagship();
-  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+  }, [editId, router]);
 
   useEffect(() => {
     if (editId === undefined) return;
@@ -115,37 +122,38 @@ function PricingPage() {
   // useEffect to update state on page load if flagshipData is available
   useEffect(() => {
     if (flagshipData) {
-      if (flagshipData?.locations?.length !== 0) {
-        setLocations(
-          flagshipData?.locations?.map(
-            (loc: { name: any; enabled: any; price: any }, i: number) => ({
-              id: i + 1,
-              name: loc.name,
-              enabled: loc.enabled,
-              price: loc.price,
-            })
-          )
+      if (flagshipData?.locations?.length) {
+        const mapped = flagshipData.locations.map(
+          (loc: { name: any; enabled: any; price: any }, i: number) => ({
+            id: i + 1,
+            name: loc.name,
+            enabled: loc.enabled,
+            price: loc.price,
+          })
         );
+        setLocations(mapped);
       }
-      if (flagshipData?.tiers?.length !== 0) {
-        setTiers(
-          flagshipData?.tiers?.map((tier: { name: any; price: any }, i: number) => ({
+      if (flagshipData?.tiers?.length) {
+        const mappedTiers = flagshipData.tiers.map(
+          (tier: { name: any; price: any }, i: number) => ({
             id: i + 1,
             name: tier.name,
             price: tier.price,
-          }))
+          })
         );
+        setTiers(mappedTiers);
       } else {
         setTierEnabled(false);
       }
-      if (flagshipData?.mattressTiers?.length !== 0) {
-        setMattressTiers(
-          flagshipData?.mattressTiers?.map((mt: { name: any; price: any }, i: number) => ({
+      if (flagshipData?.mattressTiers?.length) {
+        const mappedMattressTiers = flagshipData.mattressTiers.map(
+          (mt: { name: any; price: any }, i: number) => ({
             id: i + 1,
             name: mt.name,
             price: mt.price,
-          }))
+          })
         );
+        setMattressTiers(mappedMattressTiers);
       } else {
         setMattressTierEnabled(false);
       }
@@ -254,16 +262,24 @@ function PricingPage() {
       mattressTiers: mattressTierEnabled ? mattressTiers.map(({ id, ...rest }) => rest) : [],
       roomSharingPreference: roomSharingEnabled ? roomSharingPreference.map(({ id, ...rest }) => rest) : [],
       earlyBirdPrice: earlyBirdPrice ? Number(earlyBirdPrice) : undefined,
-      updatedAt: getUpdatedAtToken(flagshipData),
+      contentVersion: getContentVersionToken(flagshipData),
     };
     ensureSilentUpdate(formData);
     try {
       const flagshipId = flagshipData?._id;
+      if (!flagshipId) {
+        showAlert('Create a Flagship first', 'error');
+        return;
+      }
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         setIsSubmitted(true);
         setIsDirty(false);
         showAlert('Pricing Added!', 'success');
+        if (res?.data) {
+          setFlagshipData(res.data);
+          saveDraft(editId ? 'edit' : 'create', editId ?? null, res.data);
+        }
         router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.SEATS, editId));
       }
     } catch (error) {

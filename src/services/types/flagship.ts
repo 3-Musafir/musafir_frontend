@@ -29,6 +29,7 @@ export interface IFlagship {
   publish: boolean;
   createdAt: string;
   updatedAt: string;
+  contentVersion?: string;
   id: string;
 }
 

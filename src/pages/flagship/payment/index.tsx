@@ -7,23 +7,21 @@ import { useRouter } from 'next/navigation';
 import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
 import { Flagship } from '@/interfaces/flagship';
 import { showAlert } from '@/pages/alert';
-import { currentFlagship } from '@/store';
 import { HttpStatusCode } from 'axios';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 import useFlagshipHook from '@/hooks/useFlagshipHandler';
 import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { getUpdatedAtToken } from '@/lib/flagshipWizard';
+import { getContentVersionToken } from '@/lib/flagshipWizard';
+import { loadDraft, saveDraft } from '@/lib/flagship-draft';
 
 function PaymentOptions() {
   const activeStep = 6;
   const router = useRouter();
   const action = useFlagshipHook();
-  const flagshipData: Flagship = useRecoilValue(currentFlagship);
-  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [flagshipData, setFlagshipData] = useState<Flagship>({} as Flagship);
   const [editId, setEditId] = useState<string | null | undefined>(undefined);
   const isEditMode = Boolean(editId);
   // Selected bank and expanded states
@@ -70,11 +68,19 @@ function PaymentOptions() {
   }, []);
 
   useEffect(() => {
+    if (editId === undefined) return;
+    if (!editId) {
+      const draft = loadDraft<Flagship>('create');
+      if (draft) {
+        setFlagshipData(draft);
+      }
+      return;
+    }
     const loadFlagship = async () => {
-      if (!editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
-        setCurrentFlagship(data);
+        setFlagshipData(data);
+        saveDraft('edit', editId, data);
       } catch (error) {
         console.error('Failed to load flagship for edit:', error);
         showAlert(mapErrorToUserMessage(error), 'error');
@@ -82,7 +88,7 @@ function PaymentOptions() {
       }
     };
     loadFlagship();
-  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+  }, [editId, router]);
 
   useEffect(() => {
     if (editId === undefined) return;
@@ -113,7 +119,7 @@ function PaymentOptions() {
     // Build payload (if additional data is required, add here)
     const formData = {
       selectedBank,
-      updatedAt: getUpdatedAtToken(flagshipData),
+      contentVersion: getContentVersionToken(flagshipData),
       silentUpdate: isEditMode ? true : undefined,
     };
     console.log(formData, 'payload');
@@ -124,6 +130,10 @@ function PaymentOptions() {
       const res: any = await action.update(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Bank Selected!', 'success');
+        if (res?.data) {
+          setFlagshipData(res.data);
+          saveDraft(editId ? 'edit' : 'create', editId ?? null, res.data);
+        }
         router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.SUCCESS, editId));
       }
     } catch (error) {

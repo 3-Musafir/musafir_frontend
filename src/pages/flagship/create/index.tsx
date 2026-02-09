@@ -9,19 +9,18 @@ import { DESTINATIONS, ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants
 import withAuth from '@/hoc/withAuth';
 import { HttpStatusCode } from 'axios';
 import ProgressBar from '@/components/progressBar';
-import { currentFlagship } from '@/store';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { ensureSilentUpdate, getUpdatedAtToken } from '@/lib/flagshipWizard';
+import { ensureSilentUpdate, getContentVersionToken } from '@/lib/flagshipWizard';
+import { Flagship } from '@/interfaces/flagship';
+import { getLastDraftMode, loadDraft, saveDraft, setLastDraftMode, clearDraft } from '@/lib/flagship-draft';
 
 function CreateFlagship() {
   const activeStep = 0;
   const router = useRouter();
   const action = useFlagshipHook();
-  const flagshipData = useRecoilValue(currentFlagship);
-  const setCurrentFlagship = useSetRecoilState(currentFlagship);
+  const [flagshipData, setFlagshipData] = useState<Flagship>({} as Flagship);
   const [editId, setEditId] = useState<string | null>(null);
   const isEditMode = Boolean(editId);
   // Basic fields state
@@ -49,11 +48,24 @@ function CreateFlagship() {
   }, []);
 
   useEffect(() => {
+    if (editId === undefined) return;
+    if (!editId) {
+      if (getLastDraftMode() === 'edit') {
+        clearDraft('create');
+      }
+      setLastDraftMode('create');
+      const draft = loadDraft<Flagship>('create');
+      if (draft) {
+        setFlagshipData(draft);
+      }
+      return;
+    }
+    setLastDraftMode('edit');
     const loadFlagship = async () => {
-      if (!editId) return;
       try {
         const data = await FlagshipService.getFlagshipByID(editId);
-        setCurrentFlagship(data);
+        setFlagshipData(data);
+        saveDraft('edit', editId, data);
       } catch (error) {
         console.error('Failed to load flagship for edit:', error);
         showAlert(mapErrorToUserMessage(error), 'error');
@@ -61,7 +73,7 @@ function CreateFlagship() {
       }
     };
     loadFlagship();
-  }, [editId, flagshipData?._id, router, setCurrentFlagship]);
+  }, [editId, router]);
 
   // useEffect to update state on page load if flagshipData is available
   useEffect(() => {
@@ -153,17 +165,25 @@ function CreateFlagship() {
       if (isEditMode && editId) {
         const updatePayload = {
           ...payload,
-          updatedAt: getUpdatedAtToken(flagshipData),
+          contentVersion: getContentVersionToken(flagshipData),
         };
         ensureSilentUpdate(updatePayload);
         const res: any = await action.update(editId, updatePayload);
         if (res.statusCode === HttpStatusCode.Ok) {
+          if (res?.data) {
+            setFlagshipData(res.data);
+            saveDraft('edit', editId, res.data);
+          }
           router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.CONTENT, editId));
         }
       } else {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const res: any = await action.create(payload);
         if (res.statusCode === HttpStatusCode.Created) {
+          if (res?.data) {
+            setFlagshipData(res.data);
+            saveDraft('create', null, res.data);
+          }
           router.push(ROUTES_CONSTANTS.FLAGSHIP.CONTENT);
         }
       }
