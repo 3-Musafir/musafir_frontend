@@ -68,9 +68,19 @@ function SuccessPage() {
   }, [flagshipData?._id, flagshipData?.startDate, isEditMode]);
 
   useEffect(() => {
-    if (flagshipData?._id) {
-      setShareLink(`3Mapp.playstore/${flagshipData._id}`);
+    if (!flagshipData?._id) {
+      setShareLink('');
+      return;
     }
+    const base =
+      (process.env.NEXT_PUBLIC_AUTH_URL &&
+        process.env.NEXT_PUBLIC_AUTH_URL.trim().length > 0 &&
+        process.env.NEXT_PUBLIC_AUTH_URL) ||
+      (typeof window !== 'undefined' ? window.location.origin : '');
+    const path = `/flagship/flagship-requirement?id=${encodeURIComponent(
+      flagshipData._id,
+    )}`;
+    setShareLink(base ? `${base}${path}` : path);
   }, [flagshipData?._id]);
 
   // API call to update public status
@@ -107,12 +117,29 @@ function SuccessPage() {
 
   // Copy to clipboard
   const copyToClipboard = async () => {
+    if (!shareLink) {
+      showAlert('Share link is not ready yet.', 'error');
+      return;
+    }
     try {
-      await navigator.clipboard.writeText(shareLink);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareLink);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = shareLink;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+      showAlert('Unable to copy link', 'error');
     }
   };
 
@@ -147,9 +174,9 @@ function SuccessPage() {
               <div className='flex-1 font-medium truncate'>{shareLink}</div>
               <button
                 onClick={copyToClipboard}
-                className={`font-bold flex items-center gap-2 ${!isPublic ? 'text-gray-500' : 'text-brand-primary'
+                className={`font-bold flex items-center gap-2 ${!shareLink ? 'text-gray-500' : 'text-brand-primary'
                   }`}
-                disabled={!isPublic}
+                disabled={!shareLink}
               >
                 <Copy className='w-4 h-4' />
                 {copied ? 'Copied!' : 'Copy'}
