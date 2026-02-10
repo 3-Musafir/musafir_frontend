@@ -63,7 +63,7 @@ export default function Explore() {
     <div className="min-h-screen w-full bg-gray-50">
       <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
         <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
-          <CompanyProfileHero companyProfile={companyProfile} loading={profileLoading} titleAs="h2" />
+          <CompanyProfileHero companyProfile={companyProfile} loading={profileLoading} />
           <section
             id="community-led"
             className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 lg:p-10 shadow-sm"
