@@ -41,6 +41,52 @@ export default function Explore() {
             </div>
           </section>
 
+          <section className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-2">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Travel with clarity</p>
+                <h2 className="text-xl font-semibold text-heading">Learn how we verify travelers and partners</h2>
+                <p className="text-sm text-text leading-relaxed">
+                  Explore the Trust & Safety Hub to see how verification, vendor onboarding, and travel education work together.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/trust"
+                  className="rounded-full border border-brand-primary px-4 py-2 text-sm font-semibold text-brand-primary hover:bg-brand-primary/10 transition"
+                >
+                  Trust & Safety Hub
+                </Link>
+                <Link
+                  href="/about-3musafir"
+                  className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-heading hover:border-brand-primary transition"
+                >
+                  About 3Musafir
+                </Link>
+              </div>
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-3 text-sm">
+              <Link
+                href="/trust/verification"
+                className="rounded-xl border border-gray-200 px-4 py-3 text-heading hover:border-brand-primary transition"
+              >
+                Verification
+              </Link>
+              <Link
+                href="/trust/vendor-onboarding"
+                className="rounded-xl border border-gray-200 px-4 py-3 text-heading hover:border-brand-primary transition"
+              >
+                Vendor onboarding
+              </Link>
+              <Link
+                href="/trust/travel-education"
+                className="rounded-xl border border-gray-200 px-4 py-3 text-heading hover:border-brand-primary transition"
+              >
+                Travel education
+              </Link>
+            </div>
+          </section>
+
           <section className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:flex-wrap md:gap-3 no-scrollbar snap-x snap-mandatory">
             <Link
               href="#how-it-works"

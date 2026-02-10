@@ -10,7 +10,6 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { showAlert } from '../alert';
-import TrustLinks from '@/components/seo/TrustLinks';
 import api from '@/lib/api';
 import apiEndpoints from '@/config/apiEndpoints';
 import { getErrorCode, mapErrorToUserMessage } from '@/utils/errorMessages';
@@ -552,7 +551,6 @@ function FlagshipRequirements() {
               @{flagship.destination}
             </p>
           )}
-          <TrustLinks className="mb-6" />
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* City */}
