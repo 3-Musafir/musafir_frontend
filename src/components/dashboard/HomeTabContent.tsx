@@ -31,9 +31,13 @@ export default function HomeTabContent() {
   });
 
   return (
-    <main className="flex-1 overflow-y-auto px-4 py-4 md:px-6 lg:px-8 xl:px-10 bg-gray-50 space-y-6 lg:space-y-8">
+    <main className="flex-1 overflow-visible px-4 py-4 md:px-6 lg:px-8 xl:px-10 bg-gray-50 space-y-6 lg:space-y-8">
       {/* Hero Section */}
-      <CompanyProfileHero companyProfile={companyProfile} loading={profileLoading} />
+      <CompanyProfileHero
+        companyProfile={companyProfile}
+        loading={profileLoading}
+        className="mt-4 mb-10"
+      />
 
       {/* Actionable Registrations */}
       {actionableRegistrations.length > 0 && (

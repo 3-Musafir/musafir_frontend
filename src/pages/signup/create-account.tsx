@@ -73,7 +73,7 @@ export default function CreateAccount() {
     <div className="min-h-screen w-full bg-gray-50 p-0">
       <div className="bg-white w-full max-w-md mx-auto rounded-lg shadow-sm h-screen p-3">
         {/* Header */}
-        <header className="flex items-center p-4 border-b">
+        <header className="flex items-center px-4 py-2 border-b">
           <Link href="/" className="p-2 hover:bg-gray-100 rounded-full">
             <ArrowLeft className="h-5 w-5" />
           </Link>

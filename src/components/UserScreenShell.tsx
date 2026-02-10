@@ -20,6 +20,8 @@ export default function UserScreenShell({ children }: UserScreenShellProps) {
   const shouldHideAuthCta = hideAuthCtaPaths.some((path) => rawPath.startsWith(path));
   const isFullBleed = fullBleedPaths.includes(rawPath);
   const shouldShowFooter = !isLoggedIn && rawPath !== "/login";
+  const shouldShowPublicHeader =
+    rawPath !== "/login" && !rawPath.startsWith("/signup");
 
   return (
     <div className="min-h-screen w-full bg-gray-50">
@@ -28,7 +30,7 @@ export default function UserScreenShell({ children }: UserScreenShellProps) {
         Content uses responsive padding (px-4 md:px-6 lg:px-8 xl:px-10) for breathing room.
         No max-width constraint - content fills the available space.
       */}
-      <PublicHeader hideAuthCta={shouldHideAuthCta} />
+      {shouldShowPublicHeader ? <PublicHeader hideAuthCta={shouldHideAuthCta} /> : null}
       <div className={`min-h-screen w-full ${isFullBleed ? "pt-0" : "pt-4 md:pt-6"}`}>
         {children}
         {shouldShowFooter ? <Footer /> : null}
