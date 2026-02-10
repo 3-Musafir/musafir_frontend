@@ -198,7 +198,7 @@ export default function FounderPortfolioPage() {
               <div className="max-w-2xl space-y-4">
                 <p className="text-xs uppercase tracking-[0.2em] text-text">Founder Portfolio</p>
                 <h1 className="text-3xl font-semibold text-heading md:text-4xl">
-                  Founder Portfolio
+                  Our Story & Vision
                 </h1>
                 <p className="text-sm text-text leading-relaxed md:text-base">
                   Biography, vision, and impact - powered by community and traveltech.

@@ -325,13 +325,19 @@ export default function Explore() {
                         'See how 3Musafir designs safety systems and accountability for group travel in Pakistan.',
                       href: '/trust',
                     },
-                    {
-                      title: 'Why 3Musafir exists',
-                      description:
-                        'Learn about the purpose, values, and long-term vision behind building a more human way to travel together.',
-                      href: '/about-3musafir',
-                    },
-                  ].map((item) => (
+                  {
+                    title: 'Why 3Musafir exists',
+                    description:
+                      'Learn about the purpose, values, and long-term vision behind building a more human way to travel together.',
+                    href: '/about-3musafir',
+                  },
+                  {
+                    title: 'Founder portfolio',
+                    description:
+                      'A closer look at the founder’s journey, work, and the thinking behind 3Musafir.',
+                    href: '/founderportfolio',
+                  },
+                ].map((item) => (
                     <details
                       key={item.title}
                       className="group rounded-2xl border border-gray-200/70 bg-white/70 text-text/90 transition hover:border-brand-primary/70"

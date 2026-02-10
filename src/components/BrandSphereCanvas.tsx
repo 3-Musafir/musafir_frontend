@@ -25,7 +25,11 @@ function SphereCore({
   const groupRef = useRef<THREE.Group>(null);
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
-  const shaderRef = useRef<THREE.Shader | null>(null);
+  const shaderRef = useRef<{
+    uniforms: Record<string, { value: unknown }>;
+    vertexShader: string;
+    fragmentShader: string;
+  } | null>(null);
   const startRef = useRef<number | null>(null);
   const doneRef = useRef(false);
   const timeRef = useRef(0);
