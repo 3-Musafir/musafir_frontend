@@ -2,7 +2,6 @@
 import Head from "next/head";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
 import { PaymentService } from "@/services/paymentService";
@@ -60,7 +59,12 @@ export default function TripPayment() {
   const [paymentType, setPaymentType] = useState<"full" | "partial">("full");
   const [partialAmount, setPartialAmount] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [discountAmount, setDiscountAmount] = useState<number>(0);
+  const [eligibleDiscounts, setEligibleDiscounts] = useState<any>(null);
+  const [selectedDiscountType, setSelectedDiscountType] = useState<
+    "soloFemale" | "group" | "musafir" | null
+  >(null);
+  const [selectedDiscountAmount, setSelectedDiscountAmount] = useState<number>(0);
+  const [authRequired, setAuthRequired] = useState(false);
   const [walletSummary, setWalletSummary] = useState<any>(null);
   const [walletToUse, setWalletToUse] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -79,8 +83,9 @@ export default function TripPayment() {
       ? registration.paymentId.status
       : undefined;
 
-  const discountRemaining = Math.max(0, discountAmount - discountApplied);
-  const finalAmount = Math.max(0, amountDue - discountRemaining);
+  const pendingDiscount = discountApplied > 0 ? 0 : selectedDiscountAmount;
+  const discountRemaining = Math.max(0, pendingDiscount);
+  const finalAmount = Math.max(0, amountDue - pendingDiscount);
   const paymentPendingApproval = paymentStatus === "pendingApproval";
   const noPaymentDue = finalAmount <= 0;
   const walletBalance =
@@ -99,6 +104,14 @@ export default function TripPayment() {
     (requiresScreenshot && !file) ||
     (paymentType === "partial" && cashToPayNow <= 0 && effectiveWalletToUse <= 0) ||
     (paymentType === "partial" && effectiveWalletToUse + cashToPayNow > finalAmount);
+
+  const discountOptions = [
+    { key: "soloFemale", label: "Solo Female Discount", data: eligibleDiscounts?.soloFemale },
+    { key: "group", label: "Group Discount", data: eligibleDiscounts?.group },
+    { key: "musafir", label: "Musafir Discount", data: eligibleDiscounts?.musafir },
+  ] as const;
+  const hasEligibleDiscounts = discountOptions.some((option) => option.data?.eligible);
+  const discountSelectionLocked = discountApplied > 0;
 
   const handleCopy = async (text: string) => {
     try {
@@ -165,24 +178,41 @@ export default function TripPayment() {
     }
   }, [registrationId]);
 
-  // Calculate discount when registration is loaded
   useEffect(() => {
-    if (registration?.user?._id) {
-      // Calculate discount based on user's past trips
-      calculateUserDiscount(registration.user._id);
-    }
-  }, [registration]);
+    const loadEligibleDiscounts = async () => {
+      if (!registrationId) return;
+      try {
+        const res = await PaymentService.getEligibleDiscounts(registrationId);
+        const data = (res as any)?.data ?? res;
+        if (data) {
+          setEligibleDiscounts(data);
+          setAuthRequired(false);
+        }
+        if (registration?.discountType && registration?.discountApplied > 0) {
+          setSelectedDiscountType(registration.discountType);
+          setSelectedDiscountAmount(registration.discountApplied);
+        }
+      } catch (error: any) {
+        const status = error?.response?.status;
+        if (status === 401 && typeof window !== "undefined") {
+          const returnTo = `/musafir/payment/${registrationId}`;
+          localStorage.setItem("returnTo", returnTo);
+          router.push(`/login?callbackUrl=${encodeURIComponent(returnTo)}`);
+          setAuthRequired(true);
+          return;
+        }
+        console.error("Failed to load eligible discounts:", error);
+      }
+    };
+    loadEligibleDiscounts();
+  }, [registrationId, registration?.discountType, registration?.discountApplied]);
 
-  // Function to calculate discount based on user's past trips
-  const calculateUserDiscount = async (userId: string) => {
-    try {
-      // Get user discount by registration ID
-      const discount = await PaymentService.getUserDiscountByRegistration(registrationId);
-      setDiscountAmount(discount);
-    } catch (error) {
-      console.error('Error calculating discount:', error);
-      setDiscountAmount(0);
-    }
+  const handleSelectDiscount = (type: "soloFemale" | "group" | "musafir") => {
+    if (!eligibleDiscounts) return;
+    const selected = (eligibleDiscounts as any)?.[type];
+    if (!selected?.eligible) return;
+    setSelectedDiscountType(type);
+    setSelectedDiscountAmount(Number(selected.amount) || 0);
   };
 
   const handleSubmit = async () => {
@@ -263,6 +293,10 @@ export default function TripPayment() {
         cashAmount > 0 ? bankDetails[selectedBank]?.id : undefined;
       const selectedBankLabel =
         cashAmount > 0 ? bankDetails[selectedBank]?.title : undefined;
+      const discountToUse =
+        discountApplied > 0 ? discountApplied : selectedDiscountAmount;
+      const discountTypeToUse =
+        discountApplied > 0 ? registration?.discountType : selectedDiscountType;
 
       if (cashAmount > 0 && !selectedBankAccountId && !selectedBankLabel) {
         toast({
@@ -279,7 +313,8 @@ export default function TripPayment() {
         bankAccountLabel: selectedBankLabel,
         paymentType: paymentType === "full" ? "fullPayment" : "partialPayment",
         amount: cashAmount,
-        discount: discountAmount,
+        discount: discountToUse,
+        discountType: discountTypeToUse ?? undefined,
         walletAmount: effectiveWalletToUse,
         walletUseId,
         screenshot: cashAmount > 0 ? file ?? undefined : undefined,
@@ -478,29 +513,78 @@ export default function TripPayment() {
 
           {/* Discount Section */}
           <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Discount Available:</span>
-                <span className="font-semibold text-brand-primary">
-                  Rs. {discountAmount.toLocaleString()}
-                </span>
-              </div>
-              {discountApplied > 0 && (
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Discount Applied:</span>
+                <span className="text-muted-foreground">Discounts</span>
+                {discountApplied > 0 ? (
                   <span className="font-semibold text-brand-primary">
-                    Rs. {discountApplied.toLocaleString()}
+                    Applied: Rs. {discountApplied.toLocaleString()}
                   </span>
+                ) : (
+                  <span className="text-muted-foreground text-sm">
+                    Select one discount
+                  </span>
+                )}
+              </div>
+
+              {!discountSelectionLocked && (
+                <div className="space-y-2">
+                  {authRequired && (
+                    <p className="text-sm text-amber-700">
+                      Login required to view eligible discounts.
+                    </p>
+                  )}
+                  {hasEligibleDiscounts ? (
+                    discountOptions.map((option) => {
+                      if (!option.data?.eligible) return null;
+                      return (
+                        <label
+                          key={option.key}
+                          className={`flex items-center justify-between rounded-md border p-3 cursor-pointer ${
+                            selectedDiscountType === option.key
+                              ? "border-brand-primary"
+                              : "border-border"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="discountType"
+                              checked={selectedDiscountType === option.key}
+                              onChange={() => handleSelectDiscount(option.key)}
+                              className="h-4 w-4 text-brand-primary focus:ring-brand-primary"
+                            />
+                            <span className="text-sm text-heading">{option.label}</span>
+                          </div>
+                          <span className="text-sm font-semibold text-brand-primary">
+                            Rs. {Number(option.data.amount || 0).toLocaleString()}
+                          </span>
+                        </label>
+                      );
+                    })
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No discounts available for this registration.
+                    </p>
+                  )}
                 </div>
               )}
+
+              {discountSelectionLocked && (
+                <div className="rounded-md bg-muted/40 p-3 text-sm text-muted-foreground">
+                  Discount applied and locked for this registration.
+                </div>
+              )}
+
               {discountRemaining > 0 && (
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Discount Remaining:</span>
+                  <span className="text-muted-foreground">Discount Applied:</span>
                   <span className="font-semibold text-brand-primary">
                     Rs. {discountRemaining.toLocaleString()}
                   </span>
                 </div>
               )}
+
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Amount to Pay Now:</span>
                 <span className="font-bold text-xl text-brand-primary-hover">

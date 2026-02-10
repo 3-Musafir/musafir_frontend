@@ -25,6 +25,8 @@ function FlagshipRequirements() {
   const [roomSharing, setRoomSharing] = useState<'default' | 'twin'>('default');
   const [groupMembers, setGroupMembers] = useState<string[]>([]);
   const [groupMemberInput, setGroupMemberInput] = useState('');
+  const [groupLinkStatus, setGroupLinkStatus] = useState<any>(null);
+  const [tripTypeLocked, setTripTypeLocked] = useState(false);
   const [partnerEmail, setPartnerEmail] = useState('');
   const [linkConflictEmails, setLinkConflictEmails] = useState<string[]>([]);
   const [groupDiscountInfo, setGroupDiscountInfo] = useState<RegistrationCreationResponse['groupDiscount'] | null>(null);
@@ -180,6 +182,18 @@ function FlagshipRequirements() {
       if (flagshipId) {
         await getFlagship(flagshipId);
         localStorage.setItem("flagshipId", JSON.stringify(flagshipId));
+        const pendingInvite = await registrationAction.getPendingGroupInvite(flagshipId);
+        if (pendingInvite) {
+          setTripType("group");
+          setTripTypeLocked(true);
+          setGroupLinkStatus(pendingInvite);
+          const inviteEmails =
+            (pendingInvite.linkedContacts || []).map((contact: any) => contact.email) ||
+            pendingInvite.groupMembers ||
+            [];
+          setGroupMembers(inviteEmails);
+          setGroupMemberInput("");
+        }
       } else {
         const flagshipId = JSON.parse(localStorage.getItem("flagshipId") || "{}");
         await getFlagship(flagshipId);
@@ -190,9 +204,11 @@ function FlagshipRequirements() {
         setTiers(registration.tier);
         setSleepPreference(registration.bedPreference);
         setRoomSharing(registration.roomSharing);
-        setTripType(registration.tripType);
         const storedGroupMembers = coerceEmailList(registration.groupMembers);
-        setGroupMembers(storedGroupMembers);
+        if (!isTripTypeLocked) {
+          setTripType(registration.tripType);
+          setGroupMembers(storedGroupMembers);
+        }
         if (registration.tripType === 'partner') {
           setPartnerEmail(storedGroupMembers[0] || '');
         } else {
@@ -231,6 +247,14 @@ function FlagshipRequirements() {
 
     fetchData();
   }, [searchParams]);
+
+  const hasGroupLinks =
+    groupMembers.length > 0 ||
+    (Array.isArray(groupLinkStatus?.linkedContacts) &&
+      groupLinkStatus.linkedContacts.length > 0) ||
+    (Array.isArray(groupLinkStatus?.groupMembers) &&
+      groupLinkStatus.groupMembers.length > 0);
+  const isTripTypeLocked = tripTypeLocked || hasGroupLinks;
 
   useEffect(() => {
     setLinkConflictEmails([]);
@@ -354,12 +378,7 @@ function FlagshipRequirements() {
         const conflictEmails = response?.linkConflicts?.map((conflict) => conflict.email) || [];
         if (conflictEmails.length) {
           setLinkConflictEmails(conflictEmails);
-          showAlert(`These members are already linked to another group: ${conflictEmails.join(', ')}`, 'error');
-        }
-        if (!response?.alreadyRegistered && tripType === 'group' && response?.groupDiscount) {
-          setGroupDiscountInfo(response.groupDiscount);
-          const feedback = getGroupDiscountFeedback(response.groupDiscount);
-          showAlert(feedback.message, feedback.type);
+          showAlert(`Some members could not be linked: ${conflictEmails.join(', ')}`, 'error');
         }
         const feedbackPayload = {
           linkConflicts: response?.linkConflicts || [],
@@ -384,6 +403,17 @@ function FlagshipRequirements() {
           const returnTo = buildReturnTo();
           showAlert('Please complete your profile (gender, phone, city) to continue registration.', 'error');
           router.push(`/userSettings?forceEdit=true&returnTo=${encodeURIComponent(returnTo)}`);
+          return;
+        }
+        if (code === 'already_in_group_for_flagship') {
+          showAlert(
+            'You already belong to a group for this trip. Leave that group before joining another.',
+            'error',
+          );
+          return;
+        }
+        if (code === 'trip_type_locked') {
+          showAlert('Trip type is locked after invites are sent.', 'error');
           return;
         }
         showAlert(mapErrorToUserMessage(error), 'error');
@@ -641,7 +671,8 @@ function FlagshipRequirements() {
                   name="memberType"
                   value="solo"
                   checked={tripType === "solo"}
-                  onChange={() => setTripType("solo")}
+                  onChange={() => !isTripTypeLocked && setTripType("solo")}
+                  disabled={isTripTypeLocked}
                   className="sr-only peer"
                 />
                 <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
@@ -655,7 +686,8 @@ function FlagshipRequirements() {
                   name="memberType"
                   value="group"
                   checked={tripType === "group"}
-                  onChange={() => setTripType("group")}
+                  onChange={() => !isTripTypeLocked && setTripType("group")}
+                  disabled={isTripTypeLocked}
                   className="sr-only peer"
                 />
                 <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
@@ -669,12 +701,18 @@ function FlagshipRequirements() {
                   name="memberType"
                   value="partner"
                   checked={tripType === "partner"}
-                  onChange={() => setTripType("partner")}
+                  onChange={() => !isTripTypeLocked && setTripType("partner")}
+                  disabled={isTripTypeLocked}
                   className="sr-only peer"
                 />
                 <div className="w-4 h-4 rounded-full border border-gray-300 peer-checked:border-4 peer-checked:border-black"></div>
                 <span>As a couple (twin room)</span>
               </label>
+              {isTripTypeLocked && (
+                <p className="text-xs text-amber-700">
+                  Trip type is locked after invites are sent.
+                </p>
+              )}
             </div>
 
             {/* Group Members */}
@@ -693,14 +731,16 @@ function FlagshipRequirements() {
                       className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700"
                     >
                       {email}
-                      <button
-                        type="button"
-                        onClick={() => removeGroupMember(email)}
-                        className="text-gray-500 hover:text-gray-800"
-                        aria-label={`Remove ${email}`}
-                      >
-                        ×
-                      </button>
+                      {!isTripTypeLocked && (
+                        <button
+                          type="button"
+                          onClick={() => removeGroupMember(email)}
+                          className="text-gray-500 hover:text-gray-800"
+                          aria-label={`Remove ${email}`}
+                        >
+                          ×
+                        </button>
+                      )}
                     </span>
                   ))}
                   <input
@@ -730,14 +770,37 @@ function FlagshipRequirements() {
                     }}
                     placeholder="Add emails and press Enter"
                     className="min-w-[180px] flex-1 border-0 bg-transparent p-1 text-sm text-gray-700 outline-none"
+                    disabled={isTripTypeLocked}
                   />
                 </div>
                 <p className="text-xs text-gray-500">
                   Enter multiple emails separated by commas or spaces.
                 </p>
+                {groupLinkStatus && (
+                  <div className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700">
+                    <p className="font-semibold">Group link status</p>
+                    {Array.isArray(groupLinkStatus.linkedContacts) && groupLinkStatus.linkedContacts.length > 0 ? (
+                      <div className="mt-1 space-y-1">
+                        {groupLinkStatus.linkedContacts.map((contact: any) => (
+                          <div key={contact.email} className="flex justify-between">
+                            <span>{contact.email}</span>
+                            <span className="capitalize">{contact.status}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="mt-1 text-gray-500">No linked members yet.</p>
+                    )}
+                    {!groupLinkStatus.allLinked && (
+                      <p className="mt-2 text-amber-700">
+                        Link incomplete. All invited members must register to unlock group benefits.
+                      </p>
+                    )}
+                  </div>
+                )}
                 {linkConflictEmails.length > 0 && (
                   <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
-                    Some members are already linked to another group: {linkConflictEmails.join(', ')}.
+                    Some members could not be linked: {linkConflictEmails.join(', ')}.
                   </div>
                 )}
                 {groupDiscountFeedback && (
@@ -752,7 +815,7 @@ function FlagshipRequirements() {
                   </div>
                 )}
                 <p className="text-xs text-gray-500">
-                  Group discounts unlock at 4 linked members and depend on remaining discount budget.
+                  Group discounts unlock at 4 registered members and require all links to be complete.
                 </p>
               </div>
             )}
@@ -776,7 +839,7 @@ function FlagshipRequirements() {
                 />
                 {linkConflictEmails.length > 0 && (
                   <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
-                    This partner is already linked to another group.
+                    This partner could not be linked.
                   </div>
                 )}
               </div>

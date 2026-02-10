@@ -4,12 +4,12 @@ export const aboutFaq: FaqItem[] = [
   {
     question: "What is 3Musafir?",
     answer:
-      "3Musafir is a community-led travel platform that organizes group journeys across Pakistan with a focus on safety, trust, and shared values.",
+      "3Musafir is a community-led travel platform that organizes group journeys across Pakistan and internationally with a focus on safety, trust, and shared values.",
   },
   {
     question: "Where does 3Musafir operate?",
     answer:
-      "Trips are designed for destinations across Pakistan, with itineraries and local partners vetted by the 3Musafir team.",
+      "Trips are designed for destinations across Pakistan and internationally, with itineraries and local partners vetted by the 3Musafir team.",
   },
   {
     question: "Who is 3Musafir for?",
@@ -37,7 +37,7 @@ export const trustFaq: FaqItem[] = [
   {
     question: "What is the 3Musafir Trust & Safety Hub?",
     answer:
-      "It is the source of truth for how 3Musafir verifies travelers, vets vendors, and prepares communities for travel across Pakistan.",
+      "It is the source of truth for how 3Musafir verifies travelers, vets vendors, and prepares communities for travel across Pakistan and internationally.",
   },
   {
     question: "Why does 3Musafir emphasize verification?",
@@ -47,7 +47,7 @@ export const trustFaq: FaqItem[] = [
   {
     question: "Do you perform background checks?",
     answer:
-      "Yes. Background checks are conducted for solo male travelers as part of the verification process.",
+      "Yes. Background checks are conducted for solo male travelers as part of the verification process, their profile is judged based on our references across police and other law enforcement agencies.",
   },
   {
     question: "How are hotels and vendors assessed?",

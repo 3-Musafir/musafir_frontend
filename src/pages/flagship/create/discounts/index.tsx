@@ -27,11 +27,6 @@ function DiscountsPage() {
   const [totalSeats, setTotalSeats] = useState("");
   const [totalDiscountsValue, setTotalDiscountsValue] = useState("");
 
-  // Partial Team Discount
-  const [partialTeamEnabled, setPartialTeamEnabled] = useState(true);
-  const [partialTeamAmount, setPartialTeamAmount] = useState("");
-  const [partialTeamCount, setPartialTeamCount] = useState("");
-
   // Solo Female Discount
   const [soloFemaleEnabled, setSoloFemaleEnabled] = useState(true);
   const [soloFemaleAmount, setSoloFemaleAmount] = useState("");
@@ -39,29 +34,53 @@ function DiscountsPage() {
 
   // Group Discount
   const [groupEnabled, setGroupEnabled] = useState(true);
-  const [groupValue, setGroupValue] = useState("");
   const [groupAmount, setGroupAmount] = useState("");
   const [groupCount, setGroupCount] = useState("");
 
   // Musafir Discount
   const [musafirEnabled, setMusafirEnabled] = useState(true);
-  const [musafirBudget, setMusafirBudget] = useState("");
+  const [musafirAmount, setMusafirAmount] = useState("");
   const [musafirCount, setMusafirCount] = useState("");
 
   // Error state for validations
   const [errors, setErrors] = useState({
     totalSeats: "",
     totalDiscountsValue: "",
-    partialTeamAmount: "",
-    partialTeamCount: "",
     soloFemaleAmount: "",
     soloFemaleCount: "",
-    groupValue: "",
     groupAmount: "",
     groupCount: "",
-    musafirBudget: "",
+    musafirAmount: "",
     musafirCount: "",
   });
+
+  const parseAmount = (value: string) => {
+    const numeric = value?.toString().replace(/[^0-9.-]/g, "");
+    const parsed = Number(numeric);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  const parseCount = (value: string) => {
+    const parsed = Math.floor(Number(value) || 0);
+    return Math.max(0, parsed);
+  };
+
+  const soloTotal =
+    soloFemaleEnabled
+      ? parseAmount(soloFemaleAmount) * parseCount(soloFemaleCount)
+      : 0;
+  const groupTotal =
+    groupEnabled ? parseAmount(groupAmount) * parseCount(groupCount) : 0;
+  const musafirTotal =
+    musafirEnabled ? parseAmount(musafirAmount) * parseCount(musafirCount) : 0;
+  const computedTotalDiscounts = soloTotal + groupTotal + musafirTotal;
+
+  const soloUsedValue = flagshipData?.discounts?.soloFemale?.usedValue || 0;
+  const soloUsedCount = flagshipData?.discounts?.soloFemale?.usedCount || 0;
+  const groupUsedValue = flagshipData?.discounts?.group?.usedValue || 0;
+  const groupUsedCount = flagshipData?.discounts?.group?.usedCount || 0;
+  const musafirUsedValue = flagshipData?.discounts?.musafir?.usedValue || 0;
+  const musafirUsedCount = flagshipData?.discounts?.musafir?.usedCount || 0;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -117,13 +136,6 @@ function DiscountsPage() {
         setTotalDiscountsValue(
           flagshipData.discounts.totalDiscountsValue || ""
         );
-        if (flagshipData.discounts.partialTeam) {
-          setPartialTeamEnabled(flagshipData.discounts.partialTeam.enabled);
-          setPartialTeamAmount(flagshipData.discounts.partialTeam.amount || "");
-          setPartialTeamCount(flagshipData.discounts.partialTeam.count || "");
-        } else {
-          setPartialTeamEnabled(false);
-        }
         if (flagshipData.discounts.soloFemale) {
           setSoloFemaleEnabled(flagshipData.discounts.soloFemale.enabled);
           setSoloFemaleAmount(flagshipData.discounts.soloFemale.amount || "");
@@ -133,15 +145,20 @@ function DiscountsPage() {
         }
         if (flagshipData.discounts.group) {
           setGroupEnabled(flagshipData.discounts.group.enabled);
-          setGroupValue(flagshipData.discounts.group.value || "");
-          setGroupAmount(flagshipData.discounts.group.amount || "");
+          const legacyGroupValue = (flagshipData.discounts.group as any)?.value;
+          setGroupAmount(flagshipData.discounts.group.amount || legacyGroupValue || "");
           setGroupCount(flagshipData.discounts.group.count || "");
         } else {
           setGroupEnabled(false);
         }
         if (flagshipData.discounts.musafir) {
           setMusafirEnabled(flagshipData.discounts.musafir.enabled);
-          setMusafirBudget(flagshipData.discounts.musafir.budget || "");
+          const legacyBudget = (flagshipData.discounts.musafir as any)?.budget;
+          setMusafirAmount(
+            flagshipData.discounts.musafir.amount ||
+              legacyBudget ||
+              ""
+          );
           setMusafirCount(flagshipData.discounts.musafir.count || "");
         } else {
           setMusafirEnabled(false);
@@ -150,19 +167,22 @@ function DiscountsPage() {
     }
   }, [flagshipData]);
 
+  useEffect(() => {
+    setTotalDiscountsValue(
+      `${Math.max(0, Math.floor(computedTotalDiscounts))}`
+    );
+  }, [computedTotalDiscounts]);
+
   // Validation function
   const validateForm = (): boolean => {
     const newErrors = {
       totalSeats: "",
       totalDiscountsValue: "",
-      partialTeamAmount: "",
-      partialTeamCount: "",
       soloFemaleAmount: "",
       soloFemaleCount: "",
-      groupValue: "",
       groupAmount: "",
       groupCount: "",
-      musafirBudget: "",
+      musafirAmount: "",
       musafirCount: "",
     };
     let isValid = true;
@@ -176,50 +196,57 @@ function DiscountsPage() {
       newErrors.totalDiscountsValue = "Total Discounts Value is required";
       isValid = false;
     }
-    // if (partialTeamEnabled) {
-    //   if (!partialTeamAmount.trim()) {
-    //     newErrors.partialTeamAmount = 'Partial team discount amount is required';
-    //     isValid = false;
-    //   }
-    //   if (!partialTeamCount.trim()) {
-    //     newErrors.partialTeamCount = 'Partial team discount count is required';
-    //     isValid = false;
-    //   }
-    // }
-    // if (soloFemaleEnabled) {
-    //   if (!soloFemaleAmount.trim()) {
-    //     newErrors.soloFemaleAmount = 'Solo female discount amount is required';
-    //     isValid = false;
-    //   }
-    //   if (!soloFemaleCount.trim()) {
-    //     newErrors.soloFemaleCount = 'Solo female discount count is required';
-    //     isValid = false;
-    //   }
-    // }
-    // if (groupEnabled) {
-    //   if (!groupValue.trim()) {
-    //     newErrors.groupValue = 'Group discount value is required';
-    //     isValid = false;
-    //   }
-    //   if (!groupAmount.trim()) {
-    //     newErrors.groupAmount = 'Group discount amount is required';
-    //     isValid = false;
-    //   }
-    //   if (!groupCount.trim()) {
-    //     newErrors.groupCount = 'Group discount count is required';
-    //     isValid = false;
-    //   }
-    // }
-    // if (musafirEnabled) {
-    //   if (!musafirBudget.trim()) {
-    //     newErrors.musafirBudget = 'Musafir discount budget is required';
-    //     isValid = false;
-    //   }
-    //   if (!musafirCount.trim()) {
-    //     newErrors.musafirCount = 'Musafir discount count is required';
-    //     isValid = false;
-    //   }
-    // }
+
+    if (soloFemaleEnabled) {
+      const amount = parseAmount(soloFemaleAmount);
+      const count = parseCount(soloFemaleCount);
+      if (amount <= 0) {
+        newErrors.soloFemaleAmount = "Solo female amount must be positive";
+        isValid = false;
+      }
+      if (count <= 0) {
+        newErrors.soloFemaleCount = "Solo female count must be positive";
+        isValid = false;
+      }
+      if (soloTotal < soloUsedValue || count < soloUsedCount) {
+        newErrors.soloFemaleAmount = "Cannot set total below used discounts";
+        isValid = false;
+      }
+    }
+
+    if (groupEnabled) {
+      const amount = parseAmount(groupAmount);
+      const count = parseCount(groupCount);
+      if (amount <= 0) {
+        newErrors.groupAmount = "Group amount must be positive";
+        isValid = false;
+      }
+      if (count <= 0) {
+        newErrors.groupCount = "Group count must be positive";
+        isValid = false;
+      }
+      if (groupTotal < groupUsedValue || count < groupUsedCount) {
+        newErrors.groupAmount = "Cannot set total below used discounts";
+        isValid = false;
+      }
+    }
+
+    if (musafirEnabled) {
+      const amount = parseAmount(musafirAmount);
+      const count = parseCount(musafirCount);
+      if (amount <= 0) {
+        newErrors.musafirAmount = "Musafir amount must be positive";
+        isValid = false;
+      }
+      if (count <= 0) {
+        newErrors.musafirCount = "Musafir count must be positive";
+        isValid = false;
+      }
+      if (musafirTotal < musafirUsedValue || count < musafirUsedCount) {
+        newErrors.musafirAmount = "Cannot set total below used discounts";
+        isValid = false;
+      }
+    }
 
     setErrors(newErrors);
     return isValid;
@@ -232,13 +259,6 @@ function DiscountsPage() {
     const formData = {
       discounts: {
         totalDiscountsValue,
-        partialTeam: partialTeamEnabled
-          ? {
-              amount: partialTeamAmount,
-              count: partialTeamCount,
-              enabled: partialTeamEnabled,
-            }
-          : undefined,
         soloFemale: soloFemaleEnabled
           ? {
               amount: soloFemaleAmount,
@@ -248,7 +268,6 @@ function DiscountsPage() {
           : undefined,
         group: groupEnabled
           ? {
-              value: groupValue,
               amount: groupAmount,
               count: groupCount,
               enabled: groupEnabled,
@@ -256,7 +275,7 @@ function DiscountsPage() {
           : undefined,
         musafir: musafirEnabled
           ? {
-              budget: musafirBudget,
+              amount: musafirAmount,
               count: musafirCount,
               enabled: musafirEnabled,
             }
@@ -334,95 +353,15 @@ function DiscountsPage() {
               <input
                 min={0}
                 value={totalDiscountsValue}
-                placeholder="50000"
-                onChange={(e) => setTotalDiscountsValue(e.target.value)}
+                placeholder="0"
                 className="w-full bg-transparent focus:outline-none"
+                readOnly
               />
             </div>
             {errors.totalDiscountsValue && (
               <p className="text-brand-error text-sm mt-1">
                 {errors.totalDiscountsValue}
               </p>
-            )}
-          </div>
-
-          {/* Partial Team Discount */}
-          <div className="mb-8 border-b pb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Partial Team Discount</h3>
-              <div
-                className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${
-                  partialTeamEnabled ? "bg-black" : "bg-gray-300"
-                }`}
-                onClick={() => setPartialTeamEnabled(!partialTeamEnabled)}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
-                    partialTeamEnabled ? "translate-x-7" : ""
-                  }`}
-                ></div>
-              </div>
-            </div>
-
-            {partialTeamEnabled && (
-              <>
-                <div className="mb-4">
-                  <h4 className="mb-2">Total Discount Amount</h4>
-                  <div className="border-2 border-black rounded-lg overflow-hidden">
-                    <input
-                      min={0}
-                      value={partialTeamAmount}
-                      onChange={(e) => setPartialTeamAmount(e.target.value)}
-                      className="w-full px-3 py-2 focus:outline-none"
-                      placeholder="0"
-                    />
-                  </div>
-                  {errors.partialTeamAmount && (
-                    <p className="text-brand-error text-sm mt-1">
-                      {errors.partialTeamAmount}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <h4 className="mb-2 text-gray-500">
-                    Number of such discounts
-                  </h4>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() =>
-                        updateCount(
-                          partialTeamCount,
-                          setPartialTeamCount,
-                          false
-                        )
-                      }
-                      className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center"
-                    >
-                      <Minus className="w-6 h-6" />
-                    </button>
-                    <input
-                      min={0}
-                      value={partialTeamCount}
-                      onChange={(e) => setPartialTeamCount(e.target.value)}
-                      className="flex-1 px-3 py-2 border rounded-lg focus:outline-none text-center"
-                    />
-                    <button
-                      onClick={() =>
-                        updateCount(partialTeamCount, setPartialTeamCount, true)
-                      }
-                      className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center"
-                    >
-                      <Plus className="w-6 h-6" />
-                    </button>
-                  </div>
-                  {errors.partialTeamCount && (
-                    <p className="text-brand-error text-sm mt-1">
-                      {errors.partialTeamCount}
-                    </p>
-                  )}
-                </div>
-              </>
             )}
           </div>
 
@@ -498,6 +437,14 @@ function DiscountsPage() {
                     </p>
                   )}
                 </div>
+                <div className="mt-2 text-xs text-gray-500">
+                  Used value: Rs.{Number(soloUsedValue).toLocaleString()} | Remaining value: Rs.
+                  {Math.max(0, soloTotal - soloUsedValue).toLocaleString()}
+                </div>
+                <div className="text-xs text-gray-500">
+                  Used count: {soloUsedCount} | Remaining count:{" "}
+                  {Math.max(0, parseCount(soloFemaleCount) - soloUsedCount)}
+                </div>
               </>
             )}
           </div>
@@ -521,31 +468,11 @@ function DiscountsPage() {
             </div>
 
             <p className="text-sm text-gray-500 mb-4">
-              Applies per-member discounts by group size (4:500, 5:600, 6:800, 7+:1000).
-              Total Value is the overall budget, and Number of such discounts is the total discounted seats.
-              Discounts are allocated to earliest groups and recalculated on cancellations.
+              Group discounts apply to members once all linked members register.
             </p>
 
             {groupEnabled && (
               <>
-                <div className="mb-4">
-                  <h4 className="mb-2">Total Value</h4>
-                  <div className="border-2 border-black rounded-lg overflow-hidden p-3">
-                    <input
-                      min={0}
-                      value={groupValue}
-                      placeholder="45"
-                      onChange={(e) => setGroupValue(e.target.value)}
-                      className="w-full bg-transparent focus:outline-none"
-                    />
-                  </div>
-                  {errors.groupValue && (
-                    <p className="text-brand-error text-sm mt-1">
-                      {errors.groupValue}
-                    </p>
-                  )}
-                </div>
-
                 <div className="mb-4">
                   <h4 className="mb-2">Discount per ticket</h4>
                   <div className="border-2 border-black rounded-lg overflow-hidden">
@@ -598,6 +525,14 @@ function DiscountsPage() {
                     </p>
                   )}
                 </div>
+                <div className="mt-2 text-xs text-gray-500">
+                  Used value: Rs.{Number(groupUsedValue).toLocaleString()} | Remaining value: Rs.
+                  {Math.max(0, groupTotal - groupUsedValue).toLocaleString()}
+                </div>
+                <div className="text-xs text-gray-500">
+                  Used count: {groupUsedCount} | Remaining count:{" "}
+                  {Math.max(0, parseCount(groupCount) - groupUsedCount)}
+                </div>
               </>
             )}
           </div>
@@ -623,19 +558,19 @@ function DiscountsPage() {
             {musafirEnabled && (
               <>
                 <div className="mb-4">
-                  <h4 className="mb-2">Total Discount Budget</h4>
+                  <h4 className="mb-2">Discount per ticket</h4>
                   <div className="border-2 border-black rounded-lg overflow-hidden">
                     <input
                       min={0}
-                      value={musafirBudget}
-                      onChange={(e) => setMusafirBudget(e.target.value)}
+                      value={musafirAmount}
+                      onChange={(e) => setMusafirAmount(e.target.value)}
                       className="w-full px-3 py-2 focus:outline-none"
                       placeholder="0"
                     />
                   </div>
-                  {errors.musafirBudget && (
+                  {errors.musafirAmount && (
                     <p className="text-brand-error text-sm mt-1">
-                      {errors.musafirBudget}
+                      {errors.musafirAmount}
                     </p>
                   )}
                 </div>
@@ -673,6 +608,14 @@ function DiscountsPage() {
                       {errors.musafirCount}
                     </p>
                   )}
+                </div>
+                <div className="mt-2 text-xs text-gray-500">
+                  Used value: Rs.{Number(musafirUsedValue).toLocaleString()} | Remaining value: Rs.
+                  {Math.max(0, musafirTotal - musafirUsedValue).toLocaleString()}
+                </div>
+                <div className="text-xs text-gray-500">
+                  Used count: {musafirUsedCount} | Remaining count:{" "}
+                  {Math.max(0, parseCount(musafirCount) - musafirUsedCount)}
                 </div>
               </>
             )}

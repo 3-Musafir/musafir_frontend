@@ -53,26 +53,26 @@ export interface Flagship {
   // Discounts
   discounts?: {
     totalDiscountsValue: string;
-    partialTeam: {
-      amount: string;
-      count: string;
-      enabled: boolean;
-    };
     soloFemale: {
       amount: string;
       count: string;
       enabled: boolean;
+      usedValue?: number;
+      usedCount?: number;
     };
     group: {
-      value: string;
       amount: string;
       count: string;
       enabled: boolean;
+      usedValue?: number;
+      usedCount?: number;
     };
     musafir: {
-      budget: string;
+      amount?: string;
       count: string;
       enabled: boolean;
+      usedValue?: number;
+      usedCount?: number;
     };
   };
 
@@ -116,26 +116,26 @@ export interface FlagshipPricing {
 
 export interface FlagshipDiscounts {
   totalDiscountsValue?: string;
-  partialTeam?: {
-    amount: string;
-    count: string;
-    enabled: boolean;
-  };
   soloFemale?: {
     amount: string;
     count: string;
     enabled: boolean;
+    usedValue?: number;
+    usedCount?: number;
   };
   group?: {
-    value: string;
     amount: string;
     count: string;
     enabled: boolean;
+    usedValue?: number;
+    usedCount?: number;
   };
   musafir?: {
-    budget: string;
+    amount?: string;
     count: string;
     enabled: boolean;
+    usedValue?: number;
+    usedCount?: number;
   };
 }
 
@@ -184,26 +184,26 @@ export interface IUpdateFlagship {
   // Discounts fields
   discounts?: {
     totalDiscountsValue?: string;
-    partialTeam?: {
-      amount: string;
-      count: string;
-      enabled: boolean;
-    };
     soloFemale?: {
       amount: string;
       count: string;
       enabled: boolean;
+      usedValue?: number;
+      usedCount?: number;
     };
     group?: {
-      value: string;
       amount: string;
       count: string;
       enabled: boolean;
+      usedValue?: number;
+      usedCount?: number;
     };
     musafir?: {
-      budget: string;
+      amount?: string;
       count: string;
       enabled: boolean;
+      usedValue?: number;
+      usedCount?: number;
     };
   };
 

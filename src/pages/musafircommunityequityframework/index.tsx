@@ -98,7 +98,7 @@ export default function MusafirCommunityEquityFramework() {
                     </p>
                     <h3 className="text-sm font-semibold text-heading">Alignment with Musafir Community’s Mission</h3>
                     <p className="text-sm text-muted-foreground">
-                      Musafir Community is founded on the principle of respect for diversity and the necessity of normalizing safe travels for women across Pakistan. We believe that traveling in groups enhances communication skills, encourages personal growth, and pushes individuals out of their comfort zones. By integrating intergenerational commitments, responsible use of technology, sustainable environmental practices (including no littering), and ethical engagement with local cultures, this framework ensures that our core values will be preserved and passed on to future musafirs.
+                      Musafir Community is founded on the principle of respect for diversity and the necessity of normalizing safe travels for women across Pakistan and internationally. We believe that traveling in groups enhances communication skills, encourages personal growth, and pushes individuals out of their comfort zones. By integrating intergenerational commitments, responsible use of technology, sustainable environmental practices (including no littering), and ethical engagement with local cultures, this framework ensures that our core values will be preserved and passed on to future musafirs.
                     </p>
                   </div>
 

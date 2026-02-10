@@ -23,6 +23,11 @@ export default function Dashboard() {
   const [flagship, setFlagship] = useState<IFlagship | null>(null);
   const [visibilityUpdating, setVisibilityUpdating] = useState(false);
   const [visibilityError, setVisibilityError] = useState("");
+  const [groupAnalytics, setGroupAnalytics] = useState<any>(null);
+  const [discountAnalytics, setDiscountAnalytics] = useState<any>(null);
+  const [groupConflicts, setGroupConflicts] = useState<any>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [analyticsError, setAnalyticsError] = useState("");
   const router = useRouter();
   const { slug } = router.query as { slug?: string };
   const flagshipAction = useFlagshipHook();
@@ -58,6 +63,48 @@ export default function Dashboard() {
     };
     fetch();
   }, [slug]);
+
+  useEffect(() => {
+    if (!slug) return;
+    const loadAnalytics = async () => {
+      setAnalyticsLoading(true);
+      setAnalyticsError("");
+      try {
+        const [groupRes, discountRes, conflictsRes] = await Promise.all([
+          FlagshipService.getGroupAnalytics(slug),
+          FlagshipService.getDiscountAnalytics(slug),
+          FlagshipService.getGroupConflicts(slug),
+        ]);
+        setGroupAnalytics((groupRes as any)?.data ?? groupRes);
+        setDiscountAnalytics((discountRes as any)?.data ?? discountRes);
+        setGroupConflicts((conflictsRes as any)?.data ?? conflictsRes);
+      } catch (error) {
+        console.error("Failed to load analytics:", error);
+        setAnalyticsError("Failed to load analytics.");
+      } finally {
+        setAnalyticsLoading(false);
+      }
+    };
+    loadAnalytics();
+  }, [slug]);
+
+  const handleReconcileLinks = async () => {
+    if (!slug) return;
+    setAnalyticsLoading(true);
+    setAnalyticsError("");
+    try {
+      await FlagshipService.reconcileGroupLinks(slug);
+      const updated = await FlagshipService.getGroupAnalytics(slug);
+      const conflicts = await FlagshipService.getGroupConflicts(slug);
+      setGroupAnalytics((updated as any)?.data ?? updated);
+      setGroupConflicts((conflicts as any)?.data ?? conflicts);
+    } catch (error) {
+      console.error("Failed to reconcile links:", error);
+      setAnalyticsError("Failed to reconcile links.");
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  };
 
   const handleVisibilityToggle = async () => {
     if (!flagship?._id) return;
@@ -228,6 +275,95 @@ export default function Dashboard() {
       )}
       {activeTab === "stats" && activeSection === "payments" && (
         <PaymentStatsContainer />
+      )}
+      {activeTab === "stats" && (
+        <div className="px-4 pb-6 space-y-4">
+          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">Discount Analytics</p>
+                <p className="text-xs text-gray-500">Usage and remaining value by discount type.</p>
+              </div>
+              {analyticsLoading && (
+                <span className="text-xs text-gray-500">Refreshing…</span>
+              )}
+            </div>
+            {analyticsError && (
+              <p className="mt-2 text-xs text-red-600">{analyticsError}</p>
+            )}
+            {discountAnalytics && (
+              <div className="mt-3 space-y-2 text-xs text-gray-700">
+                {(["soloFemale", "group", "musafir"] as const).map((key) => {
+                  const item = discountAnalytics?.[key];
+                  if (!item) return null;
+                  return (
+                    <div key={key} className="flex justify-between">
+                      <span className="capitalize">{key.replace("Female", " female")}</span>
+                      <span>
+                        Used {item.usedValue || 0} / {item.totalValue || 0} (Count {item.usedCount || 0}/{item.count || 0})
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">Group Link Analytics</p>
+                <p className="text-xs text-gray-500">Completion rate and link status counts.</p>
+              </div>
+              <button
+                type="button"
+                onClick={handleReconcileLinks}
+                disabled={analyticsLoading}
+                className="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+              >
+                Reconcile links
+              </button>
+            </div>
+            {groupAnalytics && (
+              <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-700">
+                <div>Total groups: {groupAnalytics.totalGroups ?? 0}</div>
+                <div>All linked: {groupAnalytics.allLinkedGroups ?? 0}</div>
+                <div>Grouped regs: {groupAnalytics.groupedRegistrations ?? 0}</div>
+                <div>
+                  Completion rate: {Math.round(((groupAnalytics.completionRate || 0) * 100))}%
+                </div>
+                <div>Linked: {groupAnalytics?.contacts?.linked ?? 0}</div>
+                <div>Pending: {groupAnalytics?.contacts?.pending ?? 0}</div>
+                <div>Invited: {groupAnalytics?.contacts?.invited ?? 0}</div>
+                <div>Conflicts: {groupAnalytics?.contacts?.conflict ?? 0}</div>
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <p className="text-sm font-semibold text-gray-900">Group Conflicts</p>
+            <p className="text-xs text-gray-500">Members linked to multiple groups or marked as conflicts.</p>
+            {groupConflicts?.conflicts?.length ? (
+              <div className="mt-3 space-y-2 text-xs text-gray-700">
+                {groupConflicts.conflicts.slice(0, 6).map((conflict: any) => (
+                  <div key={conflict.email} className="flex flex-col gap-1 border-b border-gray-100 pb-2">
+                    <span className="font-medium">{conflict.email}</span>
+                    <span className="text-gray-500">
+                      Groups: {Array.from(conflict.groupIds || []).length}
+                    </span>
+                  </div>
+                ))}
+                {groupConflicts.conflicts.length > 6 && (
+                  <p className="text-xs text-gray-500">
+                    Showing 6 of {groupConflicts.conflicts.length} conflicts.
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="mt-2 text-xs text-gray-500">No conflicts found.</p>
+            )}
+          </div>
+        </div>
       )}
       {activeTab === "registration" && (
         <>

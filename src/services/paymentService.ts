@@ -23,6 +23,10 @@ export class PaymentService {
     }
   }
 
+  static async getEligibleDiscounts(registrationId: string) {
+    return api.get(`/payment/eligible-discounts/${registrationId}`);
+  }
+
   static async createBankAccount(bankAccount: any) {
     return api.post(`/payment/create-bank-account`, bankAccount);
   }
@@ -51,6 +55,9 @@ export class PaymentService {
     formData.append("paymentType", payment.paymentType);
     formData.append("amount", payment.amount.toString());
     formData.append("discount", payment.discount?.toString() || "0");
+    if (payment.discountType) {
+      formData.append("discountType", payment.discountType);
+    }
     if (typeof payment.walletAmount === "number") {
       formData.append("walletAmount", payment.walletAmount.toString());
     }

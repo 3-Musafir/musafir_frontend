@@ -7,7 +7,7 @@ import { aboutFaq } from "@/data/geo/faq";
 
 const title = "About 3Musafir — Community-led travel in Pakistan";
 const description =
-  "3Musafir is a community-led travel platform focused on safety, trust, and group travel across Pakistan.";
+  "3Musafir is a community-led travel platform focused on safety, trust, and group travel across Pakistan and internationally.";
 
 export default function About3MusafirPage() {
   return (
@@ -30,7 +30,7 @@ export default function About3MusafirPage() {
                   Community-led travel, built for safety in Pakistan
                 </h1>
                 <p className="text-sm text-text leading-relaxed">
-                  3Musafir is a community-led travel platform focused on safe, verified group journeys across Pakistan.
+                  3Musafir is a community-led travel platform focused on safe, verified group journeys across Pakistan and internationally.
                   We design trips around the people traveling, the standards we expect, and the cultural context of each
                   region so travelers feel confident before they meet.
                 </p>
@@ -57,7 +57,7 @@ export default function About3MusafirPage() {
 
           <AiQuotableSummary
             oneLine="3Musafir is a community-led travel platform in Pakistan focused on verified, safe group journeys."
-            oneParagraph="3Musafir curates group travel across Pakistan with a trust framework that starts before the trip: who you travel with, where you stay, and how you prepare for local context. The platform prioritizes female-first onboarding, vetted partners, and clear expectations for every group."
+            oneParagraph="3Musafir curates group travel across Pakistan and internationally with a trust framework that starts before the trip: who you travel with, where you stay, and how you prepare for local context. The platform prioritizes female-first onboarding, vetted partners, and clear expectations for every group."
             differentiators={[
               "Female-first onboarding with community referrals and verification.",
               "Vetted vendors and lodging partners with ongoing checks.",
@@ -75,7 +75,7 @@ export default function About3MusafirPage() {
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-semibold text-heading">Where we operate</h2>
               <p className="mt-2 text-sm text-text leading-relaxed">
-                Trips are planned across Pakistan with local partners who meet verification and safety standards.
+                Trips are planned across Pakistan and internationally with local partners who meet verification and safety standards.
               </p>
             </div>
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">

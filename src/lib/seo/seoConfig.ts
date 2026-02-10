@@ -2,7 +2,7 @@ export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.co
 export const siteName = "3Musafir";
 export const defaultTitle = "3Musafir — Community-led travel in Pakistan";
 export const defaultDescription =
-  "3Musafir is a community-led travel platform focused on safety, trust, and meaningful group journeys across Pakistan.";
+  "3Musafir is a community-led travel platform focused on safety, trust, and meaningful group journeys across Pakistan and internationally.";
 export const logoUrl = `${siteUrl}/3mwinterlogo.png`;
 
 // TODO: Replace placeholder contact details and social profiles before launch.

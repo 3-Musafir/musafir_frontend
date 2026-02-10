@@ -11,7 +11,7 @@ export interface RegistrationCreationResponse {
   isPaid?: boolean;
   status?: string;
   amountDue?: number;
-  linkConflicts?: { email: string; reason: 'already_in_another_group' }[];
+  linkConflicts?: { email: string; reason: 'already_in_another_group' | 'already_invited' }[];
   groupDiscount?: {
     status: 'applied' | 'not_eligible' | 'budget_exhausted' | 'disabled';
     perMember: number;
@@ -62,6 +62,22 @@ const useRegistrationHook = () => {
     return false;
   };
 
+  const getGroupLinkStatus = async (registrationId: string): Promise<any> => {
+    const res = await api.get(`/registration/group-link-status/${registrationId}`);
+    if (res.statusCode === 200) {
+      return res.data;
+    }
+    return false;
+  };
+
+  const getPendingGroupInvite = async (flagshipId: string): Promise<any> => {
+    const res = await api.get(`/registration/pending-group-invite/${flagshipId}`);
+    if (res.statusCode === 200) {
+      return res.data;
+    }
+    return false;
+  };
+
   const cancelSeat = async (registrationId: string): Promise<any> => {
     const res = await api.post(`${REGISTRATION.CANCEL_SEAT(registrationId)}`);
     if (res.statusCode === 200) {
@@ -79,6 +95,8 @@ const useRegistrationHook = () => {
     getUpcomingPassport,
     sendReEvaluateRequestToJury,
     getRegistrationById,
+    getGroupLinkStatus,
+    getPendingGroupInvite,
     cancelSeat,
   };
 };

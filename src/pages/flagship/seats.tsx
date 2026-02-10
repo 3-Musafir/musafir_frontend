@@ -1,6 +1,7 @@
 import Header from "@/components/header";
 import Navigation from "@/pages/navigation";
 import useFlagshipHook from "@/hooks/useFlagshipHandler";
+import useRegistrationHook from "@/hooks/useRegistrationHandler";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
@@ -10,11 +11,12 @@ import TrustLinks from "@/components/seo/TrustLinks";
 export default function RemainingSeats() {
   const [flagship, setFlagship] = useState<any>({});
   const action = useFlagshipHook();
+  const registrationAction = useRegistrationHook();
   const router = useRouter();
   const [registrationId, setRegistrationId] = useState<string>('');
   const [registrationFeedback, setRegistrationFeedback] = useState<
     | {
-        linkConflicts?: { email: string; reason: 'already_in_another_group' }[];
+        linkConflicts?: { email: string; reason: 'already_in_another_group' | 'already_invited' }[];
         groupDiscount?: {
           status: 'applied' | 'not_eligible' | 'budget_exhausted' | 'disabled';
           perMember: number;
@@ -24,6 +26,7 @@ export default function RemainingSeats() {
     | null
   >(null);
   const [feedbackDismissed, setFeedbackDismissed] = useState(false);
+  const [groupLinkStatus, setGroupLinkStatus] = useState<any>(null);
   const user = useRecoilValue(currentUser);
   const verificationStatus = (user as any)?.verification?.status;
   const isVerified = verificationStatus === "verified";
@@ -74,6 +77,11 @@ export default function RemainingSeats() {
     const registrationId = JSON.parse(localStorage.getItem("registrationId") || "null");
     if (registrationId) {
       setRegistrationId(registrationId);
+      registrationAction.getGroupLinkStatus(registrationId).then((data) => {
+        if (data) {
+          setGroupLinkStatus(data);
+        }
+      });
     }
 
     const feedbackRaw = localStorage.getItem("registrationFeedback");
@@ -108,13 +116,34 @@ export default function RemainingSeats() {
             <TrustLinks className="mt-4" />
           </div>
 
+          {groupLinkStatus && !groupLinkStatus.allLinked && (
+            <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+              <p className="font-semibold mb-2">Group link incomplete</p>
+              {Array.isArray(groupLinkStatus.linkedContacts) && groupLinkStatus.linkedContacts.length > 0 ? (
+                <div className="space-y-1">
+                  {groupLinkStatus.linkedContacts.map((contact: any) => (
+                    <div key={contact.email} className="flex justify-between">
+                      <span>{contact.email}</span>
+                      <span className="capitalize">{contact.status}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>No linked members yet.</p>
+              )}
+              <p className="mt-2">
+                Group discounts unlock only after all registered members are linked (invites do not count).
+              </p>
+            </div>
+          )}
+
           {registrationFeedback && !feedbackDismissed && (
             <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-2">
                   {registrationFeedback.linkConflicts?.length ? (
                     <p className="text-sm text-red-700">
-                      Some members are already linked to another group: {registrationFeedback.linkConflicts
+                      Some members could not be linked: {registrationFeedback.linkConflicts
                         .map((conflict) => conflict.email)
                         .join(', ')}.
                     </p>

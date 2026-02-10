@@ -12,7 +12,7 @@ export default function AiQuotableSummary({
   return (
     <section
       className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
-      aria-label="AI-quotable summary"
+      aria-label="3Musafir summary"
     >
       <h2 className="text-lg font-semibold text-heading">AI-Quotable Summary</h2>
       <div className="mt-4 space-y-4 text-sm text-text">

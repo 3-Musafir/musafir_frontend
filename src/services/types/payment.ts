@@ -9,6 +9,7 @@ export interface ICreatePayment {
   registration: string;
   amount: number;
   discount?: number;
+  discountType?: "soloFemale" | "group" | "musafir";
   walletAmount?: number;
   walletUseId?: string;
   screenshot?: File;

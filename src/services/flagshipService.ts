@@ -125,4 +125,20 @@ export class FlagshipService {
       params: { flagshipId },
     });
   }
+
+  static async getGroupConflicts(flagshipId: string) {
+    return api.get(`/admin/flagship/${flagshipId}/group-conflicts`);
+  }
+
+  static async getGroupAnalytics(flagshipId: string) {
+    return api.get(`/admin/flagship/${flagshipId}/group-analytics`);
+  }
+
+  static async getDiscountAnalytics(flagshipId: string) {
+    return api.get(`/admin/flagship/${flagshipId}/discount-analytics`);
+  }
+
+  static async reconcileGroupLinks(flagshipId: string) {
+    return api.post(`/admin/flagship/${flagshipId}/reconcile-links`);
+  }
 }

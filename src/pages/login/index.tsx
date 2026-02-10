@@ -12,12 +12,23 @@ export default function Login() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [localReturnTo, setLocalReturnTo] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = localStorage.getItem("returnTo");
+    if (stored && /^\/(?!\/)/.test(stored)) {
+      setLocalReturnTo(stored);
+    }
+  }, []);
 
   const requestedCallback = useMemo(() => {
     const raw = searchParams?.get("callbackUrl");
     const isSafe = typeof raw === "string" && /^\/(?!\/)/.test(raw);
-    return isSafe ? raw : null;
-  }, [searchParams]);
+    if (isSafe) return raw;
+    if (localReturnTo && /^\/(?!\/)/.test(localReturnTo)) return localReturnTo;
+    return null;
+  }, [searchParams, localReturnTo]);
   const actionLogin = useLoginHook();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,6 +42,9 @@ export default function Login() {
 
       if (userData?.roles?.includes(ROLES.ADMIN)) {
         if (requestedCallback && requestedCallback.startsWith("/admin")) {
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("returnTo");
+          }
           router.push(requestedCallback);
           return;
         }
@@ -41,6 +55,9 @@ export default function Login() {
 
       if (userData?.roles?.includes(ROLES.MUSAFIR)) {
         if (requestedCallback && !requestedCallback.startsWith("/admin")) {
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("returnTo");
+          }
           router.push(requestedCallback);
           return;
         }
@@ -76,6 +93,9 @@ export default function Login() {
       if (result?.status === 200) {
         setHasRedirected(true);
         if (requestedCallback) {
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("returnTo");
+          }
           router.replace(requestedCallback);
           return;
         }
