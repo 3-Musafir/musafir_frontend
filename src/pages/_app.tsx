@@ -101,13 +101,19 @@ export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const useUserShell = useMemo(() => {
     const pathname = router.pathname || "";
-    const adminPrefixes = [
+    const appPrefixes = [
       "/admin",
       "/dashboard",
-      "/flagship/create",
-      "/flagship/payment",
+      "/home",
+      "/passport",
+      "/wallet",
+      "/referrals",
+      "/notifications",
+      "/userSettings",
+      "/flagship",
+      "/musafir",
     ];
-    return !adminPrefixes.some((prefix) => pathname.startsWith(prefix));
+    return !appPrefixes.some((prefix) => pathname.startsWith(prefix));
   }, [router.pathname]);
 
   const siteUrl = baseSiteUrl;

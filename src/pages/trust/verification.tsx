@@ -29,33 +29,55 @@ export default function VerificationPage() {
           </header>
 
           <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-heading">How it works</h2>
-            <ul className="mt-4 space-y-2 text-sm text-text">
-              <li>Female-first onboarding to establish trusted group foundations.</li>
-              <li>Two community referrals to confirm identity and intent.</li>
-              <li>Interviews for solo male travelers before approval.</li>
-              <li>Background checks for solo males to protect group comfort.</li>
-            </ul>
+            <details className="group" open>
+              <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <h2 className="text-xl font-semibold text-heading">How it works</h2>
+                    <p className="text-sm text-text leading-relaxed">
+                      The steps we take to verify travelers before they join a group.
+                    </p>
+                  </div>
+                  <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
+                </div>
+              </summary>
+              <ul className="mt-4 space-y-2 text-sm text-text">
+                <li>Female-first onboarding to establish trusted group foundations.</li>
+                <li>Two community referrals to confirm identity and intent.</li>
+                <li>Interviews for solo male travelers before approval.</li>
+                <li>Background checks for solo males to protect group comfort.</li>
+              </ul>
+            </details>
           </section>
 
           <section className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-heading">What we do</h2>
+            <details className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-lg font-semibold text-heading">What we do</h2>
+                  <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
+                </div>
+              </summary>
               <ul className="mt-3 space-y-2 text-sm text-text">
                 <li>Verify identities and community referrals.</li>
                 <li>Interview solo male travelers before approval.</li>
                 <li>Use background checks for solo male applicants.</li>
                 <li>Reassess verification if new information emerges.</li>
               </ul>
-            </div>
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-heading">What we don’t do</h2>
+            </details>
+            <details className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-lg font-semibold text-heading">What we don't do</h2>
+                  <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
+                </div>
+              </summary>
               <ul className="mt-3 space-y-2 text-sm text-text">
-                <li>We don’t approve travelers without referrals or interviews.</li>
-                <li>We don’t mix groups without clarity on shared expectations.</li>
-                <li>We don’t bypass safety steps to fill seats faster.</li>
+                <li>We don't approve travelers without referrals or interviews.</li>
+                <li>We don't mix groups without clarity on shared expectations.</li>
+                <li>We don't bypass safety steps to fill seats faster.</li>
               </ul>
-            </div>
+            </details>
           </section>
 
           <FaqSection title="Verification FAQs" items={verificationFaq} />

@@ -29,33 +29,55 @@ export default function TravelEducationPage() {
           </header>
 
           <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-heading">How it works</h2>
-            <ul className="mt-4 space-y-2 text-sm text-text">
-              <li>Pre-travel briefings on cultural norms and regional sensitivities.</li>
-              <li>Clear group expectations for respectful behavior.</li>
-              <li>Guidance on communication and safety during travel.</li>
-              <li>On-trip support when local context changes.</li>
-            </ul>
+            <details className="group" open>
+              <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <h2 className="text-xl font-semibold text-heading">How it works</h2>
+                    <p className="text-sm text-text leading-relaxed">
+                      The guidance we provide before and during each trip.
+                    </p>
+                  </div>
+                  <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
+                </div>
+              </summary>
+              <ul className="mt-4 space-y-2 text-sm text-text">
+                <li>Pre-travel briefings on cultural norms and regional sensitivities.</li>
+                <li>Clear group expectations for respectful behavior.</li>
+                <li>Guidance on communication and safety during travel.</li>
+                <li>On-trip support when local context changes.</li>
+              </ul>
+            </details>
           </section>
 
           <section className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-heading">What we do</h2>
+            <details className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-lg font-semibold text-heading">What we do</h2>
+                  <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
+                </div>
+              </summary>
               <ul className="mt-3 space-y-2 text-sm text-text">
                 <li>Share regional norms before departure.</li>
                 <li>Explain expectations for group conduct.</li>
                 <li>Provide safety awareness guidance for each destination.</li>
                 <li>Offer support when plans shift on-ground.</li>
               </ul>
-            </div>
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-heading">What we don’t do</h2>
+            </details>
+            <details className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-lg font-semibold text-heading">What we don't do</h2>
+                  <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
+                </div>
+              </summary>
               <ul className="mt-3 space-y-2 text-sm text-text">
-                <li>We don’t leave groups without preparation before travel.</li>
-                <li>We don’t ignore regional context when planning itineraries.</li>
-                <li>We don’t treat safety as an afterthought.</li>
+                <li>We don't leave groups without preparation before travel.</li>
+                <li>We don't ignore regional context when planning itineraries.</li>
+                <li>We don't treat safety as an afterthought.</li>
               </ul>
-            </div>
+            </details>
           </section>
 
           <FaqSection title="Travel education FAQs" items={educationFaq} />

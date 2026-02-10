@@ -29,33 +29,56 @@ export default function VendorOnboardingPage() {
           </header>
 
           <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-heading">How it works</h2>
-            <ul className="mt-4 space-y-2 text-sm text-text">
-              <li>Onboarding interviews to confirm safety practices and alignment.</li>
-              <li>Background checks and verification of ownership and staff IDs.</li>
-              <li>Clear safety standards shared with vendor teams.</li>
-              <li>Ongoing reviews based on traveler feedback and on-ground checks.</li>
-            </ul>
+            <details className="group" open>
+              <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <h2 className="text-xl font-semibold text-heading">How it works</h2>
+                    <p className="text-sm text-text leading-relaxed">
+                      The steps we follow before bringing a partner into a 3Musafir trip.
+                    </p>
+                  </div>
+                  <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
+                </div>
+              </summary>
+              <ul className="mt-4 space-y-2 text-sm text-text">
+                <li>Onboarding interviews to confirm safety practices and alignment.</li>
+                <li>Background checks and verification of ownership and staff IDs.</li>
+                <li>Clear safety standards shared with vendor teams.</li>
+                <li>Ongoing reviews based on traveler feedback and on-ground checks.</li>
+              </ul>
+            </details>
           </section>
 
           <section className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-heading">What we do</h2>
+            <details className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-lg font-semibold text-heading">What we do</h2>
+                  <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
+                </div>
+              </summary>
               <ul className="mt-3 space-y-2 text-sm text-text">
                 <li>Verify vendors before listing trips.</li>
                 <li>Confirm staff identification and onsite standards.</li>
                 <li>Provide safety expectations and service training.</li>
                 <li>Pause partnerships that fail to meet standards.</li>
               </ul>
-            </div>
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold text-heading">What we don’t do</h2>
+            </details>
+
+            <details className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-lg font-semibold text-heading">What we don't do</h2>
+                  <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
+                </div>
+              </summary>
               <ul className="mt-3 space-y-2 text-sm text-text">
-                <li>We don’t work with vendors without verified ownership.</li>
-                <li>We don’t ignore traveler feedback on safety issues.</li>
-                <li>We don’t onboard partners who refuse safety expectations.</li>
+                <li>We don't work with vendors without verified ownership.</li>
+                <li>We don't ignore traveler feedback on safety issues.</li>
+                <li>We don't onboard partners who refuse safety expectations.</li>
               </ul>
-            </div>
+            </details>
           </section>
 
           <FaqSection title="Vendor onboarding FAQs" items={vendorFaq} />

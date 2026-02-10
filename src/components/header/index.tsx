@@ -1,10 +1,9 @@
 import { Bell, Menu, Home, Flag, Wallet, Users } from 'lucide-react';
-import { signOut, useSession } from 'next-auth/react';
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRef, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
-import useUserHandler from '@/hooks/useUserHandler';
+import UserProfileMenu from './UserProfileMenu';
 import { useNotificationsContext } from '@/context/NotificationsProvider';
 import { TabType } from '@/context/DashboardContext';
 
@@ -16,11 +15,6 @@ interface HeaderProps {
   activeTab?: TabType;
 }
 
-interface User {
-  fullName?: string;
-  email?: string;
-  profileImg?: string;
-}
 
 export default function Header({
   notificationCount = 0,
@@ -30,27 +24,11 @@ export default function Header({
   activeTab: externalActiveTab
 }: HeaderProps) {
   const previousPathRef = useRef<string | null>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
   const { status } = useSession();
-  const { getMe } = useUserHandler();
   const { unreadCount } = useNotificationsContext();
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      const inUserDropdown = dropdownRef.current && dropdownRef.current.contains(event.target as Node);
-
-      if (!inUserDropdown) setShowDropdown(false);
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   useEffect(() => {
     if (!pathname) return;
@@ -59,24 +37,6 @@ export default function Header({
     }
   }, [pathname]);
 
-  useEffect(() => {
-    if (status !== 'authenticated') {
-      setUser(null);
-      return;
-    }
-
-    const fetchUser = async () => {
-      try {
-        const res = await getMe();
-        setUser(res);
-      } catch (error) {
-        console.error('Failed to fetch user for header', error);
-      }
-    };
-
-    fetchUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -84,27 +44,8 @@ export default function Header({
     }
   }, [status, router]);
 
-  const initials = useMemo(() => {
-    if (!user) return 'U';
-    const name = user.fullName || user.email || '';
-    const parts = name.trim().split(' ').filter(Boolean);
-    if (parts.length === 0) return (name[0] || 'U').toUpperCase();
-    if (parts.length === 1) return parts[0][0]?.toUpperCase() || 'U';
-    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-  }, [user]);
 
-  const handleSettings = () => {
-    router.push('/userSettings');
-    setShowDropdown(false);
-  };
 
-  const handleProfileClick = () => {
-    if (status !== 'authenticated') {
-      router.push('/login');
-      return;
-    }
-    setShowDropdown((prev) => !prev);
-  };
 
   const showAuthCta = status !== 'authenticated'; // Show login/signup buttons when not authenticated on ANY page
 
@@ -213,52 +154,7 @@ export default function Header({
         )}
 
         {/* User Profile / Settings */}
-        <div className='relative flex items-center'>
-          <button
-            onClick={handleProfileClick}
-            className='flex items-center focus:outline-none'
-          >
-            {status === 'authenticated' && user?.fullName && (
-              <span className='text-sm lg:text-base font-medium mr-2 lg:mr-3 hidden sm:inline'>{user.fullName}</span>
-            )}
-            <div className='w-9 h-9 lg:w-11 lg:h-11 rounded-full bg-gray-900 flex items-center justify-center text-white text-sm lg:text-base overflow-hidden relative'>
-              {status === 'authenticated' && user?.profileImg ? (
-                <Image
-                  src={user.profileImg}
-                  alt='Profile image'
-                  fill
-                  sizes='44px'
-                  className='object-cover rounded-full'
-                />
-              ) : (
-                initials
-              )}
-            </div>
-          </button>
-          {status === 'authenticated' && showDropdown && (
-            <div
-              ref={dropdownRef}
-              className='absolute right-0 mt-12 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-10'
-            >
-              <button
-                onClick={handleSettings}
-                className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-              >
-                Settings
-              </button>
-              <button
-                onClick={async () => {
-                  const base = process.env.NEXT_PUBLIC_AUTH_URL?.trim();
-                  const callbackUrl = base ? `${base}/login` : '/login';
-                  await signOut({ callbackUrl });
-                }}
-                className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-              >
-                Sign out
-              </button>
-            </div>
-          )}
-        </div>
+        <UserProfileMenu />
       </div>
     </header>
   );

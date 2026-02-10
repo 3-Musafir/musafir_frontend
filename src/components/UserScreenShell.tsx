@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import Footer from "@/components/Footer";
+import PublicHeader from "@/components/header/PublicHeader";
 
 interface UserScreenShellProps {
   children: ReactNode;
@@ -12,11 +13,13 @@ interface UserScreenShellProps {
 export default function UserScreenShell({ children }: UserScreenShellProps) {
   const router = useRouter();
   const { data: session } = useSession();
-  const pathname = router.pathname || "";
-  const excludedPaths = ["/home", "/login"];
-  const isExcludedPath = excludedPaths.some((path) => pathname.startsWith(path));
   const isLoggedIn = Boolean(session?.user);
-  const shouldShowFooter = !isLoggedIn && !isExcludedPath;
+  const rawPath = (router.asPath || "/").split("?")[0].split("#")[0] || "/";
+  const hideAuthCtaPaths = ["/launch"];
+  const fullBleedPaths = ["/trust", "/about-3musafir"];
+  const shouldHideAuthCta = hideAuthCtaPaths.some((path) => rawPath.startsWith(path));
+  const isFullBleed = fullBleedPaths.includes(rawPath);
+  const shouldShowFooter = !isLoggedIn && rawPath !== "/login";
 
   return (
     <div className="min-h-screen w-full bg-gray-50">
@@ -25,7 +28,8 @@ export default function UserScreenShell({ children }: UserScreenShellProps) {
         Content uses responsive padding (px-4 md:px-6 lg:px-8 xl:px-10) for breathing room.
         No max-width constraint - content fills the available space.
       */}
-      <div className="min-h-screen w-full">
+      <PublicHeader hideAuthCta={shouldHideAuthCta} />
+      <div className={`min-h-screen w-full ${isFullBleed ? "pt-0" : "pt-4 md:pt-6"}`}>
         {children}
         {shouldShowFooter ? <Footer /> : null}
       </div>

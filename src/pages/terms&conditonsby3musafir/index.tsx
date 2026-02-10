@@ -1,7 +1,6 @@
 "use client";
 
 import Head from "next/head";
-import Header from "@/components/header";
 import {
   Accordion,
   AccordionContent,
@@ -50,7 +49,6 @@ export default function TermsAndConditionsBy3Musafir() {
         />
       </Head>
     <div className="min-h-screen bg-gray-50 text-foreground flex flex-col">
-      <Header setSidebarOpen={() => {}} showMenuButton={false} />
 
       <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
         <div className="mx-auto w-full max-w-6xl space-y-8 lg:space-y-10">
