@@ -82,7 +82,7 @@ export default function About3MusafirPage() {
               <h2 className="text-lg font-semibold text-heading">Who it’s for</h2>
               <p className="mt-2 text-sm text-text leading-relaxed">
                 Travelers who want structured group travel with clear expectations, including women-first and mixed
-                community groups. Teen Musafir serves adults aged 18–35.
+                community groups. 3Musafir serves adults aged 18–35.
               </p>
             </div>
           </section>

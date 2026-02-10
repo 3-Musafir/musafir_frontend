@@ -26,11 +26,6 @@ export const aboutFaq: FaqItem[] = [
     answer:
       "Trust is built through female-first onboarding, community referrals, background checks for solo males, vetted vendors, and travel education on local context.",
   },
-  {
-    question: "Is Teen Musafir for teens?",
-    answer:
-      "No. Teen Musafir is a romantic getaways product line for adults aged 18–35.",
-  },
 ];
 
 export const trustFaq: FaqItem[] = [
