@@ -28,15 +28,15 @@ export default function PublicHeader({ hideAuthCta = false }: { hideAuthCta?: bo
 
   return (
     <header className="w-full bg-white border-b">
-      <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 xl:px-10 h-16 lg:h-20">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 xl:px-10 h-16 lg:h-20 overflow-visible">
+        <div className="flex items-center gap-3 overflow-visible">
           <Link href="/home" aria-label="3Musafir home" className="flex items-center">
             <Image
               src="/primarylogo.svg"
               alt="3Musafir"
-              width={160}
-              height={160}
-              className="h-16 w-16 lg:h-24 lg:w-24"
+              width={200}
+              height={200}
+              className="h-20 w-20 lg:h-28 lg:w-28 -my-2"
             />
           </Link>
           {label ? <span className="text-xs text-text">{label}</span> : null}

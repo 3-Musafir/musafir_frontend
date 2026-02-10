@@ -82,15 +82,15 @@ export default function Explore() {
                     <h1 className="text-3xl sm:text-4xl font-semibold leading-tight text-heading">
                       Travel built around people, not packages
                     </h1>
-                    <p className="text-base sm:text-lg text-text">
-                      3Musafir is a community-first travel platform where journeys are shaped by shared values, trust, and meaningful experiences — before dates, prices, or destinations.
-                    </p>
                   </div>
                   <span className="mt-2 text-brand-primary text-xl transition group-open:rotate-45">+
                   </span>
                 </div>
               </summary>
-              <div className="mt-6">
+              <div className="mt-6 space-y-4">
+                <p className="text-base sm:text-lg text-text">
+                  3Musafir is a community-first travel platform where journeys are shaped by shared values, trust, and meaningful experiences — before dates, prices, or destinations.
+                </p>
                 <Link
                   href="#how-it-works"
                   className="inline-flex items-center text-sm font-semibold text-brand-primary hover:text-brand-primary-hover transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
