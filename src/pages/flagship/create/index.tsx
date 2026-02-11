@@ -12,7 +12,7 @@ import ProgressBar from '@/components/progressBar';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { ensureSilentUpdate, getContentVersionToken } from '@/lib/flagshipWizard';
+import { ensureSilentUpdate } from '@/lib/flagshipWizard';
 import { Flagship } from '@/interfaces/flagship';
 import { getLastDraftMode, loadDraft, saveDraft, setLastDraftMode, clearDraft } from '@/lib/flagship-draft';
 
@@ -165,10 +165,9 @@ function CreateFlagship() {
       if (isEditMode && editId) {
         const updatePayload = {
           ...payload,
-          contentVersion: getContentVersionToken(flagshipData),
         };
         ensureSilentUpdate(updatePayload);
-        const res: any = await action.update(editId, updatePayload);
+        const res: any = await action.updateWithLatestVersion(editId, updatePayload);
         if (res.statusCode === HttpStatusCode.Ok) {
           if (res?.data) {
             setFlagshipData(res.data);

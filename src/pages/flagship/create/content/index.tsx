@@ -32,7 +32,7 @@ import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { ensureSilentUpdate, getContentVersionToken } from '@/lib/flagshipWizard';
+import { ensureSilentUpdate } from '@/lib/flagshipWizard';
 import { Flagship } from '@/interfaces/flagship';
 import { loadDraft, saveDraft } from '@/lib/flagship-draft';
 
@@ -240,10 +240,6 @@ function ContentPage() {
       const formData = new FormData();
       formData.append('travelPlan', travelPlanEditor?.getHTML() || '');
       formData.append('tocs', tocsEditor?.getHTML() || '');
-      const contentVersionToken = getContentVersionToken(flagshipData);
-      if (contentVersionToken) {
-        formData.append('contentVersion', contentVersionToken);
-      }
       ensureSilentUpdate(formData);
       files.forEach((file, index) => {
         formData.append(`files`, file);
@@ -258,7 +254,7 @@ function ContentPage() {
         formData.append('removeDetailedPlan', 'true');
       }
 
-      const res: any = await action.update(flagshipId, formData);
+      const res: any = await action.updateWithLatestVersion(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Content Added!', 'success');
         if (res?.data) {

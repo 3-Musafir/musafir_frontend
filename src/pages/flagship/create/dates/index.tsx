@@ -11,7 +11,7 @@ import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import ProgressBar from '@/components/progressBar';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { ensureSilentUpdate, getContentVersionToken } from '@/lib/flagshipWizard';
+import { ensureSilentUpdate } from '@/lib/flagshipWizard';
 import { loadDraft, saveDraft } from '@/lib/flagship-draft';
 
 function ImportantDates() {
@@ -158,14 +158,13 @@ function ImportantDates() {
       registrationDeadline: new Date(registrationDeadline),
       advancePaymentDeadline: new Date(advancePaymentDeadline),
       earlyBirdDeadline: new Date(earlyBirdDeadline),
-      contentVersion: getContentVersionToken(flagshipData),
     };
     ensureSilentUpdate(formData);
 
     try {
       const flagshipId = flagshipData._id || '';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: any = await action.update(flagshipId, formData);
+      const res: any = await action.updateWithLatestVersion(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Dates Added!', 'success');
         if (res?.data) {

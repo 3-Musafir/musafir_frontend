@@ -13,7 +13,7 @@ import ProgressBar from '@/components/progressBar';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { ensureSilentUpdate, getContentVersionToken } from '@/lib/flagshipWizard';
+import { ensureSilentUpdate } from '@/lib/flagshipWizard';
 import { Flagship } from '@/interfaces/flagship';
 import { loadDraft, saveDraft } from '@/lib/flagship-draft';
 
@@ -262,7 +262,6 @@ function PricingPage() {
       mattressTiers: mattressTierEnabled ? mattressTiers.map(({ id, ...rest }) => rest) : [],
       roomSharingPreference: roomSharingEnabled ? roomSharingPreference.map(({ id, ...rest }) => rest) : [],
       earlyBirdPrice: earlyBirdPrice ? Number(earlyBirdPrice) : undefined,
-      contentVersion: getContentVersionToken(flagshipData),
     };
     ensureSilentUpdate(formData);
     try {
@@ -271,7 +270,7 @@ function PricingPage() {
         showAlert('Create a Flagship first', 'error');
         return;
       }
-      const res: any = await action.update(flagshipId, formData);
+      const res: any = await action.updateWithLatestVersion(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         setIsSubmitted(true);
         setIsDirty(false);

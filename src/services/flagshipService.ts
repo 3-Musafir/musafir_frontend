@@ -1,6 +1,6 @@
 import api from "@/lib/api";
 import { IRegistration, IPendingPaymentVerificationResponse } from "@/interfaces/trip/trip";
-import { IFlagship, IRegistrationStats } from "./types/flagship";
+import { IFlagship, IRegistrationStats, IPaymentStats } from "./types/flagship";
 
 export class FlagshipService {
   static async getRegisteredUsers(
@@ -63,8 +63,8 @@ export class FlagshipService {
     return api.get(`/flagship/registeration-stats/${flagshipId}`);
   }
 
-  static async getPaymentStats(flagshipId: string) {
-    return api.get(`/payment-stats/${flagshipId}`);
+  static async getPaymentStats(flagshipId: string): Promise<IPaymentStats> {
+    return api.get(`/flagship/payment-stats/${flagshipId}`);
   }
 
   static async getRegistrationByID(

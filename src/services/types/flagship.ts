@@ -104,3 +104,35 @@ export interface IRegistrationStats {
   newUsersCount: number;
   returningUsersCount: number;
 }
+
+export interface IPaymentStats {
+  daysUntilStart: number;
+  totalSeats: number;
+  seatsFilled: number;
+  maleSeats: number;
+  femaleSeats: number;
+  cityCounts: {
+    islamabad: number;
+    lahore: number;
+    karachi: number;
+    other?: number;
+  };
+  totalPaid: number;
+  totalDue: number;
+  totalTarget: number;
+  paymentMethodTotals: {
+    bank_transfer: number;
+    wallet_only: number;
+    wallet_plus_bank: number;
+  };
+  paymentStatusTotals: {
+    approved: number;
+    pendingApproval: number;
+    rejected: number;
+  };
+  discountTotals: {
+    soloFemale: number;
+    group: number;
+    musafir: number;
+  };
+}

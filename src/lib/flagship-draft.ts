@@ -55,7 +55,13 @@ export const saveDraft = (
   const storage = getStorage();
   if (!storage) return;
   const key = getDraftKey(mode, editId);
-  storage.setItem(key, JSON.stringify(data ?? {}));
+  const sanitized = (() => {
+    if (!data || typeof data !== 'object' || Array.isArray(data)) return data ?? {};
+    const copy = { ...(data as Record<string, unknown>) };
+    delete (copy as any).contentVersion;
+    return copy;
+  })();
+  storage.setItem(key, JSON.stringify(sanitized ?? {}));
 };
 
 export const clearDraft = (mode: FlagshipDraftMode, editId?: string | null) => {

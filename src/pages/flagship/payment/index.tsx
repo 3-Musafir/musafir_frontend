@@ -14,7 +14,6 @@ import ProgressBar from '@/components/progressBar';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
-import { getContentVersionToken } from '@/lib/flagshipWizard';
 import { loadDraft, saveDraft } from '@/lib/flagship-draft';
 
 function PaymentOptions() {
@@ -119,7 +118,6 @@ function PaymentOptions() {
     // Build payload (if additional data is required, add here)
     const formData = {
       selectedBank,
-      contentVersion: getContentVersionToken(flagshipData),
       silentUpdate: isEditMode ? true : undefined,
     };
     console.log(formData, 'payload');
@@ -127,7 +125,7 @@ function PaymentOptions() {
     try {
       const flagshipId = flagshipData._id || '';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: any = await action.update(flagshipId, formData);
+      const res: any = await action.updateWithLatestVersion(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Bank Selected!', 'success');
         if (res?.data) {

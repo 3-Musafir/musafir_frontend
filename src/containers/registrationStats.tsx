@@ -22,6 +22,7 @@ interface AgeData {
 export const RegistrationStatsContainer = () => {
   const [stats, setStats] = useState<IRegistrationStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const router = useRouter();
   const { slug } = router.query;
 
@@ -35,6 +36,7 @@ export const RegistrationStatsContainer = () => {
           setStats(data);
         } catch (error) {
           console.error("Failed to fetch registration stats:", error);
+          setError("Failed to load registration stats.");
         } finally {
           setLoading(false);
         }
@@ -44,8 +46,16 @@ export const RegistrationStatsContainer = () => {
     fetchStats();
   }, [slug]);
 
-  if (loading || !stats) {
+  if (loading) {
     return <div className="p-4">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="p-4 text-sm text-red-600">{error}</div>;
+  }
+
+  if (!stats) {
+    return <div className="p-4 text-sm text-gray-500">No stats available yet.</div>;
   }
 
   // Calculate percentages for the progress bars
@@ -71,7 +81,7 @@ export const RegistrationStatsContainer = () => {
   const femalePercentage = (stats.femaleCount / total) * 100;
 
   // Transform age distribution data for Recharts
-  const ageData: AgeData[] = Object.entries(stats.ageDistribution).map(
+  const ageData: AgeData[] = Object.entries(stats.ageDistribution ?? {}).map(
     ([range, count]) => ({
       range,
       count,

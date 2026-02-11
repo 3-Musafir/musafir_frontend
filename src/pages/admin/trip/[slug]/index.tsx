@@ -52,6 +52,12 @@ export default function Dashboard() {
     : null;
 
   useEffect(() => {
+    if (activeTab === "stats") {
+      setActiveSection("registrations");
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
     if (!slug) return;
     const fetch = async () => {
       try {
@@ -67,6 +73,9 @@ export default function Dashboard() {
   useEffect(() => {
     if (!slug) return;
     const loadAnalytics = async () => {
+      setGroupAnalytics(null);
+      setDiscountAnalytics(null);
+      setGroupConflicts(null);
       setAnalyticsLoading(true);
       setAnalyticsError("");
       try {
@@ -112,10 +121,9 @@ export default function Dashboard() {
     setVisibilityUpdating(true);
     setVisibilityError("");
     try {
-      const res: any = await flagshipAction.update(flagship._id, {
+      const res: any = await flagshipAction.updateWithLatestVersion(flagship._id, {
         visibility: nextVisibility,
         silentUpdate: true,
-        contentVersion: flagship?.contentVersion,
       });
       const updatedFlagship = res?.data || { ...flagship, visibility: nextVisibility };
       setFlagship(updatedFlagship);
@@ -246,28 +254,28 @@ export default function Dashboard() {
             </TabsList>
           </Tabs>
 
-          {/* {activeTab === "stats" && (
-          <div className="grid grid-cols-2 border-b">
-            <button
-              className={cn(
-                "py-3 text-center font-medium",
-                activeSection === "registrations" && "border-b-2 border-black"
-              )}
-              onClick={() => setActiveSection("registrations")}
-            >
-              Registrations
-            </button>
-            <button
-              className={cn(
-                "py-3 text-center font-medium",
-                activeSection === "payments" && "border-b-2 border-black"
-              )}
-              onClick={() => setActiveSection("payments")}
-            >
-              Payments
-            </button>
-          </div>
-        )} */}
+          {activeTab === "stats" && (
+            <div className="grid grid-cols-2 border-b">
+              <button
+                className={cn(
+                  "py-3 text-center font-medium",
+                  activeSection === "registrations" && "border-b-2 border-black"
+                )}
+                onClick={() => setActiveSection("registrations")}
+              >
+                Registrations
+              </button>
+              <button
+                className={cn(
+                  "py-3 text-center font-medium",
+                  activeSection === "payments" && "border-b-2 border-black"
+                )}
+                onClick={() => setActiveSection("payments")}
+              >
+                Payments
+              </button>
+            </div>
+          )}
         </header>
       </div>
       {activeTab === "stats" && activeSection === "registrations" && (

@@ -12,7 +12,6 @@ import withAuth from '@/hoc/withAuth';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch } from '@/lib/flagship-edit';
-import { getContentVersionToken } from '@/lib/flagshipWizard';
 import { clearDraft, loadDraft, saveDraft } from '@/lib/flagship-draft';
 
 function SuccessPage() {
@@ -90,10 +89,9 @@ function SuccessPage() {
       const formData = {
         status: FLAGSHIP_STATUS.PUBLISHED,
         publish: fStatus,
-        contentVersion: getContentVersionToken(flagshipData),
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: any = await action.update(flagshipId, formData);
+      const res: any = await action.updateWithLatestVersion(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
         showAlert('Flagship is Live', 'success');
         if (res?.data) {

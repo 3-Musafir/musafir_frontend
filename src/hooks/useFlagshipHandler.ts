@@ -39,6 +39,38 @@ const useFlagshipHook = () => {
     return res;
   };
 
+  const updateWithLatestVersion = async (id: string, data: any): Promise<unknown> => {
+    if (!id) {
+      return update(id, data);
+    }
+
+    let latest: any;
+    try {
+      latest = await api.get(`${FLAGSHIP.GET}/${id}`);
+    } catch (error: any) {
+      throw {
+        ...error,
+        message: 'Unable to refresh trip. Please retry.',
+      };
+    }
+
+    const latestVersion = latest?.contentVersion;
+    let payload = data;
+
+    if (data instanceof FormData) {
+      if (latestVersion) {
+        data.set('contentVersion', latestVersion);
+      }
+    } else if (data && typeof data === 'object') {
+      payload = {
+        ...data,
+        contentVersion: latestVersion ?? data.contentVersion,
+      };
+    }
+
+    return update(id, payload);
+  };
+
   const filterFlagship = async (data: IFlagshipFilter): Promise<unknown> => {
     const res = await api.get(`${FLAGSHIP.FILTER}/`, data);
     if (res.statusCode === HttpStatusCode.Ok) {
@@ -81,6 +113,7 @@ const useFlagshipHook = () => {
   return {
     create,
     update,
+    updateWithLatestVersion,
     filterFlagship,
     currentFlagshipData,
     filteredFlagshipsData,
