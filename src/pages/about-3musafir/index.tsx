@@ -24,7 +24,7 @@ const overviewCards = [
   },
   {
     title: "Who it's for",
-    summary: "Adults 18-35 seeking structured, community-first travel.",
+    summary: "Adults form the of 18 to 45 seeking structured, community-first travel.",
     details:
       "Groups include women-first cohorts and mixed community groups with clear expectations, shared comfort levels, and respectful behavior.",
   },

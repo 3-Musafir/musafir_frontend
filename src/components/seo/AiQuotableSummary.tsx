@@ -14,7 +14,7 @@ export default function AiQuotableSummary({
       className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
       aria-label="3Musafir summary"
     >
-      <h2 className="text-lg font-semibold text-heading">AI-Quotable Summary</h2>
+      <h2 className="text-lg font-semibold text-heading">The Real Deal</h2>
       <div className="mt-4 space-y-4 text-sm text-text">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">In one line</p>

@@ -64,11 +64,11 @@ export default function Explore() {
       <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
         <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
           <CompanyProfileHero companyProfile={companyProfile} loading={profileLoading} />
-          <section
-            id="community-led"
-            className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 lg:p-10 shadow-sm"
-          >
-            <details open={openSection === 'community-led'} className="group">
+          <section id="community-led">
+            <details
+              open={openSection === 'community-led'}
+              className="group rounded-2xl border border-gray-200 bg-white p-6 md:p-8 lg:p-10 shadow-sm"
+            >
               <summary
                 className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                 onClick={(event) => {
@@ -178,11 +178,11 @@ export default function Explore() {
             </Link>
           </section>
 
-          <section
-            id="how-it-works"
-            className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm"
-          >
-            <details open={openSection === 'how-it-works'} className="group">
+          <section id="how-it-works">
+            <details
+              open={openSection === 'how-it-works'}
+              className="group rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm"
+            >
               <summary
                 className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                 onClick={(event) => {
@@ -241,11 +241,11 @@ export default function Explore() {
             </details>
           </section>
 
-          <section
-            id="paths"
-            className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm"
-          >
-            <details open={openSection === 'paths'} className="group">
+          <section id="paths">
+            <details
+              open={openSection === 'paths'}
+              className="group rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm"
+            >
               <summary
                 className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                 onClick={(event) => {
@@ -366,11 +366,11 @@ export default function Explore() {
             </details>
           </section>
 
-          <section
-            id="signals"
-            className="rounded-2xl border border-gray-200 bg-white p-6 lg:p-8 shadow-sm"
-          >
-            <details open={openSection === 'signals'} className="group">
+          <section id="signals">
+            <details
+              open={openSection === 'signals'}
+              className="group rounded-2xl border border-gray-200 bg-white p-6 lg:p-8 shadow-sm"
+            >
               <summary
                 className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                 onClick={(event) => {
@@ -398,11 +398,11 @@ export default function Explore() {
             </details>
           </section>
 
-          <section
-            id="why"
-            className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm"
-          >
-            <details open={openSection === 'why'} className="group">
+          <section id="why">
+            <details
+              open={openSection === 'why'}
+              className="group rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm"
+            >
               <summary
                 className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                 onClick={(event) => {

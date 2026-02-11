@@ -28,8 +28,8 @@ export default function TravelEducationPage() {
             </p>
           </header>
 
-          <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <details className="group" open>
+          <section>
+            <details className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm" open>
               <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
