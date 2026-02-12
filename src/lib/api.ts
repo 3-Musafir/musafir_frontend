@@ -35,13 +35,17 @@ const bustSessionCache = () => {
   cachedAt = 0;
 };
 
-// Track whether a token refresh is already in flight so concurrent 401s
+// Track whether a token refresh is already in flight so concurrent errors
 // don't trigger multiple refreshes (and multiple sign-outs).
-let refreshPromise: Promise<any> | null = null;
+let refreshPromise: Promise<string | null> | null = null;
 
 // **Attach token dynamically before each request**
 axiosInstance.interceptors.request.use(
   async (config: any) => {
+    // Skip token override for retried requests — they already carry the
+    // fresh token set by the response interceptor.
+    if (config._retry) return config;
+
     const session = await getCachedSession();
     if (session?.accessToken) {
       config.headers.Authorization = `Bearer ${session.accessToken}`;
@@ -51,51 +55,66 @@ axiosInstance.interceptors.request.use(
   (error: any) => Promise.reject(error),
 );
 
-// **Response interceptor: refresh-and-retry on 401**
+// The backend returns 401 from JwtAuthGuard and 403 from RolesGuard when
+// the JWT is expired (auth guard sets req.user = null, RolesGuard sees no user).
+// Both mean "token expired, try refreshing".
+const isAuthError = (status: number, data: any) =>
+  status === 401 ||
+  (status === 403 && typeof data?.message === 'string' &&
+    data.message.toLowerCase().includes('authentication required'));
+
+/**
+ * Call our server-side /api/auth/refresh endpoint which reads the refresh
+ * token from the NextAuth JWT cookie, calls the backend, and returns a new
+ * access token. This bypasses the jwt() callback's accessTokenExpires timer.
+ */
+const forceRefresh = async (): Promise<string | null> => {
+  try {
+    const res = await axios.post('/api/auth/refresh', {}, {
+      baseURL: typeof window !== 'undefined' ? window.location.origin : '',
+      timeout: 15000,
+    });
+    return res.data?.accessToken ?? null;
+  } catch {
+    return null;
+  }
+};
+
+// **Response interceptor: refresh-and-retry on auth errors**
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: any) => {
     const originalRequest = error.config;
+    const status = error.response?.status;
+    const data = error.response?.data;
 
     // Only attempt refresh once per request (_retry flag prevents loops)
-    if (error.response?.status === 401 && !originalRequest?._retry) {
+    if (isAuthError(status, data) && !originalRequest?._retry) {
       originalRequest._retry = true;
 
-      // If another request is already refreshing, wait for it
+      // Coalesce concurrent refresh attempts into a single call
       if (!refreshPromise) {
+        refreshPromise = forceRefresh().finally(() => {
+          refreshPromise = null;
+        });
+      }
+
+      const newAccessToken = await refreshPromise;
+
+      if (newAccessToken) {
+        // Bust the cache so future requests pick up the new token
         bustSessionCache();
-        // getSession() triggers the NextAuth jwt() callback which runs
-        // refreshAccessToken() when the token is near/past expiry.
-        refreshPromise = getSession()
-          .finally(() => {
-            refreshPromise = null;
-          });
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axiosInstance(originalRequest);
       }
 
-      try {
-        const freshSession = await refreshPromise;
-
-        // If the refresh succeeded and we have a valid token, retry the
-        // original request with the new token.
-        if (freshSession?.accessToken && !freshSession?.error) {
-          bustSessionCache();
-          originalRequest.headers.Authorization = `Bearer ${freshSession.accessToken}`;
-          return axiosInstance(originalRequest);
-        }
-      } catch {
-        // refresh itself failed — fall through to sign-out below
-      }
-
-      // Refresh truly failed or returned an error — sign out cleanly.
+      // Refresh truly failed — sign out cleanly.
       bustSessionCache();
-      const session = await getSession();
-      if (session?.accessToken) {
-        showAlert('Session expired. Please login again.', 'error');
-        signOut();
-        setTimeout(() => {
-          window.location.href = `/${ROUTES_CONSTANTS.LOGIN}`;
-        }, 2000);
-      }
+      showAlert('Session expired. Please login again.', 'error');
+      signOut();
+      setTimeout(() => {
+        window.location.href = `/${ROUTES_CONSTANTS.LOGIN}`;
+      }, 2000);
     }
 
     return Promise.reject(error);
@@ -107,7 +126,7 @@ const handleResponse = async (response: any) => {
   return response.data;
 };
 
-// **Handle non-401 errors globally**
+// **Handle non-auth errors globally**
 const handleError = async (error: any) => {
   let errorMessage = 'An error occurred';
 
