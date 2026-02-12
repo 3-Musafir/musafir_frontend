@@ -1,3 +1,12 @@
+export interface IFlagshipAttended {
+  _id: string;
+  tripName: string;
+  startDate?: string;
+  endDate?: string;
+  status?: string;
+  destination?: string;
+}
+
 export interface IUser {
   _id: string;
   fullName: string;
@@ -16,6 +25,8 @@ export interface IUser {
   verification: Verification;
   createdAt: string;
   updatedAt: string;
+  numberOfFlagshipsAttended?: number;
+  flagshipsAttended?: IFlagshipAttended[];
 }
 
 export interface Verification {

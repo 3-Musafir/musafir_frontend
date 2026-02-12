@@ -20,6 +20,7 @@ import {
   Hash,
   LucideIcon,
   ArrowLeft,
+  Flag,
 } from "lucide-react";
 import { useRouter } from "next/router";
 
@@ -204,7 +205,7 @@ export default function UserDetailsPage() {
     title: string;
     children: React.ReactNode;
   }) => (
-    <Card className="w-full max-w-md mx-auto bg-white shadow-sm hover:shadow-md transition-shadow">
+    <Card className="w-full bg-white shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold text-gray-800">
           {title}
@@ -234,9 +235,9 @@ export default function UserDetailsPage() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Header Card */}
-        <Card className="w-full max-w-md mx-auto bg-gradient-to-r from-blue-50 to-indigo-50 border-none">
+        <Card className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 border-none">
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center gap-3">
@@ -261,95 +262,138 @@ export default function UserDetailsPage() {
           </CardHeader>
         </Card>
 
-        {/* Personal Information */}
-        <InfoCard title="Personal Information">
-          <div className="space-y-4">
-            <InfoItem icon={Phone} label="Phone" value={user.phone} />
-            <InfoItem icon={IdCard} label="CNIC" value={user.cnic} />
-            <InfoItem icon={User} label="Gender" value={user.gender} />
-            <InfoItem
-              icon={Calendar}
-              label="Date of Birth"
-              value={user.dateOfBirth}
-            />
-          </div>
-        </InfoCard>
-
-        {/* Academic Information */}
-        <InfoCard title="Academic Information">
-          <div className="space-y-4">
-            <InfoItem
-              icon={GraduationCap}
-              label="University"
-              value={user.university}
-            />
-            <InfoItem icon={MapPin} label="City" value={user.city} />
-            <InfoItem
-              icon={Link}
-              label="Social Link"
-              value={user.socialLink || "Not provided"}
-            />
-            <InfoItem
-              icon={Hash}
-              label="Referral ID"
-              value={user.referralID || "Not provided"}
-            />
-          </div>
-        </InfoCard>
-
-        {/* Verification Status */}
-        <InfoCard title="Verification Status">
-          <div className="space-y-4">
-            <InfoItem
-              icon={Mail}
-              label="Email Verified"
-              value={user.emailVerified ? "Yes" : "No"}
-            />
-            <InfoItem
-              icon={Phone}
-              label="Request Call"
-              value={user.verification.RequestCall ? "Yes" : "No"}
-            />
-            {user.verification.videoLink && (
-              <div className="flex items-start space-x-3 py-2">
-                <Link className="h-5 w-5 text-gray-500 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-500">
-                    Video Link
-                  </p>
-                  <a
-                    href={user.verification.videoLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 underline break-all"
-                  >
-                    {user.verification.videoLink}
-                  </a>
-                </div>
-              </div>
-            )}
-            <div className="pt-2">
-              <Button
-                variant="outline"
-                onClick={handleToggleVerification}
-                disabled={toggleLoading}
-                isLoading={toggleLoading}
-                className="w-full justify-center"
-              >
-                {user.verification.status === "verified"
-                  ? "Mark as Unverified"
-                  : "Mark as Verified"}
-              </Button>
-              <p className="text-xs text-gray-500 mt-2">
-                Admin override — toggle between verified and unverified.
-              </p>
+        {/* Two-column grid on desktop, single column on mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Personal Information */}
+          <InfoCard title="Personal Information">
+            <div className="space-y-4">
+              <InfoItem icon={Phone} label="Phone" value={user.phone} />
+              <InfoItem icon={IdCard} label="CNIC" value={user.cnic} />
+              <InfoItem icon={User} label="Gender" value={user.gender} />
+              <InfoItem
+                icon={Calendar}
+                label="Date of Birth"
+                value={user.dateOfBirth}
+              />
             </div>
-          </div>
-        </InfoCard>
+          </InfoCard>
+
+          {/* Academic Information */}
+          <InfoCard title="Academic Information">
+            <div className="space-y-4">
+              <InfoItem
+                icon={GraduationCap}
+                label="University"
+                value={user.university}
+              />
+              <InfoItem icon={MapPin} label="City" value={user.city} />
+              <InfoItem
+                icon={Link}
+                label="Social Link"
+                value={user.socialLink || "Not provided"}
+              />
+              <InfoItem
+                icon={Hash}
+                label="Referral ID"
+                value={user.referralID || "Not provided"}
+              />
+            </div>
+          </InfoCard>
+
+          {/* Flagships Attended */}
+          {user.flagshipsAttended && user.flagshipsAttended.length > 0 && (
+            <InfoCard title={`Flagships Attended (${user.flagshipsAttended.length})`}>
+              <div className="space-y-3">
+                {user.flagshipsAttended.map((flagship: any) => (
+                  <div
+                    key={flagship._id}
+                    className="flex items-center space-x-3 py-2 border-b last:border-b-0 border-gray-100"
+                  >
+                    <Flag className="h-5 w-5 text-brand-primary shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-base font-medium text-gray-900">
+                        {flagship.tripName}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {flagship.startDate
+                          ? new Date(flagship.startDate).toLocaleDateString("en-PK", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })
+                          : ""}
+                        {flagship.endDate
+                          ? ` — ${new Date(flagship.endDate).toLocaleDateString("en-PK", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}`
+                          : ""}
+                      </p>
+                      {flagship.destination && (
+                        <p className="text-sm text-gray-400">{flagship.destination}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </InfoCard>
+          )}
+
+          {/* Verification Status */}
+          <InfoCard title="Verification Status">
+            <div className="space-y-4">
+              <InfoItem
+                icon={Mail}
+                label="Email Verified"
+                value={user.emailVerified ? "Yes" : "No"}
+              />
+              <InfoItem
+                icon={Phone}
+                label="Request Call"
+                value={user.verification.RequestCall ? "Yes" : "No"}
+              />
+              {user.verification.videoLink && (
+                <div className="flex items-start space-x-3 py-2">
+                  <Link className="h-5 w-5 text-gray-500 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-500">
+                      Video Link
+                    </p>
+                    <a
+                      href={user.verification.videoLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline break-all"
+                    >
+                      {user.verification.videoLink}
+                    </a>
+                  </div>
+                </div>
+              )}
+              <div className="pt-2">
+                <Button
+                  variant="outline"
+                  onClick={handleToggleVerification}
+                  disabled={toggleLoading}
+                  isLoading={toggleLoading}
+                  className="w-full justify-center"
+                >
+                  {user.verification.status === "verified"
+                    ? "Mark as Unverified"
+                    : "Mark as Verified"}
+                </Button>
+                <p className="text-xs text-gray-500 mt-2">
+                  Admin override — toggle between verified and unverified.
+                </p>
+              </div>
+            </div>
+          </InfoCard>
+        </div>
 
         {/* Action Buttons */}
         {user.verification.status === "pending" && (
-          <Card className="w-full max-w-md mx-auto bg-white shadow-sm">
+          <Card className="w-full bg-white shadow-sm">
             <CardContent className="pt-6">
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
