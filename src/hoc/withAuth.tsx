@@ -79,9 +79,13 @@ const withAuth = <P extends object>(
           if (userPayload) {
             setCurrentUser(userPayload);
           }
-        } catch (err) {
+        } catch (err: any) {
           console.error("Failed to fetch profile:", err);
-          handleSignOut();
+          // Only sign out on auth failures (401). Network errors, timeouts,
+          // etc. should not nuke the session — the user can retry.
+          if (err?.response?.status === 401) {
+            handleSignOut();
+          }
         } finally {
           if (!cancelled) {
             setProfileChecked(true);

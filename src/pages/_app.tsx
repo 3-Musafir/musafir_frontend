@@ -185,8 +185,8 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
       <SessionProvider
         session={pageProps.session}
-        refetchOnWindowFocus={false}
-        refetchInterval={0}
+        refetchOnWindowFocus={true}
+        refetchInterval={5 * 60}
       >
         <RecoilRoot>
           <NotificationsProvider>

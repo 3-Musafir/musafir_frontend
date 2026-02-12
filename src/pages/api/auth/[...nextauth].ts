@@ -208,13 +208,15 @@ export default NextAuth({
         };
       }
 
-      // On subsequent requests, check if token needs refresh
-      // Refresh if token expires in less than 30 minutes
+      // On subsequent requests, check if token needs refresh.
+      // Refresh when: (a) token expires in less than 30 minutes, OR
+      // (b) a previous refresh failed — retry so the user isn't stuck.
+      const expiresIn = (token.accessTokenExpires as number) - Date.now();
       const shouldRefresh =
-        token.accessTokenExpires &&
-        Date.now() > (token.accessTokenExpires as number) - 30 * 60 * 1000;
+        token.accessTokenExpires && expiresIn < 30 * 60 * 1000;
+      const hadRefreshError = token.error === "RefreshAccessTokenError";
 
-      if (shouldRefresh && token.refreshToken) {
+      if ((shouldRefresh || hadRefreshError) && token.refreshToken) {
         return refreshAccessToken(token);
       }
 
@@ -225,10 +227,10 @@ export default NextAuth({
       session.accessToken = token.accessToken as string | undefined;
       // Ensure the user payload stays slim in the session as well.
       session.user = (token.user as any) ?? session.user;
-      // Pass refresh error to client so it can handle re-authentication
-      if (token.error) {
-        session.error = token.error as string;
-      }
+      // Pass refresh error to client so it can handle re-authentication.
+      // Clear the flag when the token is healthy so a recovered session
+      // doesn't carry a stale error.
+      session.error = token.error ? (token.error as string) : undefined;
       return session;
     },
   },
