@@ -48,17 +48,59 @@ function FlagshipRequirements() {
     return Number.isFinite(parsed) ? parsed : 0;
   };
 
-  const resolveBasePrice = (data?: any) => {
+  const formatPKR = (value: number) => {
+    const amount = Number.isFinite(value) ? value : 0;
+    return `PKR ${amount.toLocaleString('en-PK')}`;
+  };
+
+  const getPKDateISO = (value: Date | string) => {
+    if (!value) return '';
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Karachi' }).format(date);
+  };
+
+  const formatPKDate = (value: Date | string) => {
+    if (!value) return '';
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat('en-PK', {
+      timeZone: 'Asia/Karachi',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(date);
+  };
+
+  const getEarlyBirdMeta = (data?: any) => {
     const basePrice = parseAmount(data?.basePrice);
     const earlyBirdPrice = parseAmount(data?.earlyBirdPrice);
     const deadlineValue = data?.earlyBirdDeadline;
-    if (earlyBirdPrice > 0 && deadlineValue) {
-      const deadline = new Date(deadlineValue);
-      if (!Number.isNaN(deadline.getTime()) && new Date() <= deadline) {
-        return earlyBirdPrice;
-      }
-    }
-    return basePrice;
+    const todayPK = getPKDateISO(new Date());
+    const deadlinePK = deadlineValue ? getPKDateISO(deadlineValue) : '';
+    const hasValidDeadline = Boolean(deadlinePK);
+    const isActive =
+      basePrice > 0 &&
+      earlyBirdPrice > 0 &&
+      earlyBirdPrice < basePrice &&
+      hasValidDeadline &&
+      todayPK <= deadlinePK;
+    const effectiveBasePrice = isActive ? earlyBirdPrice : basePrice;
+    const savings = isActive ? Math.max(0, basePrice - earlyBirdPrice) : 0;
+    const deadlineLabel = isActive ? formatPKDate(deadlineValue) : '';
+
+    return {
+      basePrice,
+      earlyBirdPrice,
+      isActive,
+      effectiveBasePrice,
+      savings,
+      deadlineLabel,
+    };
+  };
+
+  const resolveBasePrice = (data?: any) => {
+    return getEarlyBirdMeta(data).effectiveBasePrice;
   };
 
   const getTwinSharingPrice = (data?: any) => {
@@ -67,6 +109,8 @@ function FlagshipRequirements() {
     );
     return Number(preference?.price) || 0;
   };
+
+  const earlyBirdMeta = getEarlyBirdMeta(flagship);
 
   const recalculateTotalPrice = () => {
     const basePrice = resolveBasePrice(flagship);
@@ -591,7 +635,7 @@ function FlagshipRequirements() {
                       </div>
                       <div className="text-right">
                         <div className={`text-lg font-bold ${city === location.name ? "text-black" : "text-gray-700"}`}>
-                          Rs. {totalPrice.toLocaleString()}
+                          {formatPKR(totalPrice)}
                         </div>
                       </div>
                     </label>
@@ -629,7 +673,7 @@ function FlagshipRequirements() {
                         <span className={tiers === tier.name ? "font-semibold" : ""}>{tier.name}</span>
                       </div>
                       <span className={`text-sm ${tiers === tier.name ? "font-bold text-black" : "text-gray-600"}`}>
-                        {tierPrice === 0 ? 'Included' : `+ Rs.${tierPrice.toLocaleString()}`}
+                        {tierPrice === 0 ? 'Included' : `+ ${formatPKR(tierPrice)}`}
                       </span>
                     </label>
                   );
@@ -901,7 +945,7 @@ function FlagshipRequirements() {
                         </span>
                       </div>
                       <span className={`text-sm ${roomSharing === (preference.name === "Twin Sharing" ? "twin" : "default") ? "font-bold text-black" : "text-gray-600"}`}>
-                        + Rs.{prefPrice.toLocaleString()}
+                        + {formatPKR(prefPrice)}
                       </span>
                     </label>
                   );
@@ -941,47 +985,75 @@ function FlagshipRequirements() {
               </label>
             </div>
 
+            {earlyBirdMeta.isActive && (
+              <div className="bg-white border border-blue-200 rounded-lg p-4 shadow-sm">
+                <h3 className="font-semibold text-sm mb-2 text-blue-900">Price Summary</h3>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-gray-700">Today&apos;s price</span>
+                    <span className="text-base font-semibold text-blue-900">
+                      {formatPKR(earlyBirdMeta.effectiveBasePrice)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-500">
+                    <span>Regular price</span>
+                    <span aria-label="Regular price" className="line-through">
+                      {formatPKR(earlyBirdMeta.basePrice)}
+                    </span>
+                  </div>
+                  {earlyBirdMeta.savings > 0 && earlyBirdMeta.deadlineLabel && (
+                    <div className="text-xs text-emerald-700">
+                      You save {formatPKR(earlyBirdMeta.savings)} if you book before{" "}
+                      {earlyBirdMeta.deadlineLabel} (PKT)
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Price Breakdown */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
               <h3 className="font-semibold text-sm mb-3 text-blue-900">Price Breakdown</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-700">Base Price:</span>
-                  <span className="font-medium">Rs. {resolveBasePrice(flagship).toLocaleString()}</span>
+                  <span className="text-gray-700">
+                    {earlyBirdMeta.isActive ? "Base price (early-bird today):" : "Base price:"}
+                  </span>
+                  <span className="font-medium">{formatPKR(earlyBirdMeta.effectiveBasePrice)}</span>
                 </div>
                 {selectedLocationPrice > 0 && (
                   <div className="flex justify-between text-gray-600">
                     <span>+ {city} (City):</span>
-                    <span>Rs. {selectedLocationPrice.toLocaleString()}</span>
+                    <span>{formatPKR(selectedLocationPrice)}</span>
                   </div>
                 )}
                 {selectedTierPrice > 0 && (
                   <div className="flex justify-between text-gray-600">
                     <span>+ {tiers} (Tier):</span>
-                    <span>Rs. {selectedTierPrice.toLocaleString()}</span>
+                    <span>{formatPKR(selectedTierPrice)}</span>
                   </div>
                 )}
                 {selectedRoomSharingPrice > 0 && (!isCoupleTrip || roomSharing !== "twin") && (
                   <div className="flex justify-between text-gray-600">
                     <span>+ Room Sharing:</span>
-                    <span>Rs. {selectedRoomSharingPrice.toLocaleString()}</span>
+                    <span>{formatPKR(selectedRoomSharingPrice)}</span>
                   </div>
                 )}
                 {isCoupleTrip && twinSharingPrice > 0 && (
                   <div className="flex justify-between text-gray-600">
                     <span>+ Twin Room (Couple):</span>
-                    <span>Rs. {twinSharingPrice.toLocaleString()}</span>
+                    <span>{formatPKR(twinSharingPrice)}</span>
                   </div>
                 )}
                 {sleepPreference === 'bed' && (
                   <div className="flex justify-between text-gray-600">
                     <span>+ Bed Upgrade:</span>
-                    <span>Rs. {Number(flagship?.mattressTiers?.[0]?.price || 0).toLocaleString()}</span>
+                    <span>{formatPKR(Number(flagship?.mattressTiers?.[0]?.price || 0))}</span>
                   </div>
                 )}
                 <div className="border-t border-blue-300 pt-2 mt-2 flex justify-between font-bold text-base">
                   <span className="text-blue-900">Total Amount:</span>
-                  <span className="text-brand-primary-hover">Rs. {price.toLocaleString()}</span>
+                  <span className="text-brand-primary-hover">{formatPKR(price)}</span>
                 </div>
               </div>
             </div>
