@@ -23,6 +23,8 @@ function DiscountsPage() {
   const [flagshipData, setFlagshipData] = useState<Flagship>({} as Flagship);
   const [editId, setEditId] = useState<string | null | undefined>(undefined);
   const isEditMode = Boolean(editId);
+  const MUSAFIR_DISCOUNT_PER_TRIP = 500;
+  const MUSAFIR_DISCOUNT_MAX = 5000;
   // Total values
   const [totalSeats, setTotalSeats] = useState("");
   const [totalDiscountsValue, setTotalDiscountsValue] = useState("");
@@ -39,7 +41,9 @@ function DiscountsPage() {
 
   // Musafir Discount
   const [musafirEnabled, setMusafirEnabled] = useState(true);
-  const [musafirAmount, setMusafirAmount] = useState("");
+  const [musafirAmount, setMusafirAmount] = useState(
+    String(MUSAFIR_DISCOUNT_MAX)
+  );
   const [musafirCount, setMusafirCount] = useState("");
 
   // Error state for validations
@@ -50,7 +54,6 @@ function DiscountsPage() {
     soloFemaleCount: "",
     groupAmount: "",
     groupCount: "",
-    musafirAmount: "",
     musafirCount: "",
   });
 
@@ -153,12 +156,7 @@ function DiscountsPage() {
         }
         if (flagshipData.discounts.musafir) {
           setMusafirEnabled(flagshipData.discounts.musafir.enabled);
-          const legacyBudget = (flagshipData.discounts.musafir as any)?.budget;
-          setMusafirAmount(
-            flagshipData.discounts.musafir.amount ||
-              legacyBudget ||
-              ""
-          );
+          setMusafirAmount(String(MUSAFIR_DISCOUNT_MAX));
           setMusafirCount(flagshipData.discounts.musafir.count || "");
         } else {
           setMusafirEnabled(false);
@@ -182,7 +180,6 @@ function DiscountsPage() {
       soloFemaleCount: "",
       groupAmount: "",
       groupCount: "",
-      musafirAmount: "",
       musafirCount: "",
     };
     let isValid = true;
@@ -232,18 +229,13 @@ function DiscountsPage() {
     }
 
     if (musafirEnabled) {
-      const amount = parseAmount(musafirAmount);
       const count = parseCount(musafirCount);
-      if (amount <= 0) {
-        newErrors.musafirAmount = "Musafir amount must be positive";
-        isValid = false;
-      }
       if (count <= 0) {
         newErrors.musafirCount = "Musafir count must be positive";
         isValid = false;
       }
       if (musafirTotal < musafirUsedValue || count < musafirUsedCount) {
-        newErrors.musafirAmount = "Cannot set total below used discounts";
+        newErrors.musafirCount = "Cannot set total below used discounts";
         isValid = false;
       }
     }
@@ -312,6 +304,14 @@ function DiscountsPage() {
       ? currentValue + 1
       : Math.max(0, currentValue - 1);
     setter(newValue.toString());
+  };
+
+  const toggleMusafirEnabled = () => {
+    const nextEnabled = !musafirEnabled;
+    setMusafirEnabled(nextEnabled);
+    if (nextEnabled) {
+      setMusafirAmount(String(MUSAFIR_DISCOUNT_MAX));
+    }
   };
 
   return (
@@ -544,7 +544,7 @@ function DiscountsPage() {
                 className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${
                   musafirEnabled ? "bg-black" : "bg-gray-300"
                 }`}
-                onClick={() => setMusafirEnabled(!musafirEnabled)}
+                onClick={toggleMusafirEnabled}
               >
                 <div
                   className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
@@ -556,28 +556,17 @@ function DiscountsPage() {
 
             {musafirEnabled && (
               <>
-                <div className="mb-4">
-                  <h4 className="mb-2">Discount per ticket</h4>
-                  <div className="border-2 border-black rounded-lg overflow-hidden">
-                    <input
-                      min={0}
-                      value={musafirAmount}
-                      onChange={(e) => setMusafirAmount(e.target.value)}
-                      className="w-full px-3 py-2 focus:outline-none"
-                      placeholder="0"
-                    />
-                  </div>
-                  {errors.musafirAmount && (
-                    <p className="text-brand-error text-sm mt-1">
-                      {errors.musafirAmount}
-                    </p>
-                  )}
+                <div className="mb-4 rounded-lg border border-dashed border-gray-300 p-3 text-sm text-gray-600">
+                  <p className="font-medium text-gray-700">Fixed rule</p>
+                  <p>
+                    Rs.{MUSAFIR_DISCOUNT_PER_TRIP.toLocaleString()} per completed
+                    trip, capped at Rs.{MUSAFIR_DISCOUNT_MAX.toLocaleString()} per
+                    user.
+                  </p>
                 </div>
 
                 <div>
-                  <h4 className="mb-2 text-gray-500">
-                    Number of such discounts
-                  </h4>
+                  <h4 className="mb-2 text-gray-500">Max Musafir users</h4>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() =>
