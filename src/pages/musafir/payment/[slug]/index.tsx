@@ -564,9 +564,14 @@ export default function TripPayment() {
                       );
                     })
                   ) : (
-                    <p className="text-sm text-muted-foreground">
-                      No discounts available for this registration.
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">
+                        No discounts available for this registration.
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Looks like discounts are gone for this trip — registering and paying early helps secure them next time.
+                      </p>
+                    </div>
                   )}
                 </div>
               )}
