@@ -92,6 +92,13 @@ axiosInstance.interceptors.response.use(
     if (isAuthError(status, data) && !originalRequest?._retry) {
       originalRequest._retry = true;
 
+      // If the request never carried a token the user is simply not logged in.
+      // Skip the refresh / sign-out dance — just let the error propagate.
+      const hadToken = !!originalRequest?.headers?.Authorization;
+      if (!hadToken) {
+        return Promise.reject(error);
+      }
+
       // Coalesce concurrent refresh attempts into a single call
       if (!refreshPromise) {
         refreshPromise = forceRefresh().finally(() => {

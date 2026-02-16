@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { useSession } from "next-auth/react";
 import useFlagshipHook from "@/hooks/useFlagshipHandler";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
 import useCompanyProfile from "@/hooks/useCompanyProfile";
@@ -59,6 +60,9 @@ interface DashboardContextType {
 const DashboardContext = createContext<DashboardContextType | null>(null);
 
 export function DashboardProvider({ children }: { children: ReactNode }) {
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
+
   // Tab state
   const [activeTab, setActiveTab] = useState<TabType>("home");
   const [passportSubTab, setPassportSubTab] = useState<"upcoming" | "past">("upcoming");
@@ -121,24 +125,32 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refreshPassport = useCallback(async () => {
+    if (!isAuthenticated) {
+      setPassportLoading(false);
+      return;
+    }
     setPassportLoading(true);
     try {
-      const [upcoming, past, status] = await Promise.all([
+      const [upcoming, past, verStatus] = await Promise.all([
         registrationHook.getUpcomingPassport(),
         registrationHook.getPastPassport(),
         userHandler.getVerificationStatus(),
       ]);
       if (upcoming) setUpcomingEvents(upcoming);
       if (past) setPastEvents(past);
-      setUserVerificationStatus(status);
+      setUserVerificationStatus(verStatus);
     } catch (error) {
       console.error("Error fetching passport data:", error);
     } finally {
       setPassportLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const refreshWalletPayments = useCallback(async () => {
+    if (!isAuthenticated) {
+      setWalletPaymentsLoading(false);
+      return;
+    }
     setWalletPaymentsLoading(true);
     try {
       const res = await PaymentService.getUserPayments({ limit: 20 });
@@ -149,9 +161,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     } finally {
       setWalletPaymentsLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const fetchWalletData = useCallback(async () => {
+    if (!isAuthenticated) {
+      setWalletLoading(false);
+      return;
+    }
     setWalletLoading(true);
     try {
       const [summaryRes, txRes] = await Promise.all([
@@ -166,9 +182,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     } finally {
       setWalletLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const refreshReferrals = useCallback(async () => {
+    if (!isAuthenticated) {
+      setReferralsLoading(false);
+      return;
+    }
     setReferralsLoading(true);
     try {
       const me = await userHandler.getMe();
@@ -179,7 +199,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     } finally {
       setReferralsLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const loadMoreTransactions = useCallback(async () => {
     if (!walletNextCursor) return;
@@ -242,10 +262,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   // Refresh verification status when passport tab is active
   useEffect(() => {
-    if (activeTab === "passport" && passportSubTab === "upcoming") {
+    if (isAuthenticated && activeTab === "passport" && passportSubTab === "upcoming") {
       userHandler.getVerificationStatus().then(setUserVerificationStatus).catch(console.error);
     }
-  }, [activeTab, passportSubTab]);
+  }, [isAuthenticated, activeTab, passportSubTab]);
 
   const value: DashboardContextType = {
     activeTab,
