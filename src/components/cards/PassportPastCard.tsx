@@ -26,7 +26,7 @@ const PassportPastCard: React.FC<PassportPastCardProps> = ({
   const isRefunded = refundStatus === "refunded" || status === "refunded";
 
   return (
-    <div className="w-full rounded-xl bg-green-800 px-4 py-5 lg:px-6 lg:py-6 text-white">
+    <div className="w-full rounded-xl bg-brand-primary px-4 py-5 lg:px-6 lg:py-6 text-black">
       <h3 className="text-xl lg:text-2xl font-semibold">{title}</h3>
       <p className="mt-1 lg:mt-2 text-sm lg:text-base opacity-80">
         {date} @ {location}

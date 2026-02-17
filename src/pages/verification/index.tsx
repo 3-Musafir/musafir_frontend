@@ -55,6 +55,13 @@ function GetVerified() {
       }
     }
 
+    // Show deferred merge notification from signup flow
+    const merged = localStorage.getItem('accountMerged');
+    if (merged) {
+      localStorage.removeItem('accountMerged');
+      showAlert('We found your existing account! Your trip history has been preserved.', 'success');
+    }
+
     const ensureNotVerified = async () => {
       try {
         const user = await getMe();

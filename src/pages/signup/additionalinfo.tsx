@@ -163,7 +163,7 @@ export default function AdditionalInfo() {
         const { userId, verificationId } = registerResponse;
 
         if (registerResponse.merged) {
-          showAlert('We found your existing account! Your trip history has been preserved.', 'success');
+          localStorage.setItem('accountMerged', 'true');
         }
 
         if (flagshipId) {
