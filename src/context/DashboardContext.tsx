@@ -239,26 +239,32 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     }
   }, [fetchWalletData, refreshWalletPayments]);
 
-  // Load data on initial mount and when tab changes
+  // Load home data on initial mount (public, no auth needed)
   useEffect(() => {
-    // Always load home data on initial mount
     if (!loadedTabs.has("home")) {
       refreshHome();
-      refreshPassport(); // Also load passport for upcoming registrations on home
-      setLoadedTabs((prev) => new Set([...prev, "home", "passport"]));
+      setLoadedTabs((prev) => new Set([...prev, "home"]));
     }
   }, []);
 
+  // Load passport data once authenticated (needs JWT for pastPassport/upcomingPassport)
+  useEffect(() => {
+    if (isAuthenticated && !loadedTabs.has("passport")) {
+      refreshPassport();
+      setLoadedTabs((prev) => new Set([...prev, "passport"]));
+    }
+  }, [isAuthenticated]);
+
   // Load tab data when switching to it (lazy loading)
   useEffect(() => {
-    if (activeTab === "wallet" && !loadedTabs.has("wallet")) {
+    if (activeTab === "wallet" && !loadedTabs.has("wallet") && isAuthenticated) {
       Promise.all([fetchWalletData(), refreshWalletPayments()]);
       setLoadedTabs((prev) => new Set([...prev, "wallet"]));
-    } else if (activeTab === "referrals" && !loadedTabs.has("referrals")) {
+    } else if (activeTab === "referrals" && !loadedTabs.has("referrals") && isAuthenticated) {
       refreshReferrals();
       setLoadedTabs((prev) => new Set([...prev, "referrals"]));
     }
-  }, [activeTab, loadedTabs, fetchWalletData, refreshWalletPayments, refreshReferrals]);
+  }, [activeTab, loadedTabs, isAuthenticated, fetchWalletData, refreshWalletPayments, refreshReferrals]);
 
   // Refresh verification status when passport tab is active
   useEffect(() => {
