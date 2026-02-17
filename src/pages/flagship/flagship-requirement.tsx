@@ -1,5 +1,3 @@
-import { ROLES } from '@/config/constants';
-import withAuth from '@/hoc/withAuth';
 import useCustomHook from '@/hooks/useFlagshipHandler';
 import useRegistrationHook, { RegistrationCreationResponse } from '@/hooks/useRegistrationHandler';
 import { BaseRegistration } from '@/interfaces/registration';
@@ -7,6 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { resolveImageSrc } from '@/lib/image';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { showAlert } from '../alert';
@@ -17,6 +16,8 @@ import { getErrorCode, mapErrorToUserMessage } from '@/utils/errorMessages';
 function FlagshipRequirements() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
   const [tripType, setTripType] = useState<'solo' | 'group' | 'partner'>('solo')
   const [city, setCity] = useState('')
   const [tiers, setTiers] = useState('');
@@ -225,17 +226,19 @@ function FlagshipRequirements() {
       if (flagshipId) {
         await getFlagship(flagshipId);
         localStorage.setItem("flagshipId", JSON.stringify(flagshipId));
-        const pendingInvite = await registrationAction.getPendingGroupInvite(flagshipId);
-        if (pendingInvite) {
-          setTripType("group");
-          setTripTypeLocked(true);
-          setGroupLinkStatus(pendingInvite);
-          const inviteEmails =
-            (pendingInvite.linkedContacts || []).map((contact: any) => contact.email) ||
-            pendingInvite.groupMembers ||
-            [];
-          setGroupMembers(inviteEmails);
-          setGroupMemberInput("");
+        if (isAuthenticated) {
+          const pendingInvite = await registrationAction.getPendingGroupInvite(flagshipId);
+          if (pendingInvite) {
+            setTripType("group");
+            setTripTypeLocked(true);
+            setGroupLinkStatus(pendingInvite);
+            const inviteEmails =
+              (pendingInvite.linkedContacts || []).map((contact: any) => contact.email) ||
+              pendingInvite.groupMembers ||
+              [];
+            setGroupMembers(inviteEmails);
+            setGroupMemberInput("");
+          }
         }
       } else {
         const flagshipId = JSON.parse(localStorage.getItem("flagshipId") || "{}");
@@ -399,6 +402,12 @@ function FlagshipRequirements() {
         price,
       };
       localStorage.setItem("registration", JSON.stringify(registration));
+
+      // Unauthenticated (signup flow): save to localStorage and continue onboarding
+      if (!isAuthenticated) {
+        router.push('/signup/additionalinfo');
+        return;
+      }
 
       try {
         const currentUser = await fetchCurrentUser();
@@ -1108,4 +1117,4 @@ function FlagshipRequirements() {
   );
 }
 
-export default withAuth(FlagshipRequirements, { allowedRoles: [ROLES.MUSAFIR] });
+export default FlagshipRequirements;

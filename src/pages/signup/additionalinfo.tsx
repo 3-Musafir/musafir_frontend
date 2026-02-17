@@ -155,10 +155,16 @@ export default function AdditionalInfo() {
       } else {
         // For password login, continue with the original flow
         const payload: BaseUser = { ...formData, employmentStatus };
-        const { userId, verificationId } = (await action.register(payload)) as {
+        const registerResponse = (await action.register(payload)) as {
           userId: string;
           verificationId: string;
+          merged?: boolean;
         };
+        const { userId, verificationId } = registerResponse;
+
+        if (registerResponse.merged) {
+          showAlert('We found your existing account! Your trip history has been preserved.', 'success');
+        }
 
         if (flagshipId) {
           const registration = JSON.parse(

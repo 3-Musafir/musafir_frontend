@@ -22,6 +22,14 @@ export default function CreateAccount() {
         JSON.stringify({ ...savedData, referralCode: ref })
       );
     }
+
+    // Clear stale flagship data from previous sessions so the signup flow
+    // doesn't force the flagship step unless the user came via a flagship link
+    // (which sets flagshipId before reaching this page via /launch).
+    if (!searchParams?.get("flagshipId")) {
+      localStorage.removeItem("flagshipId");
+      localStorage.removeItem("registration");
+    }
   }, [searchParams]);
 
   const checkEmailAvailability = async () => {
