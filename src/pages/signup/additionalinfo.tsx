@@ -148,7 +148,11 @@ export default function AdditionalInfo() {
           city,
           employmentStatus,
         };
-        await api.patch(USER.UPDATE_ME, payload);
+        const res = await api.patch(USER.UPDATE_ME, payload);
+        const patchData = res?.data ?? res;
+        if (patchData?.merged) {
+          localStorage.setItem('accountMerged', 'true');
+        }
         localStorage.removeItem("isGoogleLogin");
         localStorage.setItem("formData", JSON.stringify(formData));
         router.replace("/home");

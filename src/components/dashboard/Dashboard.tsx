@@ -9,6 +9,7 @@ import PassportTabContent from "./PassportTabContent";
 import WalletTabContent from "./WalletTabContent";
 import ReferralsTabContent from "./ReferralsTabContent";
 import { Home, Flag, Wallet, Users } from "lucide-react";
+import { showAlert } from "@/pages/alert";
 
 const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
   { id: "home", label: "Home", icon: Home },
@@ -33,6 +34,15 @@ function DashboardContent() {
       router.replace("/home", undefined, { shallow: true });
     }
   }, [router.isReady, router.query.tab, setActiveTab, router]);
+
+  // Show deferred merge notification (set during Google SSO signup)
+  useEffect(() => {
+    const merged = localStorage.getItem('accountMerged');
+    if (merged) {
+      localStorage.removeItem('accountMerged');
+      showAlert('We found your existing account! Your trip history has been preserved.', 'success');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen w-full bg-gray-50 flex flex-col">

@@ -12,6 +12,7 @@ export default function EmailVerification() {
   const action = useCustomHook();
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSkipVerification = async (e: any) => {
     e.preventDefault();
@@ -26,36 +27,41 @@ export default function EmailVerification() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const savedData = JSON.parse(localStorage.getItem('formData') || '{}');
-    const formData = {
-      ...savedData, password
-    }
-    const response = await action.verifyEmail(password, savedData.verificationId);
-    if ((response as { accessToken: string }).accessToken) {
-      // Clear signup-related form data from localStorage before signing in
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.removeItem("formData");
-          localStorage.removeItem("registration");
-          localStorage.removeItem("registrationId");
-          localStorage.removeItem("isGoogleLogin");
-        } catch (err) {
-          console.warn("Failed to clear localStorage keys:", err);
-        }
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      const savedData = JSON.parse(localStorage.getItem('formData') || '{}');
+      const formData = {
+        ...savedData, password
       }
+      const response = await action.verifyEmail(password, savedData.verificationId);
+      if ((response as { accessToken: string }).accessToken) {
+        // Clear signup-related form data from localStorage before signing in
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.removeItem("formData");
+            localStorage.removeItem("registration");
+            localStorage.removeItem("registrationId");
+            localStorage.removeItem("isGoogleLogin");
+          } catch (err) {
+            console.warn("Failed to clear localStorage keys:", err);
+          }
+        }
 
-      await signIn("credentials", {
-        email: formData.email,
-        password: formData.password,
-        redirect: false,
-      });
+        await signIn("credentials", {
+          email: formData.email,
+          password: formData.password,
+          redirect: false,
+        });
 
-      //this first routes to the home page and then to  the verification page need to figure it out
-      router.push("/verification");
-    } else {
-      //throw error over here that request failed, 
+        //this first routes to the home page and then to  the verification page need to figure it out
+        router.push("/verification");
+      } else {
+        //throw error over here that request failed,
+      }
+    } finally {
+      setIsLoading(false);
     }
-
   };
 
   return (
@@ -110,16 +116,19 @@ export default function EmailVerification() {
               <div className="space-y-2">
                 <button
                   onClick={handleSubmit}
-                  className="w-full bg-brand-primary hover:bg-brand-primary-hover text-black py-4 rounded-md text-sm font-medium transition-colors"
+                  disabled={isLoading}
+                  aria-busy={isLoading || undefined}
+                  className="w-full bg-brand-primary hover:bg-brand-primary-hover text-black py-4 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Musafir Verification
+                  {isLoading ? 'Verifying...' : 'Musafir Verification'}
                 </button>
               </div>
               {/* skip Verification for now */}
               <div>
                 <button
                   onClick={handleSkipVerification}
-                  className="w-full bg-gray-200 hover:bg-gray-300 text-black py-4 rounded-md text-sm font-medium transition-colors"
+                  disabled={isLoading}
+                  className="w-full bg-gray-200 hover:bg-gray-300 text-black py-4 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Skip Verification for now
                 </button>
