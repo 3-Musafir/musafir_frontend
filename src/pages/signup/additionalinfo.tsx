@@ -8,6 +8,7 @@ import useRegistrationHook, { RegistrationCreationResponse } from "@/hooks/useRe
 import api from "@/lib/api";
 import apiEndpoints from "@/config/apiEndpoints";
 import { showAlert } from "@/pages/alert";
+import { mapErrorToUserMessage } from "@/utils/errorMessages";
 import { cnicDigits, formatCnicInput, validateCnicFormat } from "@/utils/cnic";
 
 export default function AdditionalInfo() {
@@ -221,6 +222,7 @@ export default function AdditionalInfo() {
       }
     } catch (error) {
       console.error("Registration error:", error);
+      showAlert(mapErrorToUserMessage(error), "error");
     } finally {
       setIsLoading(false);
     }

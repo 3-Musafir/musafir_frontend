@@ -45,6 +45,8 @@ async function refreshAccessToken(token: any) {
     return {
       ...token,
       accessToken: refreshedTokens.accessToken,
+      // Backend now rotates refresh tokens — use the new one if provided
+      refreshToken: refreshedTokens.refreshToken ?? token.refreshToken,
       accessTokenExpires: Date.now() + 9.5 * 60 * 60 * 1000, // 9.5 hours
       error: undefined,
     };
@@ -136,14 +138,11 @@ export default NextAuth({
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         try {
-          console.log(`${process.env.NEXT_PUBLIC_API_URL}/user/google`);
-          // Send Google user details to NestJS API to create/get a user and receive JWT
+          // Send Google ID token to backend for server-side verification
           const res = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/user/google`,
             {
-              email: user.email,
-              googleId: user.id,
-              fullName: user.name || "",
+              idToken: account.id_token,
             },
             { timeout: 10000 }
           );
