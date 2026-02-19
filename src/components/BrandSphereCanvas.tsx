@@ -47,8 +47,8 @@ function SphereCore({
       shader.uniforms.uTime = { value: 0 };
       shader.uniforms.uMorph = { value: 0 };
       shader.uniforms.uWave = { value: 0.035 };
-      shader.uniforms.uColorA = { value: new THREE.Color("#FD8E29") };
-      shader.uniforms.uColorB = { value: new THREE.Color("#FF490E") };
+      shader.uniforms.uColorA = { value: new THREE.Color("#6EC5FF") };
+      shader.uniforms.uColorB = { value: new THREE.Color("#2B2D42") };
       shader.uniforms.uRippleOrigins = { value: rippleOriginsRef.current };
       shader.uniforms.uRippleTimes = { value: rippleTimesRef.current };
       shader.uniforms.uRippleDuration = { value: 2.0 };
@@ -202,8 +202,8 @@ roughnessFactor = clamp(roughnessFactor - vRipple * 0.18, 0.05, 1.0);`,
           ref={materialRef}
           roughness={0.55}
           metalness={0.1}
-          emissive={new THREE.Color("#FF5A20")}
-          emissiveIntensity={0.12}
+          emissive={new THREE.Color("#2C6FA6")}
+          emissiveIntensity={0.1}
         />
       </mesh>
     </group>

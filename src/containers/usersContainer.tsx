@@ -24,6 +24,12 @@ export function UsersContainer({ users, activeSection, searchQuery, isSearching 
     router.push(`/admin/user/${userId}`);
   };
 
+  const formatDate = (value?: string) => {
+    if (!value) return "—";
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString();
+  };
+
   if (isSearching) {
     return (
       <div className="text-center text-gray-500 py-8">
@@ -34,7 +40,27 @@ export function UsersContainer({ users, activeSection, searchQuery, isSearching 
 
   return (
     <div className="space-y-6">
-      {users?.length > 0 ? users.map((user) => (
+      {users?.length > 0 ? users.map((user) => {
+        const verificationStatus = (user.verification?.status || "").toLowerCase();
+        const verificationDateRaw =
+          user.verification?.verificationDate || user.verification?.VerificationDate;
+        const verificationRequestDateRaw =
+          user.verification?.verificationRequestDate ||
+          user.verification?.VerificationRequestDate;
+        const verificationLabel =
+          verificationStatus === "verified"
+            ? "Verified on"
+            : verificationStatus === "pending"
+              ? "Requested on"
+              : "Verification date";
+        const verificationValue =
+          verificationStatus === "verified"
+            ? formatDate(verificationDateRaw)
+            : verificationStatus === "pending"
+              ? formatDate(verificationRequestDateRaw)
+              : "—";
+
+        return (
         <Card
           key={user._id}
           className="overflow-hidden transition-all duration-200 hover:shadow-lg"
@@ -54,6 +80,10 @@ export function UsersContainer({ users, activeSection, searchQuery, isSearching 
                 <span className="text-gray-600">University</span>
                 <span className="font-medium">{user.university}</span>
               </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">{verificationLabel}</span>
+                <span className="font-medium">{verificationValue}</span>
+              </div>
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
@@ -70,7 +100,8 @@ export function UsersContainer({ users, activeSection, searchQuery, isSearching 
             </Badge>
           </CardFooter>
         </Card>
-      )) : (
+        );
+      }) : (
         <div className="text-center text-gray-500 py-8">
           <p className="text-xl font-medium mb-2">
             {searchQuery

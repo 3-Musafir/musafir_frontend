@@ -33,4 +33,8 @@ export interface Verification {
   status: string;
   RequestCall: boolean;
   videoLink?: string;
+  verificationDate?: string;
+  verificationRequestDate?: string;
+  VerificationDate?: string;
+  VerificationRequestDate?: string;
 }
