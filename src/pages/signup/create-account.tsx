@@ -62,10 +62,10 @@ export default function CreateAccount() {
   };
 
   const handleGoogleSignIn = async () => {
-    // Mark this navigation as a Google signup flow so downstream steps
-    // (like AdditionalInfo) can adapt the UI/flow.
+    // Mark intent — only promoted to "isGoogleLogin" after session is confirmed
+    // in auth-callback. This prevents a stale flag if sign-in fails.
     if (typeof window !== "undefined") {
-      localStorage.setItem("isGoogleLogin", "true");
+      localStorage.setItem("isGoogleLoginPending", "true");
     }
 
     const base =

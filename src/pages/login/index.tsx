@@ -117,9 +117,10 @@ export default function Login() {
   };
 
   const handleGoogleSignIn = async () => {
-    // Set local flag so downstream signup pages know this was a Google flow
+    // Mark intent — only promoted to "isGoogleLogin" after session is confirmed
+    // in auth-callback. This prevents a stale flag if sign-in fails.
     if (typeof window !== "undefined") {
-      localStorage.setItem("isGoogleLogin", "true");
+      localStorage.setItem("isGoogleLoginPending", "true");
     }
 
     // Allow caller to pass a safe callbackUrl (e.g., /admin) via query.

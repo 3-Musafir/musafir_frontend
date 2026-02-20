@@ -57,6 +57,12 @@ export default function AuthCallback() {
     };
 
     if (status === "authenticated") {
+      // Promote the pending Google flag now that we have a valid session.
+      // This ensures isGoogleLogin is never set without a real session.
+      if (typeof window !== "undefined" && localStorage.getItem("isGoogleLoginPending")) {
+        localStorage.setItem("isGoogleLogin", "true");
+        localStorage.removeItem("isGoogleLoginPending");
+      }
       routeUser();
       return () => {
         cancelled = true;
@@ -65,6 +71,11 @@ export default function AuthCallback() {
     }
 
     if (status === "unauthenticated") {
+      // Sign-in failed — clean up the pending flag so downstream pages
+      // don't think we're in a Google flow without a session.
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("isGoogleLoginPending");
+      }
       router.replace(`/login?callbackUrl=${encodeURIComponent(nextPath || "/")}`);
       return () => {
         cancelled = true;

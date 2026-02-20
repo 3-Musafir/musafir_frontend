@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import useCustomHook from "@/hooks/useSignUp";
 import { BaseUser } from "@/interfaces/signup";
 import useRegistrationHook, { RegistrationCreationResponse } from "@/hooks/useRegistrationHandler";
@@ -14,6 +14,7 @@ import { cnicDigits, formatCnicInput, validateCnicFormat } from "@/utils/cnic";
 export default function AdditionalInfo() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { status: sessionStatus } = useSession();
   const action = useCustomHook();
   const registrationAction = useRegistrationHook();
   const [university, setUniversity] = useState("");
@@ -82,11 +83,26 @@ export default function AdditionalInfo() {
       setEmploymentStatus(savedData?.employmentStatus || "");
     }
 
-    // Check if user is coming from Google login flow via localStorage flag
-    // Set a flag 'isGoogleLogin' to 'true' during the Google signup redirect flow
+    // Determine Google login flow. We only trust the flag if the user
+    // actually has an authenticated session — prevents a stale flag from
+    // a failed Google sign-in from triggering the PATCH flow.
     const googleFlag = localStorage.getItem('isGoogleLogin');
-    setIsGoogleLogin(googleFlag === 'true' || isForcedCompletion);
-  }, [isForcedCompletion]);
+    const googlePending = localStorage.getItem('isGoogleLoginPending');
+
+    if (sessionStatus === 'authenticated' && (googleFlag === 'true' || googlePending === 'true' || isForcedCompletion)) {
+      // Session exists — safe to use Google flow
+      if (googlePending) {
+        localStorage.setItem('isGoogleLogin', 'true');
+        localStorage.removeItem('isGoogleLoginPending');
+      }
+      setIsGoogleLogin(true);
+    } else if (sessionStatus !== 'loading') {
+      // No session or still loading — don't enable Google flow
+      // Clean up stale flags
+      if (googlePending) localStorage.removeItem('isGoogleLoginPending');
+      setIsGoogleLogin(isForcedCompletion && sessionStatus === 'authenticated');
+    }
+  }, [isForcedCompletion, sessionStatus]);
 
   const handleCnicChange = (value: string) => {
     const formatted = formatCnicInput(value);
@@ -137,6 +153,12 @@ export default function AdditionalInfo() {
 
       // Different flow for Google login vs password login
       if (isGoogleLogin) {
+        // Guard: verify session exists before making authenticated call
+        if (sessionStatus !== 'authenticated') {
+          showAlert('Your session has expired. Please sign in again.', 'error');
+          router.replace('/login');
+          return;
+        }
         // For Google login, patch the authenticated user and continue
         const { USER } = apiEndpoints;
         const payload = {

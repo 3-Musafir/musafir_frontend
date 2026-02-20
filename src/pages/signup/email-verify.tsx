@@ -43,6 +43,7 @@ export default function EmailVerification() {
             localStorage.removeItem("registration");
             localStorage.removeItem("registrationId");
             localStorage.removeItem("isGoogleLogin");
+            localStorage.removeItem("isGoogleLoginPending");
           } catch (err) {
             console.warn("Failed to clear localStorage keys:", err);
           }
