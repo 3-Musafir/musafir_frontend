@@ -121,6 +121,10 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   PAYMENT_USER_NOT_FOUND: 'Unable to process payment. User not found.',
   PAYMENT_FAILED: 'Payment failed. Please try again or use a different method.',
   PAYMENT_VALIDATION_FAILED: 'Payment validation failed. Please check your details.',
+  payment_pending_approval: 'A payment is already pending approval.',
+  wallet_amount_exceeds_due: 'Wallet amount can’t exceed remaining due.',
+  payment_amount_must_match_due: 'Payment amount must equal remaining due.',
+  wallet_not_allowed: 'Wallet credits are not available for this payment method.',
 
   // ============================================
   // REFUND

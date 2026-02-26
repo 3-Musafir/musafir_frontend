@@ -19,8 +19,10 @@ type StatusType =
 
 interface PaymentDetails {
   price: number;
-  dueAmount: number;
+  amountDue: number;
   discountApplied?: number;
+  paidAmount?: number;
+  isFullyPaid?: boolean;
 }
 
 const getStatusStyles = (status: StatusType) => {
@@ -132,10 +134,10 @@ const getActionButton = (
           disabled: true,
         };
       }
-      if (paymentInfo && typeof paymentInfo.dueAmount === 'number' && paymentInfo.dueAmount > 0) {
+      if (paymentInfo && typeof paymentInfo.amountDue === 'number' && paymentInfo.amountDue > 0) {
         return {
           css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
-          text: `Pay remaining (Rs.${paymentInfo.dueAmount.toLocaleString()})`,
+          text: `Pay remaining (Rs.${paymentInfo.amountDue.toLocaleString()})`,
           onClick: () => router.push(`/musafir/payment/${registrationId}`),
         };
       }
@@ -257,11 +259,12 @@ const StatusInfo: React.FC<{
       if (!paymentInfo) return null;
       const discountApplied =
         typeof paymentInfo.discountApplied === 'number' ? paymentInfo.discountApplied : 0;
-      const paidAmount = Math.max(
-        0,
-        (paymentInfo.price || 0) - (paymentInfo.dueAmount || 0) - discountApplied,
-      );
-      const isFullyPaid = (paymentInfo.dueAmount || 0) <= 0;
+      const paidAmount =
+        typeof paymentInfo.paidAmount === 'number' ? paymentInfo.paidAmount : 0;
+      const isFullyPaid =
+        typeof paymentInfo.isFullyPaid === 'boolean'
+          ? paymentInfo.isFullyPaid
+          : (paymentInfo.amountDue || 0) <= 0;
       return (
         <div className="text-sm text-heading space-y-1">
           <p>
@@ -276,7 +279,7 @@ const StatusInfo: React.FC<{
             Paid: Rs.{paidAmount.toLocaleString()}
           </p>
           <p className="font-bold text-sm">
-            Due Amount: Rs.{paymentInfo.dueAmount.toLocaleString()}
+            Due Amount: Rs.{paymentInfo.amountDue.toLocaleString()}
           </p>
         </div>
       );

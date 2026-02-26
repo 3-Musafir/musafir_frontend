@@ -56,10 +56,12 @@ export default function PassportTabContent() {
                 location={event.flagship.destination}
                 image={event.flagship.images[0]}
                 status={event.status}
-                paymentInfo={{
+                paymentInfo={event.paymentSummary || {
                   price: event.price,
-                  dueAmount: event.amountDue,
+                  amountDue: event.amountDue,
                   discountApplied: event.discountApplied,
+                  paidAmount: 0,
+                  isFullyPaid: false,
                 }}
                 detailedPlan={event?.flagship?.detailedPlan}
                 userVerificationStatus={userVerificationStatus}

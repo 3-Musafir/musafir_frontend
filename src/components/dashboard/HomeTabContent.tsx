@@ -24,7 +24,9 @@ export default function HomeTabContent() {
     if (!event?.flagship) return false;
     if (event?.cancelledAt) return false;
     if (event?.refundStatus && event.refundStatus !== "none") return false;
-    const dueAmount = Number(event.amountDue || 0);
+    const dueAmount = Number(
+      event.paymentSummary?.amountDue ?? event.amountDue ?? 0
+    );
     if (event.status === "payment") return true;
     if (event.status === "confirmed" && dueAmount > 0) return true;
     return false;
@@ -57,10 +59,12 @@ export default function HomeTabContent() {
                 location={event.flagship?.destination}
                 image={event.flagship?.images?.[0]}
                 status={event.status}
-                paymentInfo={{
+                paymentInfo={event.paymentSummary || {
                   price: event.price,
-                  dueAmount: event.amountDue,
+                  amountDue: event.amountDue,
                   discountApplied: event.discountApplied,
+                  paidAmount: 0,
+                  isFullyPaid: false,
                 }}
                 detailedPlan={event.flagship?.detailedPlan}
                 userVerificationStatus={userVerificationStatus}

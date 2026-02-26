@@ -10,6 +10,7 @@ import { IdentityVerificationList } from "../../../../containers/verification";
 import { PaidListContainer } from "../../../../containers/paidList";
 import { RegistrationsList } from "@/containers/registeredList";
 import { PaymentVerificationList } from "@/containers/paymentVerification";
+import { CheckinList } from "@/containers/checkinList";
 import { useRouter } from "next/router";
 import { FlagshipService } from "@/services/flagshipService";
 import { format } from "date-fns";
@@ -214,7 +215,7 @@ export default function Dashboard() {
             className="w-full"
             onValueChange={setActiveTab}
           >
-            <TabsList className="w-full grid grid-cols-4 h-12">
+            <TabsList className="w-full grid grid-cols-5 h-12">
               <TabsTrigger
                 value="stats"
                 className={cn(
@@ -241,6 +242,15 @@ export default function Dashboard() {
             )}
           >
             Payment Verification
+          </TabsTrigger>
+          <TabsTrigger
+            value="checkin"
+            className={cn(
+              "py-3 flex justify-center",
+              activeTab === "checkin" && "border-b-2 border-black"
+            )}
+          >
+            Check-In
           </TabsTrigger>
               <TabsTrigger
                 value="paid"
@@ -388,6 +398,7 @@ export default function Dashboard() {
         </>
       )}
       {activeTab === "verification" && <PaymentVerificationList />}
+      {activeTab === "checkin" && slug && <CheckinList flagshipId={slug} />}
       {activeTab === "paid" && <PaidListContainer />}
     </div>
   );

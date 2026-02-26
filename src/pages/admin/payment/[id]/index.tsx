@@ -144,21 +144,10 @@ export default function PaymentDetailsPage() {
     typeof registration?.price === "number" ? registration.price : undefined;
   const registrationAmountDue =
     typeof registration?.amountDue === "number" ? registration.amountDue : undefined;
-  const registrationDiscountApplied =
-    typeof registration?.discountApplied === "number"
-      ? registration.discountApplied
-      : 0;
-  const paymentDiscount = payment.discount || 0;
-  const discountDelta = Math.max(0, paymentDiscount - registrationDiscountApplied);
-  const paymentWalletRequested =
-    typeof payment.walletRequested === "number" ? payment.walletRequested : 0;
   const projectedRemainingDue =
-    typeof registrationAmountDue === "number"
-      ? Math.max(
-          0,
-          registrationAmountDue - payment.amount - discountDelta - paymentWalletRequested
-        )
-      : undefined;
+    typeof (payment as any)?.remainingDueAtDecision === "number"
+      ? (payment as any).remainingDueAtDecision
+      : registrationAmountDue;
   // Type guard to check if bankAccount is an IBankAccount object
   const bankAccount =
     typeof payment.bankAccount === "string" ? null : payment.bankAccount;
@@ -174,7 +163,17 @@ export default function PaymentDetailsPage() {
         ? bankLabel
           ? `${bankLabel} + Wallet`
           : "Bank + Wallet"
-        : bankLabel || "Bank transfer";
+        : payment.paymentMethod === "cash"
+          ? "Cash"
+          : payment.paymentMethod === "partial_cash"
+            ? "Partial Cash"
+            : payment.paymentMethod === "split_cash_bank"
+              ? bankLabel
+                ? `Cash + ${bankLabel}`
+                : "Cash + Bank"
+              : bankLabel || "Bank transfer";
+  const cashProof = (payment as any)?.cashProofKey as string | undefined;
+  const bankProof = (payment as any)?.bankProofKey as string | undefined;
 
   console.log(payment);
   return (
@@ -253,6 +252,22 @@ export default function PaymentDetailsPage() {
               <span className="text-gray-600">Payment Source</span>
               <span className="font-medium">{paymentSourceLabel}</span>
             </div>
+            {typeof payment.cashAmount === "number" && payment.cashAmount > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Cash Collected</span>
+                <span className="font-medium">
+                  Rs. {payment.cashAmount.toLocaleString()}
+                </span>
+              </div>
+            )}
+            {typeof payment.bankAmount === "number" && payment.bankAmount > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Bank Collected</span>
+                <span className="font-medium">
+                  Rs. {payment.bankAmount.toLocaleString()}
+                </span>
+              </div>
+            )}
             {bankAccount ? (
               <>
                 <div className="flex justify-between">
@@ -373,21 +388,51 @@ export default function PaymentDetailsPage() {
 
       <Card>
         <CardHeader>
-          <h2 className="text-xl font-semibold">Payment Screenshot</h2>
+          <h2 className="text-xl font-semibold">Payment Proofs</h2>
         </CardHeader>
         <CardContent>
-          {payment.screenshot ? (
-            <div className="relative aspect-video w-full">
-              <Image
-                src={payment.screenshot}
-                alt="Payment Screenshot"
-                fill
-                className="object-contain"
-              />
+          {cashProof || bankProof || payment.screenshot ? (
+            <div className="space-y-4">
+              {cashProof && (
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">Cash Proof</p>
+                  <div className="relative aspect-video w-full">
+                    <Image
+                      src={cashProof}
+                      alt="Cash Proof"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+              )}
+              {bankProof && (
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">Bank Proof</p>
+                  <div className="relative aspect-video w-full">
+                    <Image
+                      src={bankProof}
+                      alt="Bank Proof"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+              )}
+              {!cashProof && !bankProof && payment.screenshot && (
+                <div className="relative aspect-video w-full">
+                  <Image
+                    src={payment.screenshot}
+                    alt="Payment Screenshot"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-gray-500 text-sm">
-              No screenshot was submitted for this payment.
+              No proof was submitted for this payment.
             </div>
           )}
         </CardContent>

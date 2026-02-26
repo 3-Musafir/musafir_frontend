@@ -1,5 +1,14 @@
 import { IFlagship } from "@/services/types/flagship";
 
+export interface PaymentSummary {
+  price: number;
+  discountApplied: number;
+  walletPaid?: number;
+  amountDue: number;
+  paidAmount: number;
+  isFullyPaid: boolean;
+}
+
 export interface IRegistration {
   _id: string;
   flagship: IFlagship | string;
@@ -8,6 +17,10 @@ export interface IRegistration {
   paymentId?: IPayment | string;
   amountDue?: number;
   discountApplied?: number;
+  paymentSummary?: PaymentSummary;
+  attendanceStatus?: "unknown" | "present" | "absent";
+  settlementStatus?: "unpaid" | "partial" | "paid" | "cancelled" | "refunded";
+  hasApprovedPayment?: boolean;
   cancelledAt?: string;
   refundStatus?: string;
   waitlistOfferStatus?: string;
@@ -69,6 +82,11 @@ export interface IPayment {
   id: string;
   paymentMethod?: string;
   screenshot?: string;
+  cashAmount?: number;
+  bankAmount?: number;
+  cashProofKey?: string;
+  bankProofKey?: string;
+  remainingDueAtDecision?: number;
   rejectionReason?: string;
 }
 

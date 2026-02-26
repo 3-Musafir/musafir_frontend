@@ -58,7 +58,6 @@ export default function TripPayment() {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [paymentType, setPaymentType] = useState<"full" | "partial">("full");
-  const [partialAmount, setPartialAmount] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [eligibleDiscounts, setEligibleDiscounts] = useState<any>(null);
   const [selectedDiscountType, setSelectedDiscountType] = useState<
@@ -71,40 +70,78 @@ export default function TripPayment() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const registrationHook = useRegistrationHook();
   const [registration, setRegistration] = useState<any>(null);
+  const [paymentQuote, setPaymentQuote] = useState<any>(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
 
   const tripPrice = registration?.price || 0;
-  const amountDue =
-    typeof registration?.amountDue === "number" ? registration.amountDue : tripPrice;
-  const discountApplied =
-    typeof registration?.discountApplied === "number"
-      ? registration.discountApplied
-      : 0;
   const paymentStatus =
     registration?.paymentId && typeof registration.paymentId === "object"
       ? registration.paymentId.status
       : undefined;
-
-  const pendingDiscount = discountApplied > 0 ? 0 : selectedDiscountAmount;
-  const discountRemaining = Math.max(0, pendingDiscount);
-  const finalAmount = Math.max(0, amountDue - pendingDiscount);
-  const paymentPendingApproval = paymentStatus === "pendingApproval";
-  const noPaymentDue = finalAmount <= 0;
   const walletBalance =
     typeof walletSummary?.balance === "number" ? walletSummary.balance : 0;
-  const maxWalletUsable = Math.max(0, Math.min(walletBalance, finalAmount));
-  const effectiveWalletToUse = Math.max(0, Math.min(walletToUse, maxWalletUsable));
+  const amountDue =
+    typeof paymentQuote?.amountDue === "number"
+      ? paymentQuote.amountDue
+      : typeof registration?.amountDue === "number"
+        ? registration.amountDue
+        : tripPrice;
+  const discountApplied =
+    typeof paymentQuote?.discountApplied === "number"
+      ? paymentQuote.discountApplied
+      : typeof registration?.discountApplied === "number"
+        ? registration.discountApplied
+        : 0;
+  const persistedDiscountApplied =
+    typeof registration?.discountApplied === "number" ? registration.discountApplied : 0;
+  const persistedDiscountType = registration?.discountType;
+  const paymentPendingApproval = paymentStatus === "pendingApproval" || paymentQuote?.pendingApproval;
+  const noPaymentDue = amountDue <= 0;
+  const maxWalletUsable =
+    typeof paymentQuote?.maxWalletUsable === "number" ? paymentQuote.maxWalletUsable : 0;
+  const walletApplied =
+    typeof paymentQuote?.walletApplied === "number" ? paymentQuote.walletApplied : 0;
   const cashToPayNow =
-    paymentType === "full"
-      ? Math.max(0, finalAmount - effectiveWalletToUse)
-      : Math.max(0, partialAmount);
-  const requiresScreenshot = cashToPayNow > 0;
+    typeof paymentQuote?.cashDue === "number" ? paymentQuote.cashDue : 0;
+  const requiresScreenshot = Boolean(paymentQuote?.requiresScreenshot);
+  const quoteErrors = Array.isArray(paymentQuote?.errors) ? paymentQuote.errors : [];
+  const walletError =
+    quoteErrors.find(
+      (err: any) =>
+        err?.code === "wallet_amount_exceeds_due" ||
+        err?.code === "wallet_insufficient_balance"
+    ) || null;
+  const walletErrorCodes = new Set([
+    "wallet_amount_exceeds_due",
+    "wallet_insufficient_balance",
+  ]);
+  const errorPriority = [
+    "payment_pending_approval",
+    "registration_not_payable",
+    "registration_cancelled",
+    "registration_refund_locked",
+    "no_payment_due",
+    "discount_already_selected",
+    "discount_not_eligible",
+    "discount_exhausted",
+    "wallet_not_allowed",
+    "payment_amount_required",
+    "payment_amount_must_match_due",
+  ];
+  const nonWalletErrors = quoteErrors.filter(
+    (err: any) => err?.code && !walletErrorCodes.has(err.code)
+  );
+  const prioritizedError =
+    errorPriority
+      .map((code) => nonWalletErrors.find((err: any) => err?.code === code))
+      .find(Boolean) || nonWalletErrors[0] || null;
   const submitDisabled =
     isSubmitting ||
+    quoteLoading ||
     paymentPendingApproval ||
     noPaymentDue ||
     (requiresScreenshot && !file) ||
-    (paymentType === "partial" && cashToPayNow <= 0 && effectiveWalletToUse <= 0) ||
-    (paymentType === "partial" && effectiveWalletToUse + cashToPayNow > finalAmount);
+    quoteErrors.length > 0;
 
   const discountOptions = [
     { key: "soloFemale", label: "Solo Female Discount", data: eligibleDiscounts?.soloFemale },
@@ -112,7 +149,8 @@ export default function TripPayment() {
     { key: "musafir", label: "Musafir Discount", data: eligibleDiscounts?.musafir },
   ] as const;
   const hasEligibleDiscounts = discountOptions.some((option) => option.data?.eligible);
-  const discountSelectionLocked = discountApplied > 0;
+  const discountSelectionLocked =
+    persistedDiscountApplied > 0 || Boolean(persistedDiscountType);
 
   const handleCopy = async (text: string) => {
     try {
@@ -208,6 +246,34 @@ export default function TripPayment() {
     loadEligibleDiscounts();
   }, [registrationId, registration?.discountType, registration?.discountApplied]);
 
+  useEffect(() => {
+    const loadQuote = async () => {
+      if (!registrationId) return;
+      setQuoteLoading(true);
+      try {
+        const payload = {
+          registration: registrationId,
+          walletAmount: walletToUse,
+          discountType: selectedDiscountType || undefined,
+          paymentMode: paymentType === "partial" ? "wallet_only" : "wallet_plus_bank",
+        } as any;
+        const res = await PaymentService.getPaymentQuote(payload);
+        const data = (res as any)?.data ?? res;
+        setPaymentQuote(data);
+      } catch (error: any) {
+        const status = error?.response?.status;
+        if (status === 401 || status === 403) {
+          router.push("/home");
+          return;
+        }
+        setPaymentQuote(null);
+      } finally {
+        setQuoteLoading(false);
+      }
+    };
+    loadQuote();
+  }, [registrationId, walletToUse, paymentType, selectedDiscountType]);
+
   const handleSelectDiscount = (type: "soloFemale" | "group" | "musafir") => {
     if (!eligibleDiscounts) return;
     const selected = (eligibleDiscounts as any)?.[type];
@@ -235,48 +301,28 @@ export default function TripPayment() {
       return;
     }
 
-    const cashAmount =
-      paymentType === "full"
-        ? Math.max(0, finalAmount - effectiveWalletToUse)
-        : Math.max(0, partialAmount);
-
-    if (paymentType === "partial" && cashAmount <= 0 && effectiveWalletToUse <= 0) {
+    if (!paymentQuote) {
       toast({
-        title: "Please enter an amount",
-        description: "Add wallet credits and/or a partial amount to proceed.",
+        title: "Loading payment details",
+        description: "Please wait a moment and try again.",
         variant: "destructive",
       });
       return;
     }
 
-    if (paymentType === "partial" && effectiveWalletToUse + cashAmount > finalAmount) {
+    if (quoteErrors.length > 0) {
       toast({
-        title: "Amount too high",
-        description: "Wallet + partial amount cannot exceed the remaining payable amount.",
+        title: "Please review your payment",
+        description:
+          prioritizedError?.message || "Fix the highlighted issues to continue.",
         variant: "destructive",
       });
       return;
     }
 
-    if (cashAmount > 0 && !file) {
+    if (requiresScreenshot && !file) {
       toast({
-        title: "Please Upload Screenshot",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (paymentType === "partial" && (!partialAmount || partialAmount <= 0)) {
-      toast({
-        title: "Please Enter A Valid Partial Amount",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (paymentType === "partial" && cashAmount > finalAmount) {
-      toast({
-        title: "Partial amount too high",
-        description: "Partial amount cannot exceed the remaining payable amount.",
+        title: "Please upload a payment screenshot",
         variant: "destructive",
       });
       return;
@@ -285,21 +331,21 @@ export default function TripPayment() {
     try {
       setIsSubmitting(true);
       const walletUseId =
-        effectiveWalletToUse > 0
+        walletApplied > 0
           ? (typeof crypto !== "undefined" && "randomUUID" in crypto
             ? (crypto as any).randomUUID()
             : `${Date.now()}-${Math.random()}`)
           : undefined;
       const selectedBankAccountId =
-        cashAmount > 0 ? bankDetails[selectedBank]?.id : undefined;
+        cashToPayNow > 0 ? bankDetails[selectedBank]?.id : undefined;
       const selectedBankLabel =
-        cashAmount > 0 ? bankDetails[selectedBank]?.title : undefined;
+        cashToPayNow > 0 ? bankDetails[selectedBank]?.title : undefined;
       const discountToUse =
         discountApplied > 0 ? discountApplied : selectedDiscountAmount;
       const discountTypeToUse =
         discountApplied > 0 ? registration?.discountType : selectedDiscountType;
 
-      if (cashAmount > 0 && !selectedBankAccountId && !selectedBankLabel) {
+      if (cashToPayNow > 0 && !selectedBankAccountId && !selectedBankLabel) {
         toast({
           title: "Select a bank account",
           description: "Please choose a bank account before submitting.",
@@ -313,12 +359,12 @@ export default function TripPayment() {
         bankAccount: selectedBankAccountId,
         bankAccountLabel: selectedBankLabel,
         paymentType: paymentType === "full" ? "fullPayment" : "partialPayment",
-        amount: cashAmount,
+        amount: cashToPayNow,
         discount: discountToUse,
         discountType: discountTypeToUse ?? undefined,
-        walletAmount: effectiveWalletToUse,
+        walletAmount: walletApplied,
         walletUseId,
-        screenshot: cashAmount > 0 ? file ?? undefined : undefined,
+        screenshot: cashToPayNow > 0 ? file ?? undefined : undefined,
       });
 
       const successMessage =
@@ -456,7 +502,7 @@ export default function TripPayment() {
                   disabled={paymentPendingApproval || noPaymentDue}
                 />
                 <label htmlFor="partialPayment" className="text-text">
-                  Partial Payment
+                  Partial (wallet only)
                 </label>
               </div>
             </div>
@@ -473,42 +519,9 @@ export default function TripPayment() {
             )}
 
             {paymentType === "partial" && (
-              <div className="mt-4">
-                <label
-                  htmlFor="partialAmount"
-                  className="block text-sm text-text mb-1"
-                >
-                  Enter Amount
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2 text-muted-foreground">
-                    Rs.
-                  </span>
-                  <input
-                    type="text"
-                    id="partialAmount"
-                    value={partialAmount || ""}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/^0+/, "");
-                      setPartialAmount(value ? Number(value) : 0);
-                    }}
-                    min="0"
-                    max={finalAmount}
-                    disabled={paymentPendingApproval || noPaymentDue}
-                    className="w-full pl-10 pr-4 py-2 border border-border bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                    placeholder="Enter amount"
-                    style={{
-                      WebkitAppearance: "none",
-                      MozAppearance: "textfield",
-                    }}
-                  />
-                </div>
-                {partialAmount > finalAmount && (
-                  <p className="text-brand-error text-sm mt-1">
-                    Amount cannot exceed remaining payable amount
-                  </p>
-                )}
-              </div>
+              <p className="mt-3 text-xs text-muted-foreground">
+                Partial payments are wallet-only. Bank transfer requires full payment.
+              </p>
             )}
           </div>
 
@@ -582,11 +595,11 @@ export default function TripPayment() {
                 </div>
               )}
 
-              {discountRemaining > 0 && (
+              {discountApplied > 0 && (
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Discount Applied:</span>
                   <span className="font-semibold text-brand-primary">
-                    Rs. {discountRemaining.toLocaleString()}
+                    Rs. {discountApplied.toLocaleString()}
                   </span>
                 </div>
               )}
@@ -594,7 +607,7 @@ export default function TripPayment() {
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Amount to Pay Now:</span>
                 <span className="font-bold text-xl text-brand-primary-hover">
-                  Rs. {finalAmount?.toLocaleString()}
+                  Rs. {(paymentQuote?.payableNow ?? amountDue).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -632,23 +645,23 @@ export default function TripPayment() {
                 Max
               </Button>
             </div>
+            {walletError && (
+              <p className="mt-2 text-xs text-brand-error">
+                {walletError.message || "Wallet amount can’t exceed remaining due."}
+              </p>
+            )}
 
             <div className="mt-3 space-y-1 text-sm text-text">
               <div className="flex justify-between">
                 <span>Wallet applied</span>
                 <span className="font-semibold text-heading">
-                  Rs.{effectiveWalletToUse.toLocaleString()}
+                  Rs.{walletApplied.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Cash to pay now</span>
                 <span className="font-semibold text-heading">
-                  Rs.
-                  {(
-                    paymentType === "full"
-                      ? Math.max(0, finalAmount - effectiveWalletToUse)
-                      : Math.max(0, partialAmount)
-                  ).toLocaleString()}
+                  Rs.{cashToPayNow.toLocaleString()}
                 </span>
               </div>
             </div>
@@ -815,6 +828,11 @@ export default function TripPayment() {
 
           {/* Confirm Payment */}
           <div className="px-4 lg:px-6 mt-auto mb-6">
+            {prioritizedError && (
+              <p className="mb-2 text-xs text-brand-error">
+                {prioritizedError.message || "Please fix the highlighted issues to continue."}
+              </p>
+            )}
             <Button
               className="w-full py-6 bg-brand-primary hover:bg-brand-primary-hover text-btn-secondary-text disabled:bg-brand-primary-disabled disabled:cursor-not-allowed"
               disabled={submitDisabled}

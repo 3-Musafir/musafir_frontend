@@ -1,8 +1,11 @@
 import api from "@/lib/api";
 import { mapErrorToUserMessage } from "@/utils/errorMessages";
 import {
+  IAdminManualPayment,
   ICreatePayment,
   IPayment,
+  IPaymentQuoteRequest,
+  IPaymentQuoteResponse,
   IRefund,
   IRequestRefund,
 } from "./types/payment";
@@ -25,6 +28,10 @@ export class PaymentService {
 
   static async getEligibleDiscounts(registrationId: string) {
     return api.get(`/payment/eligible-discounts/${registrationId}`);
+  }
+
+  static async getPaymentQuote(payload: IPaymentQuoteRequest): Promise<IPaymentQuoteResponse | any> {
+    return api.post(`/payment/quote`, payload);
   }
 
   static async createBankAccount(bankAccount: any) {
@@ -70,6 +77,42 @@ export class PaymentService {
 
     // Let the shared API layer surface structured errors (including verification codes)
     return api.post(`/payment/create-payment`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  }
+
+  static async adminManualPayment(payload: IAdminManualPayment) {
+    const formData = new FormData();
+    formData.append("registration", payload.registration);
+    formData.append("paymentMethod", payload.paymentMethod);
+    if (typeof payload.cashAmount === "number") {
+      formData.append("cashAmount", payload.cashAmount.toString());
+    }
+    if (typeof payload.bankAmount === "number") {
+      formData.append("bankAmount", payload.bankAmount.toString());
+    }
+    if (payload.bankAccount) {
+      formData.append("bankAccount", payload.bankAccount);
+    }
+    if (payload.bankAccountLabel) {
+      formData.append("bankAccountLabel", payload.bankAccountLabel);
+    }
+    if (payload.idempotencyKey) {
+      formData.append("idempotencyKey", payload.idempotencyKey);
+    }
+    if (payload.adminNote) {
+      formData.append("adminNote", payload.adminNote);
+    }
+    if (payload.cashProof) {
+      formData.append("cashProof", payload.cashProof);
+    }
+    if (payload.bankProof) {
+      formData.append("bankProof", payload.bankProof);
+    }
+
+    return api.post(`/payment/admin/manual-payment`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

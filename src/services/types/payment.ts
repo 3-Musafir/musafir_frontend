@@ -2,6 +2,16 @@ import { IRegistration } from "@/interfaces/trip/trip";
 import { IFlagship } from "./flagship";
 import { IUser } from "./user";
 
+export type PaymentMethod =
+  | "bank_transfer"
+  | "wallet_only"
+  | "wallet_plus_bank"
+  | "cash"
+  | "split_cash_bank"
+  | "partial_cash";
+
+export type PaymentMode = "wallet_only" | "bank_transfer" | "wallet_plus_bank";
+
 export interface ICreatePayment {
   bankAccount?: string;
   bankAccountLabel?: string;
@@ -13,6 +23,39 @@ export interface ICreatePayment {
   walletAmount?: number;
   walletUseId?: string;
   screenshot?: File;
+}
+
+export interface IPaymentQuoteRequest {
+  registration: string;
+  walletAmount?: number;
+  discountType?: "soloFemale" | "group" | "musafir";
+  paymentMode?: PaymentMode;
+}
+
+export interface IPaymentQuoteResponse {
+  amountDue: number;
+  discountApplied: number;
+  maxWalletUsable: number;
+  walletApplied: number;
+  cashDue: number;
+  payableNow: number;
+  requiresScreenshot: boolean;
+  paymentMode: PaymentMode;
+  pendingApproval?: boolean;
+  errors?: Array<{ code: string; message: string }>;
+}
+
+export interface IAdminManualPayment {
+  registration: string;
+  paymentMethod: "cash" | "bank_transfer" | "split_cash_bank" | "partial_cash";
+  cashAmount?: number;
+  bankAmount?: number;
+  bankAccount?: string;
+  bankAccountLabel?: string;
+  cashProof?: File;
+  bankProof?: File;
+  idempotencyKey?: string;
+  adminNote?: string;
 }
 
 export interface IBankAccount {
@@ -29,12 +72,20 @@ export interface IPayment {
   bankAccount: IBankAccount | string | null;
   bankAccountLabel?: string;
   paymentType: string;
-  paymentMethod?: "bank_transfer" | "wallet_only" | "wallet_plus_bank";
+  paymentMethod?: PaymentMethod;
   amount: number;
   discount?: number;
   walletApplied?: number;
   walletRequested?: number;
   screenshot?: string;
+  cashAmount?: number;
+  bankAmount?: number;
+  cashProofKey?: string;
+  bankProofKey?: string;
+  createdByAdmin?: boolean;
+  recordedBy?: string;
+  recordedAt?: string;
+  adminNote?: string;
   status: string;
   createdAt: string;
   updatedAt: string;
