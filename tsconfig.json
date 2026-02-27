@@ -27,8 +27,16 @@
         "name": "next"
       }
     ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
+    "**/*.ts",
+    "**/*.tsx",
     "**/*.ts",
     "**/*.tsx",
     "next-env.d.ts",
@@ -41,3 +49,4 @@
     ".next"
   ]
 }
+
