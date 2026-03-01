@@ -197,7 +197,7 @@ roughnessFactor = clamp(roughnessFactor - vRipple * 0.18, 0.05, 1.0);`,
   return (
     <group ref={groupRef}>
       <mesh ref={meshRef} onPointerDown={handlePointerDown}>
-        <sphereGeometry args={[1, 128, 128]} />
+        <boxGeometry args={[1.25, 1.25, 1.25, 32, 32, 32]} />
         <meshStandardMaterial
           ref={materialRef}
           roughness={0.55}
