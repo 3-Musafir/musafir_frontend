@@ -361,7 +361,7 @@ function UserSettings() {
           </div>
         )}
         <header className="flex items-center justify-center p-2 mt-2">
-          <h1 className="text-2xl font-semibold">User Settings</h1>
+          <h1 className="text-2xl font-semibold">User Profile</h1>
         </header>
         <form className="space-y-6 h-full p-4">
           <div className="flex items-center gap-4">
