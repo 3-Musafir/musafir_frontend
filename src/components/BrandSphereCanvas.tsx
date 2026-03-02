@@ -1,3 +1,4 @@
+import { RoundedBox } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import type { ThreeEvent } from "@react-three/fiber";
 import type React from "react";
@@ -196,8 +197,13 @@ roughnessFactor = clamp(roughnessFactor - vRipple * 0.18, 0.05, 1.0);`,
 
   return (
     <group ref={groupRef}>
-      <mesh ref={meshRef} onPointerDown={handlePointerDown}>
-        <boxGeometry args={[1.25, 1.25, 1.25, 32, 32, 32]} />
+      <RoundedBox
+        ref={meshRef}
+        args={[1.807, 1.341, 1.341]}
+        radius={0.18}
+        smoothness={10}
+        onPointerDown={handlePointerDown}
+      >
         <meshStandardMaterial
           ref={materialRef}
           roughness={0.55}
@@ -205,7 +211,7 @@ roughnessFactor = clamp(roughnessFactor - vRipple * 0.18, 0.05, 1.0);`,
           emissive={new THREE.Color("#2C6FA6")}
           emissiveIntensity={0.1}
         />
-      </mesh>
+      </RoundedBox>
     </group>
   );
 }
