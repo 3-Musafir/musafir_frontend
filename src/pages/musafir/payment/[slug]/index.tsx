@@ -14,6 +14,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import { trackClarityEvent } from "@/lib/analytics/clarity";
+import { CLARITY_EVENTS } from "@/lib/analytics/events";
 
 const bankDetails = {
   "faysal-bank": {
@@ -68,6 +70,7 @@ export default function TripPayment() {
   const [walletSummary, setWalletSummary] = useState<any>(null);
   const [walletToUse, setWalletToUse] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const quoteEventFired = useRef(false);
   const registrationHook = useRegistrationHook();
   const [registration, setRegistration] = useState<any>(null);
   const [paymentQuote, setPaymentQuote] = useState<any>(null);
@@ -274,6 +277,13 @@ export default function TripPayment() {
     loadQuote();
   }, [registrationId, walletToUse, paymentType, selectedDiscountType]);
 
+  useEffect(() => {
+    if (paymentQuote && !quoteEventFired.current) {
+      trackClarityEvent(CLARITY_EVENTS.PAYMENT_QUOTE_LOADED);
+      quoteEventFired.current = true;
+    }
+  }, [paymentQuote]);
+
   const handleSelectDiscount = (type: "soloFemale" | "group" | "musafir") => {
     if (!eligibleDiscounts) return;
     const selected = (eligibleDiscounts as any)?.[type];
@@ -378,10 +388,13 @@ export default function TripPayment() {
         description: successMessage,
       });
 
+      trackClarityEvent(CLARITY_EVENTS.PAYMENT_SUBMIT_SUCCESS);
+
       setTimeout(() => {
         router.push("/home");
       }, 2000);
     } catch (error) {
+      trackClarityEvent(CLARITY_EVENTS.PAYMENT_SUBMIT_FAILED);
       console.error("Payment submission error:", error);
 
       const code =

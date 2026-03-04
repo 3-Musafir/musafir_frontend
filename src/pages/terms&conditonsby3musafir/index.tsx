@@ -169,6 +169,11 @@ export default function TermsAndConditionsBy3Musafir() {
                     <p className="text-sm text-muted-foreground">
                       6.2 Marketing Opt-Out: Participants may opt out of marketing communications by notifying the Company.
                     </p>
+                    <p className="text-sm text-muted-foreground">
+                      6.3 Behavioral analytics and session replay: We use privacy-respecting analytics tools (such as Microsoft
+                      Clarity) to understand how visitors interact with our site and improve the experience. These tools are
+                      enabled only after you provide analytics consent, which you can manage through the consent banner.
+                    </p>
                   </div>
 
                   <div className="space-y-2">

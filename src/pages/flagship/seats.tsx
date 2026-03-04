@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { currentUser } from "@/store/signup";
+import { trackClarityEvent } from "@/lib/analytics/clarity";
+import { CLARITY_EVENTS } from "@/lib/analytics/events";
 
 export default function RemainingSeats() {
   const [flagship, setFlagship] = useState<any>({});
@@ -96,6 +98,7 @@ export default function RemainingSeats() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    trackClarityEvent(CLARITY_EVENTS.CHECKOUT_START);
     router.push(`/musafir/payment/${registrationId}`);
   };
 
@@ -204,6 +207,7 @@ export default function RemainingSeats() {
               </p>
               <button
                 onClick={() => {
+                  trackClarityEvent(CLARITY_EVENTS.VERIFICATION_START);
                   if (registrationId) {
                     localStorage.setItem(
                       "verificationReturnTo",

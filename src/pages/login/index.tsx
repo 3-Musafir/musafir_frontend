@@ -2,6 +2,8 @@ import { ROLES, ROUTES_CONSTANTS } from "@/config/constants";
 import useLoginHook from "@/hooks/useLoginHandler";
 import { User } from "@/interfaces/login";
 import { mapErrorToUserMessage } from "@/utils/errorMessages";
+import { trackClarityEvent } from "@/lib/analytics/clarity";
+import { CLARITY_EVENTS } from "@/lib/analytics/events";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -81,6 +83,7 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
+    trackClarityEvent(CLARITY_EVENTS.LOGIN_SUBMIT);
 
     try {
       const result = await signIn("credentials", {
@@ -91,6 +94,7 @@ export default function Login() {
       console.log(result, "results");
 
       if (result?.status === 200) {
+        trackClarityEvent(CLARITY_EVENTS.LOGIN_SUCCESS);
         setHasRedirected(true);
         if (requestedCallback) {
           if (typeof window !== "undefined") {
@@ -105,11 +109,13 @@ export default function Login() {
       }
 
       if (result?.error) {
+        trackClarityEvent(CLARITY_EVENTS.LOGIN_ERROR);
         console.log("error", error);
         setError("Invalid email or password");
       }
     } catch (error) {
       console.error("Login error:", error);
+      trackClarityEvent(CLARITY_EVENTS.LOGIN_ERROR);
       setError(mapErrorToUserMessage(error));
     } finally {
       setIsLoading(false);
@@ -138,6 +144,8 @@ export default function Login() {
     const callbackUrl = nextPath
       ? `${defaultCallback}?next=${encodeURIComponent(nextPath)}`
       : defaultCallback;
+
+    trackClarityEvent(CLARITY_EVENTS.LOGIN_GOOGLE_START);
 
     await signIn("google", { callbackUrl });
   };

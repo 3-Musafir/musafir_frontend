@@ -9,6 +9,8 @@ import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { PaymentService } from "@/services/paymentService";
+import { trackClarityEvent } from "@/lib/analytics/clarity";
+import { CLARITY_EVENTS } from "@/lib/analytics/events";
 import { useRouter } from "next/router";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
 
@@ -168,6 +170,8 @@ export default function RefundForm() {
         feedback,
         rating,
       });
+
+      trackClarityEvent(CLARITY_EVENTS.REFUND_SUBMIT);
 
       setIsSubmitted(true);
     } catch (error) {
