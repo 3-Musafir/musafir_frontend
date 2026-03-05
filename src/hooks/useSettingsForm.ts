@@ -210,13 +210,38 @@ export function useSettingsForm() {
 
   const handleProfileImgFile = useCallback((file?: File | null) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const result = reader.result as string;
-      setFormData((prev) => ({ ...prev, profileImg: result || "" }));
+    const MAX_DIMENSION = 800;
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      let { width, height } = img;
+      if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+        if (width > height) {
+          height = Math.round((height * MAX_DIMENSION) / width);
+          width = MAX_DIMENSION;
+        } else {
+          width = Math.round((width * MAX_DIMENSION) / height);
+          height = MAX_DIMENSION;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(img, 0, 0, width, height);
+      const compressed = canvas.toDataURL("image/jpeg", 0.8);
+      URL.revokeObjectURL(img.src);
+      setFormData((prev) => ({ ...prev, profileImg: compressed }));
     };
-    reader.readAsDataURL(file);
-  }, []);
+    img.onerror = () => {
+      URL.revokeObjectURL(img.src);
+      toast({
+        title: "Upload Failed",
+        description: "Could not read this image. Please try a different file.",
+        variant: "destructive",
+      });
+    };
+    img.src = URL.createObjectURL(file);
+  }, [toast]);
 
   const handleRemoveProfileImg = useCallback(() => {
     setFormData((prev) => ({ ...prev, profileImg: "" }));
@@ -323,11 +348,25 @@ export function useSettingsForm() {
       }
     } catch (err: any) {
       console.error("Error updating user data:", err);
-      const errorMessage = err?.response?.data?.message
+      const status = err?.response?.status;
+      const rawMessage = err?.response?.data?.message
         ? Array.isArray(err.response.data.message)
           ? err.response.data.message.join(", ")
           : err.response.data.message
-        : "Failed to update user data. Please try again.";
+        : "";
+
+      // Map technical errors to user-friendly messages
+      let errorMessage: string;
+      if (status === 413 || /entity too large|payload too large/i.test(rawMessage)) {
+        errorMessage = "Your profile photo is too large. Please use a smaller image.";
+      } else if (status === 413 || /too large/i.test(rawMessage)) {
+        errorMessage = "The data you submitted is too large. Please try again with a smaller photo.";
+      } else if (rawMessage) {
+        errorMessage = rawMessage;
+      } else {
+        errorMessage = "Something went wrong. Please try again.";
+      }
+
       toast({
         title: "Update Failed",
         description: errorMessage,
