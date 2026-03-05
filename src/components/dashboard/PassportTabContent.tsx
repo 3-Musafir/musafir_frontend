@@ -1,12 +1,15 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/router";
 import { useDashboard } from "@/context/DashboardContext";
 import PassportUpcomingCard from "@/components/cards/PassportUpcomingCard";
 import PassportPastCard from "@/components/cards/PassportPastCard";
 import { formatDate } from "@/utils/formatDate";
+import { Phone } from "lucide-react";
 
 export default function PassportTabContent() {
+  const router = useRouter();
   const {
     upcomingEvents,
     pastEvents,
@@ -14,6 +17,7 @@ export default function PassportTabContent() {
     passportSubTab,
     setPassportSubTab,
     userVerificationStatus,
+    userPhone,
   } = useDashboard();
 
   return (
@@ -100,7 +104,20 @@ export default function PassportTabContent() {
             ))}
           </div>
         )}
-        {passportSubTab === "past" && pastEvents.length === 0 && !passportLoading && (
+        {passportSubTab === "past" && pastEvents.length === 0 && !passportLoading && !userPhone && (
+          <div className="flex flex-col items-center justify-center h-60 text-muted-foreground">
+            <Phone className="h-10 w-10 text-amber-500 mb-3" />
+            <p className="text-center text-lg mb-2">Been on a trip with us before?</p>
+            <p className="text-center mb-4">Add your phone number to link your trip history.</p>
+            <button
+              onClick={() => router.push("/userSettings?forceEdit=true&returnTo=/home?tab=passport")}
+              className="btn-primary px-6 py-2 text-sm"
+            >
+              Add Phone Number
+            </button>
+          </div>
+        )}
+        {passportSubTab === "past" && pastEvents.length === 0 && !passportLoading && userPhone && (
           <div className="flex flex-col items-center justify-center h-60 text-muted-foreground">
             <p className="text-center text-lg mb-2">You haven&apos;t been on any trips yet.</p>
             <p className="text-center">Time for an adventure - book your first trip now!</p>

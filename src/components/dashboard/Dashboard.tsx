@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { DashboardProvider, useDashboard, TabType } from "@/context/DashboardContext";
 import Header from "@/components/header";
@@ -8,7 +8,7 @@ import HomeTabContent from "./HomeTabContent";
 import PassportTabContent from "./PassportTabContent";
 import WalletTabContent from "./WalletTabContent";
 import ReferralsTabContent from "./ReferralsTabContent";
-import { Home, Flag, Wallet, Users } from "lucide-react";
+import { Home, Flag, Wallet, Users, X, Phone } from "lucide-react";
 import { showAlert } from "@/pages/alert";
 
 const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
@@ -22,7 +22,9 @@ const validTabs: TabType[] = ["home", "passport", "wallet", "referrals"];
 
 function DashboardContent() {
   const router = useRouter();
-  const { activeTab, setActiveTab } = useDashboard();
+  const { activeTab, setActiveTab, userPhone, passportLoading } = useDashboard();
+  const [phoneBannerDismissed, setPhoneBannerDismissed] = useState(false);
+  const showPhoneBanner = !passportLoading && userPhone === null && !phoneBannerDismissed;
 
   // Handle URL query parameter for initial tab
   useEffect(() => {
@@ -52,6 +54,31 @@ function DashboardContent() {
         onTabChange={setActiveTab}
         activeTab={activeTab}
       />
+
+      {/* Phone number missing banner */}
+      {showPhoneBanner && (
+        <div className="mx-4 md:mx-6 lg:mx-8 xl:mx-10 mt-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 flex items-center gap-3">
+          <Phone className="h-5 w-5 text-amber-600 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-amber-800">
+              Add your phone number to unlock your trip history and discounts.
+            </p>
+          </div>
+          <button
+            onClick={() => router.push("/userSettings?forceEdit=true&returnTo=/home")}
+            className="text-sm font-medium text-brand-primary hover:text-brand-primary-hover whitespace-nowrap"
+          >
+            Add Now
+          </button>
+          <button
+            onClick={() => setPhoneBannerDismissed(true)}
+            className="text-amber-400 hover:text-amber-600 shrink-0"
+            aria-label="Dismiss"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {/* Tab Content - renders based on activeTab */}
       <div className="flex-1 flex flex-col">
