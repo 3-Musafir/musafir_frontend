@@ -391,6 +391,30 @@ export default function TripPayment() {
     setSelectedDiscountAmount(Number(selected.amount) || 0);
   };
 
+  useEffect(() => {
+    if (discountSelectionLocked) return;
+    if (!eligibleDiscounts) return;
+    if (selectedDiscountType) return;
+    const eligible = discountOptions
+      .map((option) => ({
+        key: option.key,
+        amount: Number(option.data?.amount ?? 0),
+        eligible: Boolean(option.data?.eligible),
+      }))
+      .filter((option) => option.eligible);
+    if (eligible.length === 0) return;
+    const lowest = eligible.reduce((min, current) =>
+      current.amount < min.amount ? current : min,
+    );
+    setSelectedDiscountType(lowest.key);
+    setSelectedDiscountAmount(Number.isFinite(lowest.amount) ? lowest.amount : 0);
+  }, [
+    discountOptions,
+    discountSelectionLocked,
+    eligibleDiscounts,
+    selectedDiscountType,
+  ]);
+
   const handleSubmit = async () => {
     if (paymentPendingApproval) {
       toast({
