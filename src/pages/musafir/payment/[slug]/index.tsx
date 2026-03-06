@@ -353,7 +353,7 @@ export default function TripPayment() {
         registration: registrationId,
         walletAmount: walletToUse,
         discountType: selectedDiscountType || undefined,
-        paymentMode: paymentType === "partial" ? "wallet_only" : "wallet_plus_bank",
+        paymentMode: paymentType === "partial" ? "partial" : "wallet_plus_bank",
       } as any;
       const res = await PaymentService.getPaymentQuote(payload);
       const data = (res as any)?.data ?? res;
@@ -476,7 +476,9 @@ export default function TripPayment() {
       const discountToUse =
         discountApplied > 0 ? discountApplied : selectedDiscountAmount;
       const discountTypeToUse =
-        discountApplied > 0 ? registration?.discountType : selectedDiscountType;
+        discountApplied > 0
+          ? (registration?.discountType ?? selectedDiscountType)
+          : selectedDiscountType;
 
       if (cashToPayNow > 0 && !selectedBankAccountId && !selectedBankLabel) {
         toast({
@@ -682,7 +684,7 @@ export default function TripPayment() {
 
             {paymentType === "partial" && (
               <p className="mt-3 text-xs text-muted-foreground">
-                Partial payments are wallet-only. Bank transfer requires full payment.
+                Partial payment is fixed at 30% of remaining due. You can pay with wallet and/or bank transfer.
               </p>
             )}
           </div>
@@ -769,7 +771,11 @@ export default function TripPayment() {
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Amount to Pay Now:</span>
                 <span className="font-bold text-xl text-brand-primary-hover">
-                  Rs. {formatCurrency(paymentQuote?.payableNow ?? amountDue)}
+                  Rs. {formatCurrency(
+                    paymentType === "partial" && typeof paymentQuote?.partialDue === "number"
+                      ? paymentQuote.partialDue
+                      : paymentQuote?.payableNow ?? amountDue
+                  )}
                 </span>
               </div>
               {quoteError && (

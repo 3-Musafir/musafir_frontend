@@ -10,7 +10,7 @@ export type PaymentMethod =
   | "split_cash_bank"
   | "partial_cash";
 
-export type PaymentMode = "wallet_only" | "bank_transfer" | "wallet_plus_bank";
+export type PaymentMode = "wallet_only" | "bank_transfer" | "wallet_plus_bank" | "partial";
 
 export interface ICreatePayment {
   bankAccount?: string;
@@ -34,6 +34,7 @@ export interface IPaymentQuoteRequest {
 
 export interface IPaymentQuoteResponse {
   amountDue: number;
+  partialDue?: number;
   discountApplied: number;
   maxWalletUsable: number;
   walletApplied: number;
