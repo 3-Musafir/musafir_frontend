@@ -16,8 +16,12 @@ import ReviewCard from "@/components/cards/ReviewCard";
 import { formatDate } from "@/utils/formatDate";
 import Navigation from "../../navigation";
 import { showAlert } from "@/pages/alert";
+import { mapErrorToUserMessage } from "@/utils/errorMessages";
 import useFaqHook from "@/hooks/useFaqHandler";
 import useRatingHook from "@/hooks/useRatingHandler";
+import useSignUpHook from "@/hooks/useSignUp";
+import { useSession, signIn } from "next-auth/react";
+import axios from "axios";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { IFlagship } from "@/services/types/flagship";
 
@@ -54,6 +58,18 @@ export default function FlagshipDetails() {
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [showPdfModal, setShowPdfModal] = useState(false);
+
+  // Onboarding modal state
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
+  const signUpAction = useSignUpHook();
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState<"question" | "email" | "password" | "notFound">("question");
+  const [emailInput, setEmailInput] = useState("");
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", "", "", ""]);
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [passwordLoading, setPasswordLoading] = useState(false);
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
   const basePath = "/flagship/details";
   const idParam = typeof id === "string" ? id : undefined;
@@ -230,6 +246,88 @@ export default function FlagshipDetails() {
     return (baseAmount + surcharge).toLocaleString();
   };
 
+  const handleRegisterClick = () => {
+    if (isAuthenticated) {
+      router.push(`/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`);
+    } else {
+      setShowOnboardingModal(true);
+      setOnboardingStep("question");
+      setEmailInput("");
+    }
+  };
+
+  const handleEmailCheck = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailInput.trim()) return;
+    setEmailLoading(true);
+
+    try {
+      const normalizedEmail = emailInput.trim().toLowerCase();
+      const isAvailable = await signUpAction.checkEmailAvailability(normalizedEmail);
+
+      if (!isAvailable) {
+        // Email exists — generate a temporary password and email it
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/send-login-password`, {
+          email: normalizedEmail,
+        });
+        setOtpDigits(["", "", "", "", "", ""]);
+        setOnboardingStep("password");
+      } else {
+        // Email not found
+        setOnboardingStep("notFound");
+      }
+    } catch (error) {
+      showAlert(mapErrorToUserMessage(error), "error");
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const otp = otpDigits.join("");
+    if (otp.length !== 6) return;
+    setPasswordLoading(true);
+
+    try {
+      const result = await signIn("credentials", {
+        email: emailInput.trim().toLowerCase(),
+        password: otp,
+        redirect: false,
+      });
+
+      if (result?.status === 200) {
+        setShowOnboardingModal(false);
+        router.push(`/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`);
+      } else if (result?.error) {
+        showAlert("Invalid password. Please check your email and try again.", "error");
+      }
+    } catch (error) {
+      showAlert(mapErrorToUserMessage(error), "error");
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  const handleResendPassword = async () => {
+    setEmailLoading(true);
+    try {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/send-login-password`, {
+        email: emailInput.trim().toLowerCase(),
+      });
+      showAlert("A new password has been sent to your email.", "success");
+    } catch (error) {
+      showAlert(mapErrorToUserMessage(error), "error");
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  const handleOnboardingGoogleSignIn = async () => {
+    const callbackUrl = `/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`;
+    await signIn("google", { callbackUrl });
+  };
+
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     setCurrentImageIndex((prev) => (prev + 1) % imageUrls.length);
@@ -264,7 +362,7 @@ export default function FlagshipDetails() {
         <div className="fixed top-0 left-0 right-0 z-50 bg-white lg:hidden">
           <div className="p-1">
             <button
-              onClick={() => router.push(`/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`)}
+              onClick={handleRegisterClick}
               className="w-full py-3 bg-brand-primary text-heading font-semibold rounded-md"
             >
               Register
@@ -369,7 +467,7 @@ export default function FlagshipDetails() {
           <div className="space-y-3 lg:space-y-0 lg:flex lg:gap-4">
             {/* Register Button */}
             <button
-              onClick={() => router.push(`/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`)}
+              onClick={handleRegisterClick}
               className="w-full lg:flex-1 py-3 lg:py-4 bg-brand-primary text-heading font-semibold rounded-md hover:bg-brand-primary-hover transition-colors"
             >
               Register
@@ -535,6 +633,259 @@ export default function FlagshipDetails() {
           </div>
         </div>
       </div>
+
+      {/* Onboarding Modal */}
+      {showOnboardingModal && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end md:items-center justify-center">
+          <div className="w-full md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl p-6 space-y-5 relative">
+            <button
+              onClick={() => setShowOnboardingModal(false)}
+              className="absolute top-4 right-4 p-1.5 hover:bg-gray-100 rounded-full"
+            >
+              <X className="w-5 h-5 text-heading" />
+            </button>
+
+            {/* Step: Question */}
+            {onboardingStep === "question" && (
+              <>
+                <h3 className="text-xl font-bold text-heading pr-8">
+                  Have you ever registered for a 3Musafir flagship before?
+                </h3>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setOnboardingStep("email")}
+                    className="btn-primary w-full"
+                  >
+                    Yes, I have
+                  </button>
+                  <button
+                    onClick={() => {
+                      localStorage.setItem("flagshipId", JSON.stringify(id));
+                      router.push(`/signup/create-account?flagshipId=${id}`);
+                    }}
+                    className="btn-outline w-full"
+                  >
+                    No, I&apos;m new
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* Step: Email */}
+            {onboardingStep === "email" && (
+              <>
+                <div>
+                  <h3 className="text-xl font-bold text-heading pr-8">
+                    Hey hey, Musafir!
+                  </h3>
+                  <p className="text-text text-sm mt-1">
+                    Enter your email to claim your Musafir ID
+                  </p>
+                </div>
+
+                <form onSubmit={handleEmailCheck} className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="onboarding-email" className="block text-sm font-medium text-heading">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="onboarding-email"
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      placeholder="Enter your email"
+                      className="w-full input-field"
+                      required
+                      disabled={emailLoading}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={emailLoading}
+                    className="btn-primary w-full flex items-center justify-center"
+                    aria-busy={emailLoading || undefined}
+                  >
+                    {emailLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                        Checking...
+                      </>
+                    ) : (
+                      "Continue"
+                    )}
+                  </button>
+                </form>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300" />
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-text">OR</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleOnboardingGoogleSignIn}
+                  disabled={emailLoading}
+                  className="w-full border border-gray-300 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed py-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-3"
+                  aria-busy={emailLoading || undefined}
+                >
+                  <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M47.532 24.5528C47.532 22.9214 47.3997 21.2811 47.1175 19.6761H24.48V28.9181H37.4434C36.9055 31.8988 35.177 34.5356 32.6461 36.2111V42.2078H40.3801C44.9217 38.0278 47.532 31.8547 47.532 24.5528Z" fill="#4285F4"/>
+                    <path d="M24.48 48.0016C30.9529 48.0016 36.4116 45.8764 40.3888 42.2078L32.6549 36.2111C30.5031 37.675 27.7252 38.5039 24.4888 38.5039C18.2275 38.5039 12.9187 34.2798 11.0139 28.6006H3.03296V34.7825C7.10718 42.8868 15.4056 48.0016 24.48 48.0016Z" fill="#34A853"/>
+                    <path d="M11.0051 28.6006C9.99973 25.6199 9.99973 22.3922 11.0051 19.4115V13.2296H3.03298C-0.371021 20.0112 -0.371021 28.0009 3.03298 34.7825L11.0051 28.6006Z" fill="#FBBC04"/>
+                    <path d="M24.48 9.49932C27.9016 9.44641 31.2086 10.7339 33.6866 13.0973L40.5387 6.24523C36.2 2.17101 30.4414 -0.068932 24.48 0.00161733C15.4055 0.00161733 7.10718 5.11644 3.03296 13.2296L11.005 19.4115C12.901 13.7235 18.2187 9.49932 24.48 9.49932Z" fill="#EA4335"/>
+                  </svg>
+                  Continue with Google
+                </button>
+
+                <button
+                  onClick={() => setOnboardingStep("question")}
+                  className="btn-ghost w-full text-sm"
+                >
+                  Back
+                </button>
+              </>
+            )}
+
+            {/* Step: Password */}
+            {onboardingStep === "password" && (
+              <>
+                <div>
+                  <h3 className="text-xl font-bold text-heading pr-8">
+                    Check your email
+                  </h3>
+                  <p className="text-text text-sm mt-2">
+                    We&apos;ve sent a temporary password to <strong className="text-heading">{emailInput}</strong>.
+                    Enter it below to continue.
+                  </p>
+                </div>
+
+                <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-heading">
+                      Enter code
+                    </label>
+                    <div className="flex justify-between gap-2">
+                      {otpDigits.map((digit, idx) => (
+                        <input
+                          key={idx}
+                          ref={(el) => { otpRefs.current[idx] = el; }}
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          maxLength={1}
+                          value={digit}
+                          disabled={passwordLoading}
+                          autoComplete={idx === 0 ? "one-time-code" : "off"}
+                          className="w-12 h-14 text-center text-xl font-semibold border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
+                          onFocus={(e) => e.target.select()}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, "");
+                            if (!val && !digit) return;
+                            const next = [...otpDigits];
+                            // Handle paste of full OTP
+                            if (val.length > 1) {
+                              const chars = val.slice(0, 6).split("");
+                              chars.forEach((c, i) => { if (idx + i < 6) next[idx + i] = c; });
+                              setOtpDigits(next);
+                              const focusIdx = Math.min(idx + chars.length, 5);
+                              otpRefs.current[focusIdx]?.focus();
+                              return;
+                            }
+                            next[idx] = val;
+                            setOtpDigits(next);
+                            if (val && idx < 5) otpRefs.current[idx + 1]?.focus();
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Backspace" && !otpDigits[idx] && idx > 0) {
+                              const next = [...otpDigits];
+                              next[idx - 1] = "";
+                              setOtpDigits(next);
+                              otpRefs.current[idx - 1]?.focus();
+                            }
+                          }}
+                          onPaste={(e) => {
+                            e.preventDefault();
+                            const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+                            if (!pasted) return;
+                            const next = [...otpDigits];
+                            pasted.split("").forEach((c, i) => { if (i < 6) next[i] = c; });
+                            setOtpDigits(next);
+                            const focusIdx = Math.min(pasted.length, 5);
+                            otpRefs.current[focusIdx]?.focus();
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={passwordLoading || otpDigits.join("").length !== 6}
+                    className="btn-primary w-full flex items-center justify-center"
+                    aria-busy={passwordLoading || undefined}
+                  >
+                    {passwordLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                        Signing in...
+                      </>
+                    ) : (
+                      "Sign In"
+                    )}
+                  </button>
+                </form>
+
+                <button
+                  onClick={handleResendPassword}
+                  disabled={emailLoading}
+                  className="btn-ghost w-full text-sm"
+                >
+                  {emailLoading ? "Sending..." : "Didn\u0027t receive it? Resend password"}
+                </button>
+              </>
+            )}
+
+            {/* Step: Not Found */}
+            {onboardingStep === "notFound" && (
+              <>
+                <div>
+                  <h3 className="text-xl font-bold text-heading pr-8">
+                    Account not found
+                  </h3>
+                  <p className="text-text text-sm mt-2">
+                    We couldn&apos;t find an account with <strong className="text-heading">{emailInput}</strong>.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    onClick={() => {
+                      localStorage.setItem("flagshipId", JSON.stringify(id));
+                      router.push(`/signup/create-account?flagshipId=${id}`);
+                    }}
+                    className="btn-primary w-full"
+                  >
+                    Create a new account
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEmailInput("");
+                      setOnboardingStep("email");
+                    }}
+                    className="btn-outline w-full"
+                  >
+                    Try another email
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* PDF Modal */}
       {showPdfModal && flagship?.detailedPlan && (

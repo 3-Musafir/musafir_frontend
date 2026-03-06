@@ -41,6 +41,7 @@ function FlagshipRequirements() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedRoomSharingPrice, setSelectedRoomSharingPrice] = useState(0);
   const registrationAction = useRegistrationHook();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const parseAmount = (value: unknown) => {
     if (value === undefined || value === null) return 0;
@@ -387,6 +388,8 @@ function FlagshipRequirements() {
       showAlert('Please confirm you have read the policies before continuing.', 'error');
       return;
     }
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     if (flagship._id) {
       const resolvedGroupMembers = buildGroupMembersPayload();
       const registration: BaseRegistration = {
@@ -420,6 +423,7 @@ function FlagshipRequirements() {
         }
       } catch (error) {
         showAlert(mapErrorToUserMessage(error), 'error');
+        setIsSubmitting(false);
         return;
       }
 
@@ -462,16 +466,20 @@ function FlagshipRequirements() {
             'You already belong to a group for this trip. Leave that group before joining another.',
             'error',
           );
+          setIsSubmitting(false);
           return;
         }
         if (code === 'trip_type_locked') {
           showAlert('Trip type is locked after invites are sent.', 'error');
+          setIsSubmitting(false);
           return;
         }
         showAlert(mapErrorToUserMessage(error), 'error');
+        setIsSubmitting(false);
       }
     } else {
       showAlert("Flagship not found.", "error");
+      setIsSubmitting(false);
     }
   };
 
@@ -1106,9 +1114,18 @@ function FlagshipRequirements() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="btn-primary w-full mt-8"
+              disabled={isSubmitting}
+              className="btn-primary w-full mt-8 flex items-center justify-center"
+              aria-busy={isSubmitting || undefined}
             >
-              {fromDetailsPage ? "Submit Form" : "Get Verified"}
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  Submitting...
+                </>
+              ) : (
+                fromDetailsPage ? "Submit Form" : "Get Verified"
+              )}
             </button>
           </form>
         </div>
