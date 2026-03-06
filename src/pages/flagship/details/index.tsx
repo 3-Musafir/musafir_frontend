@@ -24,6 +24,12 @@ import { useSession, signIn } from "next-auth/react";
 import axios from "axios";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { IFlagship } from "@/services/types/flagship";
+import {
+  formatPhoneForApi,
+  inputFromStoredPhone,
+  sanitizePhoneInput,
+  validatePhoneDigits,
+} from "@/utils/phone";
 
 export default function FlagshipDetails() {
   type FaqItem = { question: string; answer: string };
@@ -64,12 +70,21 @@ export default function FlagshipDetails() {
   const isAuthenticated = status === "authenticated";
   const signUpAction = useSignUpHook();
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-  const [onboardingStep, setOnboardingStep] = useState<"question" | "email" | "password" | "notFound">("question");
+  const [onboardingStep, setOnboardingStep] = useState<"question" | "email" | "password" | "basicInfo">("question");
   const [emailInput, setEmailInput] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
   const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", "", "", ""]);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [passwordLoading, setPasswordLoading] = useState(false);
+  // Basic info fields (inline signup for new users)
+  const [emailPreFilled, setEmailPreFilled] = useState(false);
+  const [basicGender, setBasicGender] = useState("female");
+  const [basicFullName, setBasicFullName] = useState("");
+  const [basicPhone, setBasicPhone] = useState("");
+  const [basicSameWhatsapp, setBasicSameWhatsapp] = useState(true);
+  const [basicWhatsapp, setBasicWhatsapp] = useState("");
+  const [basicPhoneError, setBasicPhoneError] = useState<string | null>(null);
+  const [basicWhatsappError, setBasicWhatsappError] = useState<string | null>(null);
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
   const basePath = "/flagship/details";
   const idParam = typeof id === "string" ? id : undefined;
@@ -273,8 +288,9 @@ export default function FlagshipDetails() {
         setOtpDigits(["", "", "", "", "", ""]);
         setOnboardingStep("password");
       } else {
-        // Email not found
-        setOnboardingStep("notFound");
+        // Email not found — collect basic info inline
+        setEmailPreFilled(true);
+        setOnboardingStep("basicInfo");
       }
     } catch (error) {
       showAlert(mapErrorToUserMessage(error), "error");
@@ -326,6 +342,33 @@ export default function FlagshipDetails() {
   const handleOnboardingGoogleSignIn = async () => {
     const callbackUrl = `/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`;
     await signIn("google", { callbackUrl });
+  };
+
+  const handleBasicInfoSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const phoneErr = validatePhoneDigits(basicPhone, "Phone");
+    const whatsappErr = basicSameWhatsapp ? null : validatePhoneDigits(basicWhatsapp, "Whatsapp");
+    setBasicPhoneError(phoneErr);
+    setBasicWhatsappError(whatsappErr);
+    if (phoneErr || whatsappErr) {
+      showAlert("Please fix the highlighted phone fields.", "error");
+      return;
+    }
+
+    const formattedPhone = formatPhoneForApi(basicPhone);
+    const formattedWhatsapp = basicWhatsapp ? formatPhoneForApi(basicWhatsapp) : formattedPhone;
+    const formData = {
+      email: emailInput.trim().toLowerCase(),
+      gender: basicGender,
+      fullName: basicFullName,
+      phone: formattedPhone,
+      whatsappPhone: basicSameWhatsapp ? formattedPhone : formattedWhatsapp,
+    };
+
+    localStorage.setItem("formData", JSON.stringify(formData));
+    localStorage.setItem("flagshipId", JSON.stringify(id));
+    setShowOnboardingModal(false);
+    router.push(`/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`);
   };
 
   const nextImage = (e: React.MouseEvent) => {
@@ -659,10 +702,7 @@ export default function FlagshipDetails() {
                     Yes, I have
                   </button>
                   <button
-                    onClick={() => {
-                      localStorage.setItem("flagshipId", JSON.stringify(id));
-                      router.push(`/signup/create-account?flagshipId=${id}`);
-                    }}
+                    onClick={() => setOnboardingStep("basicInfo")}
                     className="btn-outline w-full"
                   >
                     No, I&apos;m new
@@ -849,39 +889,189 @@ export default function FlagshipDetails() {
               </>
             )}
 
-            {/* Step: Not Found */}
-            {onboardingStep === "notFound" && (
-              <>
+            {/* Step: Basic Info (new user inline signup) */}
+            {onboardingStep === "basicInfo" && (
+              <form onSubmit={handleBasicInfoSubmit} className="space-y-5">
                 <div>
                   <h3 className="text-xl font-bold text-heading pr-8">
-                    Account not found
+                    You seem to be new here&hellip; let&apos;s get to know you first!
                   </h3>
-                  <p className="text-text text-sm mt-2">
-                    We couldn&apos;t find an account with <strong className="text-heading">{emailInput}</strong>.
-                  </p>
                 </div>
 
-                <div className="space-y-3">
-                  <button
-                    onClick={() => {
-                      localStorage.setItem("flagshipId", JSON.stringify(id));
-                      router.push(`/signup/create-account?flagshipId=${id}`);
-                    }}
-                    className="btn-primary w-full"
-                  >
-                    Create a new account
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEmailInput("");
-                      setOnboardingStep("email");
-                    }}
-                    className="btn-outline w-full"
-                  >
-                    Try another email
-                  </button>
+                {/* Email */}
+                <div className="space-y-2">
+                  <label htmlFor="basicEmail" className="block text-sm font-medium">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="basicEmail"
+                    required
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    disabled={emailPreFilled}
+                    className={`w-full input-field ${emailPreFilled ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                    placeholder="Enter your email"
+                  />
                 </div>
-              </>
+
+                {/* Gender */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium">Gender</label>
+                  <div className="flex gap-3">
+                    {["male", "female", "other"].map((value) => (
+                      <label
+                        key={value}
+                        className={`px-4 py-2 rounded-full cursor-pointer text-sm ${
+                          basicGender === value
+                            ? "bg-black text-white"
+                            : "bg-gray-100 text-gray-900"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="basicGender"
+                          value={value}
+                          checked={basicGender === value}
+                          onChange={(e) => setBasicGender(e.target.value)}
+                          className="sr-only"
+                        />
+                        {value.charAt(0).toUpperCase() + value.slice(1)}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Full Name */}
+                <div className="space-y-2">
+                  <label htmlFor="basicFullName" className="block text-sm font-medium">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="basicFullName"
+                      required
+                      value={basicFullName}
+                      onChange={(e) => setBasicFullName(e.target.value)}
+                      className="w-full input-field"
+                      placeholder="Enter your full name"
+                    />
+                    {basicFullName && (
+                      <button
+                        type="button"
+                        onClick={() => setBasicFullName("")}
+                        className="absolute right-3 top-1/2 -translate-y-1/2"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Phone */}
+                <div className="space-y-2">
+                  <label htmlFor="basicPhone" className="block text-sm font-medium">
+                    Phone
+                  </label>
+                  <div className="flex gap-2 items-start">
+                    <select className="w-[100px] h-11 input-field">
+                      <option value="+92">+92</option>
+                    </select>
+                    <div className="flex-1">
+                      <input
+                        type="tel"
+                        id="basicPhone"
+                        value={basicPhone}
+                        required
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        maxLength={10}
+                        onChange={(e) => {
+                          const value = sanitizePhoneInput(e.target.value);
+                          setBasicPhone(value);
+                          if (value.length === 10) setBasicPhoneError(null);
+                        }}
+                        placeholder="3XXXXXXXXX"
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                          basicPhoneError
+                            ? "border-brand-error focus:ring-red-500"
+                            : "border-gray-300 focus:ring-gray-400"
+                        }`}
+                      />
+                      {basicPhoneError && (
+                        <p className="text-xs text-brand-error mt-1">{basicPhoneError}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Same Whatsapp checkbox */}
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="basicSameWhatsapp"
+                    checked={basicSameWhatsapp}
+                    onChange={() => setBasicSameWhatsapp(!basicSameWhatsapp)}
+                    className="mr-2 accent-black"
+                  />
+                  <label htmlFor="basicSameWhatsapp" className="text-sm font-medium">
+                    I use the same number for my Whatsapp
+                  </label>
+                </div>
+
+                {/* Whatsapp */}
+                <div className="space-y-2">
+                  <label htmlFor="basicWhatsapp" className="block text-sm font-medium">
+                    Whatsapp
+                  </label>
+                  <div className="flex gap-2 items-start">
+                    <select
+                      className={`w-[100px] h-11 input-field ${
+                        basicSameWhatsapp ? "bg-gray-100 cursor-not-allowed" : "bg-white"
+                      }`}
+                      disabled={basicSameWhatsapp}
+                    >
+                      <option value="+92">+92</option>
+                    </select>
+                    <div className="flex-1">
+                      <input
+                        type="tel"
+                        id="basicWhatsapp"
+                        value={basicWhatsapp}
+                        required={!basicSameWhatsapp}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        maxLength={10}
+                        onChange={(e) => {
+                          const value = sanitizePhoneInput(e.target.value);
+                          setBasicWhatsapp(value);
+                          if (value.length === 10) setBasicWhatsappError(null);
+                        }}
+                        placeholder="3XXXXXXXXX"
+                        disabled={basicSameWhatsapp}
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                          basicSameWhatsapp
+                            ? "bg-gray-100 cursor-not-allowed"
+                            : basicWhatsappError
+                            ? "border-brand-error focus:ring-red-500"
+                            : "border-gray-300 focus:ring-gray-400"
+                        }`}
+                      />
+                      {!basicSameWhatsapp && basicWhatsappError && (
+                        <p className="text-xs text-brand-error mt-1">{basicWhatsappError}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Submit */}
+                <button type="submit" className="btn-primary w-full">
+                  Flagship Preferences
+                </button>
+              </form>
             )}
           </div>
         </div>
