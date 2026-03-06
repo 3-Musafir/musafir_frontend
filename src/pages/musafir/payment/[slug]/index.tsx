@@ -3,17 +3,17 @@ import Head from "next/head";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
 import { PaymentService } from "@/services/paymentService";
-import { formatDate } from "@/utils/formatDate";
 import { Camera, ChevronDown, ChevronUp, Copy } from "lucide-react";
 import Image from "next/image";
 import { resolveImageSrc } from "@/lib/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { trackClarityEvent } from "@/lib/analytics/clarity";
 import { CLARITY_EVENTS } from "@/lib/analytics/events";
 
@@ -39,6 +39,87 @@ const bankDetails = {
 } as const;
 
 type BankKey = keyof typeof bankDetails;
+
+const getDaySuffix = (day: number) => {
+  if (day > 3 && day < 21) return "th";
+  switch (day % 10) {
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
+  }
+};
+
+const formatTripDate = (start?: string, end?: string) => {
+  if (!start || !end) return "—";
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) return "—";
+  const startDay = startDate.getDate();
+  const endDay = endDate.getDate();
+  const month = endDate.toLocaleString("default", { month: "long" });
+  const year = endDate.getFullYear();
+  return `${startDay}-${endDay}${getDaySuffix(endDay)} ${month} ${year}`;
+};
+
+const formatCurrency = (value: unknown) => {
+  return typeof value === "number" && Number.isFinite(value)
+    ? value.toLocaleString()
+    : "—";
+};
+
+const skeletonBlinkStyle = `
+@keyframes skeleton-blink {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.skeleton-blink {
+  animation: skeleton-blink 1.2s ease-in-out infinite;
+}
+`;
+
+function TripPaymentSkeleton() {
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <style>{skeletonBlinkStyle}</style>
+      <div className="w-full">
+        <div className="flex flex-col min-h-screen bg-card lg:my-6 lg:rounded-xl lg:min-h-0 lg:border lg:border-border">
+          <div className="px-4 py-2 lg:py-4 text-center">
+            <Skeleton className="h-8 w-48 mx-auto animate-none skeleton-blink" />
+          </div>
+          <div className="h-48 lg:h-64 mx-4 mb-4 overflow-hidden">
+            <Skeleton className="h-full w-full rounded-lg animate-none skeleton-blink" />
+          </div>
+          <div className="px-4 lg:px-6 mb-6 space-y-2">
+            <Skeleton className="h-7 w-3/5 animate-none skeleton-blink" />
+            <Skeleton className="h-5 w-2/5 animate-none skeleton-blink" />
+          </div>
+          <div className="mx-4 lg:mx-6 p-4 lg:p-6 mb-6 border border-border rounded-lg space-y-3">
+            <Skeleton className="h-5 w-1/3 animate-none skeleton-blink" />
+            <Skeleton className="h-5 w-1/2 animate-none skeleton-blink" />
+            <Skeleton className="h-10 w-full animate-none skeleton-blink" />
+          </div>
+          <div className="mx-4 lg:mx-6 p-4 lg:p-6 mb-6 border border-border rounded-lg space-y-3">
+            <Skeleton className="h-5 w-1/3 animate-none skeleton-blink" />
+            <Skeleton className="h-10 w-full animate-none skeleton-blink" />
+            <Skeleton className="h-10 w-full animate-none skeleton-blink" />
+          </div>
+          <div className="mx-4 lg:mx-6 p-4 lg:p-6 mb-6 border border-border rounded-lg space-y-3">
+            <Skeleton className="h-5 w-1/4 animate-none skeleton-blink" />
+            <Skeleton className="h-10 w-full animate-none skeleton-blink" />
+          </div>
+          <div className="px-4 lg:px-6 mt-auto mb-6">
+            <Skeleton className="h-12 w-full animate-none skeleton-blink" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function TripPayment() {
   const { toast } = useToast();
@@ -75,6 +156,10 @@ export default function TripPayment() {
   const [registration, setRegistration] = useState<any>(null);
   const [paymentQuote, setPaymentQuote] = useState<any>(null);
   const [quoteLoading, setQuoteLoading] = useState(false);
+  const [registrationLoading, setRegistrationLoading] = useState(true);
+  const [registrationError, setRegistrationError] = useState<string | null>(null);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
+  const initialQuoteLoadedRef = useRef(false);
 
   const tripPrice = registration?.price || 0;
   const paymentStatus =
@@ -186,11 +271,21 @@ export default function TripPayment() {
 
   const fetchRegistration = async () => {
     if (!registrationId) return;
-    const registration = await registrationHook.getRegistrationById(registrationId);
-    if (registration) {
-      setRegistration(registration);
-    };
-  }
+    setRegistrationLoading(true);
+    setRegistrationError(null);
+    try {
+      const registration = await registrationHook.getRegistrationById(registrationId);
+      if (registration) {
+        setRegistration(registration);
+      } else {
+        setRegistrationError("Registration not found.");
+      }
+    } catch (e) {
+      setRegistrationError("Failed to load registration.");
+    } finally {
+      setRegistrationLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchRegistration();
@@ -249,33 +344,37 @@ export default function TripPayment() {
     loadEligibleDiscounts();
   }, [registrationId, registration?.discountType, registration?.discountApplied]);
 
-  useEffect(() => {
-    const loadQuote = async () => {
-      if (!registrationId) return;
-      setQuoteLoading(true);
-      try {
-        const payload = {
-          registration: registrationId,
-          walletAmount: walletToUse,
-          discountType: selectedDiscountType || undefined,
-          paymentMode: paymentType === "partial" ? "wallet_only" : "wallet_plus_bank",
-        } as any;
-        const res = await PaymentService.getPaymentQuote(payload);
-        const data = (res as any)?.data ?? res;
-        setPaymentQuote(data);
-      } catch (error: any) {
-        const status = error?.response?.status;
-        if (status === 401 || status === 403) {
-          router.push("/home");
-          return;
-        }
-        setPaymentQuote(null);
-      } finally {
-        setQuoteLoading(false);
+  const loadQuote = useCallback(async () => {
+    if (!registrationId) return;
+    setQuoteLoading(true);
+    setQuoteError(null);
+    try {
+      const payload = {
+        registration: registrationId,
+        walletAmount: walletToUse,
+        discountType: selectedDiscountType || undefined,
+        paymentMode: paymentType === "partial" ? "wallet_only" : "wallet_plus_bank",
+      } as any;
+      const res = await PaymentService.getPaymentQuote(payload);
+      const data = (res as any)?.data ?? res;
+      setPaymentQuote(data);
+      initialQuoteLoadedRef.current = true;
+    } catch (error: any) {
+      const status = error?.response?.status;
+      if (status === 401 || status === 403) {
+        router.push("/home");
+        return;
       }
-    };
+      setPaymentQuote(null);
+      setQuoteError("Unable to load payment details.");
+    } finally {
+      setQuoteLoading(false);
+    }
+  }, [registrationId, walletToUse, paymentType, selectedDiscountType, router]);
+
+  useEffect(() => {
     loadQuote();
-  }, [registrationId, walletToUse, paymentType, selectedDiscountType]);
+  }, [loadQuote]);
 
   useEffect(() => {
     if (paymentQuote && !quoteEventFired.current) {
@@ -437,6 +536,30 @@ export default function TripPayment() {
     }
   };
 
+  const pageLoading =
+    !registrationId ||
+    registrationLoading ||
+    (!registration && !registrationError) ||
+    (quoteLoading && !paymentQuote);
+
+  if (pageLoading) {
+    return <TripPaymentSkeleton />;
+  }
+
+  if (registrationError) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="max-w-md w-full mx-4 rounded-lg border border-border bg-card p-6 text-center space-y-4">
+          <h1 className="text-xl font-semibold text-heading">Unable to load payment</h1>
+          <p className="text-sm text-muted-foreground">{registrationError}</p>
+          <Link href="/home">
+            <Button>Go Home</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <Head>
@@ -469,7 +592,9 @@ export default function TripPayment() {
           {/* Event Details */}
           <div className="px-4 lg:px-6 mb-6">
             <h2 className="text-2xl lg:text-3xl font-bold text-heading">{registration?.flagship?.tripName}</h2>
-            <p className="text-muted-foreground lg:text-lg">{formatDate(registration?.flagship?.startDate, registration?.flagship?.endDate)}</p>
+            <p className="text-muted-foreground lg:text-lg">
+              {formatTripDate(registration?.flagship?.startDate, registration?.flagship?.endDate)}
+            </p>
           </div>
 
           {/* Price and Payment Type */}
@@ -478,13 +603,13 @@ export default function TripPayment() {
               <div className="flex justify-between items-center">
                 <span className="text-text">Trip Price</span>
                 <span className="font-bold text-xl text-heading">
-                  Rs. {tripPrice?.toLocaleString()}
+                  Rs. {formatCurrency(tripPrice)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-text">Remaining Due</span>
                 <span className="font-bold text-xl text-heading">
-                  Rs. {amountDue?.toLocaleString()}
+                  Rs. {formatCurrency(amountDue)}
                 </span>
               </div>
             </div>
@@ -515,7 +640,7 @@ export default function TripPayment() {
                   disabled={paymentPendingApproval || noPaymentDue}
                 />
                 <label htmlFor="partialPayment" className="text-text">
-                  Partial (wallet only)
+                  Partial Payment
                 </label>
               </div>
             </div>
@@ -545,7 +670,7 @@ export default function TripPayment() {
                 <span className="text-muted-foreground">Discounts</span>
                 {discountApplied > 0 ? (
                   <span className="font-semibold text-brand-primary">
-                    Applied: Rs. {discountApplied.toLocaleString()}
+                    Applied: Rs. {formatCurrency(discountApplied)}
                   </span>
                 ) : (
                   <span className="text-muted-foreground text-sm">
@@ -584,7 +709,7 @@ export default function TripPayment() {
                             <span className="text-sm text-heading">{option.label}</span>
                           </div>
                           <span className="text-sm font-semibold text-brand-primary">
-                            Rs. {Number(option.data.amount || 0).toLocaleString()}
+                            Rs. {formatCurrency(Number(option.data.amount || 0))}
                           </span>
                         </label>
                       );
@@ -612,7 +737,7 @@ export default function TripPayment() {
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Discount Applied:</span>
                   <span className="font-semibold text-brand-primary">
-                    Rs. {discountApplied.toLocaleString()}
+                    Rs. {formatCurrency(discountApplied)}
                   </span>
                 </div>
               )}
@@ -620,9 +745,20 @@ export default function TripPayment() {
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Amount to Pay Now:</span>
                 <span className="font-bold text-xl text-brand-primary-hover">
-                  Rs. {(paymentQuote?.payableNow ?? amountDue).toLocaleString()}
+                  Rs. {formatCurrency(paymentQuote?.payableNow ?? amountDue)}
                 </span>
               </div>
+              {quoteError && (
+                <div className="rounded-md border border-brand-error/30 bg-brand-error/5 p-3 text-xs text-brand-error flex items-center justify-between">
+                  <span>{quoteError}</span>
+                  <Button variant="ghost" size="sm" onClick={loadQuote}>
+                    Retry
+                  </Button>
+                </div>
+              )}
+              {quoteLoading && initialQuoteLoadedRef.current && (
+                <p className="text-xs text-muted-foreground">Updating payment details…</p>
+              )}
             </div>
           </div>
 
@@ -635,7 +771,7 @@ export default function TripPayment() {
               </Link>
             </div>
             <p className="mt-1 text-sm text-text">
-              Balance: Rs.{walletBalance.toLocaleString()} (max usable: Rs.{maxWalletUsable.toLocaleString()})
+              Balance: Rs.{formatCurrency(walletBalance)} (max usable: Rs.{formatCurrency(maxWalletUsable)})
             </p>
 
             <div className="mt-3 flex items-center gap-2">
@@ -668,13 +804,13 @@ export default function TripPayment() {
               <div className="flex justify-between">
                 <span>Wallet applied</span>
                 <span className="font-semibold text-heading">
-                  Rs.{walletApplied.toLocaleString()}
+                  Rs.{formatCurrency(walletApplied)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Cash to pay now</span>
                 <span className="font-semibold text-heading">
-                  Rs.{cashToPayNow.toLocaleString()}
+                  Rs.{formatCurrency(cashToPayNow)}
                 </span>
               </div>
             </div>
