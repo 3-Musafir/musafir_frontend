@@ -51,19 +51,19 @@ export default function PassportTabContent() {
         {passportSubTab === "upcoming" && upcomingEvents.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
             {upcomingEvents.map((event) => (
-              <PassportUpcomingCard
-                key={event._id}
-                registrationId={event._id}
-                title={event.flagship.tripName}
-                date={formatDate(event.flagship.startDate, event.flagship.endDate)}
-                appliedDate={new Date(event.createdAt).toLocaleDateString()}
-                location={event.flagship.destination}
-                image={event.flagship.images[0]}
-                status={event.status}
-                paymentInfo={event.paymentSummary || {
-                  price: event.price,
-                  amountDue: event.amountDue,
-                  discountApplied: event.discountApplied,
+                <PassportUpcomingCard
+                  key={event._id}
+                  registrationId={event._id}
+                  title={event.flagship.tripName}
+                  date={formatDate(event.flagship.startDate, event.flagship.endDate)}
+                  appliedDate={new Date(event.createdAt).toLocaleDateString()}
+                  location={event.flagship.destination}
+                  images={event.flagship.images}
+                  status={event.status}
+                  paymentInfo={event.paymentSummary || {
+                    price: event.price,
+                    amountDue: event.amountDue,
+                    discountApplied: event.discountApplied,
                   paidAmount: 0,
                   isFullyPaid: false,
                 }}

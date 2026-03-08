@@ -57,7 +57,7 @@ export default function HomeTabContent() {
                 date={formatDate(event.flagship?.startDate, event.flagship?.endDate)}
                 appliedDate={new Date(event.createdAt).toLocaleDateString()}
                 location={event.flagship?.destination}
-                image={event.flagship?.images?.[0]}
+                images={event.flagship?.images}
                 status={event.status}
                 paymentInfo={event.paymentSummary || {
                   price: event.price,

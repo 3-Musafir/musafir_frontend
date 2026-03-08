@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import { resolveImageSrc } from "@/lib/image";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
@@ -6,6 +6,7 @@ import { ROUTES_CONSTANTS } from "@/config/constants";
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { X } from "lucide-react";
+import { useSwipeCarousel } from "@/hooks/useSwipeCarousel";
 
 type StatusType =
   | "new"
@@ -311,7 +312,7 @@ const PassportUpcomingCard: React.FC<any> = ({
   date,
   location,
   status,
-  image,
+  images,
   paymentInfo,
   appliedDate,
   detailedPlan,
@@ -345,6 +346,16 @@ const PassportUpcomingCard: React.FC<any> = ({
     }
     router.push(`/musafir/refund/${registrationId}`);
   };
+  const fallbackImage = "/norwayUpcomming.jpg";
+  const imageUrls = useMemo(
+    () =>
+      (images && images.length > 0 ? images : [fallbackImage]).map((img) =>
+        resolveImageSrc(img, fallbackImage),
+      ),
+    [images],
+  );
+  const { index, bind } = useSwipeCarousel(imageUrls.length);
+
   const actionButton = getActionButton(
     displayStatus,
     registrationId,
@@ -360,9 +371,9 @@ const PassportUpcomingCard: React.FC<any> = ({
   return (
     <div className="overflow-hidden rounded-2xl bg-card shadow-sm border border-border h-full flex flex-col">
       {/* Image - Responsive height */}
-      <div className="relative h-[140px] lg:h-[180px] w-full overflow-hidden">
+      <div className="relative h-[140px] lg:h-[180px] w-full overflow-hidden" {...bind}>
         <Image
-          src={resolveImageSrc(image, "/norwayUpcomming.jpg")}
+          src={imageUrls[index]}
           alt={title}
           fill
           className="object-cover"
