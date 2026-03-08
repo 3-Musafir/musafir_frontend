@@ -198,13 +198,13 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter Your Password"
-                  className="w-full input-field"
+                  className="w-full input-field pr-10"
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 z-10 pointer-events-auto"
                   disabled={isLoading}
                 >
                   {showPassword ? (
