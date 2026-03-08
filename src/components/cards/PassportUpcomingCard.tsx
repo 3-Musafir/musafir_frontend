@@ -349,7 +349,7 @@ const PassportUpcomingCard: React.FC<any> = ({
   const fallbackImage = "/norwayUpcomming.jpg";
   const imageUrls = useMemo(
     () =>
-      (images && images.length > 0 ? images : [fallbackImage]).map((img) =>
+      (images && images.length > 0 ? images : [fallbackImage]).map((img: string) =>
         resolveImageSrc(img, fallbackImage),
       ),
     [images],
