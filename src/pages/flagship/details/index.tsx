@@ -70,7 +70,7 @@ export default function FlagshipDetails() {
   const isAuthenticated = status === "authenticated";
   const signUpAction = useSignUpHook();
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-  const [onboardingStep, setOnboardingStep] = useState<"question" | "email" | "password" | "basicInfo">("question");
+  const [onboardingStep, setOnboardingStep] = useState<"email" | "password" | "basicInfo">("email");
   const [emailInput, setEmailInput] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
   const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", "", "", ""]);
@@ -266,7 +266,7 @@ export default function FlagshipDetails() {
       router.push(`/flagship/flagship-requirement?id=${id}&fromDetailsPage=true`);
     } else {
       setShowOnboardingModal(true);
-      setOnboardingStep("question");
+      setOnboardingStep("email");
       setEmailInput("");
     }
   };
@@ -688,38 +688,15 @@ export default function FlagshipDetails() {
               <X className="w-5 h-5 text-heading" />
             </button>
 
-            {/* Step: Question */}
-            {onboardingStep === "question" && (
-              <>
-                <h3 className="text-xl font-bold text-heading pr-8">
-                  Have you ever registered for a 3Musafir flagship before?
-                </h3>
-                <div className="space-y-3">
-                  <button
-                    onClick={() => setOnboardingStep("email")}
-                    className="btn-primary w-full"
-                  >
-                    Yes, I have
-                  </button>
-                  <button
-                    onClick={() => setOnboardingStep("basicInfo")}
-                    className="btn-outline w-full"
-                  >
-                    No, I&apos;m new
-                  </button>
-                </div>
-              </>
-            )}
-
             {/* Step: Email */}
             {onboardingStep === "email" && (
               <>
                 <div>
                   <h3 className="text-xl font-bold text-heading pr-8">
-                    Hey hey, Musafir!
+                    Enter your email to get started
                   </h3>
                   <p className="text-text text-sm mt-1">
-                    Enter your email to claim your Musafir ID
+                    We&apos;ll check if you already have a Musafir account
                   </p>
                 </div>
 
@@ -781,12 +758,6 @@ export default function FlagshipDetails() {
                   Continue with Google
                 </button>
 
-                <button
-                  onClick={() => setOnboardingStep("question")}
-                  className="btn-ghost w-full text-sm"
-                >
-                  Back
-                </button>
               </>
             )}
 
