@@ -115,7 +115,7 @@ export default function App({ Component, pageProps }: AppProps) {
       "/flagship",
       "/musafir",
     ];
-    return !appPrefixes.some((prefix) => pathname.startsWith(prefix));
+    return pathname !== "/" && !appPrefixes.some((prefix) => pathname.startsWith(prefix));
   }, [router.pathname]);
 
   const siteUrl = baseSiteUrl;
