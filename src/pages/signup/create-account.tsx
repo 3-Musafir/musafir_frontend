@@ -44,7 +44,7 @@ export default function CreateAccount() {
 
     try {
       if (!(await checkEmailAvailability())) {
-        showAlert("This email seems familiar 👀 If you've joined a Musafir trip before, let's set up your account. New here? You can use another email to sign up.", "error");
+        showAlert(mapErrorToUserMessage({ response: { data: { code: 'USER_EMAIL_ALREADY_EXISTS' } } }), "error");
         return;
       }
 
