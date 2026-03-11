@@ -8,8 +8,9 @@ import { useRecoilValue } from "recoil";
 import { currentUser } from "@/store/signup";
 import { trackClarityEvent } from "@/lib/analytics/clarity";
 import { CLARITY_EVENTS } from "@/lib/analytics/events";
+import withAuth from "@/hoc/withAuth";
 
-export default function RemainingSeats() {
+function RemainingSeats() {
   const [flagship, setFlagship] = useState<any>(null);
   const [flagshipLoading, setFlagshipLoading] = useState(true);
   const action = useFlagshipHook();
@@ -29,6 +30,7 @@ export default function RemainingSeats() {
   >(null);
   const [feedbackDismissed, setFeedbackDismissed] = useState(false);
   const [groupLinkStatus, setGroupLinkStatus] = useState<any>(null);
+  const [mounted, setMounted] = useState(false);
   const user = useRecoilValue(currentUser);
   const verificationStatus = (user as any)?.verification?.status;
   const isVerified = verificationStatus === "verified";
@@ -73,6 +75,7 @@ export default function RemainingSeats() {
   };
 
   useEffect(() => {
+    setMounted(true);
     const flagshipId = JSON.parse(localStorage.getItem("flagshipId") || "null");
     if (flagshipId) {
       getFlagship(flagshipId);
@@ -206,7 +209,7 @@ export default function RemainingSeats() {
             </div>
           </div>
 
-          {isVerified ? (
+          {!mounted ? null : isVerified ? (
             <button
               onClick={handleSubmit}
               className="btn-primary w-full"
@@ -241,3 +244,5 @@ export default function RemainingSeats() {
     </div>
   );
 }
+
+export default withAuth(RemainingSeats);

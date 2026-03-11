@@ -441,12 +441,16 @@ export default function FlagshipDetails() {
       {/* Hero Image - Full width on desktop */}
       <div className="relative h-52 md:h-72 lg:h-[450px] w-full lg:px-8">
         <div className="relative h-full w-full lg:rounded-xl lg:overflow-hidden">
-        <Image
-          src={imageUrls[currentImageIndex]}
-          alt={flagship.tripName || "Event image"}
-          fill
-          className="object-cover"
-        />
+        {imageUrls.map((url: string, index: number) => (
+          <Image
+            key={url}
+            src={url}
+            alt={`${flagship.tripName || "Event image"} ${index + 1}`}
+            fill
+            className={`object-cover transition-opacity duration-300 ${currentImageIndex === index ? "opacity-100" : "opacity-0"}`}
+            priority={index === 0}
+          />
+        ))}
 
         {imageUrls.length > 1 && (
           <>
@@ -465,8 +469,9 @@ export default function FlagshipDetails() {
 
             <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
               {imageUrls.map((_: string, index: number) => (
-                <div
+                <button
                   key={index}
+                  onClick={() => setCurrentImageIndex(index)}
                   className={`h-1.5 rounded-full transition-all ${ currentImageIndex === index ? "w-4 bg-white" : "w-1.5 bg-white/60" }`}
                 />
               ))}
