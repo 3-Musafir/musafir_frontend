@@ -42,6 +42,7 @@ function FlagshipRequirements() {
   const [selectedRoomSharingPrice, setSelectedRoomSharingPrice] = useState(0);
   const registrationAction = useRegistrationHook();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false);
 
   const parseAmount = (value: unknown) => {
     if (value === undefined || value === null) return 0;
@@ -220,6 +221,7 @@ function FlagshipRequirements() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setPageLoading(true);
       const flagshipId = searchParams?.get("id");
       const fromDetailsPage = searchParams?.get("fromDetailsPage") === "true";
       setFromDetailsPage(fromDetailsPage);
@@ -228,6 +230,18 @@ function FlagshipRequirements() {
         await getFlagship(flagshipId);
         localStorage.setItem("flagshipId", JSON.stringify(flagshipId));
         if (isAuthenticated) {
+          // Check if user already has a registration for this flagship
+          const existingReg = await registrationAction.checkExisting(flagshipId);
+          if (existingReg?.exists && existingReg.registrationId) {
+            localStorage.setItem("registrationId", JSON.stringify(existingReg.registrationId));
+            const alertMessage = existingReg.isPaid
+              ? "You already have a confirmed registration for this flagship."
+              : "You already registered. Continue on the payment page to secure your seat.";
+            showAlert(alertMessage, 'success');
+            router.push('/flagship/seats');
+            return;
+          }
+
           const pendingInvite = await registrationAction.getPendingGroupInvite(flagshipId);
           if (pendingInvite) {
             setTripType("group");
@@ -290,6 +304,7 @@ function FlagshipRequirements() {
           setPrice(basePrice + locationPrice);
         }
       }
+      setPageLoading(false);
     };
 
     fetchData();
@@ -503,6 +518,14 @@ function FlagshipRequirements() {
   const groupDiscountFeedback = groupDiscountInfo
     ? getGroupDiscountFeedback(groupDiscountInfo)
     : null;
+
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

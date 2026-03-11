@@ -13,10 +13,9 @@ const AlertContainer = () => {
       setAlerts((prevAlerts) => {
         const nextAlert = event.detail as { message: string; type: 'success' | 'error' };
         if (
-          nextAlert.type === 'error' &&
           prevAlerts.some(
             (alert) =>
-              alert.type === 'error' &&
+              alert.type === nextAlert.type &&
               alert.message === nextAlert.message
           )
         ) {

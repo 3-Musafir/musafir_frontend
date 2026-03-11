@@ -855,7 +855,7 @@ export default function FlagshipDetails() {
                   disabled={emailLoading}
                   className="btn-ghost w-full text-sm"
                 >
-                  {emailLoading ? "Sending..." : "Didn\u0027t receive it? Resend password"}
+                  {emailLoading ? "Sending..." : "Didn\u0027t receive it? Resend Code"}
                 </button>
               </>
             )}

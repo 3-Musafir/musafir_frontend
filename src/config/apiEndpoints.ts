@@ -21,6 +21,7 @@ const endpoints = {
     GET_UPCOMING_PASSPORT: "/registration/upcomingPassport",
     SEND_RE_EVALUATE_REQUEST_TO_JURY: "/registration/reEvaluateRequestToJury",
     GET_REGISTRATION_BY_ID: "/registration/getRegistrationById",
+    CHECK_EXISTING: (flagshipId: string) => `/registration/check/${flagshipId}`,
     CANCEL_SEAT: (registrationId: string) => `/registration/${registrationId}/cancel`,
   },
   FEEDBACK: {

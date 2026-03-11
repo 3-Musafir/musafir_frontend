@@ -70,6 +70,24 @@ const useRegistrationHook = () => {
     return false;
   };
 
+  const checkExisting = async (flagshipId: string): Promise<{
+    exists: boolean;
+    registrationId?: string;
+    isPaid?: boolean;
+    status?: string;
+    amountDue?: number;
+  } | null> => {
+    try {
+      const res = await api.get(REGISTRATION.CHECK_EXISTING(flagshipId));
+      if (res.statusCode === 200) {
+        return res.data;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
   const getPendingGroupInvite = async (flagshipId: string): Promise<any> => {
     const res = await api.get(`/registration/pending-group-invite/${flagshipId}`);
     if (res.statusCode === 200) {
@@ -91,6 +109,7 @@ const useRegistrationHook = () => {
 
   return {
     create,
+    checkExisting,
     getPastPassport,
     getUpcomingPassport,
     sendReEvaluateRequestToJury,
