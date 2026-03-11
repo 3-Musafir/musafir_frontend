@@ -32,7 +32,7 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   // ============================================
   USER_NOT_FOUND: 'Account not found. Please check your details or sign up.',
   USER_EMAIL_REQUIRED: 'Please provide your email address.',
-  USER_EMAIL_ALREADY_EXISTS: 'An account with this email already exists. Please log in or use a different email.',
+  USER_EMAIL_ALREADY_EXISTS: 'This email seems familiar 👀 If you\'ve joined a Musafir trip before, let\'s set up your account. New here? You can use another email to sign up.',
   USER_EMAIL_NOT_FOUND: 'No account found with this email address.',
   USER_PHONE_REQUIRED: 'Please provide your phone number.',
   USER_MULTIPLE_PHONE_MATCHES: 'Multiple accounts found. Please enter your full phone number or email.',
@@ -40,7 +40,7 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   USER_BLOCKED: 'Your account has been temporarily blocked. Please try again later.',
   USER_BLOCKED_TEMPORARY: 'Too many attempts. Please try again in a few hours.',
   USER_INVALID_CREDENTIALS: 'Invalid email or password. Please try again.',
-  USER_EMAIL_TAKEN: 'This email is already in use by another account.',
+  USER_EMAIL_TAKEN: 'This email seems familiar 👀 If you\'ve joined a Musafir trip before, let\'s set up your account. New here? You can use another email to sign up.',
   PROFILE_INCOMPLETE: 'Please complete your profile (gender, phone, city) to continue.',
 
   // ============================================
