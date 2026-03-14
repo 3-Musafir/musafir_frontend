@@ -1,8 +1,6 @@
 "use client";
 import Head from "next/head";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Accordion,
   AccordionContent,
@@ -13,9 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
 import { PaymentService } from "@/services/paymentService";
-import { Camera, ChevronDown, ChevronUp, Copy, CreditCard, Landmark, Wallet } from "lucide-react";
-import Image from "next/image";
-import { resolveImageSrc } from "@/lib/image";
+import { Camera, Copy, CreditCard, Landmark, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -130,8 +126,7 @@ function TripPaymentSkeleton() {
 
 export default function TripPayment() {
   const { toast } = useToast();
-  const [selectedBank, setSelectedBank] =
-    useState<BankKey>("faysal-bank");
+  const [selectedBank, setSelectedBank] = useState<BankKey | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<"bank" | "wallet" | "card">("bank");
   const router = useRouter();
   const params = useParams();
@@ -145,7 +140,6 @@ export default function TripPayment() {
   const description =
     "Complete your trip payment securely with 3Musafir and confirm your seat.";
   const registrationId = params?.slug as string;
-  const [expandedBank, setExpandedBank] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [paymentType, setPaymentType] = useState<"full" | "partial">("full");
@@ -159,8 +153,6 @@ export default function TripPayment() {
   const [walletSummary, setWalletSummary] = useState<any>(null);
   const [walletToUse, setWalletToUse] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const detailsRef = useRef<HTMLDivElement>(null);
-  const breakdownRef = useRef<HTMLDivElement>(null);
   const quoteEventFired = useRef(false);
   const registrationHook = useRegistrationHook();
   const [registration, setRegistration] = useState<any>(null);
@@ -172,12 +164,13 @@ export default function TripPayment() {
   const initialQuoteLoadedRef = useRef(false);
   const [paymentHistory, setPaymentHistory] = useState<IPaymentHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState<"method" | "proof" | "amount" | "account">("method");
+  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [manualAmount, setManualAmount] = useState<number>(0);
+  const [manualAmountTouched, setManualAmountTouched] = useState(false);
+  const [walletAmountTouched, setWalletAmountTouched] = useState(false);
 
   const tripPrice = registration?.price || 0;
-  const paymentStatus =
-    registration?.paymentId && typeof registration.paymentId === "object"
-      ? registration.paymentId.status
-      : undefined;
   const walletBalance =
     typeof walletSummary?.balance === "number" ? walletSummary.balance : 0;
   const amountDue =
@@ -198,8 +191,6 @@ export default function TripPayment() {
   const noPaymentDue = amountDue <= 0;
   const maxWalletUsable =
     typeof paymentQuote?.maxWalletUsable === "number" ? paymentQuote.maxWalletUsable : 0;
-  const walletApplied =
-    typeof paymentQuote?.walletApplied === "number" ? paymentQuote.walletApplied : 0;
   const cashToPayNow =
     typeof paymentQuote?.cashDue === "number" ? paymentQuote.cashDue : 0;
   const requiresScreenshot = Boolean(paymentQuote?.requiresScreenshot);
@@ -233,13 +224,21 @@ export default function TripPayment() {
     errorPriority
       .map((code) => nonWalletErrors.find((err: any) => err?.code === code))
       .find(Boolean) || nonWalletErrors[0] || null;
-  const submitDisabled =
-    isSubmitting ||
-    quoteLoading ||
-    noPaymentDue ||
-    (requiresScreenshot && !file) ||
-    selectedMethod === "card" ||
-    quoteErrors.length > 0;
+  const payableNow =
+    paymentType === "partial" && typeof paymentQuote?.partialDue === "number"
+      ? paymentQuote.partialDue
+      : typeof paymentQuote?.payableNow === "number"
+        ? paymentQuote.payableNow
+        : amountDue;
+  const requiredBankAmount = selectedMethod === "bank" ? cashToPayNow : 0;
+  const bankAmountMismatch =
+    selectedMethod === "bank" &&
+    manualAmount > 0 &&
+    Math.floor(manualAmount) !== Math.floor(requiredBankAmount);
+  const walletAmountMismatch =
+    selectedMethod === "wallet" &&
+    walletToUse > 0 &&
+    Math.floor(walletToUse) !== Math.floor(payableNow);
 
   const discountOptions = [
     { key: "soloFemale", label: "Solo Female Discount", data: eligibleDiscounts?.soloFemale },
@@ -249,6 +248,49 @@ export default function TripPayment() {
   const hasEligibleDiscounts = discountOptions.some((option) => option.data?.eligible);
   const discountSelectionLocked =
     persistedDiscountApplied > 0 || Boolean(persistedDiscountType);
+
+  type StepKey = "method" | "proof" | "amount" | "account";
+  const stepSequence: StepKey[] = selectedMethod === "bank"
+    ? ["method", "proof", "amount", "account"]
+    : selectedMethod === "wallet"
+      ? ["method", "amount"]
+      : ["method"];
+  const stepIndex = Math.max(0, stepSequence.indexOf(currentStep));
+  const isFirstStep = stepIndex === 0;
+
+  const goNext = () => {
+    const nextIndex = Math.min(stepIndex + 1, stepSequence.length - 1);
+    setCurrentStep(stepSequence[nextIndex]);
+  };
+
+  const goBack = () => {
+    const prevIndex = Math.max(stepIndex - 1, 0);
+    setCurrentStep(stepSequence[prevIndex]);
+  };
+
+  const isAmountRequiredError = prioritizedError?.code === "payment_amount_required";
+  const hasBlockingError = Boolean(prioritizedError && !isAmountRequiredError);
+  const walletAmountInvalid =
+    selectedMethod === "wallet" &&
+    (walletToUse <= 0 || Boolean(walletError) || walletAmountMismatch);
+  const methodNextDisabled =
+    selectedMethod === "card" || noPaymentDue || hasBlockingError || quoteLoading || !paymentQuote;
+  const proofNextDisabled =
+    selectedMethod === "bank" && !file;
+  const amountNextDisabled =
+    hasBlockingError ||
+    noPaymentDue ||
+    quoteLoading ||
+    !paymentQuote ||
+    (selectedMethod === "wallet"
+      ? walletAmountInvalid
+      : manualAmount <= 0 || bankAmountMismatch);
+  const accountNextDisabled =
+    hasBlockingError ||
+    noPaymentDue ||
+    quoteLoading ||
+    !paymentQuote ||
+    (selectedMethod === "bank" && !selectedBank);
 
   const handleCopy = async (text: string) => {
     try {
@@ -300,6 +342,12 @@ export default function TripPayment() {
   useEffect(() => {
     fetchRegistration();
   }, [registrationId]);
+
+  useEffect(() => {
+    setCurrentStep("method");
+    setManualAmountTouched(false);
+    setWalletAmountTouched(false);
+  }, [selectedMethod]);
 
   useEffect(() => {
     const loadWallet = async () => {
@@ -359,17 +407,18 @@ export default function TripPayment() {
     setQuoteLoading(true);
     setQuoteError(null);
     try {
+      const walletAmountForQuote = selectedMethod === "wallet" ? walletToUse : 0;
       const resolvedPaymentMode =
         paymentType === "partial"
           ? "partial"
           : selectedMethod === "wallet"
             ? "wallet_only"
             : selectedMethod === "bank"
-              ? (walletToUse > 0 ? "wallet_plus_bank" : "bank_transfer")
+              ? "bank_transfer"
               : "bank_transfer";
       const payload = {
         registration: registrationId,
-        walletAmount: walletToUse,
+        walletAmount: walletAmountForQuote,
         discountType: selectedDiscountType || undefined,
         paymentMode: resolvedPaymentMode,
       } as any;
@@ -400,6 +449,21 @@ export default function TripPayment() {
       quoteEventFired.current = true;
     }
   }, [paymentQuote]);
+
+  useEffect(() => {
+    if (selectedMethod !== "bank") return;
+    if (manualAmountTouched) return;
+    if (typeof cashToPayNow === "number" && cashToPayNow > 0) {
+      setManualAmount(cashToPayNow);
+    }
+  }, [selectedMethod, cashToPayNow, manualAmountTouched]);
+
+  useEffect(() => {
+    if (selectedMethod !== "wallet") return;
+    if (walletAmountTouched) return;
+    if (walletToUse > 0) return;
+    setWalletToUse(0);
+  }, [selectedMethod, walletAmountTouched, walletToUse]);
 
   useEffect(() => {
     if (!registrationId) return;
@@ -485,7 +549,7 @@ export default function TripPayment() {
       return;
     }
 
-    if (requiresScreenshot && !file) {
+    if (selectedMethod === "bank" && !file) {
       toast({
         title: "Please upload a payment screenshot",
         variant: "destructive",
@@ -495,8 +559,9 @@ export default function TripPayment() {
 
     try {
       setIsSubmitting(true);
+      const walletAmountToSubmit = selectedMethod === "wallet" ? walletToUse : 0;
       const walletUseId =
-        walletApplied > 0
+        walletAmountToSubmit > 0
           ? (typeof crypto !== "undefined" && "randomUUID" in crypto
             ? (crypto as any).randomUUID()
             : `${Date.now()}-${Math.random()}`)
@@ -506,9 +571,13 @@ export default function TripPayment() {
           ? (crypto as any).randomUUID()
           : `${Date.now()}-${Math.random()}`;
       const selectedBankAccountId =
-        cashToPayNow > 0 ? bankDetails[selectedBank]?.id : undefined;
+        selectedMethod === "bank" && manualAmount > 0 && selectedBank
+          ? bankDetails[selectedBank]?.id
+          : undefined;
       const selectedBankLabel =
-        cashToPayNow > 0 ? bankDetails[selectedBank]?.title : undefined;
+        selectedMethod === "bank" && manualAmount > 0 && selectedBank
+          ? bankDetails[selectedBank]?.title
+          : undefined;
       const discountToUse =
         discountApplied > 0 ? discountApplied : selectedDiscountAmount;
       const discountTypeToUse =
@@ -516,7 +585,7 @@ export default function TripPayment() {
           ? (registration?.discountType ?? selectedDiscountType)
           : selectedDiscountType;
 
-      if (cashToPayNow > 0 && !selectedBankAccountId && !selectedBankLabel) {
+      if (selectedMethod === "bank" && manualAmount > 0 && !selectedBankAccountId && !selectedBankLabel) {
         toast({
           title: "Select a bank account",
           description: "Please choose a bank account before submitting.",
@@ -525,18 +594,20 @@ export default function TripPayment() {
         return;
       }
 
+      const amountToSubmit = selectedMethod === "bank" ? manualAmount : 0;
+
       const res: any = await PaymentService.createPayment({
         registration: registrationId,
         idempotencyKey,
         bankAccount: selectedBankAccountId,
         bankAccountLabel: selectedBankLabel,
         paymentType: paymentType === "full" ? "fullPayment" : "partialPayment",
-        amount: cashToPayNow,
+        amount: amountToSubmit,
         discount: discountToUse,
         discountType: discountTypeToUse ?? undefined,
-        walletAmount: walletApplied,
+        walletAmount: walletAmountToSubmit,
         walletUseId,
-        screenshot: cashToPayNow > 0 ? file ?? undefined : undefined,
+        screenshot: selectedMethod === "bank" && amountToSubmit > 0 ? file ?? undefined : undefined,
       });
 
       const successMessage =
@@ -633,525 +704,421 @@ export default function TripPayment() {
         <meta property="og:description" content={description} />
         <meta property="og:url" content={canonicalUrl} />
       </Head>
-    <div className="min-h-screen bg-background text-foreground">
-      {registrationId && <div className="w-full">
-        <div className="flex flex-col min-h-screen bg-card lg:my-6 lg:rounded-xl lg:min-h-0 lg:border lg:border-border">
-          {/* Header */}
-          <div className="px-4 py-2 lg:py-4 text-center">
-            <h1 className="text-2xl lg:text-3xl font-bold text-heading">Trip Payment</h1>
-          </div>
-
-          {/* Trip Image */}
-          <div className="h-48 lg:h-64 bg-muted rounded-lg mx-4 mb-4 overflow-hidden">
-            <Image
-              src={resolveImageSrc(registration?.flagship?.images?.[0], "/payments-cover.png")}
-              alt="Payments Cover"
-              height={192}
-              width={768}
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* Event Details */}
-          <div className="px-4 lg:px-6 mb-6">
-            <h2 className="text-2xl lg:text-3xl font-bold text-heading">{registration?.flagship?.tripName}</h2>
-            <p className="text-muted-foreground lg:text-lg">
-              {formatTripDate(registration?.flagship?.startDate, registration?.flagship?.endDate)}
-            </p>
-          </div>
-
-          {/* Choose Payment Method */}
-          <div className="px-4 lg:px-6 mb-6">
-            <h3 className="text-2xl lg:text-3xl font-bold text-heading">Choose a payment method</h3>
-            <p className="text-muted-foreground text-sm lg:text-base mt-1">
-              Greyed ones aren't available for you at the moment.
-            </p>
-            <div className="mt-4 space-y-3">
-              <button
-                type="button"
-                onClick={() => setSelectedMethod("bank")}
-                className={`w-full rounded-2xl border px-4 py-4 flex items-center justify-between transition ${
-                  selectedMethod === "bank" ? "border-brand-primary bg-brand-primary/5" : "border-border bg-card"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
-                    <Landmark className="h-5 w-5 text-brand-primary" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-base font-semibold text-heading">Bank Transfer</p>
-                    <p className="text-xs text-muted-foreground">Transfer to a 3Musafir account</p>
-                  </div>
-                </div>
-                <span
-                  className={`h-6 w-6 rounded-full border flex items-center justify-center ${
-                    selectedMethod === "bank" ? "border-brand-primary" : "border-border"
-                  }`}
+      <div className="min-h-screen bg-background text-foreground">
+        {registrationId && (
+          <div className="w-full">
+            <div className="flex flex-col min-h-screen bg-card lg:my-6 lg:rounded-xl lg:min-h-0 lg:border lg:border-border">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                <button
+                  type="button"
+                  onClick={() => (isFirstStep ? router.back() : goBack())}
+                  className="h-9 w-9 flex items-center justify-center rounded-full border border-border text-heading"
                 >
-                  {selectedMethod === "bank" && <span className="h-3 w-3 rounded-full bg-brand-primary" />}
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSelectedMethod("wallet")}
-                className={`w-full rounded-2xl border px-4 py-4 flex items-center justify-between transition ${
-                  selectedMethod === "wallet" ? "border-brand-primary bg-brand-primary/5" : "border-border bg-card"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
-                    <Wallet className="h-5 w-5 text-brand-primary" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-base font-semibold text-heading">Use my credits</p>
-                    <p className="text-xs text-muted-foreground">Pay from your wallet balance</p>
-                  </div>
-                </div>
-                <span
-                  className={`h-6 w-6 rounded-full border flex items-center justify-center ${
-                    selectedMethod === "wallet" ? "border-brand-primary" : "border-border"
-                  }`}
-                >
-                  {selectedMethod === "wallet" && <span className="h-3 w-3 rounded-full bg-brand-primary" />}
-                </span>
-              </button>
-
-              <div className="w-full rounded-2xl border px-4 py-4 flex items-center justify-between opacity-50 border-border bg-card">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-                    <CreditCard className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-base font-semibold text-heading">Credit/Debit Card</p>
-                    <p className="text-xs text-muted-foreground">Coming soon</p>
-                  </div>
-                </div>
-                <span className="h-6 w-6 rounded-full border border-border" />
-              </div>
-            </div>
-          </div>
-
-          {/* Total Due + Next */}
-          <div className="mx-4 lg:mx-6 mb-6 rounded-2xl border border-border bg-card px-4 py-4 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Total due amount</p>
-              <p className="text-2xl font-bold text-heading">Rs. {formatCurrency(amountDue)}</p>
-              <button
-                type="button"
-                onClick={() => {
-                  setTimeout(() => breakdownRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
-                }}
-                className="text-sm text-brand-primary hover:underline mt-1"
-              >
-                See breakdown
-              </button>
-            </div>
-            <Button
-              type="button"
-              className="bg-brand-primary text-btn-secondary-text"
-              onClick={() => detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
-            >
-              Next
-            </Button>
-          </div>
-
-          <div ref={breakdownRef}>
-            {paymentType === "partial" && typeof paymentQuote?.partialDue === "number" && (
-              <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Minimum to save your seat</p>
-                    <p className="text-xs text-muted-foreground">(30% of total amount)</p>
-                  </div>
-                  <p className="text-lg font-semibold text-brand-primary">
-                    Rs. {formatCurrency(paymentQuote.partialDue)}
-                  </p>
-                </div>
-                <div className="mt-3 h-2 rounded-full bg-muted">
-                  <div
-                    className="h-2 rounded-full bg-brand-primary"
-                    style={{
-                      width: `${Math.min(
-                        100,
-                        (paymentQuote.partialDue / Math.max(amountDue, 1)) * 100
-                      )}%`,
-                    }}
-                  />
-                </div>
-                <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-                  <span>Rs. {formatCurrency(amountDue - paymentQuote.partialDue)} remaining</span>
-                  <span>Total: Rs. {formatCurrency(amountDue)}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Price and Payment Type */}
-            <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between items-center">
-                <span className="text-text">Trip Price</span>
-                <span className="font-bold text-xl text-heading">
-                  Rs. {formatCurrency(tripPrice)}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text">Remaining Due</span>
-                <span className="font-bold text-xl text-heading">
-                  Rs. {formatCurrency(amountDue)}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex space-x-4">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="fullPayment"
-                  name="paymentType"
-                  checked={paymentType === "full"}
-                  onChange={() => setPaymentType("full")}
-                  className="h-4 w-4 text-brand-primary focus:ring-brand-primary"
-                  disabled={noPaymentDue}
-                />
-                <label htmlFor="fullPayment" className="text-text">
-                  Full Payment
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="partialPayment"
-                  name="paymentType"
-                  checked={paymentType === "partial"}
-                  onChange={() => setPaymentType("partial")}
-                  className="h-4 w-4 text-brand-primary focus:ring-brand-primary"
-                  disabled={noPaymentDue}
-                />
-                <label htmlFor="partialPayment" className="text-text">
-                  Partial Payment
-                </label>
-              </div>
-            </div>
-
-            {noPaymentDue && (
-              <p className="mt-3 text-sm text-muted-foreground">
-                No remaining payment due.
-              </p>
-            )}
-
-            {paymentType === "partial" && (
-              <p className="mt-3 text-xs text-muted-foreground">
-                Partial payment is fixed at 30% of remaining due. You can pay with wallet and/or bank transfer.
-              </p>
-            )}
-            </div>
-
-            {/* Discount Section */}
-            <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Discounts</span>
-                {discountApplied > 0 ? (
-                  <span className="font-semibold text-brand-primary">
-                    Applied: Rs. {formatCurrency(discountApplied)}
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground text-sm">
-                    Select one discount
-                  </span>
-                )}
+                  {isFirstStep ? "×" : "←"}
+                </button>
+                <h1 className="text-lg font-semibold text-heading">Trip Payment</h1>
+                <div className="h-9 w-9" />
               </div>
 
-              {!discountSelectionLocked && (
-                <div className="space-y-2">
-                  {authRequired && (
-                    <p className="text-sm text-amber-700">
-                      Login required to view eligible discounts.
-                    </p>
-                  )}
-                  {hasEligibleDiscounts ? (
-                    discountOptions.map((option) => {
-                      if (!option.data?.eligible) return null;
-                      return (
-                        <label
-                          key={option.key}
-                          className={`flex items-center justify-between rounded-md border p-3 cursor-pointer ${
-                            selectedDiscountType === option.key
-                              ? "border-brand-primary"
-                              : "border-border"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="radio"
-                              name="discountType"
-                              checked={selectedDiscountType === option.key}
-                              onChange={() => handleSelectDiscount(option.key)}
-                              className="h-4 w-4 text-brand-primary focus:ring-brand-primary"
-                            />
-                            <span className="text-sm text-heading">{option.label}</span>
-                          </div>
-                          <span className="text-sm font-semibold text-brand-primary">
-                            Rs. {formatCurrency(Number(option.data.amount || 0))}
-                          </span>
-                        </label>
-                      );
-                    })
-                  ) : (
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">
-                        No discounts available for this registration.
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Looks like discounts are gone for this trip — registering and paying early helps secure them next time.
+              <div className="px-4 pt-4 pb-2 text-center">
+                <p className="text-sm text-muted-foreground">
+                  {registration?.flagship?.tripName || "Trip"}{" "}
+                  {formatTripDate(registration?.flagship?.startDate, registration?.flagship?.endDate)}
+                </p>
+              </div>
+
+              <div className="flex-1 px-4 lg:px-6 pb-6">
+                {currentStep === "method" && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-2xl font-bold text-heading">Choose a payment method</h3>
+                      <p className="text-muted-foreground text-sm mt-1">
+                        Greyed ones aren't available for you at the moment.
                       </p>
                     </div>
-                  )}
-                </div>
-              )}
 
-              {discountSelectionLocked && (
-                <div className="rounded-md bg-muted/40 p-3 text-sm text-muted-foreground">
-                  Discount applied and locked for this registration.
-                </div>
-              )}
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedMethod("bank")}
+                        className={`w-full rounded-2xl border px-4 py-4 flex items-center justify-between transition ${
+                          selectedMethod === "bank" ? "border-brand-primary bg-brand-primary/5" : "border-border bg-card"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
+                            <Landmark className="h-5 w-5 text-brand-primary" />
+                          </div>
+                          <div className="text-left">
+                            <p className="text-base font-semibold text-heading">Bank Transfer</p>
+                            <p className="text-xs text-muted-foreground">Transfer to a 3Musafir account</p>
+                          </div>
+                        </div>
+                        <span
+                          className={`h-6 w-6 rounded-full border flex items-center justify-center ${
+                            selectedMethod === "bank" ? "border-brand-primary" : "border-border"
+                          }`}
+                        >
+                          {selectedMethod === "bank" && <span className="h-3 w-3 rounded-full bg-brand-primary" />}
+                        </span>
+                      </button>
 
-              {discountApplied > 0 && (
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Discount Applied:</span>
-                  <span className="font-semibold text-brand-primary">
-                    Rs. {formatCurrency(discountApplied)}
-                  </span>
-                </div>
-              )}
+                      <button
+                        type="button"
+                        onClick={() => setSelectedMethod("wallet")}
+                        className={`w-full rounded-2xl border px-4 py-4 flex items-center justify-between transition ${
+                          selectedMethod === "wallet" ? "border-brand-primary bg-brand-primary/5" : "border-border bg-card"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
+                            <Wallet className="h-5 w-5 text-brand-primary" />
+                          </div>
+                          <div className="text-left">
+                            <p className="text-base font-semibold text-heading">Use my credits</p>
+                            <p className="text-xs text-muted-foreground">Pay from your wallet balance</p>
+                          </div>
+                        </div>
+                        <span
+                          className={`h-6 w-6 rounded-full border flex items-center justify-center ${
+                            selectedMethod === "wallet" ? "border-brand-primary" : "border-border"
+                          }`}
+                        >
+                          {selectedMethod === "wallet" && <span className="h-3 w-3 rounded-full bg-brand-primary" />}
+                        </span>
+                      </button>
 
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Amount to Pay Now:</span>
-                <span className="font-bold text-xl text-brand-primary-hover">
-                  Rs. {formatCurrency(
-                    paymentType === "partial" && typeof paymentQuote?.partialDue === "number"
-                      ? paymentQuote.partialDue
-                      : paymentQuote?.payableNow ?? amountDue
-                  )}
-                </span>
-              </div>
-              {quoteError && (
-                <div className="rounded-md border border-brand-error/30 bg-brand-error/5 p-3 text-xs text-brand-error flex items-center justify-between">
-                  <span>{quoteError}</span>
-                  <Button variant="ghost" size="sm" onClick={loadQuote}>
-                    Retry
-                  </Button>
-                </div>
-              )}
-              {quoteLoading && initialQuoteLoadedRef.current && (
-                <p className="text-xs text-muted-foreground">Updating payment details…</p>
-              )}
-            </div>
-            </div>
+                      <div className="w-full rounded-2xl border px-4 py-4 flex items-center justify-between opacity-50 border-border bg-card">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                            <CreditCard className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                          <div className="text-left">
+                            <p className="text-base font-semibold text-heading">Credit/Debit Card</p>
+                            <p className="text-xs text-muted-foreground">Coming soon</p>
+                          </div>
+                        </div>
+                        <span className="h-6 w-6 rounded-full border border-border" />
+                      </div>
+                    </div>
 
-            {/* Previous Transactions */}
-            <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-lg font-semibold text-heading">Previous Transactions</h4>
-                <span className="text-sm text-muted-foreground">
-                  {paymentHistory.length} payment(s)
-                </span>
-              </div>
-              {historyLoading ? (
-                <p className="text-sm text-muted-foreground">Loading payments…</p>
-              ) : paymentHistory.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No previous payments found.</p>
-              ) : (
-                <Accordion type="single" collapsible>
-                  {paymentHistory.map((item) => {
-                    const walletValue =
-                      typeof item.walletApplied === "number"
-                        ? item.walletApplied
-                        : typeof item.walletRequested === "number"
-                          ? item.walletRequested
-                          : 0;
-                    const totalPaid =
-                      (typeof item.amount === "number" ? item.amount : 0) + Math.max(0, walletValue);
-                    return (
-                      <AccordionItem key={item._id} value={item._id}>
-                        <AccordionTrigger className="text-sm">
-                          <div className="flex w-full items-center justify-between pr-4">
-                            <div>
-                              <p className="font-semibold text-heading">Rs. {formatCurrency(totalPaid)}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {new Date(item.createdAt).toLocaleDateString()}
+                    <div className="rounded-2xl border border-border bg-card px-4 py-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-muted-foreground">Total due amount</p>
+                          <p className="text-2xl font-bold text-heading">Rs. {formatCurrency(amountDue)}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowBreakdown((prev) => !prev)}
+                          className="text-sm text-brand-primary hover:underline"
+                        >
+                          {showBreakdown ? "Hide breakdown" : "See breakdown"}
+                        </button>
+                      </div>
+                    </div>
+
+                    {showBreakdown && (
+                      <div className="space-y-4">
+                        {paymentType === "partial" && typeof paymentQuote?.partialDue === "number" && (
+                          <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-muted-foreground">Minimum to save your seat</p>
+                                <p className="text-xs text-muted-foreground">(30% of total amount)</p>
+                              </div>
+                              <p className="text-lg font-semibold text-brand-primary">
+                                Rs. {formatCurrency(paymentQuote.partialDue)}
                               </p>
                             </div>
-                            <span
-                              className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                                item.status === "approved"
-                                  ? "bg-emerald-50 text-emerald-600"
-                                  : item.status === "pendingApproval"
-                                    ? "bg-amber-50 text-amber-600"
-                                    : "bg-rose-50 text-rose-600"
-                              }`}
-                            >
-                              {item.status === "pendingApproval" ? "Pending" : item.status}
-                            </span>
+                            <div className="mt-3 h-2 rounded-full bg-muted">
+                              <div
+                                className="h-2 rounded-full bg-brand-primary"
+                                style={{
+                                  width: `${Math.min(
+                                    100,
+                                    (paymentQuote.partialDue / Math.max(amountDue, 1)) * 100
+                                  )}%`,
+                                }}
+                              />
+                            </div>
+                            <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+                              <span>Rs. {formatCurrency(amountDue - paymentQuote.partialDue)} remaining</span>
+                              <span>Total: Rs. {formatCurrency(amountDue)}</span>
+                            </div>
                           </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-2 text-sm text-muted-foreground">
-                            {walletValue > 0 && (
-                              <div className="flex justify-between">
-                                <span>Wallet applied</span>
-                                <span>Rs. {formatCurrency(walletValue)}</span>
-                              </div>
-                            )}
-                            {typeof item.amount === "number" && item.amount > 0 && (
-                              <div className="flex justify-between">
-                                <span>Bank transfer</span>
-                                <span>Rs. {formatCurrency(item.amount)}</span>
-                              </div>
-                            )}
-                            {item.rejectionPublicNote && (
-                              <p className="text-xs text-brand-error">{item.rejectionPublicNote}</p>
-                            )}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    );
-                  })}
-                </Accordion>
-              )}
-            </div>
-          </div>
-
-          <div ref={detailsRef}>
-          {/* Wallet Credits */}
-          {selectedMethod !== "card" && (
-          <div className="rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6 border border-border bg-card">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-heading">Use Wallet</h3>
-              <Link href="/wallet" className="text-sm text-brand-primary hover:underline">
-                Top up
-              </Link>
-            </div>
-            <p className="mt-1 text-sm text-text">
-              Balance: Rs.{formatCurrency(walletBalance)} (max usable: Rs.{formatCurrency(maxWalletUsable)})
-            </p>
-
-            <div className="mt-3 flex items-center gap-2">
-              <input
-                type="number"
-                min={0}
-                max={maxWalletUsable}
-                value={walletToUse}
-                onChange={(e) => setWalletToUse(Number(e.target.value || 0))}
-                disabled={noPaymentDue || maxWalletUsable <= 0}
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder="Wallet amount"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setWalletToUse(maxWalletUsable)}
-                disabled={noPaymentDue || maxWalletUsable <= 0}
-              >
-                Max
-              </Button>
-            </div>
-            {walletError && (
-              <p className="mt-2 text-xs text-brand-error">
-                {walletError.message || "Wallet amount can’t exceed remaining due."}
-              </p>
-            )}
-
-            <div className="mt-3 space-y-1 text-sm text-text">
-              <div className="flex justify-between">
-                <span>Wallet applied</span>
-                <span className="font-semibold text-heading">
-                  Rs.{formatCurrency(walletApplied)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Cash to pay now</span>
-                <span className="font-semibold text-heading">
-                  Rs.{formatCurrency(cashToPayNow)}
-                </span>
-              </div>
-            </div>
-          </div>
-          )}
-
-          {selectedMethod === "bank" ? (
-          requiresScreenshot ? (
-            <>
-              {/* Step 1: Transfer Amount */}
-              <div className="px-4 lg:px-6 mb-6">
-                <h3 className="text-xl lg:text-2xl font-bold mb-2 text-heading">Step 1: Transfer Amount</h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Transfer to one of these Bank accounts and share your receipt
-                  below
-                </p>
-                <RadioGroup
-                  value={selectedBank}
-                  onValueChange={(value) => setSelectedBank(value as BankKey)}
-                  className="space-y-3"
-                >
-                  {Object.entries(bankDetails).map(([bankId, details]) => (
-                    <div
-                      key={bankId}
-                      className="border border-border bg-card rounded-lg overflow-hidden"
-                    >
-                      <div
-                        className="flex items-center justify-between p-4 cursor-pointer"
-                        onClick={() =>
-                          setExpandedBank(expandedBank === bankId ? null : bankId)
-                        }
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value={bankId} id={bankId} />
-                          <Label htmlFor={bankId} className="flex items-center">
-                            <Image
-                              src={
-                                bankId === "standard-chartered"
-                                  ? "/sc.png"
-                                  : "/db.png"
-                              }
-                              alt={details.title}
-                              width={24}
-                              height={24}
-                              className="mr-3"
-                            />
-                            <span>{details.title}</span>
-                          </Label>
-                        </div>
-                        {expandedBank === bankId ? (
-                          <ChevronUp className="h-5 w-5" />
-                        ) : (
-                          <ChevronDown className="h-5 w-5" />
                         )}
-                      </div>
 
-                      {expandedBank === bankId && (
-                        <div className="px-4 pb-4 space-y-3">
-                          <div className="flex flex-col space-y-1">
-                            <span className="text-sm text-muted-foreground">
-                              Account Title
-                            </span>
-                            <span className="font-medium text-heading">{details.title}</span>
-                          </div>
-                          <div className="flex flex-col space-y-1">
-                            <span className="text-sm text-muted-foreground">
-                              {String(details.accountNumber || "").startsWith("PK")
-                                ? "IBAN"
-                                : "Account Number"}
-                            </span>
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium text-heading">
-                                {details.accountNumber}
+                        <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
+                          <div className="space-y-2 mb-4">
+                            <div className="flex justify-between items-center">
+                              <span className="text-text">Trip Price</span>
+                              <span className="font-bold text-xl text-heading">
+                                Rs. {formatCurrency(tripPrice)}
                               </span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-text">Remaining Due</span>
+                              <span className="font-bold text-xl text-heading">
+                                Rs. {formatCurrency(amountDue)}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex space-x-4">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="fullPayment"
+                                name="paymentType"
+                                checked={paymentType === "full"}
+                                onChange={() => setPaymentType("full")}
+                                className="h-4 w-4 text-brand-primary focus:ring-brand-primary"
+                                disabled={noPaymentDue}
+                              />
+                              <label htmlFor="fullPayment" className="text-text">
+                                Full Payment
+                              </label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="radio"
+                                id="partialPayment"
+                                name="paymentType"
+                                checked={paymentType === "partial"}
+                                onChange={() => setPaymentType("partial")}
+                                className="h-4 w-4 text-brand-primary focus:ring-brand-primary"
+                                disabled={noPaymentDue}
+                              />
+                              <label htmlFor="partialPayment" className="text-text">
+                                Partial Payment
+                              </label>
+                            </div>
+                          </div>
+
+                          {noPaymentDue && (
+                            <p className="mt-3 text-sm text-muted-foreground">
+                              No remaining payment due.
+                            </p>
+                          )}
+
+                          {paymentType === "partial" && (
+                            <p className="mt-3 text-xs text-muted-foreground">
+                              Partial payment is fixed at 30% of remaining due.
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Discounts</span>
+                              {discountApplied > 0 ? (
+                                <span className="font-semibold text-brand-primary">
+                                  Applied: Rs. {formatCurrency(discountApplied)}
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground text-sm">
+                                  Select one discount
+                                </span>
+                              )}
+                            </div>
+
+                            {!discountSelectionLocked && (
+                              <div className="space-y-2">
+                                {authRequired && (
+                                  <p className="text-sm text-amber-700">
+                                    Login required to view eligible discounts.
+                                  </p>
+                                )}
+                                {hasEligibleDiscounts ? (
+                                  discountOptions.map((option) => {
+                                    if (!option.data?.eligible) return null;
+                                    return (
+                                      <label
+                                        key={option.key}
+                                        className={`flex items-center justify-between rounded-md border p-3 cursor-pointer ${
+                                          selectedDiscountType === option.key
+                                            ? "border-brand-primary"
+                                            : "border-border"
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <input
+                                            type="radio"
+                                            name="discountType"
+                                            checked={selectedDiscountType === option.key}
+                                            onChange={() => handleSelectDiscount(option.key)}
+                                            className="h-4 w-4 text-brand-primary focus:ring-brand-primary"
+                                          />
+                                          <span className="text-sm text-heading">{option.label}</span>
+                                        </div>
+                                        <span className="text-sm font-semibold text-brand-primary">
+                                          Rs. {formatCurrency(Number(option.data.amount || 0))}
+                                        </span>
+                                      </label>
+                                    );
+                                  })
+                                ) : (
+                                  <div className="space-y-1">
+                                    <p className="text-sm text-muted-foreground">
+                                      No discounts available for this registration.
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                      Looks like discounts are gone for this trip — registering and paying early helps secure them next time.
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {discountSelectionLocked && (
+                              <div className="rounded-md bg-muted/40 p-3 text-sm text-muted-foreground">
+                                Discount applied and locked for this registration.
+                              </div>
+                            )}
+
+                            {discountApplied > 0 && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-muted-foreground">Discount Applied:</span>
+                                <span className="font-semibold text-brand-primary">
+                                  Rs. {formatCurrency(discountApplied)}
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Amount to Pay Now:</span>
+                              <span className="font-bold text-xl text-brand-primary-hover">
+                                Rs. {formatCurrency(payableNow)}
+                              </span>
+                            </div>
+                            {quoteError && (
+                              <div className="rounded-md border border-brand-error/30 bg-brand-error/5 p-3 text-xs text-brand-error flex items-center justify-between">
+                                <span>{quoteError}</span>
+                                <Button variant="ghost" size="sm" onClick={loadQuote}>
+                                  Retry
+                                </Button>
+                              </div>
+                            )}
+                            {quoteLoading && initialQuoteLoadedRef.current && (
+                              <p className="text-xs text-muted-foreground">Updating payment details…</p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-lg font-semibold text-heading">Previous Transactions</h4>
+                            <span className="text-sm text-muted-foreground">
+                              {paymentHistory.length} payment(s)
+                            </span>
+                          </div>
+                          {historyLoading ? (
+                            <p className="text-sm text-muted-foreground">Loading payments…</p>
+                          ) : paymentHistory.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">No previous payments found.</p>
+                          ) : (
+                            <Accordion type="single" collapsible>
+                              {paymentHistory.map((item) => {
+                                const walletValue =
+                                  typeof item.walletApplied === "number"
+                                    ? item.walletApplied
+                                    : typeof item.walletRequested === "number"
+                                      ? item.walletRequested
+                                      : 0;
+                                const totalPaid =
+                                  (typeof item.amount === "number" ? item.amount : 0) + Math.max(0, walletValue);
+                                return (
+                                  <AccordionItem key={item._id} value={item._id}>
+                                    <AccordionTrigger className="text-sm">
+                                      <div className="flex w-full items-center justify-between pr-4">
+                                        <div>
+                                          <p className="font-semibold text-heading">Rs. {formatCurrency(totalPaid)}</p>
+                                          <p className="text-xs text-muted-foreground">
+                                            {new Date(item.createdAt).toLocaleDateString()}
+                                          </p>
+                                        </div>
+                                        <span
+                                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                                            item.status === "approved"
+                                              ? "bg-emerald-50 text-emerald-600"
+                                              : item.status === "pendingApproval"
+                                                ? "bg-amber-50 text-amber-600"
+                                                : "bg-rose-50 text-rose-600"
+                                          }`}
+                                        >
+                                          {item.status === "pendingApproval" ? "Pending" : item.status}
+                                        </span>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                      <div className="space-y-2 text-sm text-muted-foreground">
+                                        {walletValue > 0 && (
+                                          <div className="flex justify-between">
+                                            <span>Wallet applied</span>
+                                            <span>Rs. {formatCurrency(walletValue)}</span>
+                                          </div>
+                                        )}
+                                        {typeof item.amount === "number" && item.amount > 0 && (
+                                          <div className="flex justify-between">
+                                            <span>Bank transfer</span>
+                                            <span>Rs. {formatCurrency(item.amount)}</span>
+                                          </div>
+                                        )}
+                                        {item.rejectionPublicNote && (
+                                          <p className="text-xs text-brand-error">{item.rejectionPublicNote}</p>
+                                        )}
+                                      </div>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                );
+                              })}
+                            </Accordion>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    <Button
+                      type="button"
+                      className="w-full py-6 bg-brand-primary text-btn-secondary-text"
+                      onClick={goNext}
+                      disabled={methodNextDisabled}
+                    >
+                      Next
+                    </Button>
+                    {prioritizedError && (
+                      <p className="text-xs text-brand-error text-center">
+                        {prioritizedError.message || "Please fix the highlighted issues to continue."}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {currentStep === "proof" && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-2xl font-bold text-heading">Upload payment proof</h3>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Transfer to one of these accounts and upload your receipt below.
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      {Object.entries(bankDetails).map(([bankId, details]) => (
+                        <div key={bankId} className="rounded-xl border border-border bg-card p-4 space-y-2">
+                          <p className="font-semibold text-heading">{details.title}</p>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              {String(details.accountNumber || "").startsWith("PK") ? "IBAN" : "Account Number"}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-heading">{details.accountNumber}</span>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 px-2"
+                                className="h-7 px-2"
                                 onClick={() => handleCopy(details.accountNumber)}
                               >
                                 <Copy className="h-4 w-4" />
@@ -1159,14 +1126,14 @@ export default function TripPayment() {
                             </div>
                           </div>
                           {details.iban && details.iban !== "—" ? (
-                            <div className="flex flex-col space-y-1">
-                              <span className="text-sm text-muted-foreground">IBAN</span>
-                              <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-muted-foreground">IBAN</span>
+                              <div className="flex items-center gap-2">
                                 <span className="font-medium text-heading">{details.iban}</span>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-8 px-2"
+                                  className="h-7 px-2"
                                   onClick={() => handleCopy(details.iban)}
                                 >
                                   <Copy className="h-4 w-4" />
@@ -1175,99 +1142,195 @@ export default function TripPayment() {
                             </div>
                           ) : null}
                         </div>
+                      ))}
+                    </div>
+
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
+
+                    <div
+                      className="bg-muted rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer"
+                      onClick={() => fileInputRef.current?.click()}
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                    >
+                      {file ? (
+                        <div className="text-center">
+                          <p className="text-text mb-2">File uploaded:</p>
+                          <p className="font-medium text-heading">{fileName}</p>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-muted-foreground mb-2">Drop files here to upload…</p>
+                          <Button variant="outline" className="bg-background">
+                            Browse files
+                          </Button>
+                        </>
                       )}
                     </div>
-                  ))}
-                </RadioGroup>
-              </div>
 
-              {/* Step 2: Upload Screenshot */}
-              <div className="px-4 lg:px-6 mb-10">
-                <h3 className="text-xl lg:text-2xl font-bold mb-2">
-                  Step 2: Upload Screenshot
-                </h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Transfer to one of these Bank accounts and share your receipt
-                  below
-                </p>
+                    <Button
+                      variant="outline"
+                      className="w-full flex items-center justify-center py-6"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Camera className="mr-2 h-5 w-5" />
+                      <span>Or take a picture</span>
+                    </Button>
 
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  className="hidden"
-                />
+                    <Button
+                      type="button"
+                      className="w-full py-6 bg-brand-primary text-btn-secondary-text"
+                      onClick={goNext}
+                      disabled={proofNextDisabled}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
 
-                <div
-                  className="bg-muted rounded-lg p-6 flex flex-col items-center justify-center mb-3 cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                  onDrop={handleDrop}
-                  onDragOver={handleDragOver}
-                >
-                  {file ? (
-                    <div className="text-center">
-                      <p className="text-text mb-2">File uploaded:</p>
-                      <p className="font-medium text-heading">{fileName}</p>
-                    </div>
-                  ) : (
-                    <>
-                      <p className="text-muted-foreground mb-2">
-                        Drop files here to upload...
+                {currentStep === "amount" && (
+                  <div className="space-y-6 text-center">
+                    <div>
+                      <h3 className="text-2xl font-bold text-heading">How much did you pay?</h3>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Please make sure you enter the accurate amount as per payment proof attached.
                       </p>
-                      <Button variant="outline" className="bg-background">
-                        Browse files
-                      </Button>
-                    </>
-                  )}
-                </div>
+                    </div>
 
-                <Button
-                  variant="outline"
-                  className="w-full flex items-center justify-center py-6"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Camera className="mr-2 h-5 w-5" />
-                  <span>Or take a picture</span>
-                </Button>
+                    <div className="space-y-4">
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        value={selectedMethod === "wallet" ? walletToUse : manualAmount}
+                        onChange={(e) => {
+                          const nextValue = Number(e.target.value || 0);
+                          if (selectedMethod === "wallet") {
+                            setWalletToUse(nextValue);
+                            setWalletAmountTouched(true);
+                          } else {
+                            setManualAmount(nextValue);
+                            setManualAmountTouched(true);
+                          }
+                        }}
+                        className="w-full text-center text-5xl font-bold text-heading bg-transparent outline-none"
+                        placeholder="0"
+                      />
+                      <div className="inline-flex items-center justify-center rounded-full bg-muted px-4 py-2 text-sm text-muted-foreground">
+                        In PKR
+                      </div>
+                    </div>
+
+                    {selectedMethod === "wallet" && (
+                      <div className="space-y-2 text-sm text-muted-foreground">
+                        <p>Wallet balance: Rs. {formatCurrency(walletBalance)}</p>
+                        <p>Max usable: Rs. {formatCurrency(maxWalletUsable)}</p>
+                        {walletError && (
+                          <p className="text-brand-error">{walletError.message}</p>
+                        )}
+                        {!walletError && walletAmountMismatch && (
+                          <p className="text-brand-error">
+                            Amount must match Rs. {formatCurrency(payableNow)}.
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {selectedMethod === "bank" && (
+                      <div className="space-y-2 text-sm text-muted-foreground">
+                        <p>Required amount: Rs. {formatCurrency(requiredBankAmount)}</p>
+                        {bankAmountMismatch && (
+                          <p className="text-brand-error">
+                            Amount must match Rs. {formatCurrency(requiredBankAmount)}.
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {prioritizedError && (
+                      <p className="text-xs text-brand-error">
+                        {prioritizedError.message || "Please fix the highlighted issues to continue."}
+                      </p>
+                    )}
+
+                    <Button
+                      type="button"
+                      className="w-full py-6 bg-brand-primary text-btn-secondary-text"
+                      onClick={() => {
+                        if (selectedMethod === "wallet") {
+                          handleSubmit();
+                        } else {
+                          goNext();
+                        }
+                      }}
+                      disabled={amountNextDisabled || isSubmitting}
+                    >
+                      {selectedMethod === "wallet" ? "Confirm" : "Next"}
+                    </Button>
+                  </div>
+                )}
+
+                {currentStep === "account" && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-2xl font-bold text-heading">Which account did you pay to?</h3>
+                    </div>
+
+                    <div className="space-y-3">
+                      {Object.entries(bankDetails).map(([bankId, details]) => (
+                        <label
+                          key={bankId}
+                          htmlFor={`bank-${bankId}`}
+                          className={`flex items-center justify-between rounded-xl border px-4 py-4 cursor-pointer ${
+                            selectedBank === bankId ? "border-brand-primary" : "border-border"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                              <Landmark className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                            <div>
+                              <p className="text-base font-semibold text-heading">{details.title}</p>
+                            </div>
+                          </div>
+                          <input
+                            id={`bank-${bankId}`}
+                            type="radio"
+                            name="bankAccount"
+                            value={bankId}
+                            checked={selectedBank === bankId}
+                            onChange={() => setSelectedBank(bankId as BankKey)}
+                            className="h-5 w-5 text-brand-primary"
+                          />
+                        </label>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>You paid</span>
+                      <span className="text-lg font-semibold text-heading">Rs. {formatCurrency(manualAmount)}</span>
+                    </div>
+
+                    <Button
+                      type="button"
+                      className="w-full py-6 bg-brand-primary text-btn-secondary-text"
+                      onClick={handleSubmit}
+                      disabled={accountNextDisabled || isSubmitting}
+                    >
+                      Confirm Payment
+                    </Button>
+                  </div>
+                )}
               </div>
-            </>
-          ) : (
-            <div className="mx-4 lg:mx-6 mb-6 rounded-lg border border-border bg-card p-4 lg:p-6">
-              <p className="text-sm lg:text-base text-text">
-                No bank transfer is required. You're paying using wallet credits.
-              </p>
             </div>
-          )
-          ) : selectedMethod === "wallet" ? (
-            <div className="mx-4 lg:mx-6 mb-6 rounded-lg border border-border bg-card p-4 lg:p-6">
-              <p className="text-sm lg:text-base text-text">
-                You're paying using wallet credits.
-              </p>
-            </div>
-          ) : null}
           </div>
-
-          {/* Confirm Payment */}
-          <div className="px-4 lg:px-6 mt-auto mb-6">
-            {prioritizedError && (
-              <p className="mb-2 text-xs text-brand-error">
-                {prioritizedError.message || "Please fix the highlighted issues to continue."}
-              </p>
-            )}
-            <Button
-              className="w-full py-6 bg-brand-primary hover:bg-brand-primary-hover text-btn-secondary-text disabled:bg-brand-primary-disabled disabled:cursor-not-allowed"
-              disabled={submitDisabled}
-              onClick={handleSubmit}
-              isLoading={isSubmitting}
-              loadingText="Submitting..."
-            >
-              Confirm Payment
-            </Button>
-          </div>
-        </div>
-      </div>}
-    </div>
+        )}
+      </div>
     </>
   );
 }
