@@ -3,11 +3,17 @@ import Head from "next/head";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
 import { PaymentService } from "@/services/paymentService";
-import { Camera, ChevronDown, ChevronUp, Copy } from "lucide-react";
+import { Camera, ChevronDown, ChevronUp, Copy, CreditCard, Landmark, Wallet } from "lucide-react";
 import Image from "next/image";
 import { resolveImageSrc } from "@/lib/image";
 import Link from "next/link";
@@ -16,6 +22,7 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { trackClarityEvent } from "@/lib/analytics/clarity";
 import { CLARITY_EVENTS } from "@/lib/analytics/events";
+import { IPaymentHistoryItem } from "@/services/types/payment";
 
 const bankDetails = {
   "faysal-bank": {
@@ -125,6 +132,7 @@ export default function TripPayment() {
   const { toast } = useToast();
   const [selectedBank, setSelectedBank] =
     useState<BankKey>("faysal-bank");
+  const [selectedMethod, setSelectedMethod] = useState<"bank" | "wallet" | "card">("bank");
   const router = useRouter();
   const params = useParams();
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
@@ -151,6 +159,8 @@ export default function TripPayment() {
   const [walletSummary, setWalletSummary] = useState<any>(null);
   const [walletToUse, setWalletToUse] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const detailsRef = useRef<HTMLDivElement>(null);
+  const breakdownRef = useRef<HTMLDivElement>(null);
   const quoteEventFired = useRef(false);
   const registrationHook = useRegistrationHook();
   const [registration, setRegistration] = useState<any>(null);
@@ -160,6 +170,8 @@ export default function TripPayment() {
   const [registrationError, setRegistrationError] = useState<string | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);
   const initialQuoteLoadedRef = useRef(false);
+  const [paymentHistory, setPaymentHistory] = useState<IPaymentHistoryItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const tripPrice = registration?.price || 0;
   const paymentStatus =
@@ -183,7 +195,6 @@ export default function TripPayment() {
   const persistedDiscountApplied =
     typeof registration?.discountApplied === "number" ? registration.discountApplied : 0;
   const persistedDiscountType = registration?.discountType;
-  const paymentPendingApproval = paymentStatus === "pendingApproval" || paymentQuote?.pendingApproval;
   const noPaymentDue = amountDue <= 0;
   const maxWalletUsable =
     typeof paymentQuote?.maxWalletUsable === "number" ? paymentQuote.maxWalletUsable : 0;
@@ -204,7 +215,6 @@ export default function TripPayment() {
     "wallet_insufficient_balance",
   ]);
   const errorPriority = [
-    "payment_pending_approval",
     "registration_not_payable",
     "registration_cancelled",
     "registration_refund_locked",
@@ -226,9 +236,9 @@ export default function TripPayment() {
   const submitDisabled =
     isSubmitting ||
     quoteLoading ||
-    paymentPendingApproval ||
     noPaymentDue ||
     (requiresScreenshot && !file) ||
+    selectedMethod === "card" ||
     quoteErrors.length > 0;
 
   const discountOptions = [
@@ -349,11 +359,19 @@ export default function TripPayment() {
     setQuoteLoading(true);
     setQuoteError(null);
     try {
+      const resolvedPaymentMode =
+        paymentType === "partial"
+          ? "partial"
+          : selectedMethod === "wallet"
+            ? "wallet_only"
+            : selectedMethod === "bank"
+              ? (walletToUse > 0 ? "wallet_plus_bank" : "bank_transfer")
+              : "bank_transfer";
       const payload = {
         registration: registrationId,
         walletAmount: walletToUse,
         discountType: selectedDiscountType || undefined,
-        paymentMode: paymentType === "partial" ? "partial" : "wallet_plus_bank",
+        paymentMode: resolvedPaymentMode,
       } as any;
       const res = await PaymentService.getPaymentQuote(payload);
       const data = (res as any)?.data ?? res;
@@ -370,7 +388,7 @@ export default function TripPayment() {
     } finally {
       setQuoteLoading(false);
     }
-  }, [registrationId, walletToUse, paymentType, selectedDiscountType, router]);
+  }, [registrationId, walletToUse, paymentType, selectedDiscountType, selectedMethod, router]);
 
   useEffect(() => {
     loadQuote();
@@ -382,6 +400,21 @@ export default function TripPayment() {
       quoteEventFired.current = true;
     }
   }, [paymentQuote]);
+
+  useEffect(() => {
+    if (!registrationId) return;
+    setHistoryLoading(true);
+    PaymentService.getPaymentHistoryByRegistration(registrationId)
+      .then((res: any) => {
+        const data = res?.items ?? res?.data?.items ?? [];
+        setPaymentHistory(Array.isArray(data) ? data : []);
+      })
+      .catch((error: any) => {
+        console.error("Failed to load payment history:", error);
+        setPaymentHistory([]);
+      })
+      .finally(() => setHistoryLoading(false));
+  }, [registrationId]);
 
   const handleSelectDiscount = (type: "soloFemale" | "group" | "musafir") => {
     if (!eligibleDiscounts) return;
@@ -416,11 +449,10 @@ export default function TripPayment() {
   ]);
 
   const handleSubmit = async () => {
-    if (paymentPendingApproval) {
+    if (selectedMethod === "card") {
       toast({
-        title: "Payment already submitted",
-        description: "Your payment is pending approval. Please wait for an update.",
-        variant: "destructive",
+        title: "Card payments coming soon",
+        description: "Please choose bank transfer or wallet to continue.",
       });
       return;
     }
@@ -469,6 +501,10 @@ export default function TripPayment() {
             ? (crypto as any).randomUUID()
             : `${Date.now()}-${Math.random()}`)
           : undefined;
+      const idempotencyKey =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? (crypto as any).randomUUID()
+          : `${Date.now()}-${Math.random()}`;
       const selectedBankAccountId =
         cashToPayNow > 0 ? bankDetails[selectedBank]?.id : undefined;
       const selectedBankLabel =
@@ -491,6 +527,7 @@ export default function TripPayment() {
 
       const res: any = await PaymentService.createPayment({
         registration: registrationId,
+        idempotencyKey,
         bankAccount: selectedBankAccountId,
         bankAccountLabel: selectedBankLabel,
         paymentType: paymentType === "full" ? "fullPayment" : "partialPayment",
@@ -623,8 +660,134 @@ export default function TripPayment() {
             </p>
           </div>
 
-          {/* Price and Payment Type */}
-          <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
+          {/* Choose Payment Method */}
+          <div className="px-4 lg:px-6 mb-6">
+            <h3 className="text-2xl lg:text-3xl font-bold text-heading">Choose a payment method</h3>
+            <p className="text-muted-foreground text-sm lg:text-base mt-1">
+              Greyed ones aren't available for you at the moment.
+            </p>
+            <div className="mt-4 space-y-3">
+              <button
+                type="button"
+                onClick={() => setSelectedMethod("bank")}
+                className={`w-full rounded-2xl border px-4 py-4 flex items-center justify-between transition ${
+                  selectedMethod === "bank" ? "border-brand-primary bg-brand-primary/5" : "border-border bg-card"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
+                    <Landmark className="h-5 w-5 text-brand-primary" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-base font-semibold text-heading">Bank Transfer</p>
+                    <p className="text-xs text-muted-foreground">Transfer to a 3Musafir account</p>
+                  </div>
+                </div>
+                <span
+                  className={`h-6 w-6 rounded-full border flex items-center justify-center ${
+                    selectedMethod === "bank" ? "border-brand-primary" : "border-border"
+                  }`}
+                >
+                  {selectedMethod === "bank" && <span className="h-3 w-3 rounded-full bg-brand-primary" />}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedMethod("wallet")}
+                className={`w-full rounded-2xl border px-4 py-4 flex items-center justify-between transition ${
+                  selectedMethod === "wallet" ? "border-brand-primary bg-brand-primary/5" : "border-border bg-card"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
+                    <Wallet className="h-5 w-5 text-brand-primary" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-base font-semibold text-heading">Use my credits</p>
+                    <p className="text-xs text-muted-foreground">Pay from your wallet balance</p>
+                  </div>
+                </div>
+                <span
+                  className={`h-6 w-6 rounded-full border flex items-center justify-center ${
+                    selectedMethod === "wallet" ? "border-brand-primary" : "border-border"
+                  }`}
+                >
+                  {selectedMethod === "wallet" && <span className="h-3 w-3 rounded-full bg-brand-primary" />}
+                </span>
+              </button>
+
+              <div className="w-full rounded-2xl border px-4 py-4 flex items-center justify-between opacity-50 border-border bg-card">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                    <CreditCard className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-base font-semibold text-heading">Credit/Debit Card</p>
+                    <p className="text-xs text-muted-foreground">Coming soon</p>
+                  </div>
+                </div>
+                <span className="h-6 w-6 rounded-full border border-border" />
+              </div>
+            </div>
+          </div>
+
+          {/* Total Due + Next */}
+          <div className="mx-4 lg:mx-6 mb-6 rounded-2xl border border-border bg-card px-4 py-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground">Total due amount</p>
+              <p className="text-2xl font-bold text-heading">Rs. {formatCurrency(amountDue)}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setTimeout(() => breakdownRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+                }}
+                className="text-sm text-brand-primary hover:underline mt-1"
+              >
+                See breakdown
+              </button>
+            </div>
+            <Button
+              type="button"
+              className="bg-brand-primary text-btn-secondary-text"
+              onClick={() => detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            >
+              Next
+            </Button>
+          </div>
+
+          <div ref={breakdownRef}>
+            {paymentType === "partial" && typeof paymentQuote?.partialDue === "number" && (
+              <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Minimum to save your seat</p>
+                    <p className="text-xs text-muted-foreground">(30% of total amount)</p>
+                  </div>
+                  <p className="text-lg font-semibold text-brand-primary">
+                    Rs. {formatCurrency(paymentQuote.partialDue)}
+                  </p>
+                </div>
+                <div className="mt-3 h-2 rounded-full bg-muted">
+                  <div
+                    className="h-2 rounded-full bg-brand-primary"
+                    style={{
+                      width: `${Math.min(
+                        100,
+                        (paymentQuote.partialDue / Math.max(amountDue, 1)) * 100
+                      )}%`,
+                    }}
+                  />
+                </div>
+                <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+                  <span>Rs. {formatCurrency(amountDue - paymentQuote.partialDue)} remaining</span>
+                  <span>Total: Rs. {formatCurrency(amountDue)}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Price and Payment Type */}
+            <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
             <div className="space-y-2 mb-4">
               <div className="flex justify-between items-center">
                 <span className="text-text">Trip Price</span>
@@ -649,7 +812,7 @@ export default function TripPayment() {
                   checked={paymentType === "full"}
                   onChange={() => setPaymentType("full")}
                   className="h-4 w-4 text-brand-primary focus:ring-brand-primary"
-                  disabled={paymentPendingApproval || noPaymentDue}
+                  disabled={noPaymentDue}
                 />
                 <label htmlFor="fullPayment" className="text-text">
                   Full Payment
@@ -663,7 +826,7 @@ export default function TripPayment() {
                   checked={paymentType === "partial"}
                   onChange={() => setPaymentType("partial")}
                   className="h-4 w-4 text-brand-primary focus:ring-brand-primary"
-                  disabled={paymentPendingApproval || noPaymentDue}
+                  disabled={noPaymentDue}
                 />
                 <label htmlFor="partialPayment" className="text-text">
                   Partial Payment
@@ -671,12 +834,7 @@ export default function TripPayment() {
               </div>
             </div>
 
-            {paymentPendingApproval && (
-              <p className="mt-3 text-sm text-muted-foreground">
-                Payment already submitted and pending approval.
-              </p>
-            )}
-            {noPaymentDue && !paymentPendingApproval && (
+            {noPaymentDue && (
               <p className="mt-3 text-sm text-muted-foreground">
                 No remaining payment due.
               </p>
@@ -687,10 +845,10 @@ export default function TripPayment() {
                 Partial payment is fixed at 30% of remaining due. You can pay with wallet and/or bank transfer.
               </p>
             )}
-          </div>
+            </div>
 
-          {/* Discount Section */}
-          <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
+            {/* Discount Section */}
+            <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Discounts</span>
@@ -790,9 +948,84 @@ export default function TripPayment() {
                 <p className="text-xs text-muted-foreground">Updating payment details…</p>
               )}
             </div>
+            </div>
+
+            {/* Previous Transactions */}
+            <div className="bg-card border border-border rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-lg font-semibold text-heading">Previous Transactions</h4>
+                <span className="text-sm text-muted-foreground">
+                  {paymentHistory.length} payment(s)
+                </span>
+              </div>
+              {historyLoading ? (
+                <p className="text-sm text-muted-foreground">Loading payments…</p>
+              ) : paymentHistory.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No previous payments found.</p>
+              ) : (
+                <Accordion type="single" collapsible>
+                  {paymentHistory.map((item) => {
+                    const walletValue =
+                      typeof item.walletApplied === "number"
+                        ? item.walletApplied
+                        : typeof item.walletRequested === "number"
+                          ? item.walletRequested
+                          : 0;
+                    const totalPaid =
+                      (typeof item.amount === "number" ? item.amount : 0) + Math.max(0, walletValue);
+                    return (
+                      <AccordionItem key={item._id} value={item._id}>
+                        <AccordionTrigger className="text-sm">
+                          <div className="flex w-full items-center justify-between pr-4">
+                            <div>
+                              <p className="font-semibold text-heading">Rs. {formatCurrency(totalPaid)}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(item.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <span
+                              className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                                item.status === "approved"
+                                  ? "bg-emerald-50 text-emerald-600"
+                                  : item.status === "pendingApproval"
+                                    ? "bg-amber-50 text-amber-600"
+                                    : "bg-rose-50 text-rose-600"
+                              }`}
+                            >
+                              {item.status === "pendingApproval" ? "Pending" : item.status}
+                            </span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-2 text-sm text-muted-foreground">
+                            {walletValue > 0 && (
+                              <div className="flex justify-between">
+                                <span>Wallet applied</span>
+                                <span>Rs. {formatCurrency(walletValue)}</span>
+                              </div>
+                            )}
+                            {typeof item.amount === "number" && item.amount > 0 && (
+                              <div className="flex justify-between">
+                                <span>Bank transfer</span>
+                                <span>Rs. {formatCurrency(item.amount)}</span>
+                              </div>
+                            )}
+                            {item.rejectionPublicNote && (
+                              <p className="text-xs text-brand-error">{item.rejectionPublicNote}</p>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })}
+                </Accordion>
+              )}
+            </div>
           </div>
 
+          <div ref={detailsRef}>
           {/* Wallet Credits */}
+          {selectedMethod !== "card" && (
           <div className="rounded-lg mx-4 lg:mx-6 p-4 lg:p-6 mb-6 border border-border bg-card">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-heading">Use Wallet</h3>
@@ -811,7 +1044,7 @@ export default function TripPayment() {
                 max={maxWalletUsable}
                 value={walletToUse}
                 onChange={(e) => setWalletToUse(Number(e.target.value || 0))}
-                disabled={paymentPendingApproval || noPaymentDue || maxWalletUsable <= 0}
+                disabled={noPaymentDue || maxWalletUsable <= 0}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="Wallet amount"
               />
@@ -819,7 +1052,7 @@ export default function TripPayment() {
                 type="button"
                 variant="outline"
                 onClick={() => setWalletToUse(maxWalletUsable)}
-                disabled={paymentPendingApproval || noPaymentDue || maxWalletUsable <= 0}
+                disabled={noPaymentDue || maxWalletUsable <= 0}
               >
                 Max
               </Button>
@@ -845,8 +1078,10 @@ export default function TripPayment() {
               </div>
             </div>
           </div>
+          )}
 
-          {requiresScreenshot ? (
+          {selectedMethod === "bank" ? (
+          requiresScreenshot ? (
             <>
               {/* Step 1: Transfer Amount */}
               <div className="px-4 lg:px-6 mb-6">
@@ -1003,7 +1238,15 @@ export default function TripPayment() {
                 No bank transfer is required. You're paying using wallet credits.
               </p>
             </div>
-          )}
+          )
+          ) : selectedMethod === "wallet" ? (
+            <div className="mx-4 lg:mx-6 mb-6 rounded-lg border border-border bg-card p-4 lg:p-6">
+              <p className="text-sm lg:text-base text-text">
+                You're paying using wallet credits.
+              </p>
+            </div>
+          ) : null}
+          </div>
 
           {/* Confirm Payment */}
           <div className="px-4 lg:px-6 mt-auto mb-6">

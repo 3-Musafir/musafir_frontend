@@ -106,14 +106,6 @@ const getActionButton = (
         onClick: () => router.push(ROUTES_CONSTANTS.VERIFICATION_REQUEST),
       };
     case "payment":
-      if (paymentStatus === "pendingApproval" || (hasPaymentSubmitted && !paymentStatus)) {
-        return {
-          css: "bg-muted text-muted-foreground border-border cursor-not-allowed hover:bg-muted hover:text-muted-foreground hover:border-border",
-          text: "Awaiting approval",
-          onClick: () => {},
-          disabled: true,
-        };
-      }
       return {
         css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
         text: "Complete Payment",
@@ -127,14 +119,6 @@ const getActionButton = (
         disabled: true,
       };
     case "confirmed":
-      if (paymentStatus === "pendingApproval") {
-        return {
-          css: "bg-muted text-muted-foreground border-border cursor-not-allowed hover:bg-muted hover:text-muted-foreground hover:border-border",
-          text: "Awaiting approval",
-          onClick: () => {},
-          disabled: true,
-        };
-      }
       if (paymentInfo && typeof paymentInfo.amountDue === 'number' && paymentInfo.amountDue > 0) {
         return {
           css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
@@ -367,6 +351,11 @@ const PassportUpcomingCard: React.FC<any> = ({
     paymentStatus,
     userVerificationStatus,
   );
+  const remainingDue =
+    typeof paymentInfo?.amountDue === "number" ? paymentInfo.amountDue : 0;
+  const showAddPaymentTag =
+    remainingDue > 0 &&
+    (displayStatus === "payment" || displayStatus === "confirmed");
 
   return (
     <div className="overflow-hidden rounded-2xl bg-card shadow-sm border border-border h-full flex flex-col">
@@ -384,13 +373,23 @@ const PassportUpcomingCard: React.FC<any> = ({
       <div className="space-y-2 lg:space-y-3 p-4 lg:p-5 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-lg lg:text-xl font-semibold text-heading">{title}</h3>
-          <span
-            className={`rounded-md px-2 py-1 lg:px-3 lg:py-1.5 text-sm lg:text-base font-medium border whitespace-nowrap ${getStatusStyles(
-              displayStatus
-            )}`}
-          >
-            {statusLabel}
-          </span>
+          <div className="flex flex-col items-end gap-2">
+            <span
+              className={`rounded-md px-2 py-1 lg:px-3 lg:py-1.5 text-sm lg:text-base font-medium border whitespace-nowrap ${getStatusStyles(
+                displayStatus
+              )}`}
+            >
+              {statusLabel}
+            </span>
+            {showAddPaymentTag && (
+              <button
+                onClick={() => router.push(`/musafir/payment/${registrationId}`)}
+                className="text-xs font-semibold text-brand-primary border border-brand-primary/30 rounded-full px-3 py-1 hover:bg-brand-primary/10"
+              >
+                Add Payment
+              </button>
+            )}
+          </div>
         </div>
 
         <p className="text-sm lg:text-base text-muted-foreground">

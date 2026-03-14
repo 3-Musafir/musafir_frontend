@@ -53,6 +53,9 @@ export class PaymentService {
   static async createPayment(payment: ICreatePayment) {
     const formData = new FormData();
     formData.append("registration", payment.registration);
+    if (payment.idempotencyKey) {
+      formData.append("idempotencyKey", payment.idempotencyKey);
+    }
     if (payment.bankAccount) {
       formData.append("bankAccount", payment.bankAccount);
     }
@@ -81,6 +84,10 @@ export class PaymentService {
         "Content-Type": "multipart/form-data",
       },
     });
+  }
+
+  static async getPaymentHistoryByRegistration(registrationId: string, params?: { limit?: number; cursor?: string }) {
+    return api.get(`/payment/registration/${registrationId}/history`, params || {});
   }
 
   static async adminManualPayment(payload: IAdminManualPayment) {

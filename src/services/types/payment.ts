@@ -18,6 +18,7 @@ export interface ICreatePayment {
   paymentType: string;
   registration: string;
   amount: number;
+  idempotencyKey?: string;
   discount?: number;
   discountType?: "soloFemale" | "group" | "musafir";
   walletAmount?: number;
@@ -90,6 +91,43 @@ export interface IPayment {
   status: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface IPaymentHistoryItem {
+  _id: string;
+  createdAt: string;
+  amount: number;
+  paymentType: string;
+  paymentMethod?: PaymentMethod;
+  status: string;
+  walletRequested?: number;
+  walletApplied?: number;
+  bankAccountLabel?: string;
+  rejectionCode?: string;
+  rejectionLabel?: string;
+  rejectionPublicNote?: string;
+  remainingDueAtDecision?: number;
+}
+
+export interface IPaymentHistoryResponse {
+  items: IPaymentHistoryItem[];
+  refunds?: any[];
+  summary?: {
+    total?: number;
+    pendingCount?: number;
+    approvedCount?: number;
+    rejectedCount?: number;
+    lastStatus?: string | null;
+    hasPending?: boolean;
+    resubmissionCount?: number;
+    lastPaymentId?: string | null;
+    totalPaid?: number;
+    totalRefunded?: number;
+    remainingDue?: number | null;
+    refundStatus?: string;
+  };
+  timeline?: any[];
+  nextCursor?: string | null;
 }
 
 export interface IRequestRefund {
