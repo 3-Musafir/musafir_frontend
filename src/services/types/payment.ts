@@ -130,6 +130,21 @@ export interface IPaymentHistoryResponse {
   nextCursor?: string | null;
 }
 
+export interface IPaymentRejectionReason {
+  _id: string;
+  code: string;
+  label: string;
+  userMessage?: string;
+  active: boolean;
+  order?: number;
+}
+
+export interface IRejectPaymentPayload {
+  rejectionCode: string;
+  publicNote?: string;
+  internalNote?: string;
+}
+
 export interface IRequestRefund {
   registration: string;
   bankDetails: string;

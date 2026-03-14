@@ -6,6 +6,8 @@ import {
   IPayment,
   IPaymentQuoteRequest,
   IPaymentQuoteResponse,
+  IPaymentRejectionReason,
+  IRejectPaymentPayload,
   IRefund,
   IRequestRefund,
 } from "./types/payment";
@@ -90,6 +92,10 @@ export class PaymentService {
     return api.get(`/payment/registration/${registrationId}/history`, params || {});
   }
 
+  static async getPaymentRejectionReasons(): Promise<IPaymentRejectionReason[]> {
+    return api.get(`/payment/rejection-reasons`);
+  }
+
   static async adminManualPayment(payload: IAdminManualPayment) {
     const formData = new FormData();
     formData.append("registration", payload.registration);
@@ -130,8 +136,8 @@ export class PaymentService {
     return api.patch(`/payment/approve-payment/${paymentId}`);
   }
 
-  static async rejectPayment(paymentId: string) {
-    return api.patch(`/payment/reject-payment/${paymentId}`);
+  static async rejectPayment(paymentId: string, payload: IRejectPaymentPayload) {
+    return api.patch(`/payment/reject-payment/${paymentId}`, payload);
   }
 
   static async getPendingPayments(): Promise<IPayment[]> {
