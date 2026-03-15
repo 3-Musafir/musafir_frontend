@@ -53,8 +53,8 @@ export default function CreateAccount() {
       const savedData = JSON.parse(localStorage.getItem("formData") || "{}");
 
       const formData = {
-        ...savedData,
         email,
+        ...(savedData.referralCode ? { referralCode: savedData.referralCode } : {}),
       };
       localStorage.setItem("formData", JSON.stringify(formData));
       router.push("/signup/registrationform");

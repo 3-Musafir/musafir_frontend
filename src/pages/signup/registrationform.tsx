@@ -167,6 +167,7 @@ export default function RegistrationForm() {
                   type="text"
                   id="fullName"
                   required
+                  autoComplete="name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="w-full input-field"
@@ -203,6 +204,7 @@ export default function RegistrationForm() {
                     id="phone"
                     value={phone}
                     required
+                    autoComplete="tel-national"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     maxLength={10}
