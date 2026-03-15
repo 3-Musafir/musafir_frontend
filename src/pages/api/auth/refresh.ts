@@ -64,9 +64,10 @@ export default async function handler(
       ? "__Secure-next-auth.session-token"
       : "next-auth.session-token";
 
+    const maxAge = 30 * 24 * 60 * 60; // 30 days — matches backend refresh token TTL
     res.setHeader(
       "Set-Cookie",
-      `${cookieName}=${encodedToken}; Path=/; HttpOnly; SameSite=Lax${secureCookie ? "; Secure" : ""}`
+      `${cookieName}=${encodedToken}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secureCookie ? "; Secure" : ""}`
     );
 
     return res.status(200).json({ accessToken: newAccessToken });
