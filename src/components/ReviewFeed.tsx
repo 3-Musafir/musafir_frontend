@@ -276,7 +276,7 @@ export default function ReviewFeed() {
       <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 xl:px-10">
         <header className="pt-10 lg:pt-12">
           <h1 className="text-3xl font-semibold text-heading sm:text-4xl">
-            If youre wondering\u2026
+            If youre wondering
           </h1>
           <p className="mt-2 text-base text-text sm:text-lg">
             Youre probably not the first. Heres what real Musafirs said.
@@ -313,7 +313,7 @@ export default function ReviewFeed() {
             id="review-search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search by city, trip, or keyword\u2026"
+            placeholder="Search by city, trip, or keyword"
             className="w-full rounded-2xl border border-canvas-line bg-white px-4 py-3 text-sm text-heading placeholder:text-text-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
           />
           {searchQuery.trim() ? (
