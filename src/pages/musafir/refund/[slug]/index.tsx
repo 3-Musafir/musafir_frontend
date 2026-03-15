@@ -13,6 +13,7 @@ import { trackClarityEvent } from "@/lib/analytics/clarity";
 import { CLARITY_EVENTS } from "@/lib/analytics/events";
 import { useRouter } from "next/router";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
+import { RegistrationStatus } from "@/config/registration-status";
 
 const SuccessComponent = ({ refundAmount }: { refundAmount?: number }) => {
   const router = useRouter();
@@ -204,7 +205,7 @@ export default function RefundForm() {
   const status = String(registration?.status || "");
   const cancelledAt = Boolean(registration?.cancelledAt);
   const registrationRefundStatus = String(registration?.refundStatus || "none");
-  const needsCancellation = status === "confirmed" && !cancelledAt;
+  const needsCancellation = status === RegistrationStatus.CONFIRMED && !cancelledAt;
   const isUnderReview =
     registrationRefundStatus === "pending" ||
     registrationRefundStatus === "processing";

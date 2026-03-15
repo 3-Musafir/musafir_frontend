@@ -50,7 +50,7 @@ function PaymentOptions() {
       id: '3',
       name: 'Alfalah Bank',
       logo: '/placeholder.svg',
-      accountNumber: '55015000960473',
+      accountNumber: 'PK98ALFH5501005000960473',
       accountTitle: 'Muhammad Hameez Rizwan',
       branch: '—',
     },

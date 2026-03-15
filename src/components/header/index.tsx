@@ -1,10 +1,11 @@
 import { Bell, Menu, Home, Flag, Wallet, Users } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import UserProfileMenu from './UserProfileMenu';
+import NotificationDrawer from '../notifications/NotificationDrawer';
 import { useNotificationsContext } from '@/context/NotificationsProvider';
 import { TabType } from '@/context/DashboardContext';
 
@@ -29,6 +30,8 @@ export default function Header({
   const pathname = usePathname();
   const { status } = useSession();
   const { unreadCount } = useNotificationsContext();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
 
   useEffect(() => {
@@ -37,13 +40,6 @@ export default function Header({
       previousPathRef.current = pathname;
     }
   }, [pathname]);
-
-
-  useEffect(() => {
-    if (status === 'authenticated') {
-      router.prefetch('/notifications');
-    }
-  }, [status, router]);
 
 
 
@@ -144,15 +140,7 @@ export default function Header({
         {status === 'authenticated' && (
           <div className='relative mr-2 lg:mr-3'>
             <button
-              onClick={() => {
-                if (pathname?.startsWith('/notifications')) {
-                  const target = previousPathRef.current || '/home';
-                  router.push(target);
-                  return;
-                }
-
-                router.push('/notifications');
-              }}
+              onClick={() => setDrawerOpen(true)}
               aria-label='View notifications'
             >
               <Bell className='w-6 h-6 lg:w-7 lg:h-7 text-gray-500' />
@@ -168,6 +156,11 @@ export default function Header({
         {/* User Profile / Settings */}
         <UserProfileMenu />
       </div>
+
+      {/* Notification Drawer */}
+      {status === 'authenticated' && (
+        <NotificationDrawer open={drawerOpen} onClose={closeDrawer} />
+      )}
     </header>
   );
 }
