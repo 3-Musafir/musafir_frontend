@@ -51,6 +51,7 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   PASSWORD_SAME_AS_OLD: 'New password must be different from your current password.',
   PASSWORD_RESET_TOKEN_INVALID: 'Invalid password reset link. Please request a new one.',
   PASSWORD_RESET_LINK_EXPIRED: 'This password reset link has expired. Please request a new one.',
+  OTP_EXPIRED: 'Your verification code has expired. Please request a new one.',
 
   // ============================================
   // VERIFICATION & REFERRALS

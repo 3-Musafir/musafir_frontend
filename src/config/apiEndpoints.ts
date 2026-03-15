@@ -1,5 +1,6 @@
 const endpoints = {
   TOKEN_VERIFY: "user/verify-token",
+  SEND_LOGIN_PASSWORD: "/user/send-login-password",
   LOGOUT: "/user/logout",
   SIGNUP: "/user/register",
   CREATE_GOOGLE: "/user/create",
