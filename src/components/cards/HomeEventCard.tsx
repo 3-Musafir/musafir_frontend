@@ -1,8 +1,9 @@
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { resolveImageSrc } from '@/lib/image';
+import { useSwipeCarousel } from '@/hooks/useSwipeCarousel';
 
 interface HomeEventCardProps {
   _id: string;
@@ -24,8 +25,13 @@ export default function HomeEventCard({
   const router = useRouter();
   const defaultImage = '/flowerFields.jpg';
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const blockClickRef = useRef(false);
 
   const handleClick = () => {
+    if (blockClickRef.current) {
+      blockClickRef.current = false;
+      return;
+    }
     router.push(`/flagship/details?id=${_id}`);
   };
 
@@ -43,12 +49,27 @@ export default function HomeEventCard({
     setCurrentImageIndex((prev) => (prev === 0 ? imageUrls.length - 1 : prev - 1));
   };
 
+  const { bind } = useSwipeCarousel(imageUrls.length, {
+    onIndexChange: setCurrentImageIndex,
+    onSwipe: () => {
+      blockClickRef.current = true;
+    },
+  });
+
+  useEffect(() => {
+    if (!blockClickRef.current) return;
+    const timeout = window.setTimeout(() => {
+      blockClickRef.current = false;
+    }, 300);
+    return () => window.clearTimeout(timeout);
+  }, [currentImageIndex]);
+
   return (
     <div
       onClick={handleClick}
       className="cursor-pointer bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-gray-300 h-full flex flex-col"
     >
-      <div className="relative h-48 sm:h-52 lg:h-56">
+      <div className="relative h-48 sm:h-52 lg:h-56" {...bind}>
         <Image
           src={imageUrls[currentImageIndex]}
           alt={tripName || 'Event image'}

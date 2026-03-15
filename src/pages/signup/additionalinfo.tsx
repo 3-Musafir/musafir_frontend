@@ -180,61 +180,62 @@ export default function AdditionalInfo() {
         localStorage.setItem("formData", JSON.stringify(formData));
         router.replace("/home");
       } else {
-        // For password login, continue with the original flow
+        // For password login, create the user account first
         const payload: BaseUser = { ...formData, employmentStatus };
+        console.log("[additionalinfo] Registering user...", { email: formData.email });
         const registerResponse = (await action.register(payload)) as {
           userId: string;
           verificationId: string;
           merged?: boolean;
         };
         const { userId, verificationId } = registerResponse;
+        console.log("[additionalinfo] User registered", { userId, merged: registerResponse.merged });
 
         if (registerResponse.merged) {
           localStorage.setItem('accountMerged', 'true');
         }
 
+        // Create flagship registration using the public endpoint (no auth needed)
         if (flagshipId) {
           const registration = JSON.parse(
             localStorage.getItem("registration") || "{}"
           );
           registration.userId = userId;
-          if (registration) {
-            const response = (await registrationAction.create(
-              registration
-            )) as RegistrationCreationResponse;
-            const registrationId = response.registrationId;
-            localStorage.setItem(
-              "registrationId",
-              JSON.stringify(registrationId)
-            );
-            const conflictEmails = response?.linkConflicts?.map((conflict) => conflict.email) || [];
-            if (conflictEmails.length) {
-              showAlert(`These members are already linked to another group: ${conflictEmails.join(', ')}`, 'error');
-            }
-            if (registration?.tripType === 'group' && response?.groupDiscount) {
-              const feedback = getGroupDiscountFeedback(response.groupDiscount);
-              showAlert(feedback.message, feedback.type);
-            }
-            const feedbackPayload = {
-              linkConflicts: response?.linkConflicts || [],
-              groupDiscount: response?.groupDiscount || null,
-            };
-            if ((feedbackPayload.linkConflicts || []).length || feedbackPayload.groupDiscount) {
-              localStorage.setItem("registrationFeedback", JSON.stringify(feedbackPayload));
-            } else {
-              localStorage.removeItem("registrationFeedback");
-            }
+          console.log("[additionalinfo] Creating registration via public endpoint...", { flagshipId, userId });
+          const response = (await api.post('/registration/public', registration)) as RegistrationCreationResponse;
+          console.log("[additionalinfo] Registration created", { registrationId: response.registrationId });
+          const registrationId = response.registrationId;
+          localStorage.setItem(
+            "registrationId",
+            JSON.stringify(registrationId)
+          );
+          const conflictEmails = response?.linkConflicts?.map((conflict) => conflict.email) || [];
+          if (conflictEmails.length) {
+            showAlert(`These members are already linked to another group: ${conflictEmails.join(', ')}`, 'error');
+          }
+          if (registration?.tripType === 'group' && response?.groupDiscount) {
+            const feedback = getGroupDiscountFeedback(response.groupDiscount);
+            showAlert(feedback.message, feedback.type);
+          }
+          const feedbackPayload = {
+            linkConflicts: response?.linkConflicts || [],
+            groupDiscount: response?.groupDiscount || null,
+          };
+          if ((feedbackPayload.linkConflicts || []).length || feedbackPayload.groupDiscount) {
+            localStorage.setItem("registrationFeedback", JSON.stringify(feedbackPayload));
+          } else {
+            localStorage.removeItem("registrationFeedback");
           }
         }
+
         const storeData = {
           ...formData,
           verificationId,
         };
         localStorage.setItem("formData", JSON.stringify(storeData));
 
-        console.log("clearing any existing session and routing to the email verify page");
+        console.log("[additionalinfo] Clearing any existing session and routing to email-verify");
         try {
-          // Clear any existing NextAuth session so email-verify can create a fresh one
           await signOut({ redirect: false });
         } catch (err) {
           console.warn("Error signing out existing session:", err);

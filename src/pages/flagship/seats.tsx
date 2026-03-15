@@ -6,9 +6,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { currentUser } from "@/store/signup";
+import { trackClarityEvent } from "@/lib/analytics/clarity";
+import { CLARITY_EVENTS } from "@/lib/analytics/events";
+import withAuth from "@/hoc/withAuth";
 
-export default function RemainingSeats() {
-  const [flagship, setFlagship] = useState<any>({});
+function RemainingSeats() {
+  const [flagship, setFlagship] = useState<any>(null);
+  const [flagshipLoading, setFlagshipLoading] = useState(true);
   const action = useFlagshipHook();
   const registrationAction = useRegistrationHook();
   const router = useRouter();
@@ -26,6 +30,7 @@ export default function RemainingSeats() {
   >(null);
   const [feedbackDismissed, setFeedbackDismissed] = useState(false);
   const [groupLinkStatus, setGroupLinkStatus] = useState<any>(null);
+  const [mounted, setMounted] = useState(false);
   const user = useRecoilValue(currentUser);
   const verificationStatus = (user as any)?.verification?.status;
   const isVerified = verificationStatus === "verified";
@@ -63,14 +68,19 @@ export default function RemainingSeats() {
   };
 
   const getFlagship = async (flagshipId: any) => {
+    setFlagshipLoading(true);
     const response = await action.getFlagship(flagshipId);
     setFlagship(response);
+    setFlagshipLoading(false);
   };
 
   useEffect(() => {
+    setMounted(true);
     const flagshipId = JSON.parse(localStorage.getItem("flagshipId") || "null");
     if (flagshipId) {
       getFlagship(flagshipId);
+    } else {
+      setFlagshipLoading(false);
     }
 
     const registrationId = JSON.parse(localStorage.getItem("registrationId") || "null");
@@ -96,6 +106,7 @@ export default function RemainingSeats() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    trackClarityEvent(CLARITY_EVENTS.CHECKOUT_START);
     router.push(`/musafir/payment/${registrationId}`);
   };
 
@@ -110,7 +121,9 @@ export default function RemainingSeats() {
         <main className="p-4 lg:max-w-2xl lg:mx-auto">
           <div className="mb-8">
             <h1 className="text-2xl font-bold mb-2 text-gray-700">
-              Remaining Seat For <br /> {flagship.tripName}
+              Remaining Seat For <br /> {flagshipLoading ? (
+                <span className="inline-block h-7 w-40 bg-gray-200 rounded animate-pulse align-middle" />
+              ) : flagship?.tripName}
             </h1>
           </div>
 
@@ -179,18 +192,24 @@ export default function RemainingSeats() {
                 Remaining Tickets
               </div>
               <div className="text-6xl font-bold text-center">
-                {(() => {
-                  const total = Number(flagship?.totalSeats || 0);
-                  const confirmedMale = Number(flagship?.confirmedMaleCount || 0);
-                  const confirmedFemale = Number(flagship?.confirmedFemaleCount || 0);
-                  const remaining = Math.max(0, total - (confirmedMale + confirmedFemale));
-                  return remaining;
-                })()}
+                {flagshipLoading ? (
+                  <div className="flex justify-center py-2">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-primary" />
+                  </div>
+                ) : (
+                  (() => {
+                    const total = Number(flagship?.totalSeats || 0);
+                    const confirmedMale = Number(flagship?.confirmedMaleCount || 0);
+                    const confirmedFemale = Number(flagship?.confirmedFemaleCount || 0);
+                    const remaining = Math.max(0, total - (confirmedMale + confirmedFemale));
+                    return remaining;
+                  })()
+                )}
               </div>
             </div>
           </div>
 
-          {isVerified ? (
+          {!mounted ? null : isVerified ? (
             <button
               onClick={handleSubmit}
               className="btn-primary w-full"
@@ -204,6 +223,7 @@ export default function RemainingSeats() {
               </p>
               <button
                 onClick={() => {
+                  trackClarityEvent(CLARITY_EVENTS.VERIFICATION_START);
                   if (registrationId) {
                     localStorage.setItem(
                       "verificationReturnTo",
@@ -224,3 +244,5 @@ export default function RemainingSeats() {
     </div>
   );
 }
+
+export default withAuth(RemainingSeats);

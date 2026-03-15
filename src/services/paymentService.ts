@@ -6,6 +6,8 @@ import {
   IPayment,
   IPaymentQuoteRequest,
   IPaymentQuoteResponse,
+  IPaymentRejectionReason,
+  IRejectPaymentPayload,
   IRefund,
   IRequestRefund,
 } from "./types/payment";
@@ -53,6 +55,9 @@ export class PaymentService {
   static async createPayment(payment: ICreatePayment) {
     const formData = new FormData();
     formData.append("registration", payment.registration);
+    if (payment.idempotencyKey) {
+      formData.append("idempotencyKey", payment.idempotencyKey);
+    }
     if (payment.bankAccount) {
       formData.append("bankAccount", payment.bankAccount);
     }
@@ -81,6 +86,14 @@ export class PaymentService {
         "Content-Type": "multipart/form-data",
       },
     });
+  }
+
+  static async getPaymentHistoryByRegistration(registrationId: string, params?: { limit?: number; cursor?: string }) {
+    return api.get(`/payment/registration/${registrationId}/history`, params || {});
+  }
+
+  static async getPaymentRejectionReasons(): Promise<IPaymentRejectionReason[]> {
+    return api.get(`/payment/rejection-reasons`);
   }
 
   static async adminManualPayment(payload: IAdminManualPayment) {
@@ -123,8 +136,8 @@ export class PaymentService {
     return api.patch(`/payment/approve-payment/${paymentId}`);
   }
 
-  static async rejectPayment(paymentId: string) {
-    return api.patch(`/payment/reject-payment/${paymentId}`);
+  static async rejectPayment(paymentId: string, payload: IRejectPaymentPayload) {
+    return api.patch(`/payment/reject-payment/${paymentId}`, payload);
   }
 
   static async getPendingPayments(): Promise<IPayment[]> {

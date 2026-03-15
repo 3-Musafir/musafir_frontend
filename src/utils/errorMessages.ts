@@ -20,7 +20,7 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   // ============================================
   AUTH_UNAUTHORIZED: 'Please log in to continue your journey.',
   AUTH_SESSION_EXPIRED: 'Your session has timed out. Please log in again to continue.',
-  AUTH_PERMISSION_DENIED: 'You don’t have access to this action on Musafir.',
+  AUTH_PERMISSION_DENIED: "You don't have access to this action on Musafir.",
   AUTH_TOKEN_INVALID: 'Your session is invalid. Please log in again.',
   AUTH_TOKEN_MISSING: 'Please log in to access this feature.',
   AUTH_INSUFFICIENT_ROLE: 'You do not have the required role for this action.',
@@ -32,7 +32,7 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   // ============================================
   USER_NOT_FOUND: 'Account not found. Please check your details or sign up.',
   USER_EMAIL_REQUIRED: 'Please provide your email address.',
-  USER_EMAIL_ALREADY_EXISTS: 'An account with this email already exists. Please log in or use a different email.',
+  USER_EMAIL_ALREADY_EXISTS: 'This email seems familiar 👀\n\nIf you\'ve joined a Musafir trip before, let\'s set up your account.\n\nNew here? You can use another email to sign up.',
   USER_EMAIL_NOT_FOUND: 'No account found with this email address.',
   USER_PHONE_REQUIRED: 'Please provide your phone number.',
   USER_MULTIPLE_PHONE_MATCHES: 'Multiple accounts found. Please enter your full phone number or email.',
@@ -40,7 +40,6 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   USER_BLOCKED: 'Your account has been temporarily blocked. Please try again later.',
   USER_BLOCKED_TEMPORARY: 'Too many attempts. Please try again in a few hours.',
   USER_INVALID_CREDENTIALS: 'Invalid email or password. Please try again.',
-  USER_EMAIL_TAKEN: 'This email is already in use by another account.',
   PROFILE_INCOMPLETE: 'Please complete your profile (gender, phone, city) to continue.',
 
   // ============================================
@@ -52,25 +51,26 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   PASSWORD_SAME_AS_OLD: 'New password must be different from your current password.',
   PASSWORD_RESET_TOKEN_INVALID: 'Invalid password reset link. Please request a new one.',
   PASSWORD_RESET_LINK_EXPIRED: 'This password reset link has expired. Please request a new one.',
+  OTP_EXPIRED: 'Your verification code has expired. Please request a new one.',
 
   // ============================================
   // VERIFICATION & REFERRALS
   // ============================================
-  REFERRAL_CODES_REQUIRED: 'To get verified as a Musafir, please add referral codes from two verified Musafirs.',
+  REFERRAL_CODES_REQUIRED: 'To get verified as a Musafir, please provide a referral code from a verified female Musafir.',
   REFERRAL_CODES_MUST_DIFFER:
     'Both referral codes need to be from different Musafirs. Please use two different verified Musafirs.',
   REFERRAL_CANNOT_USE_OWN:
-    'You can’t use your own referral code. Ask other verified Musafirs from the community to vouch for you.',
+    "You can't use your own referral code. Ask a verified female Musafir from the community to vouch for you.",
   REFERRAL_GENDER_REQUIREMENT:
-    'For community safety, you’ll need referral codes from at least one male and one female verified Musafir.',
+    'For verification, you need a referral code from a verified female Musafir.',
   VERIFICATION_REQUIRED:
     'Please complete your Musafir verification to continue.',
   VERIFICATION_PENDING:
-    'Your Musafir verification is under review. We’ll notify you once it’s approved.',
+    "Your Musafir verification is under review. We'll notify you once it's approved.",
 
-  REFERRAL_USER_NOT_VERIFIED: 'Invalid referral codes. Please ask verified Musafirs for their codes.',
+  REFERRAL_USER_NOT_VERIFIED: 'Invalid referral code. Please ask a verified female Musafir for their code.',
   REFERRAL_SAME_USER: 'Both referral codes belong to the same person. Please use codes from two different verified Musafirs.',
-  REFERRAL_CANNOT_VERIFY_SELF: 'You cannot use your own account to verify yourself. Please ask other verified Musafirs for their codes.',
+  REFERRAL_CANNOT_VERIFY_SELF: 'You cannot use your own account to verify yourself. Please ask a verified female Musafir for their code.',
   REFERRAL_NOT_FOUND: 'Referral code not found. Please check the code and try again.',
 
   VERIFICATION_NOT_FOUND: 'Verification record not found.',
@@ -81,9 +81,9 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   // FLAGSHIP / TRIPS
   // ============================================
   FLAGSHIP_NOT_FOUND:
-    'We couldn’t find this trip. It might have been updated, filled, or removed.',
+    "We couldn't find this trip. It might have been updated, filled, or removed.",
   WAITLIST_SEATS_FULL:
-    'Seats filled up before you could confirm. You’ll stay on the waitlist for the next opening.',
+    "Seats filled up before you could confirm. You'll stay on the waitlist for the next opening.",
   CANCEL_NOT_ELIGIBLE:
     'Only confirmed seats can be cancelled. Please check your trip status.',
   FLAGSHIP_INVALID_DATE_RANGE: 'Invalid date range. Start date must be before end date.',
@@ -122,7 +122,7 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   PAYMENT_FAILED: 'Payment failed. Please try again or use a different method.',
   PAYMENT_VALIDATION_FAILED: 'Payment validation failed. Please check your details.',
   payment_pending_approval: 'A payment is already pending approval.',
-  wallet_amount_exceeds_due: 'Wallet amount can’t exceed remaining due.',
+  wallet_amount_exceeds_due: "Wallet amount can't exceed remaining due.",
   payment_amount_must_match_due: 'Payment amount must equal remaining due.',
   wallet_not_allowed: 'Wallet credits are not available for this payment method.',
 

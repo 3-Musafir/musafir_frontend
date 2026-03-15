@@ -6,6 +6,8 @@ import { signIn } from "next-auth/react";
 import useSignUpHook from "@/hooks/useSignUp";
 import { showAlert } from "@/pages/alert";
 import { mapErrorToUserMessage } from "@/utils/errorMessages";
+import { trackClarityEvent } from "@/lib/analytics/clarity";
+import { CLARITY_EVENTS } from "@/lib/analytics/events";
 
 export default function CreateAccount() {
   const router = useRouter();
@@ -42,15 +44,17 @@ export default function CreateAccount() {
 
     try {
       if (!(await checkEmailAvailability())) {
-        showAlert("Email already exists, Please enter another email", "error");
+        showAlert(mapErrorToUserMessage({ response: { data: { code: 'USER_EMAIL_ALREADY_EXISTS' } } }), "error");
         return;
       }
+
+      trackClarityEvent(CLARITY_EVENTS.SIGNUP_EMAIL_SUBMIT);
 
       const savedData = JSON.parse(localStorage.getItem("formData") || "{}");
 
       const formData = {
-        ...savedData,
         email,
+        ...(savedData.referralCode ? { referralCode: savedData.referralCode } : {}),
       };
       localStorage.setItem("formData", JSON.stringify(formData));
       router.push("/signup/registrationform");
@@ -73,6 +77,8 @@ export default function CreateAccount() {
         ? process.env.NEXT_PUBLIC_AUTH_URL
         : "";
     const callbackUrl = base ? `${base}/signup/registrationform` : "/signup/registrationform";
+
+    trackClarityEvent(CLARITY_EVENTS.SIGNUP_GOOGLE_START);
 
     await signIn("google", { callbackUrl });
   };

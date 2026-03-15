@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react';
 import { useRef, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import UserProfileMenu from './UserProfileMenu';
 import { useNotificationsContext } from '@/context/NotificationsProvider';
 import { TabType } from '@/context/DashboardContext';
@@ -58,6 +59,17 @@ export default function Header({
 
   return (
     <header className='h-16 lg:h-20 bg-white border-b flex items-center px-4 lg:px-8'>
+      {/* Logo */}
+      <Link href='/home' aria-label='3Musafir home' className='flex items-center shrink-0'>
+        <Image
+          src='/primarylogo.svg'
+          alt='3Musafir'
+          width={200}
+          height={200}
+          className='h-20 w-20 lg:h-28 lg:w-28 -my-2'
+        />
+      </Link>
+
       {/* Mobile menu button */}
       {showMenuButton && setSidebarOpen && (
         <button className='p-2 rounded-md lg:hidden' onClick={() => setSidebarOpen(true)}>

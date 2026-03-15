@@ -2,6 +2,8 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { showAlert } from '@/pages/alert'
+import { trackClarityEvent } from '@/lib/analytics/clarity'
+import { CLARITY_EVENTS } from '@/lib/analytics/events'
 import {
   formatPhoneForApi,
   inputFromStoredPhone,
@@ -54,6 +56,8 @@ export default function RegistrationForm() {
       showAlert('Please fix the highlighted phone fields.', 'error')
       return
     }
+
+    trackClarityEvent(CLARITY_EVENTS.SIGNUP_PROFILE_SUBMIT);
 
     const formatedPhone = formatPhoneForApi(phone);
     const formatedWhatsapp = whatsappPhone ? formatPhoneForApi(whatsappPhone) : whatsappPhone;
@@ -163,6 +167,7 @@ export default function RegistrationForm() {
                   type="text"
                   id="fullName"
                   required
+                  autoComplete="name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="w-full input-field"
@@ -199,6 +204,7 @@ export default function RegistrationForm() {
                     id="phone"
                     value={phone}
                     required
+                    autoComplete="tel-national"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     maxLength={10}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import { resolveImageSrc } from "@/lib/image";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
@@ -6,6 +6,7 @@ import { ROUTES_CONSTANTS } from "@/config/constants";
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { X } from "lucide-react";
+import { useSwipeCarousel } from "@/hooks/useSwipeCarousel";
 
 type StatusType =
   | "new"
@@ -105,14 +106,6 @@ const getActionButton = (
         onClick: () => router.push(ROUTES_CONSTANTS.VERIFICATION_REQUEST),
       };
     case "payment":
-      if (paymentStatus === "pendingApproval" || (hasPaymentSubmitted && !paymentStatus)) {
-        return {
-          css: "bg-muted text-muted-foreground border-border cursor-not-allowed hover:bg-muted hover:text-muted-foreground hover:border-border",
-          text: "Awaiting approval",
-          onClick: () => {},
-          disabled: true,
-        };
-      }
       return {
         css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
         text: "Complete Payment",
@@ -126,14 +119,6 @@ const getActionButton = (
         disabled: true,
       };
     case "confirmed":
-      if (paymentStatus === "pendingApproval") {
-        return {
-          css: "bg-muted text-muted-foreground border-border cursor-not-allowed hover:bg-muted hover:text-muted-foreground hover:border-border",
-          text: "Awaiting approval",
-          onClick: () => {},
-          disabled: true,
-        };
-      }
       if (paymentInfo && typeof paymentInfo.amountDue === 'number' && paymentInfo.amountDue > 0) {
         return {
           css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
@@ -311,7 +296,7 @@ const PassportUpcomingCard: React.FC<any> = ({
   date,
   location,
   status,
-  image,
+  images,
   paymentInfo,
   appliedDate,
   detailedPlan,
@@ -345,6 +330,16 @@ const PassportUpcomingCard: React.FC<any> = ({
     }
     router.push(`/musafir/refund/${registrationId}`);
   };
+  const fallbackImage = "/norwayUpcomming.jpg";
+  const imageUrls = useMemo(
+    () =>
+      (images && images.length > 0 ? images : [fallbackImage]).map((img: string) =>
+        resolveImageSrc(img, fallbackImage),
+      ),
+    [images],
+  );
+  const { index, bind } = useSwipeCarousel(imageUrls.length);
+
   const actionButton = getActionButton(
     displayStatus,
     registrationId,
@@ -356,13 +351,18 @@ const PassportUpcomingCard: React.FC<any> = ({
     paymentStatus,
     userVerificationStatus,
   );
+  const remainingDue =
+    typeof paymentInfo?.amountDue === "number" ? paymentInfo.amountDue : 0;
+  const showAddPaymentTag =
+    remainingDue > 0 &&
+    (displayStatus === "payment" || displayStatus === "confirmed");
 
   return (
     <div className="overflow-hidden rounded-2xl bg-card shadow-sm border border-border h-full flex flex-col">
       {/* Image - Responsive height */}
-      <div className="relative h-[140px] lg:h-[180px] w-full overflow-hidden">
+      <div className="relative h-[140px] lg:h-[180px] w-full overflow-hidden" {...bind}>
         <Image
-          src={resolveImageSrc(image, "/norwayUpcomming.jpg")}
+          src={imageUrls[index]}
           alt={title}
           fill
           className="object-cover"
@@ -373,13 +373,23 @@ const PassportUpcomingCard: React.FC<any> = ({
       <div className="space-y-2 lg:space-y-3 p-4 lg:p-5 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-lg lg:text-xl font-semibold text-heading">{title}</h3>
-          <span
-            className={`rounded-md px-2 py-1 lg:px-3 lg:py-1.5 text-sm lg:text-base font-medium border whitespace-nowrap ${getStatusStyles(
-              displayStatus
-            )}`}
-          >
-            {statusLabel}
-          </span>
+          <div className="flex flex-col items-end gap-2">
+            <span
+              className={`rounded-md px-2 py-1 lg:px-3 lg:py-1.5 text-sm lg:text-base font-medium border whitespace-nowrap ${getStatusStyles(
+                displayStatus
+              )}`}
+            >
+              {statusLabel}
+            </span>
+            {showAddPaymentTag && (
+              <button
+                onClick={() => router.push(`/musafir/payment/${registrationId}`)}
+                className="text-xs font-semibold text-brand-primary border border-brand-primary/30 rounded-full px-3 py-1 hover:bg-brand-primary/10"
+              >
+                Add Payment
+              </button>
+            )}
+          </div>
         </div>
 
         <p className="text-sm lg:text-base text-muted-foreground">

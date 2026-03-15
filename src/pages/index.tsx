@@ -1,5 +1,5 @@
-import Explore from "./explore";
+import Home from "./home";
 
 export default function RootIndex() {
-  return <Explore />;
+  return <Home />;
 }

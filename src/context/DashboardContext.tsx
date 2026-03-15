@@ -51,6 +51,9 @@ interface DashboardContextType {
   // User verification status (shared)
   userVerificationStatus: string | undefined;
 
+  // User phone (null = not set yet)
+  userPhone: string | null;
+
   // Refresh functions
   refreshHome: () => Promise<void>;
   refreshPassport: () => Promise<void>;
@@ -101,6 +104,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   // Shared state
   const [userVerificationStatus, setUserVerificationStatus] = useState<string | undefined>(undefined);
+  const [userPhone, setUserPhone] = useState<string | null>(null);
 
   // Track which tabs have been loaded
   const [loadedTabs, setLoadedTabs] = useState<Set<TabType>>(new Set());
@@ -131,14 +135,16 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     }
     setPassportLoading(true);
     try {
-      const [upcoming, past, verStatus] = await Promise.all([
+      const [upcoming, past, verStatus, me] = await Promise.all([
         registrationHook.getUpcomingPassport(),
         registrationHook.getPastPassport(),
         userHandler.getVerificationStatus(),
+        userHandler.getMe(),
       ]);
       if (upcoming) setUpcomingEvents(upcoming);
       if (past) setPastEvents(past);
       setUserVerificationStatus(verStatus);
+      setUserPhone(me?.phone || null);
     } catch (error) {
       console.error("Error fetching passport data:", error);
     } finally {
@@ -301,6 +307,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     verifiedByMe,
     referralsLoading,
     userVerificationStatus,
+    userPhone,
     refreshHome,
     refreshPassport,
     refreshReferrals,

@@ -11,6 +11,8 @@ import AlertContainer from "./alert";
 import { Toaster } from "@/components/ui/toaster";
 import { NotificationsProvider } from "@/context/NotificationsProvider";
 import UserScreenShell from "@/components/UserScreenShell";
+import ClarityTracker from "@/components/analytics/ClarityTracker";
+import AnalyticsConsentBanner from "@/components/analytics/AnalyticsConsentBanner";
 
 const DEFAULT_DESCRIPTION = defaultDescription;
 const DEFAULT_OG_IMAGE = "/3mwinterlogo.png";
@@ -113,7 +115,7 @@ export default function App({ Component, pageProps }: AppProps) {
       "/flagship",
       "/musafir",
     ];
-    return !appPrefixes.some((prefix) => pathname.startsWith(prefix));
+    return pathname !== "/" && !appPrefixes.some((prefix) => pathname.startsWith(prefix));
   }, [router.pathname]);
 
   const siteUrl = baseSiteUrl;
@@ -188,6 +190,8 @@ export default function App({ Component, pageProps }: AppProps) {
         refetchOnWindowFocus={true}
         refetchInterval={5 * 60}
       >
+        <ClarityTracker />
+        <AnalyticsConsentBanner />
         <RecoilRoot>
           <NotificationsProvider>
             {useUserShell ? (

@@ -1,11 +1,14 @@
 // "use client"
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react';
+import { trackClarityEvent } from '@/lib/analytics/clarity';
+import { CLARITY_EVENTS } from '@/lib/analytics/events';
 
 export default function AccountCreated() {
     const router = useRouter();
 
     useEffect(() => {
+        trackClarityEvent(CLARITY_EVENTS.SIGNUP_COMPLETE);
         const timer = setTimeout(() => {
             router.push('/home');
         }, 3000);

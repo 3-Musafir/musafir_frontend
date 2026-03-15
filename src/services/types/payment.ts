@@ -10,7 +10,7 @@ export type PaymentMethod =
   | "split_cash_bank"
   | "partial_cash";
 
-export type PaymentMode = "wallet_only" | "bank_transfer" | "wallet_plus_bank";
+export type PaymentMode = "wallet_only" | "bank_transfer" | "wallet_plus_bank" | "partial";
 
 export interface ICreatePayment {
   bankAccount?: string;
@@ -18,6 +18,7 @@ export interface ICreatePayment {
   paymentType: string;
   registration: string;
   amount: number;
+  idempotencyKey?: string;
   discount?: number;
   discountType?: "soloFemale" | "group" | "musafir";
   walletAmount?: number;
@@ -34,6 +35,7 @@ export interface IPaymentQuoteRequest {
 
 export interface IPaymentQuoteResponse {
   amountDue: number;
+  partialDue?: number;
   discountApplied: number;
   maxWalletUsable: number;
   walletApplied: number;
@@ -89,6 +91,58 @@ export interface IPayment {
   status: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface IPaymentHistoryItem {
+  _id: string;
+  createdAt: string;
+  amount: number;
+  paymentType: string;
+  paymentMethod?: PaymentMethod;
+  status: string;
+  walletRequested?: number;
+  walletApplied?: number;
+  bankAccountLabel?: string;
+  rejectionCode?: string;
+  rejectionLabel?: string;
+  rejectionPublicNote?: string;
+  remainingDueAtDecision?: number;
+}
+
+export interface IPaymentHistoryResponse {
+  items: IPaymentHistoryItem[];
+  refunds?: any[];
+  summary?: {
+    total?: number;
+    pendingCount?: number;
+    approvedCount?: number;
+    rejectedCount?: number;
+    lastStatus?: string | null;
+    hasPending?: boolean;
+    resubmissionCount?: number;
+    lastPaymentId?: string | null;
+    totalPaid?: number;
+    totalRefunded?: number;
+    remainingDue?: number | null;
+    refundStatus?: string;
+  };
+  timeline?: any[];
+  nextCursor?: string | null;
+}
+
+export interface IPaymentRejectionReason {
+  _id: string;
+  code: string;
+  label: string;
+  userMessage?: string;
+  active: boolean;
+  order?: number;
+}
+
+export interface IRejectPaymentPayload {
+  rejectionCode: string;
+  publicNote?: string;
+  internalNote?: string;
 }
 
 export interface IRequestRefund {

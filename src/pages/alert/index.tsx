@@ -13,10 +13,9 @@ const AlertContainer = () => {
       setAlerts((prevAlerts) => {
         const nextAlert = event.detail as { message: string; type: 'success' | 'error' };
         if (
-          nextAlert.type === 'error' &&
           prevAlerts.some(
             (alert) =>
-              alert.type === 'error' &&
+              alert.type === nextAlert.type &&
               alert.message === nextAlert.message
           )
         ) {
@@ -25,10 +24,10 @@ const AlertContainer = () => {
         return [...prevAlerts, nextAlert];
       });
 
-      // Auto-remove the alert after 3 seconds
+      // Auto-remove the alert after 30 seconds
       setTimeout(() => {
         setAlerts((prevAlerts) => prevAlerts.slice(1));
-      }, 5000);
+      }, 10000);
     };
 
     window.addEventListener('show-alert', handleShowAlert as EventListener);

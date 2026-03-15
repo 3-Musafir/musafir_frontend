@@ -18,7 +18,6 @@ function GetVerified() {
   const [fallbackPath, setFallbackPath] = useState<string>('/home');
   const [returnToPath, setReturnToPath] = useState<string | null>(null);
   const [referral1, setReferral1] = useState('');
-  const [referral2, setReferral2] = useState('');
   const [videoLink, setVideoLink] = useState('');
   const [flagshipId, setFlagshipId] = useState('');
   const [videoFile, setVideoFile] = useState<File | null>(null)
@@ -95,12 +94,12 @@ function GetVerified() {
 
   // Function to check if any verification method is selected
   const isFormValid = () => {
-    return (referral1 || referral2) || videoLink || requestCall || videoFile;
+    return referral1 || videoLink || requestCall || videoFile;
   };
 
   // Function to check which verification method is selected
   const getSelectedMethod = () => {
-    if (referral1 || referral2) return 'referral';
+    if (referral1) return 'referral';
     if (videoLink || videoFile) return 'video';
     if (requestCall) return 'call';
     return null;
@@ -119,15 +118,8 @@ function GetVerified() {
       return;
     }
 
-    // Check if only one referral code is provided
-    if ((referral1 && !referral2) || (!referral1 && referral2)) {
-      showAlert('Please provide both referral codes for referral verification.', 'error');
-      return;
-    }
-
     const formData = new FormData();
     if (referral1) formData.append('referral1', referral1);
-    if (referral2) formData.append('referral2', referral2);
     if (videoLink) formData.append('videoUrl', videoLink);
     if (videoFile) formData.append('video', videoFile);
     if (requestCall) formData.append('requestCall', requestCall.toString());
@@ -196,7 +188,6 @@ function GetVerified() {
       setIsRecording(true);
       // Clear other verification methods
       setReferral1('');
-      setReferral2('');
       setRequestCall(false);
       setVideoLink('');
 
@@ -220,7 +211,6 @@ function GetVerified() {
     if (file) {
       // Clear other verification methods
       setReferral1('');
-      setReferral2('');
       setRequestCall(false);
       setVideoLink('');
       // Set the video file
@@ -285,85 +275,48 @@ function GetVerified() {
 
         {(verificationStatus === 'unverified' || verificationStatus === 'rejected' || !verificationStatus) && (
           <>
-            {/* Referral Codes Section */}
+            {/* Referral Code Section */}
             <section className='mb-8'>
-              <h2 className='text-2xl font-bold mb-1'>Referral Codes</h2>
+              <h2 className='text-2xl font-bold mb-1'>Referral Code</h2>
               <p className='text-gray-500 text-sm mb-4'>Instant</p>
               <p className='text-gray-500 mb-6'>
-                You need <span className='font-medium'>2 musafirs</span> from the community to vouch for
-                you. Ask them for their referral code
+                You need a referral code from a <span className='font-medium'>verified female musafir</span> to
+                vouch for you
               </p>
 
-              <div className='grid grid-cols-2 gap-4 mb-8'>
-                <div>
-                  <label htmlFor='referral1' className='block text-sm font-medium mb-2'>
-                    Referral 1
-                  </label>
-                  <div className="relative">
-                    <input
-                      type='text'
-                      id='referral1'
-                      placeholder='paste code here'
-                      value={referral1}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setReferral1(value);
-                        // If entering a referral code, clear other verification methods
-                        if (value) {
-                          setVideoLink('');
-                          setVideoFile(null);
-                          setRequestCall(false);
-                        }
-                      }}
-                      disabled={isMethodDisabled('referral')}
-                      title={isMethodDisabled('referral') ? 'Only one verification method can be chosen at a time' : ''}
-                      className={`w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 ${isMethodDisabled('referral') ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    />
-                    {referral1 && (
-                      <button
-                        type="button"
-                        onClick={() => setReferral1('')}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor='referral2' className='block text-sm font-medium mb-2'>
-                    Referral 2
-                  </label>
-                  <div className="relative">
-                    <input
-                      type='text'
-                      id='referral2'
-                      placeholder='paste code here'
-                      value={referral2}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setReferral2(value);
-                        // If entering a referral code, clear other verification methods
-                        if (value) {
-                          setVideoLink('');
-                          setVideoFile(null);
-                          setRequestCall(false);
-                        }
-                      }}
-                      disabled={isMethodDisabled('referral')}
-                      title={isMethodDisabled('referral') ? 'Only one verification method can be chosen at a time' : ''}
-                      className={`w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 ${isMethodDisabled('referral') ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    />
-                    {referral2 && (
-                      <button
-                        type="button"
-                        onClick={() => setReferral2('')}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
+              <div className='mb-8'>
+                <label htmlFor='referral1' className='block text-sm font-medium mb-2'>
+                  Referral Code
+                </label>
+                <div className="relative">
+                  <input
+                    type='text'
+                    id='referral1'
+                    placeholder='paste code here'
+                    value={referral1}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setReferral1(value);
+                      // If entering a referral code, clear other verification methods
+                      if (value) {
+                        setVideoLink('');
+                        setVideoFile(null);
+                        setRequestCall(false);
+                      }
+                    }}
+                    disabled={isMethodDisabled('referral')}
+                    title={isMethodDisabled('referral') ? 'Only one verification method can be chosen at a time' : ''}
+                    className={`w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 ${isMethodDisabled('referral') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  />
+                  {referral1 && (
+                    <button
+                      type="button"
+                      onClick={() => setReferral1('')}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             </section>
@@ -403,7 +356,6 @@ function GetVerified() {
                         // If entering a video link, clear other verification methods
                         if (value) {
                           setReferral1('');
-                          setReferral2('');
                           setVideoFile(null);
                           setRequestCall(false);
                         }
@@ -496,7 +448,6 @@ function GetVerified() {
                     // If requesting a call, clear other verification methods
                     if (checked) {
                       setReferral1('');
-                      setReferral2('');
                       setVideoLink('');
                       setVideoFile(null);
                     }

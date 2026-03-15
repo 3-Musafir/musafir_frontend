@@ -41,6 +41,8 @@ function FlagshipRequirements() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedRoomSharingPrice, setSelectedRoomSharingPrice] = useState(0);
   const registrationAction = useRegistrationHook();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false);
 
   const parseAmount = (value: unknown) => {
     if (value === undefined || value === null) return 0;
@@ -219,6 +221,7 @@ function FlagshipRequirements() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setPageLoading(true);
       const flagshipId = searchParams?.get("id");
       const fromDetailsPage = searchParams?.get("fromDetailsPage") === "true";
       setFromDetailsPage(fromDetailsPage);
@@ -227,6 +230,18 @@ function FlagshipRequirements() {
         await getFlagship(flagshipId);
         localStorage.setItem("flagshipId", JSON.stringify(flagshipId));
         if (isAuthenticated) {
+          // Check if user already has a registration for this flagship
+          const existingReg = await registrationAction.checkExisting(flagshipId);
+          if (existingReg?.exists && existingReg.registrationId) {
+            localStorage.setItem("registrationId", JSON.stringify(existingReg.registrationId));
+            const alertMessage = existingReg.isPaid
+              ? "You already have a confirmed registration for this flagship."
+              : "You already registered. Continue on the payment page to secure your seat.";
+            showAlert(alertMessage, 'success');
+            router.push('/flagship/seats');
+            return;
+          }
+
           const pendingInvite = await registrationAction.getPendingGroupInvite(flagshipId);
           if (pendingInvite) {
             setTripType("group");
@@ -289,6 +304,7 @@ function FlagshipRequirements() {
           setPrice(basePrice + locationPrice);
         }
       }
+      setPageLoading(false);
     };
 
     fetchData();
@@ -387,6 +403,8 @@ function FlagshipRequirements() {
       showAlert('Please confirm you have read the policies before continuing.', 'error');
       return;
     }
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     if (flagship._id) {
       const resolvedGroupMembers = buildGroupMembersPayload();
       const registration: BaseRegistration = {
@@ -420,6 +438,7 @@ function FlagshipRequirements() {
         }
       } catch (error) {
         showAlert(mapErrorToUserMessage(error), 'error');
+        setIsSubmitting(false);
         return;
       }
 
@@ -462,16 +481,20 @@ function FlagshipRequirements() {
             'You already belong to a group for this trip. Leave that group before joining another.',
             'error',
           );
+          setIsSubmitting(false);
           return;
         }
         if (code === 'trip_type_locked') {
           showAlert('Trip type is locked after invites are sent.', 'error');
+          setIsSubmitting(false);
           return;
         }
         showAlert(mapErrorToUserMessage(error), 'error');
+        setIsSubmitting(false);
       }
     } else {
       showAlert("Flagship not found.", "error");
+      setIsSubmitting(false);
     }
   };
 
@@ -495,6 +518,14 @@ function FlagshipRequirements() {
   const groupDiscountFeedback = groupDiscountInfo
     ? getGroupDiscountFeedback(groupDiscountInfo)
     : null;
+
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -1106,9 +1137,18 @@ function FlagshipRequirements() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="btn-primary w-full mt-8"
+              disabled={isSubmitting}
+              className="btn-primary w-full mt-8 flex items-center justify-center"
+              aria-busy={isSubmitting || undefined}
             >
-              {fromDetailsPage ? "Submit Form" : "Get Verified"}
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  Submitting...
+                </>
+              ) : (
+                fromDetailsPage ? "Submit Form" : "Get Verified"
+              )}
             </button>
           </form>
         </div>

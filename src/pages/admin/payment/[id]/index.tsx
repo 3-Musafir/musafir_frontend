@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { PaymentService } from "@/services/paymentService";
-import { IPayment } from "@/services/types/payment";
+import { IPayment, IPaymentRejectionReason } from "@/services/types/payment";
 import { FlagshipService } from "@/services/flagshipService";
 import { IFlagship } from "@/services/types/flagship";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,14 @@ export default function PaymentDetailsPage() {
   const [payment, setPayment] = useState<IPayment | null>(null);
   const [flagship, setFlagship] = useState<IFlagship | null>(null);
   const [loading, setLoading] = useState(true);
+  const [rejectionReasons, setRejectionReasons] = useState<IPaymentRejectionReason[]>([]);
+  const [rejectionReasonLoading, setRejectionReasonLoading] = useState(false);
+  const [rejectionReasonError, setRejectionReasonError] = useState<string | null>(null);
+  const [selectedRejectionCode, setSelectedRejectionCode] = useState<string>("");
+  const [publicNote, setPublicNote] = useState<string>("");
+  const [internalNote, setInternalNote] = useState<string>("");
+  const [userMessagePrefill, setUserMessagePrefill] = useState<string>("");
+  const [manualRejectionCode, setManualRejectionCode] = useState<string>("");
 
   const fetchData = async () => {
     if (!paymentId) return;
@@ -60,6 +68,42 @@ export default function PaymentDetailsPage() {
     fetchData();
   }, [paymentId]);
 
+  useEffect(() => {
+    const loadRejectionReasons = async () => {
+      if (!paymentId || !payment || payment.status !== "pendingApproval") return;
+      setRejectionReasonLoading(true);
+      setRejectionReasonError(null);
+      try {
+        const data = await PaymentService.getPaymentRejectionReasons();
+        const sorted = Array.isArray(data)
+          ? [...data].sort((a, b) => {
+              const orderA = typeof a.order === "number" ? a.order : Number.MAX_SAFE_INTEGER;
+              const orderB = typeof b.order === "number" ? b.order : Number.MAX_SAFE_INTEGER;
+              if (orderA !== orderB) return orderA - orderB;
+              return a.label.localeCompare(b.label);
+            })
+          : [];
+        setRejectionReasons(sorted);
+      } catch (error) {
+        setRejectionReasonError("Unable to load rejection reasons.");
+        setRejectionReasons([]);
+      } finally {
+        setRejectionReasonLoading(false);
+      }
+    };
+    loadRejectionReasons();
+  }, [paymentId, payment]);
+
+  const handleSelectRejectionCode = (code: string) => {
+    const selected = rejectionReasons.find((reason) => reason.code === code);
+    const nextUserMessage = selected?.userMessage || "";
+    if (!publicNote || publicNote === userMessagePrefill) {
+      setPublicNote(nextUserMessage);
+    }
+    setUserMessagePrefill(nextUserMessage);
+    setSelectedRejectionCode(code);
+  };
+
   const handleApprovePayment = async () => {
     if (!paymentId) return;
     try {
@@ -89,7 +133,23 @@ export default function PaymentDetailsPage() {
   const handleRejectPayment = async () => {
     if (!paymentId) return;
     try {
-      await PaymentService.rejectPayment(paymentId);
+      const hasReasons = rejectionReasons.length > 0;
+      const rejectionCode = hasReasons ? selectedRejectionCode : manualRejectionCode.trim();
+      if (!rejectionCode) {
+        toast({
+          title: "Rejection reason required",
+          description: hasReasons
+            ? "Please select a rejection reason."
+            : "Please enter a rejection code.",
+          variant: "destructive",
+        });
+        return;
+      }
+      await PaymentService.rejectPayment(paymentId, {
+        rejectionCode,
+        publicNote: publicNote.trim() || undefined,
+        internalNote: internalNote.trim() || undefined,
+      });
       toast({
         title: "Success",
         description: "Payment rejected successfully",
@@ -176,6 +236,16 @@ export default function PaymentDetailsPage() {
   const bankProof = (payment as any)?.bankProofKey as string | undefined;
 
   console.log(payment);
+  const showRejectPanel = payment.status === "pendingApproval";
+  const reasonsUnavailable = rejectionReasonError || rejectionReasons.length === 0;
+  const requiresManualCode = rejectionReasons.length === 0;
+  const rejectDisabled =
+    rejectionReasonLoading ||
+    (rejectionReasons.length > 0 && !selectedRejectionCode) ||
+    (requiresManualCode && !manualRejectionCode.trim());
+  const publicNoteRemaining = 240 - publicNote.length;
+  const internalNoteRemaining = 240 - internalNote.length;
+
   return (
     <div className="max-w-md mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold">Payment Details</h1>
@@ -438,23 +508,111 @@ export default function PaymentDetailsPage() {
         </CardContent>
       </Card>
 
-      {payment.status === "pendingApproval" && (
-        <CardFooter className="flex justify-between gap-4">
-          <Button
-            variant="destructive"
-            className="flex-1"
-            onClick={handleRejectPayment}
-          >
-            Reject Payment
-          </Button>
-          <Button
-            variant="default"
-            className="flex-1"
-            onClick={handleApprovePayment}
-          >
-            Approve Payment
-          </Button>
-        </CardFooter>
+      {showRejectPanel && (
+        <>
+          <Card>
+            <CardHeader>
+              <h2 className="text-xl font-semibold">Reject Payment</h2>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {rejectionReasons.length > 0 ? (
+                <div className="space-y-2">
+                  <label className="text-sm text-gray-600">Reason</label>
+                  <select
+                    value={selectedRejectionCode}
+                    onChange={(event) => handleSelectRejectionCode(event.target.value)}
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    disabled={rejectionReasonLoading}
+                  >
+                    <option value="">Select a reason</option>
+                    {rejectionReasons.map((reason) => (
+                      <option key={reason._id} value={reason.code}>
+                        {reason.label}
+                      </option>
+                    ))}
+                  </select>
+                  {rejectionReasonLoading && (
+                    <p className="text-xs text-muted-foreground">Loading rejection reasons…</p>
+                  )}
+                  {rejectionReasonError && (
+                    <p className="text-xs text-brand-error">Unable to load rejection reasons.</p>
+                  )}
+                  {selectedRejectionCode && userMessagePrefill && (
+                    <p className="text-xs text-muted-foreground">{userMessagePrefill}</p>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <label className="text-sm text-gray-600">Rejection code</label>
+                  <input
+                    value={manualRejectionCode}
+                    onChange={(event) => setManualRejectionCode(event.target.value)}
+                    placeholder="invalid_screenshot"
+                    className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    disabled={rejectionReasonLoading}
+                  />
+                  {rejectionReasonLoading && (
+                    <p className="text-xs text-muted-foreground">Loading rejection reasons…</p>
+                  )}
+                  {rejectionReasonError && (
+                    <p className="text-xs text-brand-error">Unable to load rejection reasons.</p>
+                  )}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <label className="text-sm text-gray-600">Public note (optional)</label>
+                <textarea
+                  value={publicNote}
+                  onChange={(event) => setPublicNote(event.target.value.slice(0, 240))}
+                  rows={3}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="Visible to the user"
+                />
+                <p className="text-xs text-muted-foreground text-right">
+                  {publicNoteRemaining} characters left
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm text-gray-600">Internal note (optional)</label>
+                <textarea
+                  value={internalNote}
+                  onChange={(event) => setInternalNote(event.target.value.slice(0, 240))}
+                  rows={3}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="Visible to admins only"
+                />
+                <p className="text-xs text-muted-foreground text-right">
+                  {internalNoteRemaining} characters left
+                </p>
+              </div>
+
+              {reasonsUnavailable && (
+                <p className="text-xs text-muted-foreground">
+                  Rejection reasons are unavailable. Enter a valid code manually.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+          <div className="flex justify-between gap-4 px-6 pb-6">
+            <Button
+              variant="destructive"
+              className="flex-1"
+              onClick={handleRejectPayment}
+              disabled={rejectDisabled}
+            >
+              Reject Payment
+            </Button>
+            <Button
+              variant="default"
+              className="flex-1"
+              onClick={handleApprovePayment}
+            >
+              Approve Payment
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );
