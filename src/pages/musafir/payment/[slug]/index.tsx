@@ -1269,8 +1269,16 @@ export default function TripPayment() {
                         }
                       }}
                       disabled={amountNextDisabled || isSubmitting}
+                      aria-busy={isSubmitting || undefined}
                     >
-                      {selectedMethod === "wallet" ? "Confirm" : "Next"}
+                      {isSubmitting ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                          Submitting...
+                        </>
+                      ) : (
+                        selectedMethod === "wallet" ? "Confirm" : "Next"
+                      )}
                     </Button>
                   </div>
                 )}
@@ -1321,8 +1329,16 @@ export default function TripPayment() {
                       className="w-full py-6 bg-brand-primary text-btn-secondary-text"
                       onClick={handleSubmit}
                       disabled={accountNextDisabled || isSubmitting}
+                      aria-busy={isSubmitting || undefined}
                     >
-                      Confirm Payment
+                      {isSubmitting ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                          Submitting...
+                        </>
+                      ) : (
+                        "Confirm Payment"
+                      )}
                     </Button>
                   </div>
                 )}
