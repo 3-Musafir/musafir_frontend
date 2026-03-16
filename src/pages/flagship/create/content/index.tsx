@@ -1,24 +1,8 @@
 'use client';
 
 import { useState, useRef, type DragEvent, type ChangeEvent, useEffect } from 'react';
-import { useEditor, EditorContent, type Editor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import TextStyle from '@tiptap/extension-text-style';
-import Color from '@tiptap/extension-color';
-import Placeholder from '@tiptap/extension-placeholder';
 import {
-  Bold,
-  Italic,
-  UnderlineIcon,
   Eye,
-  List,
-  ListOrdered,
-  Quote,
-  Undo,
-  Redo,
-  Code2,
-  Eraser,
   File,
   X,
 } from 'lucide-react';
@@ -30,6 +14,8 @@ import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
 import { mapErrorToUserMessage } from '@/utils/errorMessages';
 import withAuth from '@/hoc/withAuth';
 import ProgressBar from '@/components/progressBar';
+import RichTextEditor from '@/components/RichTextEditor';
+import { isHtmlBodyEmpty } from '@/utils/htmlToPlainText';
 import { FlagshipService } from '@/services/flagshipService';
 import { getEditIdFromSearch, withEditId } from '@/lib/flagship-edit';
 import { ensureSilentUpdate } from '@/lib/flagshipWizard';
@@ -48,43 +34,14 @@ function ContentPage() {
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [removedImages, setRemovedImages] = useState<string[]>([]);
   const [removeExistingDetailedPlan, setRemoveExistingDetailedPlan] = useState(false);
+  const [travelPlanHtml, setTravelPlanHtml] = useState('');
+  const [tocsHtml, setTocsHtml] = useState('');
   const [errors, setErrors] = useState({ travelPlan: false, files: false });
   const [previewOpen, setPreviewOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const detailedPlanInputRef = useRef<HTMLInputElement>(null);
-
-  const baseExtensions = [
-    StarterKit.configure({
-      heading: {
-        levels: [1, 2, 3],
-      },
-    }),
-    Underline,
-    TextStyle,
-    Color.configure({ types: ['textStyle', 'heading'] }),
-  ];
-
-  const travelPlanEditor = useEditor({
-    extensions: [
-      ...baseExtensions,
-      Placeholder.configure({
-        placeholder: 'Describe the travel plan…',
-      }),
-    ],
-    content: flagshipData?.travelPlan,
-  });
-
-  const tocsEditor = useEditor({
-    extensions: [
-      ...baseExtensions,
-      Placeholder.configure({
-        placeholder: 'Add TOCs, FAQs, inclusions…',
-      }),
-    ],
-    content: flagshipData?.tocs,
-  });
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -130,24 +87,16 @@ function ContentPage() {
   }, [flagshipData?.images]);
 
   useEffect(() => {
-    if (travelPlanEditor && flagshipData?.travelPlan !== undefined) {
-      const current = travelPlanEditor.getHTML();
-      const next = flagshipData.travelPlan || '';
-      if (next && current !== next) {
-        travelPlanEditor.commands.setContent(next);
-      }
+    if (flagshipData?.travelPlan) {
+      setTravelPlanHtml(flagshipData.travelPlan);
     }
-  }, [flagshipData?.travelPlan, travelPlanEditor]);
+  }, [flagshipData?.travelPlan]);
 
   useEffect(() => {
-    if (tocsEditor && flagshipData?.tocs !== undefined) {
-      const current = tocsEditor.getHTML();
-      const next = flagshipData.tocs || '';
-      if (next && current !== next) {
-        tocsEditor.commands.setContent(next);
-      }
+    if (flagshipData?.tocs) {
+      setTocsHtml(flagshipData.tocs);
     }
-  }, [flagshipData?.tocs, tocsEditor]);
+  }, [flagshipData?.tocs]);
 
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -216,11 +165,7 @@ function ContentPage() {
   };
 
   const validateFields = () => {
-    if (!travelPlanEditor) {
-      return false;
-    }
-
-    const travelPlanEmpty = !travelPlanEditor.getHTML() || travelPlanEditor.getHTML() === '<p></p>';
+    const travelPlanEmpty = isHtmlBodyEmpty(travelPlanHtml);
     const filesEmpty = files.length === 0 && existingImages.length === 0;
     setErrors({ travelPlan: travelPlanEmpty, files: filesEmpty });
     return !travelPlanEmpty && !filesEmpty;
@@ -240,8 +185,8 @@ function ContentPage() {
         return;
       }
       const formData = new FormData();
-      formData.append('travelPlan', travelPlanEditor?.getHTML() || '');
-      formData.append('tocs', tocsEditor?.getHTML() || '');
+      formData.append('travelPlan', travelPlanHtml || '');
+      formData.append('tocs', tocsHtml || '');
       ensureSilentUpdate(formData);
       files.forEach((file, index) => {
         formData.append(`files`, file);
@@ -273,116 +218,6 @@ function ContentPage() {
     }
   };
 
-  const MenuBar = ({ editor }: { editor: Editor | null }) => {
-    if (!editor) {
-      return null;
-    }
-
-    return (
-      <div className='flex items-center p-2 border-b'>
-        <div className='flex items-center space-x-1'>
-          <select
-            className='px-2 py-1 border rounded bg-white'
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value === 'paragraph') {
-                editor.chain().focus().setParagraph().run();
-              } else {
-                editor.chain().focus().setHeading({ level: Number(value) as 1 | 2 | 3 }).run();
-              }
-            }}
-            value={
-              editor.isActive('heading', { level: 1 })
-                ? '1'
-                : editor.isActive('heading', { level: 2 })
-                  ? '2'
-                  : editor.isActive('heading', { level: 3 })
-                    ? '3'
-                    : 'paragraph'
-            }
-          >
-            <option value='paragraph'>Paragraph</option>
-            <option value='1'>Heading 1</option>
-            <option value='2'>Heading 2</option>
-            <option value='3'>Heading 3</option>
-          </select>
-          <button
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`p-1.5 hover:bg-gray-100 rounded ${editor.isActive('bold') ? 'bg-gray-200' : ''
-              }`}
-          >
-            <Bold className='w-4 h-4' />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`p-1.5 hover:bg-gray-100 rounded ${editor.isActive('italic') ? 'bg-gray-200' : ''
-              }`}
-          >
-            <Italic className='w-4 h-4' />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleUnderline().run()}
-            className={`p-1.5 hover:bg-gray-100 rounded ${editor.isActive('underline') ? 'bg-gray-200' : ''
-              }`}
-          >
-            <UnderlineIcon className='w-4 h-4' />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`p-1.5 hover:bg-gray-100 rounded ${editor.isActive('bulletList') ? 'bg-gray-200' : ''
-              }`}
-          >
-            <List className='w-4 h-4' />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            className={`p-1.5 hover:bg-gray-100 rounded ${editor.isActive('orderedList') ? 'bg-gray-200' : ''
-              }`}
-          >
-            <ListOrdered className='w-4 h-4' />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            className={`p-1.5 hover:bg-gray-100 rounded ${editor.isActive('blockquote') ? 'bg-gray-200' : ''
-              }`}
-          >
-            <Quote className='w-4 h-4' />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-            className={`p-1.5 hover:bg-gray-100 rounded ${editor.isActive('codeBlock') ? 'bg-gray-200' : ''
-              }`}
-          >
-            <Code2 className='w-4 h-4' />
-          </button>
-          <button
-            onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}
-            className='p-1.5 hover:bg-gray-100 rounded'
-            title='Clear formatting'
-          >
-            <Eraser className='w-4 h-4' />
-          </button>
-          <div className='ml-2 flex space-x-1'>
-            <button
-              onClick={() => editor.chain().focus().undo().run()}
-              className='p-1.5 hover:bg-gray-100 rounded'
-              disabled={!editor.can().undo()}
-            >
-              <Undo className='w-4 h-4' />
-            </button>
-            <button
-              onClick={() => editor.chain().focus().redo().run()}
-              className='p-1.5 hover:bg-gray-100 rounded'
-              disabled={!editor.can().redo()}
-            >
-              <Redo className='w-4 h-4' />
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className='min-h-screen w-full bg-white md:flex md:items-center md:justify-center p-0'>
       <div className='bg-white max-w-md mx-auto rounded-lg h-screen p-3 w-full'>
@@ -408,7 +243,6 @@ function ContentPage() {
                 type='button'
                 onClick={() => setPreviewOpen(true)}
                 className='flex items-center gap-2 px-3 py-2 border rounded-lg hover:bg-gray-50'
-                disabled={!travelPlanEditor}
                 title='Preview itinerary'
               >
                 <Eye className='w-4 h-4' />
@@ -416,23 +250,23 @@ function ContentPage() {
               </button>
             </div>
 
-            {/* Tiptap Editor for Travel Plan */}
-            <div className='border rounded-lg overflow-hidden mb-4'>
-              <MenuBar editor={travelPlanEditor} />
-              <EditorContent
-                editor={travelPlanEditor}
-                className='min-h-[200px] p-4 focus:outline-none prose max-w-none richtext'
+            {/* Quill Editor for Travel Plan */}
+            <div className='mb-4'>
+              <RichTextEditor
+                value={travelPlanHtml}
+                onChange={setTravelPlanHtml}
+                placeholder='Describe the travel plan…'
               />
             </div>
             {errors.travelPlan && <p className='text-brand-error text-sm'>Travel Plan is required.</p>}
 
             {/* TOCs Section */}
             <h3 className='text-2xl font-bold mb-4 mt-8'>TOCs & Inclusions</h3>
-            <div className='border rounded-lg overflow-hidden mb-4'>
-              <MenuBar editor={tocsEditor} />
-              <EditorContent
-                editor={tocsEditor}
-                className='min-h-[160px] p-4 focus:outline-none prose max-w-none richtext'
+            <div className='mb-4'>
+              <RichTextEditor
+                value={tocsHtml}
+                onChange={setTocsHtml}
+                placeholder='Add TOCs, FAQs, inclusions…'
               />
             </div>
 
@@ -625,7 +459,7 @@ function ContentPage() {
               <div className='p-4 overflow-auto max-h-[70vh] prose max-w-none richtext'>
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: travelPlanEditor?.getHTML() || '<p>No content yet.</p>',
+                    __html: travelPlanHtml || '<p>No content yet.</p>',
                   }}
                 />
               </div>
