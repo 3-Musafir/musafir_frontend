@@ -25,8 +25,26 @@ declare module "next-auth/jwt" {
   }
 }
 
+// Deduplication: since refresh tokens are single-use (rotated on each use),
+// concurrent jwt() callback invocations must share a single in-flight refresh
+// to prevent the second call from burning a now-deleted token.
+let inflightRefresh: Promise<any> | null = null;
+
 // Helper function to refresh access token
 async function refreshAccessToken(token: any) {
+  // If a refresh is already in flight, wait for it instead of firing another
+  if (inflightRefresh) {
+    return inflightRefresh;
+  }
+
+  inflightRefresh = _doRefresh(token).finally(() => {
+    inflightRefresh = null;
+  });
+
+  return inflightRefresh;
+}
+
+async function _doRefresh(token: any) {
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/user/refresh-access-token`,
@@ -208,14 +226,16 @@ export default NextAuth({
       }
 
       // On subsequent requests, check if token needs refresh.
-      // Refresh when: (a) token expires in less than 30 minutes, OR
-      // (b) a previous refresh failed — retry so the user isn't stuck.
+      // Only refresh when the access token is near expiry. Do NOT retry on
+      // previous refresh errors — with single-use token rotation, the old
+      // refresh token has been deleted, so retrying would just burn requests
+      // in an infinite 401 loop. The client-side interceptor handles the
+      // fallback via /api/auth/refresh and will sign out if truly expired.
       const expiresIn = (token.accessTokenExpires as number) - Date.now();
       const shouldRefresh =
         token.accessTokenExpires && expiresIn < 30 * 60 * 1000;
-      const hadRefreshError = token.error === "RefreshAccessTokenError";
 
-      if ((shouldRefresh || hadRefreshError) && token.refreshToken) {
+      if (shouldRefresh && !token.error && token.refreshToken) {
         return refreshAccessToken(token);
       }
 

@@ -16,6 +16,11 @@ import axios from "axios";
  * can immediately retry the failed request. The NextAuth session cookie is
  * also updated so subsequent getSession() calls return the fresh token.
  */
+
+// Deduplication: concurrent requests share a single in-flight refresh
+// to avoid burning the single-use refresh token with a second call.
+let inflightRefresh: Promise<{ accessToken: string; refreshToken?: string }> | null = null;
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -36,14 +41,22 @@ export default async function handler(
       return res.status(401).json({ error: "No refresh token" });
     }
 
-    // Call the backend refresh endpoint
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/user/refresh-access-token`,
-      { refreshToken: token.refreshToken },
-      { timeout: 10000 }
-    );
+    // Call the backend refresh endpoint (deduplicated)
+    if (!inflightRefresh) {
+      inflightRefresh = axios
+        .post(
+          `${process.env.NEXT_PUBLIC_API_URL}/user/refresh-access-token`,
+          { refreshToken: token.refreshToken },
+          { timeout: 10000 }
+        )
+        .then((r) => r.data)
+        .finally(() => {
+          inflightRefresh = null;
+        });
+    }
 
-    const newAccessToken = response.data?.accessToken;
+    const refreshedData = await inflightRefresh;
+    const newAccessToken = refreshedData?.accessToken;
     if (!newAccessToken) {
       return res.status(401).json({ error: "Refresh failed" });
     }
@@ -52,6 +65,7 @@ export default async function handler(
     const updatedToken = {
       ...token,
       accessToken: newAccessToken,
+      refreshToken: refreshedData.refreshToken ?? token.refreshToken,
       accessTokenExpires: Date.now() + 9.5 * 60 * 60 * 1000,
       error: undefined,
     };
