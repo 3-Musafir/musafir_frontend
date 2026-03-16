@@ -26,6 +26,7 @@ function ImportantDates() {
   const [registrationDeadline, setRegistrationDeadline] = useState('');
   const [advancePaymentDeadline, setAdvancePaymentDeadline] = useState('');
   const [earlyBirdDeadline, setEarlyBirdDeadline] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   interface FormErrors {
     tripDates: string;
@@ -153,6 +154,8 @@ function ImportantDates() {
   // Handle form submission
   const handleSubmit = async () => {
     if (!validateForm()) return;
+
+    setIsSubmitting(true);
     const formData = {
       tripDates,
       registrationDeadline: new Date(registrationDeadline),
@@ -176,6 +179,8 @@ function ImportantDates() {
     } catch (error) {
       console.error('Network error', error);
       showAlert(mapErrorToUserMessage(error), 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -221,6 +226,8 @@ function ImportantDates() {
                   <input
                     type='date'
                     value={registrationDeadline}
+                    min={new Date().toISOString().slice(0, 10)}
+                    max={flagshipData.startDate ? new Date(flagshipData.startDate).toISOString().slice(0, 10) : undefined}
                     onChange={(e) => setRegistrationDeadline(e.target.value)}
                     className='w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none text-lg'
                     placeholder='MM/DD/YYYY'
@@ -242,6 +249,8 @@ function ImportantDates() {
                   <input
                     type='date'
                     value={advancePaymentDeadline}
+                    min={new Date().toISOString().slice(0, 10)}
+                    max={flagshipData.startDate ? new Date(flagshipData.startDate).toISOString().slice(0, 10) : undefined}
                     onChange={(e) => setAdvancePaymentDeadline(e.target.value)}
                     className='w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none text-lg'
                     placeholder='MM/DD/YYYY'
@@ -262,6 +271,8 @@ function ImportantDates() {
                 <input
                   type='date'
                   value={earlyBirdDeadline}
+                  min={new Date().toISOString().slice(0, 10)}
+                  max={flagshipData.startDate ? new Date(flagshipData.startDate).toISOString().slice(0, 10) : undefined}
                   onChange={(e) => setEarlyBirdDeadline(e.target.value)}
                   className='w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none text-lg'
                   placeholder='MM/DD/YYYY'
@@ -277,9 +288,16 @@ function ImportantDates() {
         {/* Next Button */}
         <button
           onClick={handleSubmit}
-          className='w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg'
+          disabled={isSubmitting}
+          aria-busy={isSubmitting || undefined}
+          className={`w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg transition-colors ${isSubmitting ? 'bg-gray-300 cursor-not-allowed' : ''}`}
         >
-          Next
+          {isSubmitting ? (
+            <span className='flex items-center justify-center'>
+              <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2' />
+              Processing...
+            </span>
+          ) : 'Next'}
         </button>
       </div>
     </div>

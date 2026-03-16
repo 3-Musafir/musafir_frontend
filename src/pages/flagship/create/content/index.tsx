@@ -50,6 +50,7 @@ function ContentPage() {
   const [removeExistingDetailedPlan, setRemoveExistingDetailedPlan] = useState(false);
   const [errors, setErrors] = useState({ travelPlan: false, files: false });
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const detailedPlanInputRef = useRef<HTMLInputElement>(null);
@@ -231,6 +232,7 @@ function ContentPage() {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const flagshipId = flagshipData?._id;
       if (!flagshipId) {
@@ -266,6 +268,8 @@ function ContentPage() {
     } catch (error: any) {
       console.error('Error:', error);
       showAlert(mapErrorToUserMessage(error), 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -592,9 +596,16 @@ function ContentPage() {
         {/* Next Button */}
         <button
           onClick={submitData}
-          className='w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg'
+          disabled={isSubmitting}
+          aria-busy={isSubmitting || undefined}
+          className={`w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg transition-colors ${isSubmitting ? 'bg-gray-300 cursor-not-allowed' : ''}`}
         >
-          Next
+          {isSubmitting ? (
+            <span className='flex items-center justify-center'>
+              <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2' />
+              Uploading...
+            </span>
+          ) : 'Next'}
         </button>
 
         {/* Preview Modal */}

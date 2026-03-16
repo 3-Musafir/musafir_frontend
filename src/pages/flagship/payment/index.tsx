@@ -123,7 +123,7 @@ function PaymentOptions() {
     console.log(formData, 'payload');
 
     try {
-      const flagshipId = flagshipData._id || '';
+      const flagshipId = String(flagshipData._id || '');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: any = await action.updateWithLatestVersion(flagshipId, formData);
       if (res.statusCode === HttpStatusCode.Ok) {
@@ -161,7 +161,7 @@ function PaymentOptions() {
           <div className='mb-8'>
             <h3 className='text-2xl font-bold mb-2'>Select Bank Account</h3>
             <p className='text-gray-500 mb-6'>
-              Choose the bank account where you transferred the investment
+              Choose the bank account where you want to get the payments.
             </p>
 
             {/* Bank Account List */}

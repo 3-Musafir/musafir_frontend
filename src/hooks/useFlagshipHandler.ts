@@ -25,6 +25,7 @@ const useFlagshipHook = () => {
   };
 
   const update = async (id: string, data: any): Promise<unknown> => {
+    const safeId = id && typeof id === 'object' ? String((id as any)._id || id) : id;
     const isFormData = data instanceof FormData;
     const config = isFormData ? {
       headers: {
@@ -32,7 +33,7 @@ const useFlagshipHook = () => {
       }
     } : {};
 
-    const res = await api.put(`${FLAGSHIP.UPDATE}/${id}`, data, config);
+    const res = await api.put(`${FLAGSHIP.UPDATE}/${safeId}`, data, config);
     if (res.statusCode === HttpStatusCode.Ok) {
       setCurrentFlagshipData(res.data);
     }
@@ -40,13 +41,14 @@ const useFlagshipHook = () => {
   };
 
   const updateWithLatestVersion = async (id: string, data: any): Promise<unknown> => {
-    if (!id) {
-      return update(id, data);
+    const safeId = id && typeof id === 'object' ? String((id as any)._id || id) : id;
+    if (!safeId) {
+      return update(safeId, data);
     }
 
     let latest: any;
     try {
-      latest = await api.get(`${FLAGSHIP.GET}/${id}`);
+      latest = await api.get(`${FLAGSHIP.GET}/${safeId}`);
     } catch (error: any) {
       throw {
         ...error,
@@ -68,7 +70,7 @@ const useFlagshipHook = () => {
       };
     }
 
-    return update(id, payload);
+    return update(safeId, payload);
   };
 
   const filterFlagship = async (data: IFlagshipFilter): Promise<unknown> => {
