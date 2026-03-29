@@ -27,10 +27,10 @@ function SeatsAllocation() {
   // Total capacity state
   const [totalSeats, setTotalSeats] = useState('');
 
-  // Toggles
-  const [genderSplitEnabled, setGenderSplitEnabled] = useState(true);
-  const [citySplitEnabled, setCitySplitEnabled] = useState(true);
-  const [mattressSplitEnabled, setMattressSplitEnabled] = useState(true);
+  // Toggles (off by default; turned on when flagshipData has them enabled)
+  const [genderSplitEnabled, setGenderSplitEnabled] = useState(false);
+  const [citySplitEnabled, setCitySplitEnabled] = useState(false);
+  const [mattressSplitEnabled, setMattressSplitEnabled] = useState(false);
 
   // Gender split state
   const [genderSplit, setGenderSplit] = useState(50);
@@ -44,6 +44,7 @@ function SeatsAllocation() {
   const [mattressPriceDelta, setMattressPriceDelta] = useState('');
   // Mounted state to avoid hydration mismatch
   const [mounted, setMounted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // City split state
   const [citySeats, setCitySeats] = useState<{ [key: string]: number }>({});
@@ -103,9 +104,9 @@ function SeatsAllocation() {
   // useEffect to update state on page load if flagshipData is available
   useEffect(() => {
     if (flagshipData) {
-      if (flagshipData.genderSplitEnabled === false) setGenderSplitEnabled(false);
-      if (flagshipData.citySplitEnabled === false) setCitySplitEnabled(false);
-      if (flagshipData.mattressSplitEnabled === false) setMattressSplitEnabled(false);
+      if (flagshipData.genderSplitEnabled !== undefined) setGenderSplitEnabled(flagshipData.genderSplitEnabled);
+      if (flagshipData.citySplitEnabled !== undefined) setCitySplitEnabled(flagshipData.citySplitEnabled);
+      if (flagshipData.mattressSplitEnabled !== undefined) setMattressSplitEnabled(flagshipData.mattressSplitEnabled);
 
       // For discounts, basePrice, citySeats, gender splits, etc.
       if (flagshipData?.maleSeats && flagshipData?.femaleSeats) {
@@ -267,6 +268,7 @@ function SeatsAllocation() {
   const handleSubmit = async () => {
     if (!validateFields()) return;
 
+    setIsSubmitting(true);
     const formData: any = {
       totalSeats: Number(totalSeats),
       citySplitEnabled,
@@ -313,6 +315,8 @@ function SeatsAllocation() {
     } catch (error) {
       console.error('API Error:', error);
       showAlert(mapErrorToUserMessage(error), 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -354,14 +358,18 @@ function SeatsAllocation() {
           <div className='mb-8'>
             <div className='flex items-center justify-between mb-2'>
               <h3 className='text-xl font-bold'>Gender Split</h3>
-              <label className='flex items-center gap-2 text-sm'>
-                <input
-                  type='checkbox'
-                  checked={genderSplitEnabled}
-                  onChange={(e) => setGenderSplitEnabled(e.target.checked)}
-                />
-                Enable
-              </label>
+              <div
+                className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${
+                  genderSplitEnabled ? 'bg-black' : 'bg-gray-300'
+                }`}
+                onClick={() => setGenderSplitEnabled(!genderSplitEnabled)}
+              >
+                <div
+                  className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
+                    genderSplitEnabled ? 'translate-x-7' : ''
+                  }`}
+                ></div>
+              </div>
             </div>
             <p className='text-sm text-gray-600 mb-3'>
               When disabled, seats are pooled without gender limits.
@@ -407,14 +415,18 @@ function SeatsAllocation() {
           <div className='mb-8'>
             <div className='flex items-center justify-between mb-2'>
               <h3 className='text-xl font-bold'>City-wise Split</h3>
-              <label className='flex items-center gap-2 text-sm'>
-                <input
-                  type='checkbox'
-                  checked={citySplitEnabled}
-                  onChange={(e) => setCitySplitEnabled(e.target.checked)}
-                />
-                Enable
-              </label>
+              <div
+                className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${
+                  citySplitEnabled ? 'bg-black' : 'bg-gray-300'
+                }`}
+                onClick={() => setCitySplitEnabled(!citySplitEnabled)}
+              >
+                <div
+                  className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
+                    citySplitEnabled ? 'translate-x-7' : ''
+                  }`}
+                ></div>
+              </div>
             </div>
             <p className='text-sm text-gray-600 mb-3'>
               When disabled, all seats share one pool; per-city limits are ignored.
@@ -464,14 +476,18 @@ function SeatsAllocation() {
           <div className='mb-8'>
             <div className='flex items-center justify-between mb-2'>
               <h3 className='text-xl font-bold'>Mattress - Bed Split</h3>
-              <label className='flex items-center gap-2 text-sm'>
-                <input
-                  type='checkbox'
-                  checked={mattressSplitEnabled}
-                  onChange={(e) => setMattressSplitEnabled(e.target.checked)}
-                />
-                Enable
-              </label>
+              <div
+                className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${
+                  mattressSplitEnabled ? 'bg-black' : 'bg-gray-300'
+                }`}
+                onClick={() => setMattressSplitEnabled(!mattressSplitEnabled)}
+              >
+                <div
+                  className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
+                    mattressSplitEnabled ? 'translate-x-7' : ''
+                  }`}
+                ></div>
+              </div>
             </div>
             <p className='text-sm text-gray-600 mb-3'>
               When disabled, all seats use the base price and no bed/mattress choice is enforced.
@@ -531,9 +547,16 @@ function SeatsAllocation() {
         {/* Next Button */}
             <button
               onClick={handleSubmit}
-              className='w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg'
+              disabled={isSubmitting}
+              aria-busy={isSubmitting || undefined}
+              className={`w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg transition-colors ${isSubmitting ? 'bg-gray-300 cursor-not-allowed' : ''}`}
             >
-              Next
+              {isSubmitting ? (
+                <span className='flex items-center justify-center'>
+                  <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2' />
+                  Processing...
+                </span>
+              ) : 'Next'}
             </button>
       </div>
     </div>

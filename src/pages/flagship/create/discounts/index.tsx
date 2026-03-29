@@ -56,6 +56,7 @@ function DiscountsPage() {
     groupCount: "",
     musafirCount: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const parseAmount = (value: string) => {
     const numeric = value?.toString().replace(/[^0-9.-]/g, "");
@@ -248,6 +249,7 @@ function DiscountsPage() {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
+    setIsSubmitting(true);
     const formData = {
       discounts: {
         totalDiscountsValue,
@@ -290,6 +292,8 @@ function DiscountsPage() {
     } catch (error) {
       console.error("API Error:", error);
       showAlert(mapErrorToUserMessage(error), "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -348,20 +352,11 @@ function DiscountsPage() {
           {/* Total Discounts Value */}
           <div className="mb-6">
             <h3 className="text-lg font-bold mb-2">Total Discounts Value</h3>
-            <div className="border-2 border-black rounded-lg overflow-hidden p-3">
-              <input
-                min={0}
-                value={totalDiscountsValue}
-                placeholder="0"
-                className="w-full bg-transparent focus:outline-none"
-                readOnly
-              />
+            <div className="bg-gray-100 rounded-lg p-3">
+              <span className="text-lg">
+                Rs. {Number(totalDiscountsValue || 0).toLocaleString()}
+              </span>
             </div>
-            {errors.totalDiscountsValue && (
-              <p className="text-brand-error text-sm mt-1">
-                {errors.totalDiscountsValue}
-              </p>
-            )}
           </div>
 
           {/* Solo Female Discount */}
@@ -613,9 +608,16 @@ function DiscountsPage() {
         {/* Next Button */}
         <button
           onClick={handleSubmit}
-          className="w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg"
+          disabled={isSubmitting}
+          aria-busy={isSubmitting || undefined}
+          className={`w-full bg-brand-primary text-black py-4 rounded-xl font-bold text-lg transition-colors ${isSubmitting ? "bg-gray-300 cursor-not-allowed" : ""}`}
         >
-          Next
+          {isSubmitting ? (
+            <span className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2" />
+              Processing...
+            </span>
+          ) : "Next"}
         </button>
       </div>
     </div>

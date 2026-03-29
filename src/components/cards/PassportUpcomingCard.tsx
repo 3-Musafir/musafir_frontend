@@ -7,13 +7,10 @@ import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { X } from "lucide-react";
 import { useSwipeCarousel } from "@/hooks/useSwipeCarousel";
+import { RegistrationStatus } from "@/config/registration-status";
 
 type StatusType =
-  | "new"
-  | "onboarding"
-  | "payment"
-  | "waitlisted"
-  | "confirmed"
+  | RegistrationStatus
   | "cancelled"
   | "refundProcessing"
   | "refunded";
@@ -28,14 +25,14 @@ interface PaymentDetails {
 
 const getStatusStyles = (status: StatusType) => {
   switch (status) {
-    case "waitlisted":
+    case RegistrationStatus.WAITLISTED:
       return "bg-amber-50 text-amber-700 border-amber-200";
-    case "payment":
+    case RegistrationStatus.PAYMENT:
       return "bg-card text-brand-primary border-brand-primary";
-    case "confirmed":
+    case RegistrationStatus.CONFIRMED:
       return "bg-card text-brand-primary border-brand-primary";
-    case "new":
-    case "onboarding":
+    case RegistrationStatus.NEW:
+    case RegistrationStatus.ONBOARDING:
       return "bg-card text-heading border-border";
     case "cancelled":
       return "bg-card text-heading border-border";
@@ -50,15 +47,15 @@ const getStatusStyles = (status: StatusType) => {
 
 const getStatusLabel = (status: StatusType) => {
   switch (status) {
-    case "new":
+    case RegistrationStatus.NEW:
       return "New";
-    case "onboarding":
+    case RegistrationStatus.ONBOARDING:
       return "Onboarding";
-    case "payment":
+    case RegistrationStatus.PAYMENT:
       return "Payment";
-    case "waitlisted":
+    case RegistrationStatus.WAITLISTED:
       return "Waitlisted";
-    case "confirmed":
+    case RegistrationStatus.CONFIRMED:
       return "Confirmed";
     case "cancelled":
       return "Cancelled";
@@ -83,8 +80,8 @@ const getActionButton = (
   userVerificationStatus?: string
 ) => {
   switch (status) {
-    case "new":
-    case "onboarding":
+    case RegistrationStatus.NEW:
+    case RegistrationStatus.ONBOARDING:
       if (userVerificationStatus === "pending") {
         return {
           css: "bg-muted text-muted-foreground border-border cursor-not-allowed hover:bg-muted hover:text-muted-foreground hover:border-border",
@@ -105,20 +102,20 @@ const getActionButton = (
         text: "Complete Verification",
         onClick: () => router.push(ROUTES_CONSTANTS.VERIFICATION_REQUEST),
       };
-    case "payment":
+    case RegistrationStatus.PAYMENT:
       return {
         css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
         text: "Complete Payment",
         onClick: () => router.push(`/musafir/payment/${registrationId}`),
       };
-    case "waitlisted":
+    case RegistrationStatus.WAITLISTED:
       return {
         css: "bg-muted text-muted-foreground border-border cursor-not-allowed hover:bg-muted hover:text-muted-foreground hover:border-border",
         text: "Waitlisted",
         onClick: () => {},
         disabled: true,
       };
-    case "confirmed":
+    case RegistrationStatus.CONFIRMED:
       if (paymentInfo && typeof paymentInfo.amountDue === 'number' && paymentInfo.amountDue > 0) {
         return {
           css: "bg-brand-primary text-btn-secondary-text border-brand-primary hover:bg-brand-primary-hover",
@@ -168,8 +165,8 @@ const StatusInfo: React.FC<{
   userVerificationStatus?: string;
 }> = ({ status, paymentInfo, appliedDate, hasPaymentSubmitted, paymentStatus, userVerificationStatus }) => {
   switch (status) {
-    case "new":
-    case "onboarding":
+    case RegistrationStatus.NEW:
+    case RegistrationStatus.ONBOARDING:
       if (userVerificationStatus === "pending") {
         return (
           <p className="text-sm text-heading">
@@ -193,7 +190,7 @@ const StatusInfo: React.FC<{
           {`Applied on ${appliedDate}`}
         </p>
       );
-    case "payment":
+    case RegistrationStatus.PAYMENT:
       if (paymentStatus === "pendingApproval" || (hasPaymentSubmitted && !paymentStatus)) {
         return (
           <p className="text-sm text-heading">
@@ -210,7 +207,7 @@ const StatusInfo: React.FC<{
           {`Applied on ${appliedDate}`}
         </p>
       );
-    case "waitlisted":
+    case RegistrationStatus.WAITLISTED:
       return (
         <p className="text-sm text-heading">
           Status: Waitlisted
@@ -240,7 +237,7 @@ const StatusInfo: React.FC<{
           You can request a refund.
         </p>
       );
-    case "confirmed":
+    case RegistrationStatus.CONFIRMED:
       if (!paymentInfo) return null;
       const discountApplied =
         typeof paymentInfo.discountApplied === 'number' ? paymentInfo.discountApplied : 0;
@@ -314,10 +311,10 @@ const PassportUpcomingCard: React.FC<any> = ({
     if (refundStatus === "refunded") return "refunded";
     if (refundStatus === "pending" || refundStatus === "processing") return "refundProcessing";
     if (cancelledAt) return "cancelled";
-    if (["new", "onboarding", "payment", "waitlisted", "confirmed"].includes(status)) {
+    if (Object.values(RegistrationStatus).includes(status as RegistrationStatus)) {
       return status as StatusType;
     }
-    return "new";
+    return RegistrationStatus.NEW;
   })();
   const statusLabel = getStatusLabel(displayStatus);
 
@@ -355,7 +352,7 @@ const PassportUpcomingCard: React.FC<any> = ({
     typeof paymentInfo?.amountDue === "number" ? paymentInfo.amountDue : 0;
   const showAddPaymentTag =
     remainingDue > 0 &&
-    (displayStatus === "payment" || displayStatus === "confirmed");
+    (displayStatus === RegistrationStatus.PAYMENT || displayStatus === RegistrationStatus.CONFIRMED);
 
   return (
     <div className="overflow-hidden rounded-2xl bg-card shadow-sm border border-border h-full flex flex-col">
@@ -417,7 +414,7 @@ const PassportUpcomingCard: React.FC<any> = ({
             >
               {actionButton.text}
             </button>
-            {displayStatus === "confirmed" && (
+            {displayStatus === RegistrationStatus.CONFIRMED && (
               <button
                 onClick={handleCancelAndRefund}
                 className="ml-2 p-2 lg:p-3 text-muted-foreground hover:text-brand-error transition-colors"

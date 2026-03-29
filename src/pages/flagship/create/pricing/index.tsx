@@ -67,6 +67,7 @@ function PricingPage() {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -255,6 +256,7 @@ function PricingPage() {
   const handleSubmit = async () => {
     if (!validateFields()) return;
 
+    setIsSubmitting(true);
     const formData = {
       basePrice,
       locations: locations.filter((loc) => loc.enabled).map(({ id, ...rest }) => rest),
@@ -283,6 +285,8 @@ function PricingPage() {
       }
     } catch (error) {
       showAlert(mapErrorToUserMessage(error), 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -724,9 +728,16 @@ function PricingPage() {
         {/* Next Button */}
           <button
             onClick={handleSubmit}
-            className='btn-primary w-full rounded-xl text-lg font-bold'
+            disabled={isSubmitting}
+            aria-busy={isSubmitting || undefined}
+            className={`btn-primary w-full rounded-xl text-lg font-bold ${isSubmitting ? 'bg-gray-300 cursor-not-allowed' : ''}`}
           >
-            Next
+            {isSubmitting ? (
+              <span className='flex items-center justify-center'>
+                <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2' />
+                Processing...
+              </span>
+            ) : 'Next'}
           </button>
       </div>
     </div>

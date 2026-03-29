@@ -8,6 +8,7 @@ import ExploreEmptyStateCard from "@/components/cards/ExploreEmptyStateCard";
 import PassportUpcomingCard from "@/components/cards/PassportUpcomingCard";
 import CompanyProfileHero from "@/components/brand/CompanyProfileHero";
 import { formatDate } from "@/utils/formatDate";
+import { RegistrationStatus } from "@/config/registration-status";
 
 export default function HomeTabContent() {
   const {
@@ -27,8 +28,8 @@ export default function HomeTabContent() {
     const dueAmount = Number(
       event.paymentSummary?.amountDue ?? event.amountDue ?? 0
     );
-    if (event.status === "payment") return true;
-    if (event.status === "confirmed" && dueAmount > 0) return true;
+    if (event.status === RegistrationStatus.PAYMENT) return true;
+    if (event.status === RegistrationStatus.CONFIRMED && dueAmount > 0) return true;
     return false;
   });
 

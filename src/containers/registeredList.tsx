@@ -6,6 +6,7 @@ import { IRegistration } from "@/interfaces/trip/trip";
 import { useRouter } from "next/router";
 import { IUser } from "@/services/types/user";
 import { useToast } from "@/hooks/use-toast";
+import { RegistrationStatus } from "@/config/registration-status";
 
 const PAGE_SIZE = 12;
 
@@ -26,15 +27,15 @@ export const RegistrationsList = () => {
 
   const getStatusLabel = (status?: string) => {
     switch (status) {
-      case "new":
+      case RegistrationStatus.NEW:
         return "New";
-      case "onboarding":
+      case RegistrationStatus.ONBOARDING:
         return "Onboarding";
-      case "payment":
+      case RegistrationStatus.PAYMENT:
         return "Payment";
-      case "waitlisted":
+      case RegistrationStatus.WAITLISTED:
         return "Waitlisted";
-      case "confirmed":
+      case RegistrationStatus.CONFIRMED:
         return "Confirmed";
       default:
         return status || "Unknown";

@@ -2,7 +2,7 @@
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/tabs";
 import { cn } from "@/lib/utils";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,8 @@ import { currentUser } from "@/store/signup";
 import { currentFlagship } from "@/store";
 import { clearDraft } from "@/lib/flagship-draft";
 
+const FOCUS_COOLDOWN_MS = 30_000; // 30s cooldown on window-focus refetch
+
 function AdminMainPage() {
   const router = useRouter();
   const userData = useRecoilValue(currentUser);
@@ -40,49 +42,36 @@ function AdminMainPage() {
   const resetCurrentFlagship = useResetRecoilState(currentFlagship);
   const [activeTab, setActiveTab] = useState("trips");
   const [activeSection, setActiveSection] = useState("past");
+  const lastFocusFetchRef = useRef<number>(0);
+
+  // --- Trips state ---
   const [trips, setTrips] = useState<{
     past: IFlagship[];
     live: IFlagship[];
     upcoming: IFlagship[];
-  }>({
-    past: [],
-    live: [],
-    upcoming: [],
-  });
-  const [users, setUsers] = useState<{
-    unverified: IUser[];
-    pendingVerification: IUser[];
-    verified: IUser[];
-  }>({
-    unverified: [],
-    pendingVerification: [],
-    verified: [],
-  });
-  const [payments, setPayments] = useState<{
-    pending: IPayment[];
-    completed: IPayment[];
-  }>({
-    pending: [],
-    completed: [],
-  });
-  const [loading, setLoading] = useState(false);
-  const [loadingCreateFlagship, setLoadingCreateFlagship] = useState(false);
+  }>({ past: [], live: [], upcoming: [] });
   const [tripsLoading, setTripsLoading] = useState(false);
   const [tripsLoaded, setTripsLoaded] = useState({
     past: false,
     live: false,
     upcoming: false,
   });
+  const [loadingCreateFlagship, setLoadingCreateFlagship] = useState(false);
+
+  // --- Users state ---
+  const [users, setUsers] = useState<{
+    unverified: IUser[];
+    pendingVerification: IUser[];
+    verified: IUser[];
+  }>({ unverified: [], pendingVerification: [], verified: [] });
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [usersLoaded, setUsersLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<{
     unverified: IUser[];
     pendingVerification: IUser[];
     verified: IUser[];
-  }>({
-    unverified: [],
-    pendingVerification: [],
-    verified: [],
-  });
+  }>({ unverified: [], pendingVerification: [], verified: [] });
   const [isSearching, setIsSearching] = useState(false);
   const [verifiedUsersPagination, setVerifiedUsersPagination] = useState({
     page: 1,
@@ -91,108 +80,172 @@ function AdminMainPage() {
     totalPages: 0,
   });
 
+  // --- Payments state ---
+  const [payments, setPayments] = useState<{
+    pending: IPayment[];
+    completed: IPayment[];
+  }>({ pending: [], completed: [] });
+  const [paymentsLoading, setPaymentsLoading] = useState(false);
+  const [paymentsLoaded, setPaymentsLoaded] = useState(false);
+
   const ensureArray = <T,>(value: T[] | null | undefined): T[] =>
     Array.isArray(value) ? value : [];
 
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const [
-        unverifiedUsers,
-        pendingUsers,
-        verifiedUsersResponse,
-        pendingPayments,
-        completedPayments,
-      ] = await Promise.all([
-        UserService.getUnverifiedUsers(),
-        UserService.getPendingVerificationUsers(),
-        UserService.getVerifiedUsers(undefined, verifiedUsersPagination.page, verifiedUsersPagination.limit),
-        PaymentService.getPendingPayments(),
-        PaymentService.getCompletedPayments(),
-      ]);
-
-      // Check if verifiedUsersResponse is paginated
-      const isPaginated = verifiedUsersResponse && 'data' in verifiedUsersResponse;
-
-      setUsers({
-        unverified: unverifiedUsers,
-        pendingVerification: pendingUsers,
-        verified: isPaginated ? verifiedUsersResponse.data : verifiedUsersResponse,
-      });
-
-      // Update pagination info if response is paginated
-      if (isPaginated) {
-        setVerifiedUsersPagination({
-          page: verifiedUsersResponse.page,
-          limit: verifiedUsersResponse.limit,
-          total: verifiedUsersResponse.total,
-          totalPages: verifiedUsersResponse.totalPages,
-        });
+  // --- Trips fetcher (already lazy per section) ---
+  const fetchTrips = useCallback(
+    async (section: "past" | "live" | "upcoming", force = false) => {
+      if (!force && tripsLoaded[section]) return;
+      try {
+        setTripsLoading(true);
+        const data =
+          section === "past"
+            ? await FlagshipService.getPastTrips()
+            : section === "live"
+              ? await FlagshipService.getLiveTrips()
+              : await FlagshipService.getUpcomingTrips();
+        setTrips((prev) => ({ ...prev, [section]: ensureArray(data) }));
+        setTripsLoaded((prev) => ({ ...prev, [section]: true }));
+      } catch (error) {
+        console.error("Error fetching trips:", error);
+      } finally {
+        setTripsLoading(false);
       }
+    },
+    [tripsLoaded]
+  );
 
-      setPayments({
-        pending: pendingPayments,
-        completed: completedPayments,
-      });
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [verifiedUsersPagination.page, verifiedUsersPagination.limit]);
+  // --- Users fetcher (lazy, only when users tab visited) ---
+  const fetchUsers = useCallback(
+    async (force = false) => {
+      if (!force && usersLoaded) return;
+      try {
+        setUsersLoading(true);
+        const [unverifiedUsers, pendingUsers, verifiedUsersResponse] =
+          await Promise.all([
+            UserService.getUnverifiedUsers(),
+            UserService.getPendingVerificationUsers(),
+            UserService.getVerifiedUsers(
+              undefined,
+              verifiedUsersPagination.page,
+              verifiedUsersPagination.limit
+            ),
+          ]);
 
-  const fetchTrips = useCallback(async (section: "past" | "live" | "upcoming", force = false) => {
-    if (!force && tripsLoaded[section]) return;
-    try {
-      setTripsLoading(true);
-      const data =
-        section === "past"
-          ? await FlagshipService.getPastTrips()
-          : section === "live"
-            ? await FlagshipService.getLiveTrips()
-            : await FlagshipService.getUpcomingTrips();
-      setTrips((prev) => ({ ...prev, [section]: ensureArray(data) }));
-      setTripsLoaded((prev) => ({ ...prev, [section]: true }));
-    } catch (error) {
-      console.error("Error fetching trips:", error);
-    } finally {
-      setTripsLoading(false);
-    }
-  }, [tripsLoaded]);
+        const isPaginated =
+          verifiedUsersResponse && "data" in verifiedUsersResponse;
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+        setUsers({
+          unverified: unverifiedUsers,
+          pendingVerification: pendingUsers,
+          verified: isPaginated
+            ? verifiedUsersResponse.data
+            : verifiedUsersResponse,
+        });
 
+        if (isPaginated) {
+          setVerifiedUsersPagination({
+            page: verifiedUsersResponse.page,
+            limit: verifiedUsersResponse.limit,
+            total: verifiedUsersResponse.total,
+            totalPages: verifiedUsersResponse.totalPages,
+          });
+        }
+
+        setUsersLoaded(true);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setUsersLoading(false);
+      }
+    },
+    [
+      usersLoaded,
+      verifiedUsersPagination.page,
+      verifiedUsersPagination.limit,
+    ]
+  );
+
+  // --- Payments fetcher (lazy, only when payments tab visited) ---
+  const fetchPayments = useCallback(
+    async (force = false) => {
+      if (!force && paymentsLoaded) return;
+      try {
+        setPaymentsLoading(true);
+        const [pendingPayments, completedPayments] = await Promise.all([
+          PaymentService.getPendingPayments(),
+          PaymentService.getCompletedPayments(),
+        ]);
+        setPayments({
+          pending: pendingPayments,
+          completed: completedPayments,
+        });
+        setPaymentsLoaded(true);
+      } catch (error) {
+        console.error("Error fetching payments:", error);
+      } finally {
+        setPaymentsLoading(false);
+      }
+    },
+    [paymentsLoaded]
+  );
+
+  // --- Active trip section ---
   const activeTripSection =
-    activeSection === "past" || activeSection === "live" || activeSection === "upcoming"
+    activeSection === "past" ||
+    activeSection === "live" ||
+    activeSection === "upcoming"
       ? activeSection
       : "past";
 
+  // --- Lazy-load data when tab changes ---
   useEffect(() => {
-    if (activeTab !== "trips") return;
-    fetchTrips(activeTripSection);
-  }, [activeTab, activeTripSection, fetchTrips]);
+    if (activeTab === "trips") {
+      fetchTrips(activeTripSection);
+    } else if (activeTab === "users") {
+      fetchUsers();
+    } else if (activeTab === "payments") {
+      fetchPayments();
+    }
+    // Refunds and Wallet manage their own data internally
+  }, [activeTab, activeTripSection, fetchTrips, fetchUsers, fetchPayments]);
 
+  // --- Re-fetch users when pagination changes ---
+  useEffect(() => {
+    if (!usersLoaded) return; // skip initial mount
+    fetchUsers(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verifiedUsersPagination.page]);
+
+  // --- Window focus refetch with cooldown ---
   useEffect(() => {
     const handleFocus = () => {
+      const now = Date.now();
+      if (now - lastFocusFetchRef.current < FOCUS_COOLDOWN_MS) return;
+      lastFocusFetchRef.current = now;
+
       if (activeTab === "trips") {
         fetchTrips(activeTripSection, true);
-        return;
+      } else if (activeTab === "users") {
+        fetchUsers(true);
+      } else if (activeTab === "payments") {
+        fetchPayments(true);
       }
-      fetchData();
+      // Refunds and Wallet handle their own refresh
     };
 
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
-  }, [activeTab, activeTripSection, fetchData, fetchTrips]);
+  }, [activeTab, activeTripSection, fetchTrips, fetchUsers, fetchPayments]);
 
+  // --- User search (debounced, hits server for all users) ---
   useEffect(() => {
     const timeoutId = setTimeout(async () => {
       if (searchQuery.trim()) {
         setIsSearching(true);
         try {
-          const results = await UserService.searchAllUsers(searchQuery.trim());
+          const results = await UserService.searchAllUsers(
+            searchQuery.trim()
+          );
           setSearchResults(results);
         } catch (error) {
           console.error("Search error:", error);
@@ -225,14 +278,11 @@ function AdminMainPage() {
 
   const handleSignOut = async () => {
     try {
-      // Clear persisted user so a stale localStorage value can't show up on next login
       resetCurrentUser();
       if (typeof window !== "undefined") {
         localStorage.removeItem("recoil-persist");
       }
-      await signOut({
-        callbackUrl: "/login",
-      });
+      await signOut({ callbackUrl: "/login" });
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -243,10 +293,19 @@ function AdminMainPage() {
       fullName?: string | null;
       email?: string | null;
     };
-
     const recoilUser = userData as unknown as PersistedUser;
     return recoilUser?.fullName || "Admin";
   };
+
+  // --- Determine loading state per tab ---
+  const isCurrentTabLoading =
+    activeTab === "trips"
+      ? tripsLoading
+      : activeTab === "users"
+        ? usersLoading
+        : activeTab === "payments"
+          ? paymentsLoading
+          : false;
 
   const LoadingSkeleton = () => (
     <div className="space-y-6">
@@ -384,7 +443,8 @@ function AdminMainPage() {
               <button
                 className={cn(
                   "py-3 text-center font-medium",
-                  activeSection === "upcoming" && "border-b-2 border-brand-primary"
+                  activeSection === "upcoming" &&
+                    "border-b-2 border-brand-primary"
                 )}
                 onClick={() => setActiveSection("upcoming")}
               >
@@ -417,7 +477,8 @@ function AdminMainPage() {
               <button
                 className={cn(
                   "py-3 text-center font-medium",
-                  activeSection === "unverified" && "border-b-2 border-brand-primary"
+                  activeSection === "unverified" &&
+                    "border-b-2 border-brand-primary"
                 )}
                 onClick={() => setActiveSection("unverified")}
               >
@@ -432,7 +493,7 @@ function AdminMainPage() {
                 className={cn(
                   "py-3 text-center font-medium",
                   activeSection === "pendingVerification" &&
-                  "border-b-2 border-brand-primary"
+                    "border-b-2 border-brand-primary"
                 )}
                 onClick={() => setActiveSection("pendingVerification")}
               >
@@ -446,7 +507,8 @@ function AdminMainPage() {
               <button
                 className={cn(
                   "py-3 text-center font-medium",
-                  activeSection === "verified" && "border-b-2 border-brand-primary"
+                  activeSection === "verified" &&
+                    "border-b-2 border-brand-primary"
                 )}
                 onClick={() => setActiveSection("verified")}
               >
@@ -468,7 +530,9 @@ function AdminMainPage() {
               />
               {searchQuery && (
                 <p className="text-sm text-muted-foreground mt-2">
-                  {isSearching ? "Searching..." : `Search results for "${searchQuery}"`}
+                  {isSearching
+                    ? "Searching..."
+                    : `Search results for "${searchQuery}"`}
                 </p>
               )}
             </div>
@@ -480,7 +544,8 @@ function AdminMainPage() {
             <button
               className={cn(
                 "py-3 text-center font-medium",
-                activeSection === "pendingPayments" && "border-b-2 border-brand-primary"
+                activeSection === "pendingPayments" &&
+                  "border-b-2 border-brand-primary"
               )}
               onClick={() => setActiveSection("pendingPayments")}
             >
@@ -490,7 +555,7 @@ function AdminMainPage() {
               className={cn(
                 "py-3 text-center font-medium",
                 activeSection === "completedPayments" &&
-                "border-b-2 border-brand-primary"
+                  "border-b-2 border-brand-primary"
               )}
               onClick={() => setActiveSection("completedPayments")}
             >
@@ -501,7 +566,7 @@ function AdminMainPage() {
       </header>
 
       <main className="p-4 space-y-6">
-        {(activeTab === "trips" ? tripsLoading : loading) ? (
+        {isCurrentTabLoading ? (
           <LoadingSkeleton />
         ) : (
           <>
@@ -533,28 +598,44 @@ function AdminMainPage() {
                   isSearching={isSearching}
                 />
                 {/* Pagination controls for verified users */}
-                {activeSection === "verified" && !searchQuery && verifiedUsersPagination.totalPages > 1 && (
-                  <div className="flex items-center justify-between mt-6 px-4">
-                    <Button
-                      variant="outline"
-                      onClick={() => setVerifiedUsersPagination(prev => ({ ...prev, page: prev.page - 1 }))}
-                      disabled={verifiedUsersPagination.page === 1}
-                    >
-                      Previous
-                    </Button>
-                    <span className="text-sm text-muted-foreground">
-                      Page {verifiedUsersPagination.page} of {verifiedUsersPagination.totalPages}
-                      ({verifiedUsersPagination.total} total users)
-                    </span>
-                    <Button
-                      variant="outline"
-                      onClick={() => setVerifiedUsersPagination(prev => ({ ...prev, page: prev.page + 1 }))}
-                      disabled={verifiedUsersPagination.page >= verifiedUsersPagination.totalPages}
-                    >
-                      Next
-                    </Button>
-                  </div>
-                )}
+                {activeSection === "verified" &&
+                  !searchQuery &&
+                  verifiedUsersPagination.totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-6 px-4">
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          setVerifiedUsersPagination((prev) => ({
+                            ...prev,
+                            page: prev.page - 1,
+                          }))
+                        }
+                        disabled={verifiedUsersPagination.page === 1}
+                      >
+                        Previous
+                      </Button>
+                      <span className="text-sm text-muted-foreground">
+                        Page {verifiedUsersPagination.page} of{" "}
+                        {verifiedUsersPagination.totalPages} (
+                        {verifiedUsersPagination.total} total users)
+                      </span>
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          setVerifiedUsersPagination((prev) => ({
+                            ...prev,
+                            page: prev.page + 1,
+                          }))
+                        }
+                        disabled={
+                          verifiedUsersPagination.page >=
+                          verifiedUsersPagination.totalPages
+                        }
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  )}
               </>
             )}
 
@@ -569,9 +650,7 @@ function AdminMainPage() {
               />
             )}
 
-            {activeTab === "refunds" && (
-              <RefundsAdminContainer />
-            )}
+            {activeTab === "refunds" && <RefundsAdminContainer />}
 
             {activeTab === "wallet" && <WalletAdminContainer />}
           </>

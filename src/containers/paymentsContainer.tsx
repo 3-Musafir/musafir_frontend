@@ -38,10 +38,12 @@ export function PaymentsContainer({
   // Helper functions to safely access nested properties
   const getSafeUserName = (item: IPayment | IRefund): string => {
     const registration = item.registration;
+    if (!registration) return 'Unknown User';
     if (typeof registration === 'string') {
       return 'User ID: ' + registration;
     }
     const user = registration.user;
+    if (!user) return 'Unknown User';
     if (typeof user === 'string') {
       return 'User ID: ' + user;
     }
@@ -50,11 +52,11 @@ export function PaymentsContainer({
 
   const getSafePaymentAmount = (item: IRefund): string => {
     const registration = item.registration;
-    if (typeof registration === 'string') {
+    if (!registration || typeof registration === 'string') {
       return 'N/A';
     }
     const payment = registration.payment;
-    if (typeof payment === 'string') {
+    if (!payment || typeof payment === 'string') {
       return 'N/A';
     }
     return payment?.amount?.toLocaleString() || 'N/A';
@@ -62,11 +64,11 @@ export function PaymentsContainer({
 
   const getSafePaymentDate = (item: IRefund): string => {
     const registration = item.registration;
-    if (typeof registration === 'string') {
+    if (!registration || typeof registration === 'string') {
       return 'N/A';
     }
     const payment = registration.payment;
-    if (typeof payment === 'string') {
+    if (!payment || typeof payment === 'string') {
       return 'N/A';
     }
     return payment?.createdAt ? new Date(payment.createdAt).toLocaleDateString() : 'N/A';

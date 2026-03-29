@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { IRegistration, IUser } from "@/interfaces/trip/trip";
 import { differenceInYears, parseISO } from "date-fns";
 import { toast } from "sonner";
+import { RegistrationStatus } from "@/config/registration-status";
 
 export default function UserDetails() {
   const [expandedSections, setExpandedSections] = useState({
@@ -32,15 +33,15 @@ export default function UserDetails() {
 
   const getStatusLabel = (status?: string) => {
     switch (status) {
-      case "new":
+      case RegistrationStatus.NEW:
         return "New";
-      case "onboarding":
+      case RegistrationStatus.ONBOARDING:
         return "Onboarding";
-      case "payment":
+      case RegistrationStatus.PAYMENT:
         return "Payment";
-      case "waitlisted":
+      case RegistrationStatus.WAITLISTED:
         return "Waitlisted";
-      case "confirmed":
+      case RegistrationStatus.CONFIRMED:
         return "Confirmed";
       default:
         return status || "Unknown";
@@ -387,7 +388,7 @@ export default function UserDetails() {
               )}
 
               <div className="mt-4 space-y-3">
-                {registrationStatus === "onboarding" && userId && (
+                {registrationStatus === RegistrationStatus.ONBOARDING && userId && (
                   <Link
                     href={`/admin/user/${userId}${registeredUser?._id ? `?registrationId=${registeredUser._id}` : ""
                       }`}
@@ -397,7 +398,7 @@ export default function UserDetails() {
                   </Link>
                 )}
 
-                {registrationStatus === "payment" && paymentId && (
+                {registrationStatus === RegistrationStatus.PAYMENT && paymentId && (
                   <Link
                     href={`/admin/payment/${paymentId}`}
                     className="w-full block text-center bg-blue-700 text-white rounded-lg py-3 px-4 font-medium"
@@ -406,15 +407,15 @@ export default function UserDetails() {
                   </Link>
                 )}
 
-                {registrationStatus === "payment" && !paymentId && (
+                {registrationStatus === RegistrationStatus.PAYMENT && !paymentId && (
                   <p className="text-sm text-gray-600">Awaiting payment submission.</p>
                 )}
 
-                {registrationStatus === "waitlisted" && (
+                {registrationStatus === RegistrationStatus.WAITLISTED && (
                   <p className="text-sm text-gray-600">User is on the waitlist.</p>
                 )}
 
-                {registrationStatus === "confirmed" && (
+                {registrationStatus === RegistrationStatus.CONFIRMED && (
                   <p className="text-sm text-gray-600">Seat confirmed.</p>
                 )}
               </div>

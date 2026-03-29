@@ -105,7 +105,8 @@ export class FlagshipService {
   }
 
   static async getFlagshipByID(flagshipId: string): Promise<IFlagship> {
-    return api.get(`/flagship/getByID/${flagshipId}`);
+    const safeId = flagshipId && typeof flagshipId === 'object' ? String((flagshipId as any)._id || flagshipId) : flagshipId;
+    return api.get(`/flagship/getByID/${safeId}`);
   }
 
   static async getGoogleSheetStatus(flagshipId: string) {
