@@ -85,7 +85,7 @@ function UserSettings() {
       <main className="flex-1 overflow-y-auto bg-white pb-28 lg:pb-16">
         <div className="max-w-4xl mx-auto page-padding pt-6">
           {/* Page Title */}
-          <h1 className="text-2xl font-semibold text-heading mb-5">Profile</h1>
+          <h1 className="text-2xl font-semibold text-heading mb-5">Profile </h1>
 
           {/* Profile Completion Meter */}
           <ProfileCompletionMeter
