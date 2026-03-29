@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useRecoilValue } from "recoil";
 import Image from "next/image";
@@ -26,7 +27,6 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { IFlagship } from "@/services/types/flagship";
 import {
   formatPhoneForApi,
-  inputFromStoredPhone,
   sanitizePhoneInput,
   validatePhoneDigits,
 } from "@/utils/phone";
@@ -92,8 +92,8 @@ export default function FlagshipDetails() {
     ? `${siteUrl}${basePath}?id=${encodeURIComponent(idParam)}`
     : `${siteUrl}${basePath}`;
   const title = flagship?.tripName
-    ? `${flagship.tripName} — 3Musafir`
-    : "Flagship details — 3Musafir";
+    ? `${flagship.tripName} 2026 | Dates, Price & Verified Group Trip`
+    : "Pakistan Group Trip Details 2026 | Dates, Price & Safety";
   const description =
     flagship?.detailedPlan ||
     (flagship?.destination
@@ -121,6 +121,7 @@ export default function FlagshipDetails() {
       },
     ],
   };
+  const destinationMentions = ["Hunza Valley", "Skardu", "Shigar Valley", "Fairy Meadows", "K2 Base Camp"];
 
   const fetchFaq = async () => {
     const faqItems = (await getFaq()) as unknown as FaqItem[];
@@ -242,6 +243,67 @@ export default function FlagshipDetails() {
   };
 
   const baseAmount = resolveBasePrice(flagship);
+  const offers = (flagship.locations || [])
+    .filter((location: { enabled: boolean }) => location.enabled)
+    .map((location: { name: string; price: string }) => ({
+      "@type": "Offer",
+      priceCurrency: "PKR",
+      price: parseAmount(formatLocationPrice(location.price)),
+      availability: "https://schema.org/InStock",
+      areaServed: location.name,
+      url: canonicalUrl,
+    }));
+  const reviewItems = rating.slice(0, 5).map((item, index) => ({
+    "@type": "Review",
+    "@id": `${canonicalUrl}#review-${index + 1}`,
+    reviewBody: item.review || "Verified 3Musafir community review.",
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: item.rating || 5,
+      bestRating: 5,
+    },
+    author: {
+      "@type": "Person",
+      name: item?.userId?.fullName || "Musafir",
+    },
+  }));
+  const faqSchema = faq.slice(0, 8).map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  }));
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: flagship.tripName,
+    description,
+    image: imageUrls.map((url: string) => (url.startsWith("http") ? url : `${siteUrl}${url}`)),
+    brand: {
+      "@type": "Brand",
+      name: "3Musafir",
+    },
+    category: "Group travel package",
+    areaServed: "Pakistan",
+    offers: offers.length > 0 ? offers : undefined,
+    review: reviewItems.length > 0 ? reviewItems : undefined,
+  };
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqSchema,
+  };
+  const reviewStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: reviewItems.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item,
+    })),
+  };
 
   const isEarlyBirdExpired = (data?: IFlagship | null) => {
     const earlyBirdPrice = parseAmount(data?.earlyBirdPrice);
@@ -391,6 +453,7 @@ export default function FlagshipDetails() {
         <link rel="canonical" href={canonicalUrl} key="canonical" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
+        <meta name="keywords" content={`${flagship.destination}, Pakistan group trip, women friendly travel Pakistan, Hunza Valley, Skardu, Shigar Valley, Fairy Meadows, K2 Base Camp`} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content={ogImageUrl} />
         <meta name="twitter:image" content={ogImageUrl} />
@@ -398,6 +461,22 @@ export default function FlagshipDetails() {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
+        {faqSchema.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+          />
+        )}
+        {reviewItems.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewStructuredData) }}
+          />
+        )}
       </Head>
     <div className="w-full bg-white min-h-screen pb-8 relative">
       {/* Sticky Register Button */}
@@ -445,7 +524,7 @@ export default function FlagshipDetails() {
           <Image
             key={url}
             src={url}
-            alt={`${flagship.tripName || "Event image"} ${index + 1}`}
+            alt={`${flagship.destination || "Pakistan"} landscape from ${flagship.tripName || "3Musafir trip"} - photo ${index + 1}`}
             fill
             className={`object-cover transition-opacity duration-300 ${currentImageIndex === index ? "opacity-100" : "opacity-0"}`}
             priority={index === 0}
@@ -622,6 +701,18 @@ export default function FlagshipDetails() {
                   )
               )}
           </div>
+          <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <h4 className="font-semibold text-heading">Cost breakdown & quick answers</h4>
+            <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-text">
+              <li><span className="font-semibold text-heading">How much does this trip cost?</span> Packages start from PKR {baseAmount.toLocaleString()} with city-wise pricing shown above.</li>
+              <li><span className="font-semibold text-heading">What is included?</span> Trip inclusions are shared in the detailed plan, with structured group support by 3Musafir.</li>
+              <li><span className="font-semibold text-heading">Is it safe for women?</span> 3Musafir runs verified community groups with onboarding, safety standards, and accountability.</li>
+              <li><span className="font-semibold text-heading">Best time to travel:</span> Spring (March–April) and autumn (October) are popular for northern routes like Hunza and Skardu.</li>
+            </ul>
+          </div>
+          <p className="mt-3 text-sm text-text">
+            Limited seats for each departure. Join early to secure your preferred city fare and verified group placement.
+          </p>
         </div>
 
         {/* FAQ Section */}
@@ -678,6 +769,20 @@ export default function FlagshipDetails() {
             >
               {queryText.length > 0 ? "Send Trip Query" : "Trip Query Button"}
             </button>
+          </div>
+          <div className="mt-8 rounded-lg border border-gray-200 p-4 text-sm text-text">
+            <p className="font-semibold text-heading">Travel with trust before you book</p>
+            <p className="mt-1">
+              Learn how 3Musafir verifies travelers, partners, and safety workflows before every departure.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-3">
+              <Link href="/trust" className="font-semibold text-brand-primary hover:underline">Trust & Safety</Link>
+              <Link href="/reviews" className="font-semibold text-brand-primary hover:underline">Musafir Reviews</Link>
+              <Link href="/about-3musafir" className="font-semibold text-brand-primary hover:underline">About 3Musafir</Link>
+            </div>
+            <p className="sr-only">
+              Popular destinations include {destinationMentions.join(", ")} with verified community experiences by 3Musafir.
+            </p>
           </div>
         </div>
       </div>

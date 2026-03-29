@@ -1,5 +1,6 @@
 'use client';
 
+import Head from 'next/head';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import CompanyProfileHero from '@/components/brand/CompanyProfileHero';
@@ -11,6 +12,51 @@ export default function Explore() {
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const { getProfile } = useCompanyProfile();
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://3musafir.com').replace(/\/$/, '');
+  const canonicalUrl = `${siteUrl}/explore`;
+  const title = 'Pakistan Group Tours 2026 | Hunza, Skardu, Fairy Meadows & K2 Base Camp';
+  const description =
+    'Explore verified community-led trips to Hunza Valley, Skardu, Shigar Valley, Fairy Meadows, and K2 Base Camp with 3Musafir. See pricing, safety standards, and limited-seat departures.';
+  const faqItems = [
+    {
+      question: 'Is 3Musafir safe for female travelers in Pakistan?',
+      answer:
+        'Yes. 3Musafir uses structured onboarding, verified participants, and controlled group experiences to make trips safer and more comfortable for women.',
+    },
+    {
+      question: 'How much do Hunza and Skardu trips cost?',
+      answer:
+        'Pricing varies by route and departure city. Most departures show transparent starting fares and inclusions on each trip detail page before registration.',
+    },
+    {
+      question: 'What destinations can I explore with 3Musafir?',
+      answer:
+        'Popular routes include Hunza Valley, Skardu, Shigar Valley, Fairy Meadows, and K2 Base Camp with seasonal departures based on weather and road access.',
+    },
+  ];
+  const structuredData = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: title,
+      description,
+      url: canonicalUrl,
+      inLanguage: 'en-PK',
+      about: ['Hunza Valley', 'Skardu', 'Shigar Valley', 'Fairy Meadows', 'K2 Base Camp', 'Group travel in Pakistan'],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
+    },
+  ];
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -60,6 +106,19 @@ export default function Explore() {
     setOpenSection((prev) => (prev === id ? null : id));
   };
   return (
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonicalUrl} key="canonical" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonicalUrl} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </Head>
     <div className="min-h-screen w-full bg-gray-50">
       <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
         <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
@@ -394,6 +453,17 @@ export default function Explore() {
                 <p>Some journeys here are still just ideas — and that’s intentional.</p>
                 <p>Not every experience is public. Some are shaped quietly, within the community.</p>
                 <p>This space keeps evolving as Musafirs do.</p>
+                <ul className="list-disc pl-5 space-y-2 text-sm text-text">
+                  <li>
+                    <span className="font-semibold text-heading">How much does this trip cost?</span> Every departure includes a starting price, city-wise fare options, and what is included before checkout.
+                  </li>
+                  <li>
+                    <span className="font-semibold text-heading">What is included?</span> Most packages include transport segments, selected stays, and guided coordination by the 3Musafir team.
+                  </li>
+                  <li>
+                    <span className="font-semibold text-heading">Is it safe?</span> Trips are community-led with verification checks, women-first support, and clearly defined conduct expectations.
+                  </li>
+                </ul>
               </div>
             </details>
           </section>
@@ -437,5 +507,6 @@ export default function Explore() {
         </div>
       </main>
     </div>
+    </>
   );
 }
