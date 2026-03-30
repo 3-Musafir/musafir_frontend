@@ -8,9 +8,17 @@ export default function ReviewsPage() {
   const description =
     "Read verified 3Musafir reviews from community-led trips across Pakistan, including Hunza Valley, Skardu, Shigar Valley, Fairy Meadows, and K2 Base Camp.";
   const canonicalUrl = `${siteUrl}/reviews`;
+<<<<<<< ours
   const averageRating =
     REVIEWS.length > 0
       ? (REVIEWS.reduce((acc, review) => acc + (review.rating || 0), 0) / REVIEWS.length).toFixed(1)
+=======
+  const normalizeRating = (intensityScore: number) =>
+    Math.min(5, Math.max(1, Number((1 + intensityScore * 4).toFixed(1))));
+  const averageRating =
+    REVIEWS.length > 0
+      ? (REVIEWS.reduce((acc, review) => acc + normalizeRating(review.intensityScore), 0) / REVIEWS.length).toFixed(1)
+>>>>>>> theirs
       : "5.0";
   const structuredData = [
     {
@@ -51,7 +59,11 @@ export default function ReviewsPage() {
         reviewBody: review.quote,
         reviewRating: {
           "@type": "Rating",
+<<<<<<< ours
           ratingValue: review.rating || 5,
+=======
+          ratingValue: normalizeRating(review.intensityScore),
+>>>>>>> theirs
           bestRating: 5,
         },
         author: {
