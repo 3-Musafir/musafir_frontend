@@ -1,5 +1,13 @@
 'use client';
 
+import { EditorContent, useEditor } from '@tiptap/react';
+import Color from '@tiptap/extension-color';
+import Heading from '@tiptap/extension-heading';
+import Placeholder from '@tiptap/extension-placeholder';
+import TextStyle from '@tiptap/extension-text-style';
+import Underline from '@tiptap/extension-underline';
+import StarterKit from '@tiptap/starter-kit';
+import { useEffect, useRef, useState } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 interface RichTextEditorProps {
@@ -43,6 +51,8 @@ function applyCommand(command: ToolbarAction, value?: string) {
   document.execCommand(command, false, value);
 }
 
+const normalizeHtml = (html: string) => html.replace(/\s+/g, ' ').trim();
+
 export default function RichTextEditor({
   value,
   onChange,
@@ -69,6 +79,7 @@ export default function RichTextEditor({
         setIsFullscreen(false);
       }
     };
+
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [isFullscreen]);
@@ -100,6 +111,9 @@ export default function RichTextEditor({
     document.execCommand(command, false, color);
     emitChange();
   };
+
+  const toolbarButtonClass = (active = false) =>
+    `rte-button ${active ? 'rte-button-active' : ''}`;
 
   return (
     <>
@@ -281,6 +295,86 @@ export default function RichTextEditor({
           background: rgba(15, 23, 42, 0.45);
           backdrop-filter: blur(2px);
           z-index: 999;
+        }
+
+        .rte-wrapper {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          min-height: 160px;
+          overflow: hidden;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          background: #fff;
+        }
+
+        .rte-toolbar {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          padding: 0.75rem;
+          border-bottom: 1px solid #e5e7eb;
+          background: #f9fafb;
+        }
+
+        .rte-button {
+          border: 1px solid #d1d5db;
+          border-radius: 0.375rem;
+          background: #fff;
+          padding: 0.375rem 0.625rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          line-height: 1;
+          cursor: pointer;
+        }
+
+        .rte-button-active {
+          border-color: #111827;
+          background: #111827;
+          color: #fff;
+        }
+
+        .rte-editor {
+          min-height: 180px;
+          padding: 1rem;
+          outline: none;
+        }
+
+        .rte-editor p.is-editor-empty:first-child::before {
+          content: attr(data-placeholder);
+          color: #9ca3af;
+          pointer-events: none;
+          float: left;
+          height: 0;
+        }
+
+        .rte-editor h1,
+        .rte-editor h2,
+        .rte-editor h3 {
+          margin: 1rem 0 0.5rem;
+          font-weight: 700;
+        }
+
+        .rte-editor h1 {
+          font-size: 1.5rem;
+        }
+
+        .rte-editor h2 {
+          font-size: 1.25rem;
+        }
+
+        .rte-editor h3 {
+          font-size: 1.125rem;
+        }
+
+        .rte-editor ul,
+        .rte-editor ol {
+          margin: 0.75rem 0;
+          padding-left: 1.5rem;
+        }
+
+        .rte-editor p {
+          margin: 0.5rem 0;
         }
 
         .rte-fullscreen {
