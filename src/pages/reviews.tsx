@@ -1,65 +1,16 @@
 import Head from "next/head";
 import ReviewFeed from "@/components/ReviewFeed";
+import SeoHead from "@/components/seo/SeoHead";
 import { REVIEWS } from "@/data/reviews";
+import { buildCanonical } from "@/lib/seo/seoConfig";
+
+const title = "3Musafir Reviews | Community travel stories and trust signals";
+const description =
+  "Read community-sourced 3Musafir testimonials about solo travel, safety, first-time group trips, and the people behind each journey.";
 
 export default function ReviewsPage() {
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
-  const title = "3Musafir Reviews 2026 | Verified Women-Friendly Group Travel Experiences";
-  const description =
-    "Read verified 3Musafir reviews from community-led trips across Pakistan, including Hunza Valley, Skardu, Shigar Valley, Fairy Meadows, and K2 Base Camp.";
-  const canonicalUrl = `${siteUrl}/reviews`;
-  const averageRating =
-    REVIEWS.length > 0
-      ? (REVIEWS.reduce((acc, review) => acc + (review.rating || 0), 0) / REVIEWS.length).toFixed(1)
-      : "5.0";
+  const canonicalUrl = buildCanonical("/reviews");
   const structuredData = [
-    {
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      name: "3Musafir reviews",
-      itemListElement: REVIEWS.slice(0, 8).map((review, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        item: {
-          "@type": "Review",
-          reviewBody: review.quote,
-          datePublished: review.createdAt,
-          author: {
-            "@type": "Person",
-            name: review.name || "Musafir",
-          },
-          itemReviewed: {
-            "@type": "Organization",
-            name: "3Musafir",
-          },
-        },
-      })),
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      name: "3Musafir",
-      url: siteUrl,
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: averageRating,
-        ratingCount: REVIEWS.length || 1,
-        bestRating: 5,
-      },
-      review: REVIEWS.slice(0, 5).map((review) => ({
-        "@type": "Review",
-        reviewBody: review.quote,
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: review.rating || 5,
-          bestRating: 5,
-        },
-        author: {
-          "@type": "Person",
-          name: review.name || "Musafir",
-        },
-      })),
-    },
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
@@ -68,7 +19,7 @@ export default function ReviewsPage() {
           "@type": "ListItem",
           position: 1,
           name: "Explore",
-          item: `${siteUrl}/explore`,
+          item: buildCanonical("/explore"),
         },
         {
           "@type": "ListItem",
@@ -78,21 +29,46 @@ export default function ReviewsPage() {
         },
       ],
     },
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "3Musafir community testimonials",
+      description:
+        "A curated list of community-sourced post-trip testimonials and trip-linked reviews.",
+      itemListElement: REVIEWS.slice(0, 12).map((review, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${canonicalUrl}#${review.id}`,
+        name: review.sourceEvent || review.context,
+        item: {
+          "@type": "CreativeWork",
+          headline: review.quote,
+          description: review.story || review.quote,
+          datePublished: review.sourceDate || review.createdAt,
+          author: {
+            "@type": "Person",
+            name: review.name || "Musafir",
+          },
+          inLanguage:
+            review.language === "mixed"
+              ? "en-PK"
+              : review.language === "ur"
+                ? "ur-PK"
+                : "en-PK",
+        },
+      })),
+    },
   ];
 
   return (
     <>
+      <SeoHead
+        title={title}
+        description={description}
+        canonicalPath="/reviews"
+        ogImage="/sc.png"
+      />
       <Head>
-        <title>{title}</title>
-        <meta name="description" content={description} />
-        <link rel="canonical" href={canonicalUrl} key="canonical" />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta
-          name="keywords"
-          content="3Musafir reviews, women friendly travel Pakistan, Hunza Valley group trip reviews, Skardu travel reviews, Fairy Meadows trip reviews"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}

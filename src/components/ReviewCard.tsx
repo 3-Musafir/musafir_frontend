@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Review } from "@/data/reviews";
+import { REVIEW_STATUS_LABELS, Review } from "@/data/reviews";
 import MediaBlock from "@/components/MediaBlock";
 
 type ReviewCardProps = {
@@ -15,6 +15,25 @@ type ReviewCardProps = {
 
 const helpedLabel = "\u2764\uFE0F This helped me";
 const thanksMessage = "Thanks well show more stories like this.";
+
+type EditorialTransform = Exclude<Review["editorialTransform"], undefined>;
+
+const editorialTransformNotes: Partial<Record<EditorialTransform, string>> = {
+  trimmed: "Trimmed for length.",
+  normalized: "Lightly normalized for readability.",
+  excerpted: "Excerpted from a longer post-trip message.",
+};
+
+const formatSourceDate = (value?: string) => {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+
+  return new Intl.DateTimeFormat("en-PK", {
+    month: "short",
+    year: "numeric",
+  }).format(parsed);
+};
 
 export default function ReviewCard({
   review,
@@ -34,11 +53,32 @@ export default function ReviewCard({
 
   const name = review.name ?? "Musafir";
   const city = review.city;
+  const sourceDate = formatSourceDate(review.sourceDate || review.createdAt);
+  const statusLabel = REVIEW_STATUS_LABELS[review.verifiedStatus];
+  const transformNote = review.editorialTransform
+    ? editorialTransformNotes[review.editorialTransform]
+    : null;
 
   return (
-    <article className="rounded-2xl border border-canvas-line bg-white px-6 py-5 shadow-soft">
+    <article
+      id={review.id}
+      className="rounded-2xl border border-canvas-line bg-white px-6 py-5 shadow-soft"
+    >
+      <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium text-text-light">
+        <span className="rounded-full bg-brand-primary-light px-2.5 py-1 text-heading">
+          {statusLabel}
+        </span>
+        {review.sourceEvent ? (
+          <span className="rounded-full bg-gray-100 px-2.5 py-1 text-text">
+            {review.sourceEvent}
+          </span>
+        ) : null}
+        {sourceDate ? <span>{sourceDate}</span> : null}
+        {review.sourceChannel ? <span>{review.sourceChannel}</span> : null}
+      </div>
+
       <p
-        className={`text-sm leading-relaxed text-heading ${
+        className={`mt-4 text-sm leading-relaxed text-heading ${
           expanded ? "" : "line-clamp-2"
         }`}
       >
@@ -60,6 +100,22 @@ export default function ReviewCard({
 
       {expanded && review.story ? (
         <p className="mt-4 text-sm leading-relaxed text-text">{review.story}</p>
+      ) : null}
+
+      {expanded ? (
+        <div className="mt-4 space-y-2 rounded-2xl bg-gray-50 px-4 py-3 text-xs text-text">
+          <p>
+            <span className="font-semibold text-heading">How this review was processed:</span>{" "}
+            {statusLabel}
+            {transformNote ? ` · ${transformNote}` : ""}
+          </p>
+          {review.sourceEvent || review.sourceDate ? (
+            <p>
+              <span className="font-semibold text-heading">Source:</span>{" "}
+              {[review.sourceEvent, sourceDate].filter(Boolean).join(" · ")}
+            </p>
+          ) : null}
+        </div>
       ) : null}
 
       <div className="mt-5 flex flex-wrap items-center gap-3">

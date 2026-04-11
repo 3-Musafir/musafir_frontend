@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import {
   DEFAULT_QUESTION,
   EXPLORING_ID,
   EXPLORING_LABEL,
   QUESTIONS,
 } from "@/data/questions";
-import { REVIEWS, Review } from "@/data/reviews";
+import {
+  REVIEW_DISCLOSURE_ITEMS,
+  REVIEW_STATUS_LABELS,
+  REVIEWS,
+  Review,
+} from "@/data/reviews";
 import { rankReviews } from "@/lib/rankReviews";
 import QuestionSelector from "@/components/QuestionSelector";
 import ReviewCard from "@/components/ReviewCard";
@@ -39,6 +45,8 @@ const matchesSearch = (review: Review, query: string) => {
     review.city,
     review.context,
     review.story,
+    review.sourceEvent,
+    review.sourceChannel,
   ]
     .filter(Boolean)
     .join(" ")
@@ -285,6 +293,58 @@ export default function ReviewFeed() {
             These questions came from real Musafirs before their first trip.
           </p>
         </header>
+
+        <section className="mt-6 rounded-3xl border border-canvas-line bg-white px-6 py-5 shadow-soft">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-3xl">
+              <h2 className="text-lg font-semibold text-heading">
+                How reviews are collected and edited
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-text">
+                This page is a trust hub for real post-trip testimonials. It mixes
+                curated excerpts and traveler-submitted messages, and it does not
+                treat every entry as a booking-linked review.
+              </p>
+              <ul className="mt-4 space-y-2 text-sm leading-relaxed text-text">
+                {REVIEW_DISCLOSURE_ITEMS.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="min-w-[240px] rounded-2xl bg-gray-50 px-4 py-4 text-xs text-text">
+              <p className="font-semibold uppercase tracking-[0.14em] text-text-light">
+                Review Labels
+              </p>
+              <div className="mt-3 space-y-2">
+                {Object.entries(REVIEW_STATUS_LABELS).map(([key, label]) => (
+                  <p key={key}>
+                    <span className="font-semibold text-heading">{label}:</span>{" "}
+                    {key === "trip-linked"
+                      ? "directly tied to a known trip or registration flow."
+                      : key === "submitted"
+                        ? "posted by a traveler after a trip, without booking verification on this page."
+                        : "curated from longer community posts for readability."}
+                  </p>
+                ))}
+              </div>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Link href="/trust" className="font-semibold text-brand-primary hover:underline">
+                  Trust hub
+                </Link>
+                <Link href="/why" className="font-semibold text-brand-primary hover:underline">
+                  Why 3Musafir
+                </Link>
+                <Link
+                  href="/about-3musafir"
+                  className="font-semibold text-brand-primary hover:underline"
+                >
+                  About 3Musafir
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
       <div className="sticky top-0 z-20">
@@ -304,6 +364,9 @@ export default function ReviewFeed() {
             <span className="text-xs font-medium text-text">Showing closest experiences</span>
           ) : null}
         </div>
+        <p className="mt-2 text-xs text-text-light">
+          Browse themes like solo travel, safety, first-time nerves, community, and trip quality.
+        </p>
 
         <div className="mt-4 flex flex-col gap-2">
           <label className="text-xs text-text-light" htmlFor="review-search">
@@ -313,7 +376,7 @@ export default function ReviewFeed() {
             id="review-search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search by city, trip, or keyword"
+            placeholder="Search by name, event, trip, or keyword"
             className="w-full rounded-2xl border border-canvas-line bg-white px-4 py-3 text-sm text-heading placeholder:text-text-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
           />
           {searchQuery.trim() ? (

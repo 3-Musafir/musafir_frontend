@@ -40,9 +40,9 @@ const SEO_MAP: Record<
     ogImage: "/murree.webp",
   },
   "/reviews": {
-    title: "Musafir Reviews — Real travel experiences",
+    title: "3Musafir Reviews — Community travel stories and trust signals",
     description:
-      "Read honest, community-sourced reviews from Musafirs about their first group travel experiences.",
+      "Read community-sourced 3Musafir testimonials about solo travel, safety, first-time group trips, and the people behind each journey.",
     ogImage: "/sc.png",
   },
   "/why": {

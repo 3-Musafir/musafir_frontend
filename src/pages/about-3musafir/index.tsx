@@ -91,6 +91,12 @@ export default function About3MusafirPage() {
                   >
                     Trust & Safety
                   </Link>
+                  <Link
+                    href="/reviews"
+                    className="inline-flex items-center rounded-full border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/80"
+                  >
+                    Read reviews
+                  </Link>
                 </div>
               </div>
               <Image
@@ -213,6 +219,10 @@ export default function About3MusafirPage() {
               Want the full trust framework? Visit the
               <Link href="/trust" className="ml-1 text-brand-primary hover:underline">
                 Trust & Safety Hub
+              </Link>
+              or review traveler stories on the
+              <Link href="/reviews" className="ml-1 text-brand-primary hover:underline">
+                reviews page
               </Link>
               .
             </p>

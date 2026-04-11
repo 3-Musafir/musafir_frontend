@@ -4,6 +4,12 @@ export const defaultTitle = "3Musafir — Community-led travel in Pakistan";
 export const defaultDescription =
   "3Musafir is a community-led travel platform focused on safety, trust, and meaningful group journeys across Pakistan and internationally.";
 export const logoUrl = `${siteUrl}/3mwinterlogo.png`;
+const configuredProfiles = [
+  process.env.NEXT_PUBLIC_INSTAGRAM_URL,
+  process.env.NEXT_PUBLIC_TIKTOK_URL,
+  process.env.NEXT_PUBLIC_LINKEDIN_URL,
+  process.env.NEXT_PUBLIC_YOUTUBE_URL,
+].filter(Boolean) as string[];
 
 // TODO: Replace placeholder contact details and social profiles before launch.
 export const contactPoints = [
@@ -16,7 +22,7 @@ export const contactPoints = [
   },
 ];
 
-export const sameAs: string[] = [];
+export const sameAs: string[] = configuredProfiles;
 
 export const buildCanonical = (path: string) => {
   const normalized = path && path !== "/" && path.endsWith("/") ? path.slice(0, -1) : path || "/";

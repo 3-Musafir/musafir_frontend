@@ -69,6 +69,12 @@ export default function TrustHubPage() {
                   >
                     About 3Musafir
                   </Link>
+                  <Link
+                    href="/reviews"
+                    className="inline-flex items-center rounded-full border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/80"
+                  >
+                    Read reviews
+                  </Link>
                 </div>
               </div>
               <Image
@@ -143,6 +149,10 @@ export default function TrustHubPage() {
               Learn more about the community on the
               <Link href="/about-3musafir" className="ml-1 text-brand-primary hover:underline">
                 About 3Musafir
+              </Link>
+              page, see how travelers describe their trips on the
+              <Link href="/reviews" className="ml-1 text-brand-primary hover:underline">
+                reviews page
               </Link>
               page, or
               <Link href="/explore" className="ml-1 text-brand-primary hover:underline">
