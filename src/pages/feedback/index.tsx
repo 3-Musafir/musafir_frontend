@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Navigation } from '../navigation';
+import { Navigation } from '@/components/navigation/Navigation';
 import withAuth from '@/hoc/withAuth';
 import { useRouter } from 'next/router';
 import useFeedbackHook from '@/hooks/useFeedbackHandler';

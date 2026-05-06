@@ -7,7 +7,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Navigation } from "../navigation";
 
 export default function RefundPolicyBy3Musafir() {
   const standardTiers = [
@@ -418,7 +417,6 @@ export default function RefundPolicyBy3Musafir() {
         </div>
       </main>
 
-      <Navigation />
     </div>
     </>
   );

@@ -7,7 +7,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Navigation } from "../navigation";
 
 export default function TermsAndConditionsBy3Musafir() {
   const summaryPoints = [
@@ -285,7 +284,6 @@ export default function TermsAndConditionsBy3Musafir() {
         </div>
       </main>
 
-      <Navigation />
     </div>
     </>
   );

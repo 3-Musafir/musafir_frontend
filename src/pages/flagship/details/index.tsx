@@ -15,7 +15,7 @@ import {
 } from "react-icons/hi";
 import ReviewCard from "@/components/cards/ReviewCard";
 import { formatDate } from "@/utils/formatDate";
-import Navigation from "../../navigation";
+import Navigation from "@/components/navigation/Navigation";
 import { showAlert } from "@/pages/alert";
 import { mapErrorToUserMessage } from "@/utils/errorMessages";
 import useFaqHook from "@/hooks/useFaqHandler";

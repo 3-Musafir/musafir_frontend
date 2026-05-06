@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import useVerificationHook from '../../hooks/useVerificationHandler';
 
 import { showAlert } from '../alert';
-import { Navigation } from '../navigation';
+import { Navigation } from '@/components/navigation/Navigation';
 import { ROLES } from '@/config/constants';
 import withAuth from '@/hoc/withAuth';
 import useUserHandler from '@/hooks/useUserHandler';

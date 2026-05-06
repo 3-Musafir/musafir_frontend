@@ -1,5 +1,5 @@
 import Header from "@/components/header";
-import Navigation from "@/pages/navigation";
+import Navigation from "@/components/navigation/Navigation";
 import useFlagshipHook from "@/hooks/useFlagshipHandler";
 import useRegistrationHook from "@/hooks/useRegistrationHandler";
 import { useRouter } from "next/navigation";

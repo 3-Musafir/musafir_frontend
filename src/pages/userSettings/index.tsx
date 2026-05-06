@@ -1,5 +1,5 @@
 "use client";
-import Navigation from "../navigation";
+import Navigation from "@/components/navigation/Navigation";
 import Header from "../../components/header";
 import withAuth from "@/hoc/withAuth";
 import { useSettingsForm } from "@/hooks/useSettingsForm";

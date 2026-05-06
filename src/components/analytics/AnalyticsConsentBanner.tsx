@@ -38,7 +38,7 @@ export default function AnalyticsConsentBanner() {
   };
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-4 shadow-lg">
+    <div className="fixed bottom-24 left-4 right-4 z-50 mx-auto max-w-3xl rounded-2xl border border-gray-200 bg-white p-4 shadow-lg lg:bottom-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm text-gray-700">
           We use privacy-respecting analytics (session replay and usage insights)

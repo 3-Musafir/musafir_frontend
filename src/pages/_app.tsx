@@ -99,23 +99,76 @@ const buildFallbackTitle = (path: string) => {
   return `3Musafir — ${titleCase(clean)}`;
 };
 
+const matchesRoutePrefix = (pathname: string, prefix: string) =>
+  pathname === prefix || pathname.startsWith(`${prefix}/`);
+
+const appRoutePrefixes = [
+  "/admin",
+  "/dashboard",
+  "/home",
+  "/passport",
+  "/wallet",
+  "/referrals",
+  "/notifications",
+  "/userSettings",
+  "/musafir",
+  "/flagship/create",
+  "/flagship/payment",
+  "/flagship/seats",
+];
+
+const authenticatedStandaloneRoutes = [
+  "/change-password",
+  "/feedback",
+  "/verification",
+  "/flagship/flagship-requirement",
+  "/flagship/flagshipRequirement-dark",
+];
+
+const authStandaloneRoutes = [
+  "/login",
+  "/forgot-password",
+  "/reset-password",
+  "/unauthorized",
+  "/auth-callback",
+];
+
+const authStandalonePrefixes = ["/signup", "/signup-dark", "/musafir-signup"];
+
+const publicStandaloneRoutes = ["/flagship/details"];
+
+const publicShellRoutes = [
+  "/about-3musafir",
+  "/community/voices",
+  "/explore",
+  "/musafircommunityequityframework",
+  "/refundpolicyby3musafir",
+  "/reviews",
+  "/terms&conditonsby3musafir",
+  "/trust-and-verification",
+  "/vendor-onboarding",
+  "/why",
+];
+
+const publicShellPrefixes = ["/alert", "/founderportfolio", "/launch", "/trust"];
+
+const usesStandaloneLayout = (pathname: string) =>
+  pathname === "/" ||
+  appRoutePrefixes.some((prefix) => matchesRoutePrefix(pathname, prefix)) ||
+  authenticatedStandaloneRoutes.includes(pathname) ||
+  authStandaloneRoutes.includes(pathname) ||
+  authStandalonePrefixes.some((prefix) => matchesRoutePrefix(pathname, prefix)) ||
+  publicStandaloneRoutes.includes(pathname);
+
+const usesPublicShell = (pathname: string) =>
+  publicShellRoutes.includes(pathname) ||
+  publicShellPrefixes.some((prefix) => matchesRoutePrefix(pathname, prefix));
+
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const useUserShell = useMemo(() => {
     const pathname = router.pathname || "";
-    const appPrefixes = [
-      "/admin",
-      "/dashboard",
-      "/home",
-      "/passport",
-      "/wallet",
-      "/referrals",
-      "/notifications",
-      "/userSettings",
-      "/flagship",
-      "/musafir",
-    ];
-    return pathname !== "/" && !appPrefixes.some((prefix) => pathname.startsWith(prefix));
+    return usesPublicShell(pathname) && !usesStandaloneLayout(pathname);
   }, [router.pathname]);
 
   const siteUrl = baseSiteUrl;

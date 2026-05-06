@@ -13,8 +13,13 @@ const resolveLabel = (path: string) => {
   if (path === "/community/voices") return "Community Voices";
   if (path === "/reviews") return "Reviews";
   if (path === "/why") return "Why 3Musafir";
+  if (path === "/musafircommunityequityframework") return "Community Framework";
   if (path === "/refundpolicyby3musafir") return "Refund Policy";
   if (path === "/terms&conditonsby3musafir") return "Terms";
+  if (path === "/founderportfolio") return "Founder Portfolio";
+  if (path === "/founderportfolio/biography") return "Biography";
+  if (path === "/launch" || path === "/launch/launch") return "Launch";
+  if (path === "/trust-and-verification") return "Trust & Verification";
   if (path.startsWith("/trust")) return "Trust & Safety";
   return "";
 };

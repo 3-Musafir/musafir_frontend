@@ -7,7 +7,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Navigation } from "../navigation";
 
 export default function MusafirCommunityEquityFramework() {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
@@ -374,7 +373,6 @@ export default function MusafirCommunityEquityFramework() {
           </div>
         </main>
 
-        <Navigation />
       </div>
     </>
   );

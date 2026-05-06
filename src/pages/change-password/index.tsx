@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import Navigation from "../navigation";
+import Navigation from "@/components/navigation/Navigation";
 import withAuth from "@/hoc/withAuth";
 import useUserHandler from "@/hooks/useUserHandler";
 import { ArrowLeft, Eye, EyeOff, Check, X } from "lucide-react";
