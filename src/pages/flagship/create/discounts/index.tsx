@@ -308,6 +308,13 @@ function DiscountsPage() {
       ? currentValue + 1
       : Math.max(0, currentValue - 1);
     setter(newValue.toString());
+    // Clear errors if any
+    setErrors((prev) => ({
+      ...prev,
+      soloFemaleCount: "",
+      groupCount: "",
+      musafirCount: "",
+    }));
   };
 
   const toggleMusafirEnabled = () => {
@@ -315,6 +322,9 @@ function DiscountsPage() {
     setMusafirEnabled(nextEnabled);
     if (nextEnabled) {
       setMusafirAmount(String(MUSAFIR_DISCOUNT_MAX));
+    }
+    if (errors.musafirCount) {
+      setErrors((prev) => ({ ...prev, musafirCount: "" }));
     }
   };
 
@@ -367,7 +377,12 @@ function DiscountsPage() {
                 className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${
                   soloFemaleEnabled ? "bg-black" : "bg-gray-300"
                 }`}
-                onClick={() => setSoloFemaleEnabled(!soloFemaleEnabled)}
+                onClick={() => {
+                  setSoloFemaleEnabled(!soloFemaleEnabled);
+                  if (errors.soloFemaleAmount || errors.soloFemaleCount) {
+                    setErrors((prev) => ({ ...prev, soloFemaleAmount: "", soloFemaleCount: "" }));
+                  }
+                }}
               >
                 <div
                   className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
@@ -385,7 +400,10 @@ function DiscountsPage() {
                     <input
                       min={0}
                       value={soloFemaleAmount}
-                      onChange={(e) => setSoloFemaleAmount(e.target.value)}
+                      onChange={(e) => {
+                        setSoloFemaleAmount(e.target.value);
+                        if (errors.soloFemaleAmount) setErrors((prev) => ({ ...prev, soloFemaleAmount: "" }));
+                      }}
                       className="w-full px-3 py-2 focus:outline-none"
                       placeholder="0"
                     />
@@ -413,7 +431,10 @@ function DiscountsPage() {
                     <input
                       min={0}
                       value={soloFemaleCount}
-                      onChange={(e) => setSoloFemaleCount(e.target.value)}
+                      onChange={(e) => {
+                        setSoloFemaleCount(e.target.value);
+                        if (errors.soloFemaleCount) setErrors((prev) => ({ ...prev, soloFemaleCount: "" }));
+                      }}
                       className="flex-1 px-3 py-2 border rounded-lg focus:outline-none text-center"
                     />
                     <button
@@ -451,7 +472,12 @@ function DiscountsPage() {
                 className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${
                   groupEnabled ? "bg-black" : "bg-gray-300"
                 }`}
-                onClick={() => setGroupEnabled(!groupEnabled)}
+                onClick={() => {
+                  setGroupEnabled(!groupEnabled);
+                  if (errors.groupAmount || errors.groupCount) {
+                    setErrors((prev) => ({ ...prev, groupAmount: "", groupCount: "" }));
+                  }
+                }}
               >
                 <div
                   className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
@@ -473,7 +499,10 @@ function DiscountsPage() {
                     <input
                       min={0}
                       value={groupAmount}
-                      onChange={(e) => setGroupAmount(e.target.value)}
+                      onChange={(e) => {
+                        setGroupAmount(e.target.value);
+                        if (errors.groupAmount) setErrors((prev) => ({ ...prev, groupAmount: "" }));
+                      }}
                       className="w-full px-3 py-2 focus:outline-none"
                       placeholder="0"
                     />
@@ -501,7 +530,10 @@ function DiscountsPage() {
                     <input
                       min={0}
                       value={groupCount}
-                      onChange={(e) => setGroupCount(e.target.value)}
+                      onChange={(e) => {
+                        setGroupCount(e.target.value);
+                        if (errors.groupCount) setErrors((prev) => ({ ...prev, groupCount: "" }));
+                      }}
                       className="flex-1 px-3 py-2 border rounded-lg focus:outline-none text-center"
                     />
                     <button
@@ -574,7 +606,10 @@ function DiscountsPage() {
                     <input
                       min={0}
                       value={musafirCount}
-                      onChange={(e) => setMusafirCount(e.target.value)}
+                      onChange={(e) => {
+                        setMusafirCount(e.target.value);
+                        if (errors.musafirCount) setErrors((prev) => ({ ...prev, musafirCount: "" }));
+                      }}
                       className="flex-1 px-3 py-2 border rounded-lg focus:outline-none text-center"
                     />
                     <button

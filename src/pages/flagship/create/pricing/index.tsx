@@ -390,6 +390,7 @@ function PricingPage() {
                 onChange={(e) => {
                   setBasePrice(e.target.value);
                   setIsDirty(true);
+                  if (errors.basePrice) setErrors((prev) => ({ ...prev, basePrice: '' }));
                 }}
                 className='w-full px-4 py-3 focus:outline-none text-lg'
                 placeholder='Enter base price'
@@ -414,6 +415,7 @@ function PricingPage() {
                 onChange={(e) => {
                   setEarlyBirdPrice(e.target.value);
                   setIsDirty(true);
+                  if (errors.earlyBirdPrice) setErrors((prev) => ({ ...prev, earlyBirdPrice: '' }));
                 }}
                 className='w-full px-4 py-3 focus:outline-none text-lg'
                 placeholder='Optional early-bird price (<= base price)'
@@ -446,6 +448,7 @@ function PricingPage() {
                         onClick={() => {
                           toggleLocation(location.id);
                           setIsDirty(true);
+                          if (errors.locations) setErrors((prev) => ({ ...prev, locations: '' }));
                         }}
                       >
                         <div
@@ -466,6 +469,7 @@ function PricingPage() {
                             onChange={(e) => {
                               updateLocationPrice(location.id, e.target.value);
                               setIsDirty(true);
+                              if (errors.locations) setErrors((prev) => ({ ...prev, locations: '' }));
                             }}
                             className='w-full px-4 py-3 focus:outline-none text-lg'
                             placeholder='0'
@@ -550,8 +554,9 @@ function PricingPage() {
                           min={0}
                           value={tier.price}
                           onChange={(e) => {
-                            updateTierPrice(tier.id, e.target.value);
-                            setIsDirty(true);
+                             updateTierPrice(tier.id, e.target.value);
+                             setIsDirty(true);
+                             if (errors.tiers) setErrors((prev) => ({ ...prev, tiers: '' }));
                           }}
                           className='w-full px-4 py-3 focus:outline-none text-lg'
                           placeholder='0'
@@ -629,8 +634,9 @@ function PricingPage() {
                           min={0}
                           value={tier.price}
                           onChange={(e) => {
-                            updateMattressTierPrice(tier.id, e.target.value);
-                            setIsDirty(true);
+                             updateMattressTierPrice(tier.id, e.target.value);
+                             setIsDirty(true);
+                             if (errors.mattressTiers) setErrors((prev) => ({ ...prev, mattressTiers: '' }));
                           }}
                           className='w-full px-4 py-3 focus:outline-none text-lg'
                           placeholder='0'
@@ -708,8 +714,9 @@ function PricingPage() {
                           min={0}
                           value={tier.price}
                           onChange={(e) => {
-                            updateRoomSharingPreferencePrice(tier.id, e.target.value);
-                            setIsDirty(true);
+                             updateRoomSharingPreferencePrice(tier.id, e.target.value);
+                             setIsDirty(true);
+                             if (errors.roomSharingPreference) setErrors((prev) => ({ ...prev, roomSharingPreference: '' }));
                           }}
                           className='w-full px-4 py-3 focus:outline-none text-lg'
                           placeholder='0'

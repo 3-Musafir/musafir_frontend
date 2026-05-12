@@ -191,6 +191,7 @@ function SeatsAllocation() {
         ...citySeats,
         [city]: newValue,
       });
+      if (errors.citySeats['global']) setErrors((prev) => ({ ...prev, citySeats: {} }));
     }
   };
 
@@ -346,7 +347,10 @@ function SeatsAllocation() {
               <input
                 value={totalSeats}
                 min={0}
-                onChange={(e) => setTotalSeats(e.target.value)}
+                onChange={(e) => {
+                  setTotalSeats(e.target.value);
+                  if (errors.totalSeats) setErrors((prev) => ({ ...prev, totalSeats: '' }));
+                }}
                 className='w-full px-4 py-3 focus:outline-none text-lg'
                 placeholder='Enter total seats'
               />
@@ -381,7 +385,10 @@ function SeatsAllocation() {
                   min='0'
                   max='100'
                   value={genderSplit}
-                  onChange={(e) => setGenderSplit(Number.parseInt(e.target.value))}
+                  onChange={(e) => {
+                    setGenderSplit(Number.parseInt(e.target.value));
+                    if (errors.gender) setErrors((prev) => ({ ...prev, gender: '' }));
+                  }}
                   className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black'
                 />
                 <div className='flex justify-between mt-4 gap-4'>
@@ -451,9 +458,10 @@ function SeatsAllocation() {
                         type='text'
                         min={0}
                         value={citySeats[cityKey] || 0}
-                        onChange={(e) =>
-                          setCitySeats({ ...citySeats, [cityKey]: Number(e.target.value) })
-                        }
+                        onChange={(e) => {
+                          setCitySeats({ ...citySeats, [cityKey]: Number(e.target.value) });
+                          if (errors.citySeats['global']) setErrors((prev) => ({ ...prev, citySeats: {} }));
+                        }}
                         required
                         className='flex-1 px-4 py-3 border rounded-xl focus:outline-none text-lg'
                       />
@@ -499,7 +507,10 @@ function SeatsAllocation() {
                   min='0'
                   max='100'
                   value={bedMattressSplit}
-                  onChange={(e) => setBedMattressSplit(Number.parseInt(e.target.value))}
+                  onChange={(e) => {
+                    setBedMattressSplit(Number.parseInt(e.target.value));
+                    if (errors.mattress) setErrors((prev) => ({ ...prev, mattress: '' }));
+                  }}
                   className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black'
                 />
                 <div className='flex justify-between mt-4 gap-4'>
@@ -530,7 +541,10 @@ function SeatsAllocation() {
                     type='number'
                     min={0}
                     value={mattressPriceDelta}
-                    onChange={(e) => setMattressPriceDelta(e.target.value)}
+                    onChange={(e) => {
+                      setMattressPriceDelta(e.target.value);
+                      if (errors.mattress) setErrors((prev) => ({ ...prev, mattress: '' }));
+                    }}
                     className='w-full px-4 py-3 border rounded-xl focus:outline-none text-lg'
                     placeholder='e.g., 2000'
                   />

@@ -173,6 +173,7 @@ function PaymentOptions() {
                     onClick={() => {
                       setSelectedBank(bank.id);
                       toggleBankDetails(bank.id);
+                      if (error) setError('');
                     }}
                   >
                     {/* Radio Button */}
