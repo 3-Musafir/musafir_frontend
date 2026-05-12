@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Landmark } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
@@ -24,9 +24,10 @@ function PaymentOptions() {
   const [editId, setEditId] = useState<string | null | undefined>(undefined);
   const isEditMode = Boolean(editId);
   // Selected bank and expanded states
-  const [selectedBank, setSelectedBank] = useState<string | null>(null);
+  const [selectedBanks, setSelectedBanks] = useState<string[]>([]);
   const [expandedBank, setExpandedBank] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [logoErrors, setLogoErrors] = useState<Record<string, boolean>>({});
 
   // Bank accounts data
   const bankAccounts = [
@@ -101,15 +102,15 @@ function PaymentOptions() {
 
   useEffect(() => {
     if (flagshipData && flagshipData.selectedBank) {
-      setSelectedBank(flagshipData.selectedBank);
+      setSelectedBanks(flagshipData.selectedBank.split(',').filter(Boolean));
     }
   }, [flagshipData]);
 
   // Handle form submission
   const handleSubmit = async () => {
-    // Validate that a bank account is selected
-    if (!selectedBank) {
-      setError('Please select a bank account.');
+    // Validate that at least one bank account is selected
+    if (selectedBanks.length === 0) {
+      setError('Please select at least one bank account.');
       return;
     } else {
       setError('');
@@ -117,7 +118,7 @@ function PaymentOptions() {
 
     // Build payload (if additional data is required, add here)
     const formData = {
-      selectedBank,
+      selectedBank: selectedBanks.join(','),
       silentUpdate: isEditMode ? true : undefined,
     };
     console.log(formData, 'payload');
@@ -151,7 +152,7 @@ function PaymentOptions() {
         </div>
 
         {/* Progress bar */}
-        <ProgressBar steps={steps} activeStep={activeStep} />
+        <ProgressBar steps={steps} activeStep={activeStep} flagshipData={flagshipData} />
 
         {/* Main Content */}
         <div className='px-4 pb-20'>
@@ -171,31 +172,45 @@ function PaymentOptions() {
                   <div
                     className='flex items-center p-4 cursor-pointer hover:bg-gray-50'
                     onClick={() => {
-                      setSelectedBank(bank.id);
+                      const next = selectedBanks.includes(bank.id)
+                        ? selectedBanks.filter(id => id !== bank.id)
+                        : [...selectedBanks, bank.id];
+                      setSelectedBanks(next);
                       toggleBankDetails(bank.id);
+                      if (error) setError('');
                     }}
                   >
-                    {/* Radio Button */}
+                    {/* Checkbox */}
                     <div className='mr-4'>
                       <div
-                        className={`w-6 h-6 rounded-full border-2 ${selectedBank === bank.id ? 'border-blue-500' : 'border-gray-300'
-                          } flex items-center justify-center`}
+                        className={`w-6 h-6 rounded border-2 ${selectedBanks.includes(bank.id) ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
+                          } flex items-center justify-center transition-colors`}
                       >
-                        {selectedBank === bank.id && (
-                          <div className='w-3 h-3 rounded-full bg-blue-500' />
+                        {selectedBanks.includes(bank.id) && (
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                          </svg>
                         )}
                       </div>
                     </div>
 
                     {/* Bank Logo */}
                     <div className='mr-3'>
-                      <Image
-                        src={bank.logo || '/placeholder.svg'}
-                        alt={bank.name}
-                        width={40}
-                        height={40}
-                        className='rounded-full'
-                      />
+                      {bank.logo && !logoErrors[bank.id] ? (
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden border border-gray-100">
+                          <Image
+                            src={bank.logo}
+                            alt={bank.name}
+                            fill
+                            className='object-cover'
+                            onError={() => setLogoErrors(prev => ({ ...prev, [bank.id]: true }))}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-100">
+                          <Landmark className="w-5 h-5 text-gray-400" />
+                        </div>
+                      )}
                     </div>
 
                     {/* Bank Name */}

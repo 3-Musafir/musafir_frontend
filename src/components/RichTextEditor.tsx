@@ -8,7 +8,6 @@ import TextStyle from '@tiptap/extension-text-style';
 import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
 import { useEffect, useRef, useState } from 'react';
-import { useEffect, useRef, useState } from 'react';
 
 interface RichTextEditorProps {
   value: string;

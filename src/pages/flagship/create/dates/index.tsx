@@ -195,7 +195,7 @@ function ImportantDates() {
         </div>
 
         {/* Progress bar */}
-        <ProgressBar steps={steps} activeStep={activeStep} />
+        <ProgressBar steps={steps} activeStep={activeStep} flagshipData={flagshipData} />
 
         {/* Main Content */}
         <div className='px-4 pb-20'>
@@ -228,7 +228,10 @@ function ImportantDates() {
                     value={registrationDeadline}
                     min={new Date().toISOString().slice(0, 10)}
                     max={flagshipData.startDate ? new Date(flagshipData.startDate).toISOString().slice(0, 10) : undefined}
-                    onChange={(e) => setRegistrationDeadline(e.target.value)}
+                    onChange={(e) => {
+                      setRegistrationDeadline(e.target.value);
+                      if (errors.registrationDeadline) setErrors((prev) => ({ ...prev, registrationDeadline: '' }));
+                    }}
                     className='w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none text-lg'
                     placeholder='MM/DD/YYYY'
                   />
@@ -251,7 +254,10 @@ function ImportantDates() {
                     value={advancePaymentDeadline}
                     min={new Date().toISOString().slice(0, 10)}
                     max={flagshipData.startDate ? new Date(flagshipData.startDate).toISOString().slice(0, 10) : undefined}
-                    onChange={(e) => setAdvancePaymentDeadline(e.target.value)}
+                    onChange={(e) => {
+                      setAdvancePaymentDeadline(e.target.value);
+                      if (errors.advancePaymentDeadline) setErrors((prev) => ({ ...prev, advancePaymentDeadline: '' }));
+                    }}
                     className='w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none text-lg'
                     placeholder='MM/DD/YYYY'
                   />
@@ -273,7 +279,10 @@ function ImportantDates() {
                   value={earlyBirdDeadline}
                   min={new Date().toISOString().slice(0, 10)}
                   max={flagshipData.startDate ? new Date(flagshipData.startDate).toISOString().slice(0, 10) : undefined}
-                  onChange={(e) => setEarlyBirdDeadline(e.target.value)}
+                  onChange={(e) => {
+                    setEarlyBirdDeadline(e.target.value);
+                    if (errors.earlyBirdDeadline) setErrors((prev) => ({ ...prev, earlyBirdDeadline: '' }));
+                  }}
                   className='w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none text-lg'
                   placeholder='MM/DD/YYYY'
                 />

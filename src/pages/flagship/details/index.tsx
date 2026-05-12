@@ -242,6 +242,15 @@ export default function FlagshipDetails() {
     return basePrice;
   };
 
+  const formatLocationPrice = (locationPrice: string | number) => {
+    const surcharge = parseAmount(locationPrice);
+    // If base is missing, fall back to whatever was provided.
+    if (baseAmount <= 0) return surcharge.toLocaleString();
+    // If the provided price already looks like a full fare, don't double add.
+    if (surcharge >= baseAmount) return surcharge.toLocaleString();
+    return (baseAmount + surcharge).toLocaleString();
+  };
+
   const baseAmount = resolveBasePrice(flagship);
   const offers = (flagship.locations || [])
     .filter((location: { enabled: boolean }) => location.enabled)
@@ -314,14 +323,7 @@ export default function FlagshipDetails() {
     return new Date() > deadline;
   };
 
-  const formatLocationPrice = (locationPrice: string | number) => {
-    const surcharge = parseAmount(locationPrice);
-    // If base is missing, fall back to whatever was provided.
-    if (baseAmount <= 0) return surcharge.toLocaleString();
-    // If the provided price already looks like a full fare, don't double add.
-    if (surcharge >= baseAmount) return surcharge.toLocaleString();
-    return (baseAmount + surcharge).toLocaleString();
-  };
+  
 
   const handleRegisterClick = () => {
     if (isAuthenticated) {

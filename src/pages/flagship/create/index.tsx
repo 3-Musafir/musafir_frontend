@@ -183,7 +183,7 @@ function CreateFlagship() {
             setFlagshipData(res.data);
             saveDraft('create', null, res.data);
           }
-          router.push(ROUTES_CONSTANTS.FLAGSHIP.CONTENT);
+          router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.CONTENT, res.data._id));
         }
       }
     } catch (error: any) {
@@ -205,7 +205,7 @@ function CreateFlagship() {
         </div>
 
         {/* Progress bar */}
-        <ProgressBar steps={steps} activeStep={activeStep} />
+        <ProgressBar steps={steps} activeStep={activeStep} flagshipData={flagshipData} />
 
         {/* Main Content */}
         <div className='px-4 pb-20'>
@@ -222,7 +222,10 @@ function CreateFlagship() {
                   type='text'
                   placeholder='Trip Name'
                   value={tripName}
-                  onChange={(e) => setTripName(e.target.value)}
+                  onChange={(e) => {
+                    setTripName(e.target.value);
+                    if (errors.tripName) setErrors((prev) => ({ ...prev, tripName: '' }));
+                  }}
                   className='w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-gray-400'
                 />
                 {errors.tripName && <p className='text-brand-error text-sm'>{errors.tripName}</p>}
@@ -237,7 +240,10 @@ function CreateFlagship() {
                   <select
                     id='destination'
                     value={destination}
-                    onChange={(e) => setDestination(e.target.value)}
+                    onChange={(e) => {
+                      setDestination(e.target.value);
+                      if (errors.destination) setErrors((prev) => ({ ...prev, destination: '' }));
+                    }}
                     className='w-full p-3 border-2 border-gray-300 rounded-lg appearance-none focus:outline-none focus:border-gray-400'
                   >
                     <option value=''>Select Destination</option>
@@ -264,7 +270,10 @@ function CreateFlagship() {
                       type='date'
                       value={startDate}
                       min={new Date().toISOString().slice(0, 10)}
-                      onChange={(e) => setStartDate(e.target.value)}
+                      onChange={(e) => {
+                        setStartDate(e.target.value);
+                        if (errors.startDate) setErrors((prev) => ({ ...prev, startDate: '' }));
+                      }}
                       className='w-full p-3 bg-gray-100 rounded-lg focus:outline-none'
                     />
                   </div>
@@ -280,7 +289,10 @@ function CreateFlagship() {
                       type='date'
                       value={endDate}
                       min={new Date().toISOString().slice(0, 10)}
-                      onChange={(e) => setEndDate(e.target.value)}
+                      onChange={(e) => {
+                        setEndDate(e.target.value);
+                        if (errors.endDate) setErrors((prev) => ({ ...prev, endDate: '' }));
+                      }}
                       className='w-full p-3 bg-gray-100 rounded-lg focus:outline-none'
                     />
                   </div>
@@ -296,7 +308,10 @@ function CreateFlagship() {
                     <button
                       key={cat}
                       type='button'
-                      onClick={() => setCategory(cat.toLowerCase())}
+                      onClick={() => {
+                        setCategory(cat.toLowerCase());
+                        if (errors.category) setErrors((prev) => ({ ...prev, category: '' }));
+                      }}
                       className={`px-4 py-2 rounded-full ${category === cat.toLowerCase() ? 'bg-black text-white' : 'bg-gray-100'
                         }`}
                     >
@@ -315,7 +330,10 @@ function CreateFlagship() {
                     <button
                       key={view}
                       type='button'
-                      onClick={() => setVisibility(view.toLowerCase())}
+                      onClick={() => {
+                        setVisibility(view.toLowerCase());
+                        if (errors.visibility) setErrors((prev) => ({ ...prev, visibility: '' }));
+                      }}
                       className={`px-4 py-2 rounded-full ${visibility === view.toLowerCase() ? 'bg-black text-white' : 'bg-gray-100'
                         }`}
                     >

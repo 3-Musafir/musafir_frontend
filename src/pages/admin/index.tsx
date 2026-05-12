@@ -335,18 +335,20 @@ function AdminMainPage() {
       {/* Admin Header */}
       <div className="sticky top-0 bg-background z-20 border-b border-border">
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center space-x-2">
-            <User className="h-5 w-5 text-text" />
-            <span className="font-medium text-heading">{getAdminName()}</span>
+          <div className="flex items-center space-x-2 min-w-0">
+            <User className="h-5 w-5 text-text flex-shrink-0" />
+            <span className="font-medium text-heading truncate">{getAdminName()}</span>
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={handleSignOut}
-            className="flex items-center space-x-2"
+            className="whitespace-nowrap flex-shrink-0 px-3"
           >
-            <LogOut className="h-4 w-4" />
-            <span>Sign Out</span>
+            <div className="flex items-center gap-2">
+              <LogOut className="h-4 w-4" />
+              <span>Sign Out</span>
+            </div>
           </Button>
         </div>
       </div>

@@ -102,6 +102,7 @@ function ContentPage() {
     e.preventDefault();
     const droppedFiles = Array.from(e.dataTransfer.files);
     setFiles(droppedFiles);
+    if (errors.files) setErrors((prev) => ({ ...prev, files: false }));
   };
 
   const handleDetailedPlanDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -121,6 +122,7 @@ function ContentPage() {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
       setFiles([...files, ...selectedFiles]);
+      if (errors.files) setErrors((prev) => ({ ...prev, files: false }));
     }
   };
 
@@ -229,7 +231,7 @@ function ContentPage() {
         </div>
 
         {/* Progress bar */}
-        <ProgressBar steps={steps} activeStep={activeStep} />
+        <ProgressBar steps={steps} activeStep={activeStep} flagshipData={flagshipData} />
 
         {/* Main Content */}
         <div className='px-4 pb-20'>
@@ -254,7 +256,10 @@ function ContentPage() {
             <div className='mb-4'>
               <RichTextEditor
                 value={travelPlanHtml}
-                onChange={setTravelPlanHtml}
+                onChange={(val) => {
+                  setTravelPlanHtml(val);
+                  if (errors.travelPlan) setErrors((prev) => ({ ...prev, travelPlan: false }));
+                }}
                 placeholder='Describe the travel plan…'
               />
             </div>
