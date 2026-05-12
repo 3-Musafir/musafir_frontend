@@ -250,7 +250,7 @@ export default function TripPayment() {
     persistedDiscountApplied > 0 || Boolean(persistedDiscountType);
 
   const flagshipSelectedBank = registration?.flagship?.selectedBank;
-  const filteredBankEntries = flagshipSelectedBank && bankDetails[flagshipSelectedBank as BankKey]
+  const filteredBankEntries: [string, any][] = flagshipSelectedBank && bankDetails[flagshipSelectedBank as BankKey]
     ? [[flagshipSelectedBank, bankDetails[flagshipSelectedBank as BankKey]]]
     : Object.entries(bankDetails);
 
@@ -1117,7 +1117,7 @@ export default function TripPayment() {
                     </div>
 
                     <div className="space-y-3">
-                      {filteredBankEntries.map(([bankId, details]: [string, any]) => (
+                      {filteredBankEntries.map(([bankId, details]) => (
                         <div key={bankId} className="rounded-xl border border-border bg-card p-4 space-y-2">
                           <p className="font-semibold text-heading">{details.title}</p>
                           <div className="flex items-center justify-between text-sm">
@@ -1301,7 +1301,7 @@ export default function TripPayment() {
                     </div>
 
                     <div className="space-y-3">
-                      {filteredBankEntries.map(([bankId, details]: [string, any]) => (
+                      {filteredBankEntries.map(([bankId, details]) => (
                         <label
                           key={bankId}
                           htmlFor={`bank-${bankId}`}
