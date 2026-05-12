@@ -21,19 +21,19 @@ import { CLARITY_EVENTS } from "@/lib/analytics/events";
 import { IPaymentHistoryItem } from "@/services/types/payment";
 
 const bankDetails = {
-  "faysal-bank": {
+  "1": {
     id: "67fe5f79662980c34fa1bc2b",
     title: "Faysal Bank (Ahmed Bin Abrar)",
     accountNumber: "PK32FAYS3077436000006884",
     iban: "—",
   },
-  "alfalah-ali-hassan": {
+  "2": {
     id: "67fe5f79662980c34fa1bc2c",
     title: "Alfalah Bank (Ali Hassan)",
     accountNumber: "PK34ALFH5617005002276965",
     iban: "—",
   },
-  "alfalah-hameez-rizwan": {
+  "3": {
     id: "68f2c0e3a1b2c3d4e5f60718",
     title: "Alfalah Bank (Muhammad Hameez Rizwan)",
     accountNumber: "55015000960473",
@@ -248,6 +248,17 @@ export default function TripPayment() {
   const hasEligibleDiscounts = discountOptions.some((option) => option.data?.eligible);
   const discountSelectionLocked =
     persistedDiscountApplied > 0 || Boolean(persistedDiscountType);
+
+  const flagshipSelectedBank = registration?.flagship?.selectedBank;
+  const filteredBankEntries = flagshipSelectedBank && bankDetails[flagshipSelectedBank as BankKey]
+    ? [[flagshipSelectedBank, bankDetails[flagshipSelectedBank as BankKey]]]
+    : Object.entries(bankDetails);
+
+  useEffect(() => {
+    if (filteredBankEntries.length === 1 && !selectedBank) {
+      setSelectedBank(filteredBankEntries[0][0] as BankKey);
+    }
+  }, [filteredBankEntries, selectedBank]);
 
   type StepKey = "method" | "proof" | "amount" | "account";
   const stepSequence: StepKey[] = selectedMethod === "bank"
@@ -1106,7 +1117,7 @@ export default function TripPayment() {
                     </div>
 
                     <div className="space-y-3">
-                      {Object.entries(bankDetails).map(([bankId, details]) => (
+                      {filteredBankEntries.map(([bankId, details]: [string, any]) => (
                         <div key={bankId} className="rounded-xl border border-border bg-card p-4 space-y-2">
                           <p className="font-semibold text-heading">{details.title}</p>
                           <div className="flex items-center justify-between text-sm">
@@ -1290,7 +1301,7 @@ export default function TripPayment() {
                     </div>
 
                     <div className="space-y-3">
-                      {Object.entries(bankDetails).map(([bankId, details]) => (
+                      {filteredBankEntries.map(([bankId, details]: [string, any]) => (
                         <label
                           key={bankId}
                           htmlFor={`bank-${bankId}`}

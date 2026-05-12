@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Landmark } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ROLES, ROUTES_CONSTANTS, steps } from '@/config/constants';
@@ -27,6 +27,7 @@ function PaymentOptions() {
   const [selectedBank, setSelectedBank] = useState<string | null>(null);
   const [expandedBank, setExpandedBank] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [logoErrors, setLogoErrors] = useState<Record<string, boolean>>({});
 
   // Bank accounts data
   const bankAccounts = [
@@ -190,13 +191,21 @@ function PaymentOptions() {
 
                     {/* Bank Logo */}
                     <div className='mr-3'>
-                      <Image
-                        src={bank.logo || '/placeholder.svg'}
-                        alt={bank.name}
-                        width={40}
-                        height={40}
-                        className='rounded-full'
-                      />
+                      {bank.logo && !logoErrors[bank.id] ? (
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden border border-gray-100">
+                          <Image
+                            src={bank.logo}
+                            alt={bank.name}
+                            fill
+                            className='object-cover'
+                            onError={() => setLogoErrors(prev => ({ ...prev, [bank.id]: true }))}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center border border-gray-100">
+                          <Landmark className="w-5 h-5 text-gray-400" />
+                        </div>
+                      )}
                     </div>
 
                     {/* Bank Name */}
