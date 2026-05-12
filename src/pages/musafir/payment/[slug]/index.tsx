@@ -250,8 +250,11 @@ export default function TripPayment() {
     persistedDiscountApplied > 0 || Boolean(persistedDiscountType);
 
   const flagshipSelectedBank = registration?.flagship?.selectedBank;
-  const filteredBankEntries: [string, any][] = flagshipSelectedBank && bankDetails[flagshipSelectedBank as BankKey]
-    ? [[flagshipSelectedBank, bankDetails[flagshipSelectedBank as BankKey]]]
+  const selectedBankIds = flagshipSelectedBank ? flagshipSelectedBank.split(',').filter(Boolean) : [];
+  const filteredBankEntries: [string, any][] = selectedBankIds.length > 0
+    ? selectedBankIds
+      .filter((id: any) => bankDetails[id as BankKey])
+      .map((id: any) => [id, bankDetails[id as BankKey]])
     : Object.entries(bankDetails);
 
   useEffect(() => {

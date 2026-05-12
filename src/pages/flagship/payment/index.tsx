@@ -24,7 +24,7 @@ function PaymentOptions() {
   const [editId, setEditId] = useState<string | null | undefined>(undefined);
   const isEditMode = Boolean(editId);
   // Selected bank and expanded states
-  const [selectedBank, setSelectedBank] = useState<string | null>(null);
+  const [selectedBanks, setSelectedBanks] = useState<string[]>([]);
   const [expandedBank, setExpandedBank] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [logoErrors, setLogoErrors] = useState<Record<string, boolean>>({});
@@ -102,15 +102,15 @@ function PaymentOptions() {
 
   useEffect(() => {
     if (flagshipData && flagshipData.selectedBank) {
-      setSelectedBank(flagshipData.selectedBank);
+      setSelectedBanks(flagshipData.selectedBank.split(',').filter(Boolean));
     }
   }, [flagshipData]);
 
   // Handle form submission
   const handleSubmit = async () => {
-    // Validate that a bank account is selected
-    if (!selectedBank) {
-      setError('Please select a bank account.');
+    // Validate that at least one bank account is selected
+    if (selectedBanks.length === 0) {
+      setError('Please select at least one bank account.');
       return;
     } else {
       setError('');
@@ -118,7 +118,7 @@ function PaymentOptions() {
 
     // Build payload (if additional data is required, add here)
     const formData = {
-      selectedBank,
+      selectedBank: selectedBanks.join(','),
       silentUpdate: isEditMode ? true : undefined,
     };
     console.log(formData, 'payload');
@@ -172,19 +172,24 @@ function PaymentOptions() {
                   <div
                     className='flex items-center p-4 cursor-pointer hover:bg-gray-50'
                     onClick={() => {
-                      setSelectedBank(bank.id);
+                      const next = selectedBanks.includes(bank.id)
+                        ? selectedBanks.filter(id => id !== bank.id)
+                        : [...selectedBanks, bank.id];
+                      setSelectedBanks(next);
                       toggleBankDetails(bank.id);
                       if (error) setError('');
                     }}
                   >
-                    {/* Radio Button */}
+                    {/* Checkbox */}
                     <div className='mr-4'>
                       <div
-                        className={`w-6 h-6 rounded-full border-2 ${selectedBank === bank.id ? 'border-blue-500' : 'border-gray-300'
-                          } flex items-center justify-center`}
+                        className={`w-6 h-6 rounded border-2 ${selectedBanks.includes(bank.id) ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
+                          } flex items-center justify-center transition-colors`}
                       >
-                        {selectedBank === bank.id && (
-                          <div className='w-3 h-3 rounded-full bg-blue-500' />
+                        {selectedBanks.includes(bank.id) && (
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                          </svg>
                         )}
                       </div>
                     </div>
