@@ -374,7 +374,7 @@ function PricingPage() {
         </div>
 
         {/* Progress bar */}
-        <ProgressBar steps={steps} activeStep={activeStep} />
+        <ProgressBar steps={steps} activeStep={activeStep} flagshipData={flagshipData} />
 
         {/* Main Content */}
         <div className='px-4 pb-20'>

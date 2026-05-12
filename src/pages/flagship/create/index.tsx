@@ -183,7 +183,7 @@ function CreateFlagship() {
             setFlagshipData(res.data);
             saveDraft('create', null, res.data);
           }
-          router.push(ROUTES_CONSTANTS.FLAGSHIP.CONTENT);
+          router.push(withEditId(ROUTES_CONSTANTS.FLAGSHIP.CONTENT, res.data._id));
         }
       }
     } catch (error: any) {
@@ -205,7 +205,7 @@ function CreateFlagship() {
         </div>
 
         {/* Progress bar */}
-        <ProgressBar steps={steps} activeStep={activeStep} />
+        <ProgressBar steps={steps} activeStep={activeStep} flagshipData={flagshipData} />
 
         {/* Main Content */}
         <div className='px-4 pb-20'>

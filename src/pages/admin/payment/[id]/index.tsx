@@ -46,16 +46,17 @@ export default function PaymentDetailsPage() {
       setPayment(data);
 
       // Fetch flagship details if it's a string (ID)
-      if (typeof (data.registration as IRegistration).flagship === "string") {
-        const flagshipData = await FlagshipService.getFlagshipByID(
-          (data.registration as IRegistration).flagship as string
-        );
-        setFlagship(flagshipData);
-      } else {
-        // If it's already an IFlagship object
-        setFlagship(
-          (data.registration as IRegistration).flagship as IFlagship
-        );
+      if (data.registration) {
+        const registration = data.registration as IRegistration;
+        if (typeof registration.flagship === "string") {
+          const flagshipData = await FlagshipService.getFlagshipByID(
+            registration.flagship as string
+          );
+          setFlagship(flagshipData);
+        } else if (registration.flagship) {
+          // If it's already an IFlagship object
+          setFlagship(registration.flagship as IFlagship);
+        }
       }
     } catch (error) {
       console.error("Error fetching payment details:", error);
@@ -196,9 +197,9 @@ export default function PaymentDetailsPage() {
 
   // Type guard to check if user is an IUser object
   const user =
-    typeof (payment.registration as IRegistration).user === "string"
-      ? null
-      : ((payment.registration as IRegistration).user as IUser);
+    payment.registration && typeof (payment.registration as IRegistration).user !== "string"
+      ? ((payment.registration as IRegistration).user as IUser)
+      : null;
   const registration = payment.registration as any;
   const registrationPrice =
     typeof registration?.price === "number" ? registration.price : undefined;
