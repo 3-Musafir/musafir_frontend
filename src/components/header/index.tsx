@@ -28,7 +28,7 @@ export default function Header({
   const previousPathRef = useRef<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const { unreadCount } = useNotificationsContext();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
@@ -45,6 +45,8 @@ export default function Header({
 
 
   const showAuthCta = status !== 'authenticated'; // Show login/signup buttons when not authenticated on ANY page
+  const sessionRoles = (session?.user as any)?.roles || [];
+  const isAdmin = Array.isArray(sessionRoles) && sessionRoles.includes('admin');
 
   const tabLinks: { href: string; label: string; icon: typeof Home; tabId: TabType }[] = [
     { href: '/home', label: 'Home', icon: Home, tabId: 'home' },
@@ -84,7 +86,7 @@ export default function Header({
           >
             Explore
           </Link>
-          {status === 'authenticated' && tabLinks.map(({ href, label, tabId }) => {
+          {status === 'authenticated' && !isAdmin && tabLinks.map(({ href, label, tabId }) => {
             const isActive = onTabChange ? externalActiveTab === tabId : pathname === href;
 
             if (onTabChange) {

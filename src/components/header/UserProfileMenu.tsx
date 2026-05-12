@@ -17,7 +17,7 @@ export default function UserProfileMenu() {
   const [user, setUser] = useState<User | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const { getMe } = useUserHandler();
 
   useEffect(() => {
@@ -65,6 +65,9 @@ export default function UserProfileMenu() {
     setShowDropdown(false);
   };
 
+  const sessionRoles = (session?.user as any)?.roles || [];
+  const isAdmin = Array.isArray(sessionRoles) && sessionRoles.includes("admin");
+
   const handleProfileClick = () => {
     if (status !== "authenticated") {
       router.push("/login");
@@ -106,6 +109,17 @@ export default function UserProfileMenu() {
           >
             Profile
           </button>
+          {isAdmin && (
+            <button
+              onClick={() => {
+                router.push("/admin");
+                setShowDropdown(false);
+              }}
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              Admin Dashboard
+            </button>
+          )}
           <button
             onClick={async () => {
               const base = process.env.NEXT_PUBLIC_AUTH_URL?.trim();

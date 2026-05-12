@@ -93,6 +93,13 @@ export async function middleware(req: NextRequest) {
       url.pathname = "/unauthorized";
       return NextResponse.redirect(url);
     }
+  } else if (requiresUser) {
+    const roles = (token as any)?.user?.roles || [];
+    if (Array.isArray(roles) && roles.includes("admin") && !roles.includes("musafir")) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/admin";
+      return NextResponse.redirect(url);
+    }
   }
 
   return NextResponse.next();
