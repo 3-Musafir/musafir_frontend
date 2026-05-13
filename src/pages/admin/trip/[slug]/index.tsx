@@ -215,12 +215,11 @@ export default function Dashboard() {
             className="w-full"
             onValueChange={setActiveTab}
           >
-            <TabsList className="w-full grid grid-cols-5 h-12">
+            <TabsList className="w-full flex overflow-x-auto no-scrollbar justify-start h-12 bg-transparent border-b rounded-none p-0 gap-6">
               <TabsTrigger
                 value="stats"
                 className={cn(
-                  "py-3 flex justify-center",
-                  activeTab === "stats" && "border-b-2 border-black"
+                  "py-3 px-0 flex justify-center bg-transparent data-[state=active]:bg-transparent rounded-none border-b-2 border-transparent data-[state=active]:border-black",
                 )}
               >
                 Stats
@@ -228,35 +227,31 @@ export default function Dashboard() {
               <TabsTrigger
                 value="registration"
                 className={cn(
-                  "py-3 flex justify-center",
-                  activeTab === "registration" && "border-b-2 border-black"
+                  "py-3 px-0 flex justify-center bg-transparent data-[state=active]:bg-transparent rounded-none border-b-2 border-transparent data-[state=active]:border-black",
                 )}
               >
                 Registration
               </TabsTrigger>
-          <TabsTrigger
-            value="verification"
-            className={cn(
-              "py-3 flex justify-center",
-              activeTab === "verification" && "border-b-2 border-black"
-            )}
-          >
-            Payment Verification
-          </TabsTrigger>
-          <TabsTrigger
-            value="checkin"
-            className={cn(
-              "py-3 flex justify-center",
-              activeTab === "checkin" && "border-b-2 border-black"
-            )}
-          >
-            Check-In
-          </TabsTrigger>
+              <TabsTrigger
+                value="verification"
+                className={cn(
+                  "py-3 px-0 flex justify-center bg-transparent data-[state=active]:bg-transparent rounded-none border-b-2 border-transparent data-[state=active]:border-black",
+                )}
+              >
+                Payments
+              </TabsTrigger>
+              <TabsTrigger
+                value="checkin"
+                className={cn(
+                  "py-3 px-0 flex justify-center bg-transparent data-[state=active]:bg-transparent rounded-none border-b-2 border-transparent data-[state=active]:border-black",
+                )}
+              >
+                Check-In
+              </TabsTrigger>
               <TabsTrigger
                 value="paid"
                 className={cn(
-                  "py-3 flex justify-center",
-                  activeTab === "paid" && "border-b-2 border-black"
+                  "py-3 px-0 flex justify-center bg-transparent data-[state=active]:bg-transparent rounded-none border-b-2 border-transparent data-[state=active]:border-black",
                 )}
               >
                 Paid
