@@ -26,7 +26,7 @@ function PricingPage() {
   const isEditMode = Boolean(editId);
   // Base price state
   const [basePrice, setBasePrice] = useState('');
-  const [earlyBirdPrice, setEarlyBirdPrice] = useState('');
+  const [earlyBirdDiscount, setEarlyBirdDiscount] = useState('');
 
   // Locations state
   const [locations, setLocations] = useState([
@@ -62,7 +62,7 @@ function PricingPage() {
     tiers: '',
     mattressTiers: '',
     roomSharingPreference: '',
-    earlyBirdPrice: '',
+    earlyBirdDiscount: '',
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -160,7 +160,10 @@ function PricingPage() {
       }
       // For discounts, basePrice, citySeats, gender splits, etc.
       if (flagshipData.basePrice) setBasePrice(flagshipData.basePrice);
-      if (flagshipData.earlyBirdPrice) setEarlyBirdPrice(String(flagshipData.earlyBirdPrice));
+      if (flagshipData.earlyBirdPrice && flagshipData.basePrice) {
+        const discount = Number(flagshipData.basePrice) - Number(flagshipData.earlyBirdPrice);
+        setEarlyBirdDiscount(String(discount));
+      }
     }
   }, [flagshipData]);
 
@@ -263,7 +266,7 @@ function PricingPage() {
       tiers: tierEnabled ? tiers.map(({ id, ...rest }) => rest) : [],
       mattressTiers: mattressTierEnabled ? mattressTiers.map(({ id, ...rest }) => rest) : [],
       roomSharingPreference: roomSharingEnabled ? roomSharingPreference.map(({ id, ...rest }) => rest) : [],
-      earlyBirdPrice: earlyBirdPrice ? Number(earlyBirdPrice) : undefined,
+      earlyBirdPrice: (basePrice && earlyBirdDiscount) ? (Number(basePrice) - Number(earlyBirdDiscount)) : undefined,
     };
     ensureSilentUpdate(formData);
     try {
@@ -299,7 +302,7 @@ function PricingPage() {
       tiers: '',
       mattressTiers: '',
       roomSharingPreference: '',
-      earlyBirdPrice: '',
+      earlyBirdDiscount: '',
     };
 
     if (!basePrice.trim()) {
@@ -347,14 +350,14 @@ function PricingPage() {
       }
     }
 
-    if (earlyBirdPrice) {
-      const eb = Number(earlyBirdPrice);
+    if (earlyBirdDiscount) {
+      const eb = Number(earlyBirdDiscount);
       const base = Number(basePrice);
-      if (Number.isNaN(eb) || eb <= 0) {
-        newErrors.earlyBirdPrice = 'Enter a valid early-bird price';
+      if (Number.isNaN(eb) || eb < 0) {
+        newErrors.earlyBirdDiscount = 'Enter a valid early-bird discount';
         isValid = false;
       } else if (!Number.isNaN(base) && eb > base) {
-        newErrors.earlyBirdPrice = 'Early-bird price should be <= base price';
+        newErrors.earlyBirdDiscount = 'Early-bird discount should be <= base price';
         isValid = false;
       }
     }
@@ -405,28 +408,34 @@ function PricingPage() {
           {/* Early Bird Price */}
           <div className='mb-8'>
             <div className='flex items-center justify-between'>
-              <h3 className='text-xl font-bold mb-2'>Early-bird price (override)</h3>
-              <p className='text-xs text-gray-600'>Applies until Early Bird Deadline (Step 5)</p>
+              <h3 className='text-xl font-bold mb-2 whitespace-nowrap'>Early-bird discount</h3>
+              <p className='text-xs text-gray-600 justify-end'>Applies until Early Bird <br /> Deadline (Step 5)</p>
             </div>
             <div className='border-2 border-black rounded-xl overflow-hidden'>
               <input
                 min={0}
-                value={earlyBirdPrice}
+                value={earlyBirdDiscount}
                 onChange={(e) => {
-                  setEarlyBirdPrice(e.target.value);
+                  setEarlyBirdDiscount(e.target.value);
                   setIsDirty(true);
-                  if (errors.earlyBirdPrice) setErrors((prev) => ({ ...prev, earlyBirdPrice: '' }));
+                  if (errors.earlyBirdDiscount) setErrors((prev) => ({ ...prev, earlyBirdDiscount: '' }));
                 }}
                 className='w-full px-4 py-3 focus:outline-none text-lg'
-                placeholder='Optional early-bird price (<= base price)'
+                placeholder='Optional early-bird discount amount'
               />
             </div>
-            {errors.earlyBirdPrice && (
-              <p className='text-brand-error text-sm mt-1'>{errors.earlyBirdPrice}</p>
+            {errors.earlyBirdDiscount && (
+              <p className='text-brand-error text-sm mt-1'>{errors.earlyBirdDiscount}</p>
             )}
-            <p className='text-gray-600 mt-2 text-sm'>
-              Users will see this lower price before adding city/tier adjustments when registering before the deadline.
-            </p>
+            {earlyBirdDiscount && basePrice && Number(earlyBirdDiscount) > Number(basePrice) ? (
+              <p className='text-brand-error text-sm mt-2'>
+                Discount cannot be greater than the base price ({basePrice})
+              </p>
+            ) : (
+              <p className='text-gray-600 mt-2 text-sm leading-relaxed'>
+                Users will see {basePrice || '[Base Price]'} - {earlyBirdDiscount || '[Early Bird Discount]'} = <span className='text-brand-primary font-bold'>{(basePrice && earlyBirdDiscount) ? (Number(basePrice) - Number(earlyBirdDiscount)) : '[Discounted Price]'}</span> before adding city/tier adjustments when registering before the deadline.
+              </p>
+            )}
           </div>
 
           {/* Departure Points Section */}
@@ -442,9 +451,8 @@ function PricingPage() {
                     <div className='flex justify-between items-center mb-2'>
                       <h4 className='text-lg font-bold'>{location.name}</h4>
                       <div
-                        className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${
-                          location.enabled ? 'bg-black' : 'bg-gray-300'
-                        }`}
+                        className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${location.enabled ? 'bg-black' : 'bg-gray-300'
+                          }`}
                         onClick={() => {
                           toggleLocation(location.id);
                           setIsDirty(true);
@@ -452,9 +460,8 @@ function PricingPage() {
                         }}
                       >
                         <div
-                          className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
-                            location.enabled ? 'translate-x-7' : ''
-                          }`}
+                          className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${location.enabled ? 'translate-x-7' : ''
+                            }`}
                         ></div>
                       </div>
                     </div>
@@ -530,15 +537,13 @@ function PricingPage() {
             <div className='flex justify-between items-center mb-6'>
               <h3 className='text-xl font-bold'>Tier Based Add-Ons</h3>
               <div
-                className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${
-                  tierEnabled ? 'bg-black' : 'bg-gray-300'
-                }`}
+                className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${tierEnabled ? 'bg-black' : 'bg-gray-300'
+                  }`}
                 onClick={() => setTierEnabled(!tierEnabled)}
               >
                 <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
-                    tierEnabled ? 'translate-x-7' : ''
-                  }`}
+                  className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${tierEnabled ? 'translate-x-7' : ''
+                    }`}
                 ></div>
               </div>
             </div>
@@ -554,9 +559,9 @@ function PricingPage() {
                           min={0}
                           value={tier.price}
                           onChange={(e) => {
-                             updateTierPrice(tier.id, e.target.value);
-                             setIsDirty(true);
-                             if (errors.tiers) setErrors((prev) => ({ ...prev, tiers: '' }));
+                            updateTierPrice(tier.id, e.target.value);
+                            setIsDirty(true);
+                            if (errors.tiers) setErrors((prev) => ({ ...prev, tiers: '' }));
                           }}
                           className='w-full px-4 py-3 focus:outline-none text-lg'
                           placeholder='0'
@@ -610,15 +615,13 @@ function PricingPage() {
             <div className='flex justify-between items-center mb-6'>
               <h3 className='text-xl font-bold'>Mattress Tier</h3>
               <div
-                className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${
-                  mattressTierEnabled ? 'bg-black' : 'bg-gray-300'
-                }`}
+                className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${mattressTierEnabled ? 'bg-black' : 'bg-gray-300'
+                  }`}
                 onClick={() => setMattressTierEnabled(!mattressTierEnabled)}
               >
                 <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
-                    mattressTierEnabled ? 'translate-x-7' : ''
-                  }`}
+                  className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${mattressTierEnabled ? 'translate-x-7' : ''
+                    }`}
                 ></div>
               </div>
             </div>
@@ -634,9 +637,9 @@ function PricingPage() {
                           min={0}
                           value={tier.price}
                           onChange={(e) => {
-                             updateMattressTierPrice(tier.id, e.target.value);
-                             setIsDirty(true);
-                             if (errors.mattressTiers) setErrors((prev) => ({ ...prev, mattressTiers: '' }));
+                            updateMattressTierPrice(tier.id, e.target.value);
+                            setIsDirty(true);
+                            if (errors.mattressTiers) setErrors((prev) => ({ ...prev, mattressTiers: '' }));
                           }}
                           className='w-full px-4 py-3 focus:outline-none text-lg'
                           placeholder='0'
@@ -690,15 +693,13 @@ function PricingPage() {
             <div className='flex justify-between items-center mb-6'>
               <h3 className='text-xl font-bold'>Room Sharing Preference</h3>
               <div
-                className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${
-                  roomSharingEnabled ? 'bg-black' : 'bg-gray-300'
-                }`}
+                className={`w-14 h-7 rounded-full p-1 cursor-pointer transition-colors ${roomSharingEnabled ? 'bg-black' : 'bg-gray-300'
+                  }`}
                 onClick={() => setRoomSharingEnabled(!roomSharingEnabled)}
               >
                 <div
-                  className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${
-                    roomSharingEnabled ? 'translate-x-7' : ''
-                  }`}
+                  className={`w-5 h-5 rounded-full bg-white transition-transform duration-200 ${roomSharingEnabled ? 'translate-x-7' : ''
+                    }`}
                 ></div>
               </div>
             </div>
@@ -714,9 +715,9 @@ function PricingPage() {
                           min={0}
                           value={tier.price}
                           onChange={(e) => {
-                             updateRoomSharingPreferencePrice(tier.id, e.target.value);
-                             setIsDirty(true);
-                             if (errors.roomSharingPreference) setErrors((prev) => ({ ...prev, roomSharingPreference: '' }));
+                            updateRoomSharingPreferencePrice(tier.id, e.target.value);
+                            setIsDirty(true);
+                            if (errors.roomSharingPreference) setErrors((prev) => ({ ...prev, roomSharingPreference: '' }));
                           }}
                           className='w-full px-4 py-3 focus:outline-none text-lg'
                           placeholder='0'
@@ -733,19 +734,19 @@ function PricingPage() {
         </div>
 
         {/* Next Button */}
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            aria-busy={isSubmitting || undefined}
-            className={`btn-primary w-full rounded-xl text-lg font-bold ${isSubmitting ? 'bg-gray-300 cursor-not-allowed' : ''}`}
-          >
-            {isSubmitting ? (
-              <span className='flex items-center justify-center'>
-                <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2' />
-                Processing...
-              </span>
-            ) : 'Next'}
-          </button>
+        <button
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          aria-busy={isSubmitting || undefined}
+          className={`btn-primary w-full rounded-xl text-lg font-bold ${isSubmitting ? 'bg-gray-300 cursor-not-allowed' : ''}`}
+        >
+          {isSubmitting ? (
+            <span className='flex items-center justify-center'>
+              <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2' />
+              Processing...
+            </span>
+          ) : 'Next'}
+        </button>
       </div>
     </div>
   );
