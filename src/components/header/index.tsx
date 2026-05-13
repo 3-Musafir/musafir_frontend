@@ -120,7 +120,7 @@ export default function Header({
         </nav>
       )}
 
-      <div className='flex items-center ml-auto space-x-4 lg:space-x-6'>
+      <div className='flex items-center h-full ml-auto space-x-4 lg:space-x-6'>
         {showAuthCta && (
           <div className='flex items-center space-x-3 lg:space-x-4 mr-1'>
             <button

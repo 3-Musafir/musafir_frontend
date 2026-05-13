@@ -76,10 +76,10 @@ export default function UserProfileMenu() {
     setShowDropdown((prev) => !prev);
   };
 
-  if (status !== "authenticated") return <div suppressHydrationWarning className="relative flex items-center" />;
+  if (status !== "authenticated") return <div suppressHydrationWarning className="relative h-full flex items-center" />;
 
   return (
-    <div suppressHydrationWarning className="relative flex items-center">
+    <div suppressHydrationWarning className="relative h-full flex items-center">
       <button onClick={handleProfileClick} className="flex items-center focus:outline-none">
         {user?.fullName && (
           <span className="text-sm lg:text-base font-medium mr-2 lg:mr-3 hidden sm:inline">{user.fullName}</span>
@@ -101,7 +101,7 @@ export default function UserProfileMenu() {
       {status === "authenticated" && showDropdown && (
         <div
           ref={dropdownRef}
-          className="absolute right-0 mt-12 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-10"
+          className="absolute right-0 top-full -mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-50"
         >
           <button
             onClick={handleSettings}
