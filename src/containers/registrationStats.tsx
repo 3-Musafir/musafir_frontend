@@ -58,14 +58,14 @@ export const RegistrationStatsContainer = () => {
     return <div className="p-4 text-sm text-gray-500">No stats available yet.</div>;
   }
 
-  // Calculate percentages for the progress bars
-  const totalRegistrations = stats.totalRegistrations;
-  const total = Math.max(1, totalRegistrations);
-  const newPercentage = (stats.newCount / total) * 100;
-  const onboardingPercentage = (stats.onboardingCount / total) * 100;
-  const paymentPercentage = (stats.paymentCount / total) * 100;
-  const waitlistedPercentage = (stats.waitlistedCount / total) * 100;
-  const confirmedPercentage = (stats.confirmedCount / total) * 100;
+  // Calculate percentages for the progress bars relative to capacity
+  const capacity = Math.max(stats.teamSeats, stats.totalRegistrations, 1);
+  const newPercentage = (stats.newCount / capacity) * 100;
+  const onboardingPercentage = (stats.onboardingCount / capacity) * 100;
+  const paymentPercentage = (stats.paymentCount / capacity) * 100;
+  const waitlistedPercentage = (stats.waitlistedCount / capacity) * 100;
+  const confirmedPercentage = (stats.confirmedCount / capacity) * 100;
+  
   const remainingPercentage = Math.max(
     0,
     100 -
@@ -76,9 +76,10 @@ export const RegistrationStatsContainer = () => {
         confirmedPercentage),
   );
 
-  // Calculate gender percentages
-  const malePercentage = (stats.maleCount / total) * 100;
-  const femalePercentage = (stats.femaleCount / total) * 100;
+  // Calculate gender percentages relative to capacity
+  const malePercentage = (stats.maleCount / capacity) * 100;
+  const femalePercentage = (stats.femaleCount / capacity) * 100;
+  const genderRemainingPercentage = Math.max(0, 100 - (malePercentage + femalePercentage));
 
   // Transform age distribution data for Recharts
   const ageData: AgeData[] = Object.entries(stats.ageDistribution ?? {}).map(
@@ -203,6 +204,10 @@ export const RegistrationStatsContainer = () => {
           <div
             className="bg-pink-500"
             style={{ width: `${femalePercentage}%` }}
+          ></div>
+          <div
+            className="bg-gray-200"
+            style={{ width: `${genderRemainingPercentage}%` }}
           ></div>
         </div>
         <div className="space-y-2">

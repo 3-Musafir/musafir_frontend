@@ -46,7 +46,7 @@ export default function PublicHeader({ hideAuthCta = false }: { hideAuthCta?: bo
           </Link>
           {label ? <span className="text-xs text-text">{label}</span> : null}
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center h-full">
           {status === "authenticated" ? (
             <UserProfileMenu />
           ) : hideAuthCta ? null : status === "loading" ? (
