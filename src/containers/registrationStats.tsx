@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FlagshipService } from "@/services/flagshipService";
 import { IRegistrationStats } from "@/services/types/flagship";
 import { useRouter } from "next/router";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   BarChart,
   Bar,
@@ -19,7 +20,7 @@ interface AgeData {
   count: number;
 }
 
-export const RegistrationStatsContainer = () => {
+export const RegistrationStatsContainer = ({ refreshKey = 0, onRefresh }: { refreshKey?: number; onRefresh?: () => void }) => {
   const [stats, setStats] = useState<IRegistrationStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -29,6 +30,7 @@ export const RegistrationStatsContainer = () => {
   useEffect(() => {
     const fetchStats = async () => {
       if (slug) {
+        setLoading(true);
         try {
           const data = await FlagshipService.getRegistrationStats(
             slug as string
@@ -44,18 +46,55 @@ export const RegistrationStatsContainer = () => {
     };
 
     fetchStats();
-  }, [slug]);
-
-  if (loading) {
-    return <div className="p-4">Loading...</div>;
-  }
+  }, [slug, refreshKey]);
 
   if (error) {
     return <div className="p-4 text-sm text-red-600">{error}</div>;
   }
 
+  // First load — no data yet, show full skeleton
   if (!stats) {
-    return <div className="p-4 text-sm text-gray-500">No stats available yet.</div>;
+    return (
+      <div className="p-4 space-y-6">
+        <Skeleton className="h-20 w-full rounded-lg" />
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-6 w-full rounded-sm" />
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Skeleton className="w-4 h-4 shrink-0" />
+              <Skeleton className="flex-1 h-4" />
+              <Skeleton className="w-6 h-4" />
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
+        </div>
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="h-6 w-full rounded-sm" />
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Skeleton className="w-4 h-4 shrink-0" />
+              <Skeleton className="flex-1 h-4" />
+              <Skeleton className="w-6 h-4" />
+            </div>
+          ))}
+        </div>
+        <Skeleton className="h-[300px] w-full rounded-lg" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-32 mb-2" />
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Skeleton className="w-4 h-4 shrink-0" />
+              <Skeleton className="flex-1 h-4" />
+              <Skeleton className="w-6 h-4" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   // Calculate percentages for the progress bars relative to capacity
@@ -102,12 +141,36 @@ export const RegistrationStatsContainer = () => {
 
   return (
     <div className="p-4 space-y-6">
+      {loading && (
+        <div className="h-0.5 w-full rounded-full overflow-hidden bg-gray-100">
+          <div className="h-full w-2/5 bg-gray-400 animate-pulse rounded-full" />
+        </div>
+      )}
       {/* Days to Trip */}
       <div className="bg-red-50 p-4 rounded-lg">
-        <div className="text-sm text-gray-600">Days to Trip</div>
-        <div className="text-4xl font-bold">
-          {stats.daysUntilStart > 0 ? stats.daysUntilStart : 0}{" "}
-          <span className="text-sm font-normal">Days</span>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm text-gray-600">Days to Trip</div>
+            <div className="text-4xl font-bold">
+              {stats.daysUntilStart > 0 ? stats.daysUntilStart : 0}{" "}
+              <span className="text-sm font-normal">Days</span>
+            </div>
+          </div>
+          {onRefresh && (
+            <button
+              type="button"
+              onClick={onRefresh}
+              title="Refresh stats"
+              className="h-8 w-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-red-100 transition"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                <path d="M21 3v5h-5" />
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                <path d="M8 16H3v5" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 

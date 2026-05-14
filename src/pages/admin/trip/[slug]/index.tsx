@@ -21,6 +21,7 @@ import { mapErrorToUserMessage } from "@/utils/errorMessages";
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("stats");
   const [activeSection, setActiveSection] = useState("registrations");
+  const [statsRefreshKey, setStatsRefreshKey] = useState(0);
   const [flagship, setFlagship] = useState<IFlagship | null>(null);
   const [visibilityUpdating, setVisibilityUpdating] = useState(false);
   const [visibilityError, setVisibilityError] = useState("");
@@ -283,12 +284,12 @@ export default function Dashboard() {
           )}
         </header>
       </div>
-      {activeTab === "stats" && activeSection === "registrations" && (
-        <RegistrationStatsContainer />
-      )}
-      {activeTab === "stats" && activeSection === "payments" && (
-        <PaymentStatsContainer />
-      )}
+      <div className={activeTab === "stats" && activeSection === "registrations" ? "" : "hidden"}>
+        <RegistrationStatsContainer refreshKey={statsRefreshKey} onRefresh={() => setStatsRefreshKey((k) => k + 1)} />
+      </div>
+      <div className={activeTab === "stats" && activeSection === "payments" ? "" : "hidden"}>
+        <PaymentStatsContainer refreshKey={statsRefreshKey} onRefresh={() => setStatsRefreshKey((k) => k + 1)} />
+      </div>
       {activeTab === "stats" && (
         <div className="px-4 pb-6 space-y-4">
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
