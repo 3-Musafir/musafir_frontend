@@ -1134,7 +1134,7 @@ export default function TripPayment() {
       {/* Breakdown Overlay */}
       {isViewingBreakdown && (
         <div className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-sm flex justify-center animate-in fade-in duration-200">
-          <div className="w-full max-w-md h-full bg-card shadow-2xl flex flex-col">
+          <div className="w-full max-w-md h-full bg-card shadow-2xl flex flex-col relative">
             <div className="flex items-center justify-between px-4 py-4 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-10">
               <button type="button" onClick={() => setIsViewingBreakdown(false)} className="h-9 w-9 flex items-center justify-center rounded-full border border-border text-heading hover:bg-muted transition-colors">
                 ×
@@ -1142,7 +1142,7 @@ export default function TripPayment() {
               <h2 className="text-lg font-semibold text-heading">Payment Breakdown</h2>
               <div className="h-9 w-9" />
             </div>
-            <div className="flex-1 overflow-y-auto p-4 lg:p-6 pb-32">
+            <div className="flex-1 overflow-y-auto px-4 pt-4 pb-32 lg:px-6 lg:pt-6">
               <div className="space-y-4">
                 {paymentType === "partial" && typeof paymentQuote?.partialDue === "number" && (
                   <div className="bg-card border border-border rounded-lg p-4 lg:p-6">
