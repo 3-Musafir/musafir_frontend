@@ -36,7 +36,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
   isLoading?: boolean
   loadingText?: string
@@ -76,7 +76,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
           />
         )}
-        <span className={isLoading ? "opacity-80" : undefined}>
+        <span className={cn(
+          isLoading && "opacity-80",
+          "flex gap-2 items-center"
+        )}>
           {isLoading && loadingText ? loadingText : children}
         </span>
       </Comp>
