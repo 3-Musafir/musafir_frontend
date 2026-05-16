@@ -194,7 +194,7 @@ export const dmcFaqs = [
   {
     question: "What does a destination management company in Pakistan do?",
     answer:
-      "A destination management company in Pakistan acts as the local operating partner for travel agencies, tour operators, and group planners. It handles itinerary design, hotels, transport, guides, vendor coordination, and on-ground troubleshooting, so an overseas partner can sell Pakistan confidently without building its own local operations team.",
+      "3Musafir is destination management company in Pakistan, we act as the local operating partner for travel agencies, tour operators, and group planners. We handle itinerary design, hotels, transport, guides, vendor coordination, and on-ground troubleshooting, so an overseas partner can sell Pakistan confidently without building their own local operations team.",
   },
   {
     question: "Is 3Musafir a Pakistan DMC for international travel agencies?",
