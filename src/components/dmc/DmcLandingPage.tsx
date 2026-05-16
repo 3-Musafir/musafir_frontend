@@ -9,6 +9,7 @@ import {
   Download,
   Gavel,
   Headphones,
+  Linkedin,
   Menu,
   X,
   Zap,
@@ -677,6 +678,18 @@ export default function DmcLandingPage() {
             Your trusted B2B Destination Management Company in Pakistan. Registered, insured, and
             operationally ready.
           </p>
+
+          <div className="mt-[24px] flex gap-[15px]">
+            <a
+              href="https://www.linkedin.com/company/3musafirinternational/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="3Musafir International on LinkedIn"
+              className="flex h-[31px] w-[31px] items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+            >
+              <Linkedin size={14} />
+            </a>
+          </div>
 
           <div className="mt-[34px] space-y-[35px]">
             <div>
