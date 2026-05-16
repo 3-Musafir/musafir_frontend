@@ -45,6 +45,12 @@ const SEO_MAP: Record<
       "Read community-sourced 3Musafir testimonials about solo travel, safety, first-time group trips, and the people behind each journey.",
     ogImage: "/sc.png",
   },
+  "/dmc": {
+    title: "Pakistan DMC for International Travel Agencies | 3Musafir",
+    description:
+      "Pakistan DMC for international agencies. 3Musafir manages inbound tours, MICE, retreats, hotel contracting, transport, and on-ground logistics across Pakistan.",
+    ogImage: "/3musafir-founders.jpg",
+  },
   "/why": {
     title: "Why 3Musafir Exists — Safer travel for women in Pakistan",
     description:
