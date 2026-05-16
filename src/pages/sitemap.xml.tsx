@@ -14,7 +14,7 @@ const ROUTES = [
   "/home",
   "/explore",
   "/reviews",
-  "/dmc",
+  "/pakistan-dmc",
   "/why",
   "/about-3musafir",
   "/trust",

@@ -180,7 +180,7 @@ export default function DmcLandingPage() {
                 Home
               </a>
               <span className="px-2 text-[#a0a5b0]">/</span>
-              <span>DMC</span>
+              <span>Pakistan DMC</span>
             </nav>
 
             <h1 className="max-w-[455px] text-[40px] font-black leading-[1.18] text-[#2d2f49]">

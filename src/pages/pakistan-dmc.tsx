@@ -23,7 +23,7 @@ const pruneJsonLd = (value: unknown): unknown => {
   return value === undefined ? undefined : value;
 };
 
-const pageUrl = absoluteUrl("/dmc");
+const pageUrl = absoluteUrl("/pakistan-dmc");
 const orgId = configuredSiteUrl ? `${configuredSiteUrl}#organization` : undefined;
 const dmcId = pageUrl ? `${pageUrl}#travelagency` : undefined;
 const provider = orgId ? { "@id": orgId } : { name: "3Musafir" };
