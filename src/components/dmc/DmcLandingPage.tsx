@@ -547,7 +547,7 @@ export default function DmcLandingPage() {
         </section>
 
         <section id="faqs" className="scroll-mt-[100px] bg-[#2d2f49] px-3 pb-[48px] pt-[75px] text-white">
-          <h2 className="mx-auto max-w-[320px] text-center text-[35px] font-black leading-[1.05]">
+          <h2 className="mx-auto max-w-[320px] text-center text-[35px] font-black leading-[1.05] text-white">
             Frequently Asked
             <br />
             Questions
