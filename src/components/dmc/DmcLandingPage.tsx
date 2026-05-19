@@ -45,8 +45,8 @@ const iconMap = {
 
 function AnswerBlock({ children }: { children: string }) {
   return (
-    <div className="rounded-[18px] border border-[#ffe0d7] bg-white px-[18px] py-[18px] shadow-[0_2px_9px_rgba(20,24,36,0.04)]">
-      <p className="text-[15px] font-medium leading-[1.55] text-[#596173]">{children}</p>
+    <div className="rounded-[18px] border border-[#ffe0d7] bg-white px-[18px] py-[18px] shadow-[0_2px_9px_rgba(20,24,36,0.04)] md:px-6 md:py-5">
+      <p className="text-[15px] font-medium leading-[1.55] text-[#596173] md:text-[16px]">{children}</p>
     </div>
   );
 }
@@ -94,7 +94,7 @@ function DmcNavMenu({
     >
       <nav
         aria-label="DMC page navigation"
-        className="absolute right-4 top-4 w-[250px] rounded-[22px] bg-white p-4 shadow-2xl"
+        className="absolute right-4 top-4 w-[250px] rounded-[22px] bg-white p-4 shadow-2xl md:right-8 lg:right-12 xl:right-[calc((100vw-1180px)/2)]"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
@@ -134,8 +134,8 @@ export default function DmcLandingPage() {
     <main className="min-h-screen scroll-smooth bg-[#fffaf8] font-[Outfit,Inter,sans-serif] text-[#2d2f49]">
       <DmcNavMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
-      <div className="mx-auto min-h-screen w-full max-w-[500px] overflow-hidden bg-[#fffaf8]">
-        <header className="sticky top-0 z-50 flex h-[100px] items-center justify-between bg-white px-[22px]">
+      <div className="mx-auto min-h-screen w-full max-w-[500px] overflow-hidden bg-[#fffaf8] md:max-w-none">
+        <header className="sticky top-0 z-50 flex h-[100px] items-center justify-between bg-white px-[22px] md:h-[92px] md:px-8 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
           <a href="#hero" className="flex min-w-0 items-center gap-3">
             <Image
               src="/3mlogosmall.svg"
@@ -160,21 +160,21 @@ export default function DmcLandingPage() {
           </button>
         </header>
 
-        <section id="hero" className="scroll-mt-[100px]">
-          <div className="relative h-[212px] w-full overflow-hidden bg-[#2f3143] grayscale">
+        <section id="hero" className="scroll-mt-[100px] md:grid md:grid-cols-[0.92fr_1.08fr] md:items-center md:gap-8 md:px-8 md:py-10 lg:gap-12 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <div className="relative h-[212px] w-full overflow-hidden bg-[#2f3143] grayscale md:order-2 md:h-auto md:aspect-[780/454] md:min-h-0 md:rounded-[28px]">
             <Image
               src="/3musafir-founders.jpg"
               alt="3Musafir team for Pakistan destination management services"
               fill
               priority
-              sizes="(max-width: 500px) 100vw, 500px"
+              sizes="(max-width: 767px) 100vw, (max-width: 1279px) 44vw, 520px"
               className="object-cover object-center opacity-70"
             />
             <div className="absolute inset-0 bg-[#151625]/25" />
           </div>
 
-          <div className="relative px-[21px] pb-12 pt-[24px]">
-            <div className="pointer-events-none absolute right-[-70px] top-[230px] h-[280px] w-[280px] rounded-full bg-[#ff3b0a]/10 blur-3xl" />
+          <div className="relative px-[21px] pb-12 pt-[24px] md:order-1 md:flex md:min-h-[650px] md:flex-col md:justify-center md:px-0 md:py-0">
+            <div className="pointer-events-none absolute right-[-70px] top-[230px] h-[280px] w-[280px] rounded-full bg-[#ff3b0a]/10 blur-3xl md:left-[40%] md:right-auto md:top-[68%]" />
 
             <nav aria-label="Breadcrumb" className="mb-[19px] text-[13px] font-bold text-[#747b8c]">
               <a href="/" className="text-[#2d2f49] underline decoration-[#ff3b0a]/30 underline-offset-4">
@@ -184,11 +184,11 @@ export default function DmcLandingPage() {
               <span>Pakistan DMC</span>
             </nav>
 
-            <h1 className="max-w-[455px] text-[40px] font-black leading-[1.18] text-[#2d2f49]">
+            <h1 className="max-w-[455px] text-[40px] font-black leading-[1.18] text-[#2d2f49] md:max-w-none md:text-[54px] md:leading-[1.04] lg:text-[64px]">
               Pakistan DMC for <span className="text-[#ff3b0a]">International Travel Agencies</span>
             </h1>
 
-            <p className="mt-[25px] max-w-[440px] text-[21px] font-medium leading-[1.5] text-[#596173]">
+            <p className="mt-[25px] max-w-[440px] text-[21px] font-medium leading-[1.5] text-[#596173] md:max-w-[620px] md:text-[23px]">
               {dmcHeroSupport}
             </p>
 
@@ -217,17 +217,17 @@ export default function DmcLandingPage() {
               </p>
             </div>
 
-            <div className="mt-[44px] space-y-[22px]">
+            <div className="mt-[44px] space-y-[22px] md:flex md:max-w-[620px] md:gap-4 md:space-y-0">
               <a
                 href="#urgent-enquiry"
-                className="flex h-[72px] w-full items-center justify-center rounded-[19px] bg-[#ff3b0a] text-[20px] font-extrabold text-white shadow-[0_13px_25px_rgba(255,59,10,0.22)]"
+                className="flex h-[72px] w-full items-center justify-center rounded-[19px] bg-[#ff3b0a] text-[20px] font-extrabold text-white shadow-[0_13px_25px_rgba(255,59,10,0.22)] md:h-[62px] md:flex-1"
               >
                 Urgent Enquiry
               </a>
 
               <a
                 href="#partner"
-                className="flex h-[70px] w-full items-center justify-center gap-4 rounded-[18px] border border-[#ebedf0] bg-white text-[20px] font-extrabold text-[#2d2f49] shadow-[0_2px_8px_rgba(20,24,36,0.04)]"
+                className="flex h-[70px] w-full items-center justify-center gap-4 rounded-[18px] border border-[#ebedf0] bg-white text-[20px] font-extrabold text-[#2d2f49] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:h-[62px] md:flex-1 md:text-[18px]"
               >
                 <Download size={25} strokeWidth={3} className="text-black" />
                 Request Brochure 2026
@@ -236,32 +236,32 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="services" className="scroll-mt-[100px] bg-white px-3 pb-24 pt-12">
-          <div className="mx-auto max-w-[500px] text-center">
-            <h2 className="mx-auto max-w-[360px] text-[29px] font-black leading-[1.08] text-[#2d2f49]">
+        <section id="services" className="scroll-mt-[100px] bg-white px-3 pb-24 pt-12 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <div className="mx-auto max-w-[760px] text-center">
+            <h2 className="mx-auto max-w-[620px] text-[29px] font-black leading-[1.08] text-[#2d2f49] md:text-[42px]">
               Comprehensive DMC Services in Pakistan
             </h2>
-            <p className="mx-auto mt-5 max-w-[370px] text-[15px] font-medium leading-[1.45] text-[#596173]">
+            <p className="mx-auto mt-5 max-w-[560px] text-[15px] font-medium leading-[1.45] text-[#596173] md:text-[17px]">
               Tailored solutions for every type of traveler and every type of agency brief.
             </p>
           </div>
 
-          <div className="mx-1 mt-[28px]">
+          <div className="mx-1 mt-[28px] md:mx-auto md:max-w-[780px]">
             <AnswerBlock>{servicesAnswer}</AnswerBlock>
           </div>
 
-          <div className="mt-[42px] flex snap-x gap-[22px] overflow-x-auto px-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="mt-[42px] flex snap-x gap-[22px] overflow-x-auto px-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
             {services.map((service) => (
               <article
                 key={service.title}
-                className="min-w-[238px] snap-start overflow-hidden rounded-[13px] border border-[#ebe9e7] bg-[#fffdfc] shadow-[0_1px_4px_rgba(20,24,36,0.04)]"
+                className="min-w-[238px] snap-start overflow-hidden rounded-[13px] border border-[#ebe9e7] bg-[#fffdfc] shadow-[0_1px_4px_rgba(20,24,36,0.04)] md:min-w-0"
               >
-                <div className="relative h-[171px] w-full overflow-hidden rounded-t-[13px] bg-[#f1eeeb]">
+                <div className="relative h-[171px] w-full overflow-hidden rounded-t-[13px] bg-[#f1eeeb] md:h-[220px]">
                   <Image
                     src={service.image}
                     alt={service.alt}
                     fill
-                    sizes="238px"
+                    sizes="(max-width: 767px) 238px, (max-width: 1279px) 30vw, 360px"
                     className="object-cover"
                   />
                 </div>
@@ -277,11 +277,11 @@ export default function DmcLandingPage() {
             ))}
           </div>
 
-          <div className="mt-[62px] grid grid-cols-2 gap-x-[15px] gap-y-[15px] px-0.5">
+          <div className="mt-[62px] grid grid-cols-2 gap-x-[15px] gap-y-[15px] px-0.5 md:grid-cols-3 md:gap-6 md:px-0">
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="flex h-[103px] flex-col justify-center rounded-[18px] border border-[#eceef0] bg-white px-[20px] text-left shadow-[0_2px_8px_rgba(20,24,36,0.05)]"
+                className="flex h-[103px] flex-col justify-center rounded-[18px] border border-[#eceef0] bg-white px-[20px] text-left shadow-[0_2px_8px_rgba(20,24,36,0.05)] md:h-[128px] md:px-7"
               >
                 <strong
                   className={`text-[34px] font-black leading-none ${
@@ -300,57 +300,61 @@ export default function DmcLandingPage() {
 
         <section
           id="international-agencies"
-          className="scroll-mt-[100px] bg-[#fffaf8] px-3 pb-[76px] pt-[48px]"
+          className="scroll-mt-[100px] bg-[#fffaf8] px-3 pb-[76px] pt-[48px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
         >
-          <p className="text-[14px] font-black uppercase text-[#ff3b0a]">International buyers</p>
-          <h2 className="mt-[14px] text-[32px] font-black leading-[1.16] text-[#2d2f49]">
-            Built for International Travel Agencies
-          </h2>
-          <p className="mt-[22px] text-[18px] font-medium leading-[1.52] text-[#596173]">
-            3Musafir exists to help overseas tour operators and agency partners run Pakistan with
-            more confidence through local execution, clearer communication, and dependable ground
-            support.
-          </p>
+          <div className="md:grid md:grid-cols-[0.9fr_1.1fr] md:gap-10 lg:gap-14">
+            <div>
+              <p className="text-[14px] font-black uppercase text-[#ff3b0a]">International buyers</p>
+              <h2 className="mt-[14px] text-[32px] font-black leading-[1.16] text-[#2d2f49] md:text-[44px]">
+                Built for International Travel Agencies
+              </h2>
+              <p className="mt-[22px] text-[18px] font-medium leading-[1.52] text-[#596173] md:text-[20px]">
+                3Musafir exists to help overseas tour operators and agency partners run Pakistan with
+                more confidence through local execution, clearer communication, and dependable ground
+                support.
+              </p>
 
-          <div className="mt-[26px]">
-            <AnswerBlock>{internationalAnswer}</AnswerBlock>
-          </div>
+              <div className="mt-[26px]">
+                <AnswerBlock>{internationalAnswer}</AnswerBlock>
+              </div>
+            </div>
 
-          <div className="mt-[28px] grid gap-[12px]">
-            {agencyMarkets.map((market) => (
-              <article
-                key={market.market}
-                className="rounded-[16px] border border-[#ebe9e7] bg-white px-[18px] py-[16px] shadow-[0_2px_8px_rgba(20,24,36,0.04)]"
-              >
-                <h3 className="text-[18px] font-black leading-tight text-[#2d2f49]">
-                  {market.market}
-                </h3>
-                <p className="mt-[8px] text-[14px] font-medium leading-[1.4] text-[#596173]">
-                  {market.body}
-                </p>
-              </article>
-            ))}
+            <div className="mt-[28px] grid gap-[12px] md:mt-0 md:grid-cols-2 lg:grid-cols-3">
+              {agencyMarkets.map((market) => (
+                <article
+                  key={market.market}
+                  className="rounded-[16px] border border-[#ebe9e7] bg-white px-[18px] py-[16px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:min-h-[150px]"
+                >
+                  <h3 className="text-[18px] font-black leading-tight text-[#2d2f49]">
+                    {market.market}
+                  </h3>
+                  <p className="mt-[8px] text-[14px] font-medium leading-[1.4] text-[#596173]">
+                    {market.body}
+                  </p>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
-        <section id="advantage" className="scroll-mt-[100px] bg-[#fffaf8] px-3 pb-[66px] pt-[10px]">
+        <section id="advantage" className="scroll-mt-[100px] bg-[#fffaf8] px-3 pb-[66px] pt-[10px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
           <p className="text-[16px] font-black uppercase text-[#ff3b0a]">WHY IT MATTERS</p>
-          <h2 className="mt-[16px] text-[34px] font-black leading-[1.18] text-[#2d2f49]">
+          <h2 className="mt-[16px] max-w-[780px] text-[34px] font-black leading-[1.18] text-[#2d2f49] md:text-[46px]">
             Why International Agencies Use Local Execution in Pakistan
           </h2>
 
-          <div className="mt-[25px]">
+          <div className="mt-[25px] md:max-w-[780px]">
             <AnswerBlock>{advantageAnswer}</AnswerBlock>
           </div>
 
-          <p className="mt-[28px] text-[21px] font-medium leading-[1.52] text-[#596173]">
+          <p className="mt-[28px] max-w-[820px] text-[21px] font-medium leading-[1.52] text-[#596173] md:text-[23px]">
             International agencies often struggle with Pakistan&apos;s unique logistical
             challenges. Our deep local roots turn these obstacles into smooth operations.
           </p>
 
-          <div className="mt-[38px] space-y-[25px]">
+          <div className="mt-[38px] space-y-[25px] md:grid md:grid-cols-3 md:gap-6 md:space-y-0">
             {advantagePoints.map((point) => (
-              <div key={point.title} className="flex gap-[14px]">
+              <div key={point.title} className="flex gap-[14px] md:flex-col md:rounded-[18px] md:border md:border-[#ebe9e7] md:bg-white md:p-[20px] md:shadow-[0_2px_8px_rgba(20,24,36,0.04)]">
                 <CheckCircle2
                   size={26}
                   strokeWidth={2.4}
@@ -369,24 +373,24 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="credentials" className="scroll-mt-[100px] bg-[#fffaf8] px-[29px] pb-[106px] pt-[47px]">
-          <h2 className="text-[30px] font-black leading-[1.35] text-[#2d2f49]">
+        <section id="credentials" className="scroll-mt-[100px] bg-[#fffaf8] px-[29px] pb-[106px] pt-[47px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <h2 className="text-[30px] font-black leading-[1.35] text-[#2d2f49] md:text-[44px]">
             Structured. Registered.
             <br />
             Mature.
           </h2>
 
-          <div className="mt-[18px]">
+          <div className="mt-[18px] md:max-w-[820px]">
             <AnswerBlock>{credentialsAnswer}</AnswerBlock>
           </div>
 
-          <p className="mt-[20px] text-[16.5px] font-medium leading-[1.45] text-[#596173]">
+          <p className="mt-[20px] max-w-[720px] text-[16.5px] font-medium leading-[1.45] text-[#596173] md:text-[18px]">
             We aren&apos;t freelancers. We are an operationally mature DMC designed for B2B
             reliability.
           </p>
 
-          <div className="mt-[26px] rounded-[18px] border border-[#ebe9e7] bg-white px-[18px] py-[18px] shadow-[0_2px_8px_rgba(20,24,36,0.04)]">
-            <ul className="space-y-[12px]">
+          <div className="mt-[26px] rounded-[18px] border border-[#ebe9e7] bg-white px-[18px] py-[18px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:px-6">
+            <ul className="space-y-[12px] md:grid md:grid-cols-3 md:gap-4 md:space-y-0">
               {trustProofs.map((item) => (
                 <li key={item} className="flex gap-[10px] text-[14px] font-bold leading-[1.35] text-[#2d2f49]">
                   <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-[#ff3b0a]" />
@@ -396,13 +400,13 @@ export default function DmcLandingPage() {
             </ul>
           </div>
 
-          <div className="mt-[31px] space-y-[20px]">
+          <div className="mt-[31px] space-y-[20px] md:grid md:grid-cols-3 md:gap-5 md:space-y-0">
             {credentialCards.map((card) => {
               const Icon = iconMap[card.icon as keyof typeof iconMap];
               return (
                 <article
                   key={card.title}
-                  className="flex min-h-[116px] items-center gap-[20px] rounded-[20px] border border-[#ebe9e7] bg-white px-[20px] py-[20px] shadow-[0_2px_9px_rgba(20,24,36,0.05)]"
+                  className="flex min-h-[116px] items-center gap-[20px] rounded-[20px] border border-[#ebe9e7] bg-white px-[20px] py-[20px] shadow-[0_2px_9px_rgba(20,24,36,0.05)] md:min-h-[210px] md:flex-col md:items-start"
                 >
                   <div
                     className={`flex h-[51px] w-[51px] shrink-0 items-center justify-center rounded-full ${card.bg}`}
@@ -422,8 +426,8 @@ export default function DmcLandingPage() {
             })}
           </div>
 
-          <div className="mt-[24px] rounded-[16px] border border-dashed border-[#ffc9bb] bg-[#fff4f0] px-[16px] py-[16px]">
-            <ul className="space-y-[8px] text-[13px] font-bold leading-[1.35] text-[#596173]">
+          <div className="mt-[24px] rounded-[16px] border border-dashed border-[#ffc9bb] bg-[#fff4f0] px-[16px] py-[16px] md:px-6">
+            <ul className="space-y-[8px] text-[13px] font-bold leading-[1.35] text-[#596173] md:grid md:grid-cols-4 md:gap-3 md:space-y-0">
               {futureTrustTodos.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -432,28 +436,29 @@ export default function DmcLandingPage() {
 
           <a
             href="#urgent-enquiry"
-            className="mt-[30px] flex h-[65px] items-center justify-center rounded-[18px] border-2 border-[#2d2f49] text-[18px] font-black text-[#2d2f49]"
+            className="mt-[30px] flex h-[65px] items-center justify-center rounded-[18px] border-2 border-[#2d2f49] text-[18px] font-black text-[#2d2f49] md:max-w-[360px]"
           >
             Request Company Credentials
           </a>
         </section>
 
-        <section id="pricing" className="scroll-mt-[100px] bg-white px-[18px] pb-[29px] pt-[38px]">
+        <section id="pricing" className="scroll-mt-[100px] bg-white px-[18px] pb-[29px] pt-[38px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
           <div className="text-center">
             <p className="text-[14px] font-black uppercase text-[#ff3b0a]">VALUE PROPOSITION</p>
-            <h2 className="mx-auto mt-[14px] max-w-[360px] text-[29px] font-black leading-tight text-[#2d2f49]">
+            <h2 className="mx-auto mt-[14px] max-w-[720px] text-[29px] font-black leading-tight text-[#2d2f49] md:text-[42px]">
               Transparent B2B Pricing for Pakistan Programs
             </h2>
-            <p className="mt-[18px] text-[15px] font-medium text-[#596173]">
+            <p className="mx-auto mt-[18px] max-w-[540px] text-[15px] font-medium text-[#596173] md:text-[17px]">
               Competitive rates designed for agency margins.
             </p>
           </div>
 
-          <div className="mt-[28px]">
+          <div className="mx-auto mt-[28px] md:max-w-[780px]">
             <AnswerBlock>{pricingAnswer}</AnswerBlock>
           </div>
 
-          <div className="mt-[44px] rounded-[20px] border border-[#ebe9e7] bg-white px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)]">
+          <div className="mt-[44px] grid gap-[30px] md:grid-cols-2 md:items-stretch">
+          <div className="rounded-[20px] border border-[#ebe9e7] bg-white px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] md:flex md:flex-col">
             <div className="flex justify-between gap-4">
               <div>
                 <h3 className="text-[24px] font-black leading-tight text-[#2d2f49]">
@@ -488,13 +493,13 @@ export default function DmcLandingPage() {
 
             <a
               href="#urgent-enquiry"
-              className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] border border-[#2d2f49] text-[14px] font-black text-[#2d2f49]"
+              className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] border border-[#2d2f49] text-[14px] font-black text-[#2d2f49] md:mt-auto"
             >
               Request Quote
             </a>
           </div>
 
-          <div className="relative mt-[30px] overflow-hidden rounded-[20px] bg-[#2d2f49] px-[32px] pb-[31px] pt-[33px] text-white shadow-[0_15px_28px_rgba(20,24,36,0.18)]">
+          <div className="relative overflow-hidden rounded-[20px] bg-[#2d2f49] px-[32px] pb-[31px] pt-[33px] text-white shadow-[0_15px_28px_rgba(20,24,36,0.18)] md:flex md:flex-col">
             <div className="absolute right-0 top-0 rounded-bl-[18px] bg-[#ff3b0a] px-[18px] py-[8px] text-[11px] font-black uppercase">
               Recommended
             </div>
@@ -535,10 +540,11 @@ export default function DmcLandingPage() {
 
             <a
               href="#urgent-enquiry"
-              className="mt-[32px] flex h-[46px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[15px] font-black text-white shadow-[0_13px_22px_rgba(255,59,10,0.24)]"
+              className="mt-[32px] flex h-[46px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[15px] font-black text-white shadow-[0_13px_22px_rgba(255,59,10,0.24)] md:mt-auto"
             >
               Request Quote
             </a>
+          </div>
           </div>
 
           <p className="mx-auto mt-[58px] max-w-[314px] text-center text-[12.5px] font-medium leading-[1.5] text-[#6f7481]">
@@ -546,18 +552,18 @@ export default function DmcLandingPage() {
           </p>
         </section>
 
-        <section id="faqs" className="scroll-mt-[100px] bg-[#2d2f49] px-3 pb-[48px] pt-[75px] text-white">
-          <h2 className="mx-auto max-w-[320px] text-center text-[35px] font-black leading-[1.05] text-white">
+        <section id="faqs" className="scroll-mt-[100px] bg-[#2d2f49] px-3 pb-[48px] pt-[75px] text-white md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <h2 className="mx-auto max-w-[640px] text-center text-[35px] font-black leading-[1.05] text-white md:text-[48px]">
             Frequently Asked
             <br />
             Questions
           </h2>
-          <p className="mx-auto mt-[27px] max-w-[330px] text-center text-[17px] font-medium leading-[1.55] text-[#b9bdca]">
+          <p className="mx-auto mt-[27px] max-w-[620px] text-center text-[17px] font-medium leading-[1.55] text-[#b9bdca] md:text-[18px]">
             Answers for international agencies evaluating 3Musafir as a Pakistan DMC, inbound tour
             operator, ground handler, and logistics partner.
           </p>
 
-          <div className="mt-[63px] space-y-[15px]">
+          <div className="mt-[63px] space-y-[15px] md:mx-auto md:grid md:max-w-[960px] md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
             {dmcFaqs.map((faq, index) => {
               const isOpen = openFaq === index;
               const answerId = `dmc-faq-answer-${index}`;
@@ -591,20 +597,20 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="partner" className="scroll-mt-[100px] bg-white px-[15px] pb-[24px] pt-[42px]">
-          <div className="rounded-[20px] border border-[#ebe9e7] bg-[#f8f8fa] px-[31px] pb-[25px] pt-[32px] shadow-[0_1px_4px_rgba(20,24,36,0.03)]">
-            <h2 className="text-[24px] font-black leading-tight text-[#2d2f49]">Become a Partner</h2>
-            <p className="mt-[17px] text-[13.5px] font-medium leading-[1.45] text-[#596173]">
+        <section id="partner" className="scroll-mt-[100px] bg-white px-[15px] pb-[24px] pt-[42px] md:px-8 md:py-20 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <div className="rounded-[20px] border border-[#ebe9e7] bg-[#f8f8fa] px-[31px] pb-[25px] pt-[32px] shadow-[0_1px_4px_rgba(20,24,36,0.03)] md:px-8 md:py-8">
+            <h2 className="text-[24px] font-black leading-tight text-[#2d2f49] md:text-[34px]">Become a Partner</h2>
+            <p className="mt-[17px] max-w-[620px] text-[13.5px] font-medium leading-[1.45] text-[#596173] md:text-[16px]">
               Join our network of international agencies and unlock exclusive B2B rates.
             </p>
 
-            <form className="mt-[23px] space-y-[15px]">
+            <form className="mt-[23px] space-y-[15px] md:grid md:grid-cols-4 md:items-end md:gap-4 md:space-y-0">
               <TextInput label="Company Name" placeholder="Company/ Business name" />
               <TextInput label="Country" placeholder="your country" />
               <TextInput label="Email " placeholder="Your official email" required type="email" />
               <button
                 type="button"
-                className="mt-[6px] h-[42px] w-full rounded-[10px] bg-[#2d2f49] text-[13px] font-black text-white"
+                className="mt-[6px] h-[42px] w-full rounded-[10px] bg-[#2d2f49] text-[13px] font-black text-white md:mt-0"
               >
                 Register Interest
               </button>
@@ -612,25 +618,27 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="urgent-enquiry" className="scroll-mt-[100px] bg-white px-[17px] pb-[37px] pt-[4px]">
-          <div className="rounded-[20px] border border-[#ffc9bb] bg-[#fff4f0] px-[31px] pb-[30px] pt-[27px]">
+        <section id="urgent-enquiry" className="scroll-mt-[100px] bg-white px-[17px] pb-[37px] pt-[4px] md:px-8 md:pb-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <div className="rounded-[20px] border border-[#ffc9bb] bg-[#fff4f0] px-[31px] pb-[30px] pt-[27px] md:grid md:grid-cols-[0.8fr_1.2fr] md:gap-8 md:px-8 md:py-8 lg:gap-12">
+            <div>
             <div className="flex items-center gap-[13px]">
               <div className="flex h-[38px] w-[38px] items-center justify-center rounded-full bg-[#ff3b0a] text-white">
                 <Zap size={21} fill="white" strokeWidth={2.5} />
               </div>
-              <h2 className="text-[25px] font-black leading-[1.25] text-[#2d2f49]">
+              <h2 className="text-[25px] font-black leading-[1.25] text-[#2d2f49] md:text-[36px]">
                 Urgent Inquiry /
                 <br />
                 Quote
               </h2>
             </div>
 
-            <p className="mt-[31px] text-[15.5px] font-medium leading-[1.5] text-[#596173]">
+            <p className="mt-[31px] text-[15.5px] font-medium leading-[1.5] text-[#596173] md:text-[17px]">
               Have a group ready to go? Need a quote within 24 hours? Fill out the details below
               for priority handling.
             </p>
+            </div>
 
-            <form className="mt-[28px] space-y-[18px]">
+            <form className="mt-[28px] space-y-[18px] md:mt-0 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
               <TextInput label="Full Name" placeholder="Your name" required />
               <TextInput label="Company Name" placeholder="Company/ Business name" />
               <TextInput label="Email " placeholder="Your official email" required type="email" />
@@ -646,7 +654,7 @@ export default function DmcLandingPage() {
                 required
               />
 
-              <label className="block">
+              <label className="block md:col-span-2">
                 <span className="mb-[6px] block text-[15px] font-extrabold leading-tight text-[#2d2f49]">
                   Requirements (Destinations, PAX, Dates)
                 </span>
@@ -655,7 +663,7 @@ export default function DmcLandingPage() {
 
               <button
                 type="button"
-                className="mt-[5px] h-[57px] w-full rounded-[14px] bg-[#ff3b0a] text-[17px] font-black text-white shadow-[0_13px_22px_rgba(255,59,10,0.22)]"
+                className="mt-[5px] h-[57px] w-full rounded-[14px] bg-[#ff3b0a] text-[17px] font-black text-white shadow-[0_13px_22px_rgba(255,59,10,0.22)] md:col-span-2 md:mt-0"
               >
                 Get Priority Quote
               </button>
@@ -663,35 +671,38 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <footer id="footer" className="scroll-mt-[100px] bg-[#2d2f49] px-2 pb-[83px] pt-[24px] text-white">
-          <div className="flex items-center gap-[8px]">
-            <Image
-              src="/3mlogosmall.svg"
-              alt="3Musafir Travels logo"
-              width={24}
-              height={24}
-              className="h-[24px] w-[24px] object-contain"
-            />
-            <strong className="text-[16px] font-black">3Musafir Travels</strong>
-          </div>
-          <p className="mt-[23px] max-w-[345px] text-[15.5px] font-medium leading-[1.55] text-[#b9bdca]">
-            Your trusted B2B Destination Management Company in Pakistan. Registered, insured, and
-            operationally ready.
-          </p>
+        <footer id="footer" className="scroll-mt-[100px] bg-[#2d2f49] px-2 pb-[83px] pt-[24px] text-white md:px-8 md:py-16 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <div className="md:grid md:grid-cols-[1.1fr_0.9fr] md:gap-12">
+          <div>
+            <div className="flex items-center gap-[8px]">
+              <Image
+                src="/3mlogosmall.svg"
+                alt="3Musafir Travels logo"
+                width={24}
+                height={24}
+                className="h-[24px] w-[24px] object-contain"
+              />
+              <strong className="text-[16px] font-black">3Musafir Travels</strong>
+            </div>
+            <p className="mt-[23px] max-w-[420px] text-[15.5px] font-medium leading-[1.55] text-[#b9bdca] md:text-[16px]">
+              Your trusted B2B Destination Management Company in Pakistan. Registered, insured, and
+              operationally ready.
+            </p>
 
-          <div className="mt-[24px] flex gap-[15px]">
-            <a
-              href="https://www.linkedin.com/company/3musafirinternational/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="3Musafir International on LinkedIn"
-              className="flex h-[31px] w-[31px] items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-            >
-              <Linkedin size={14} />
-            </a>
+            <div className="mt-[24px] flex gap-[15px]">
+              <a
+                href="https://www.linkedin.com/company/3musafirinternational/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="3Musafir International on LinkedIn"
+                className="flex h-[31px] w-[31px] items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+              >
+                <Linkedin size={14} />
+              </a>
+            </div>
           </div>
 
-          <div className="mt-[34px] space-y-[35px]">
+          <div className="mt-[34px] space-y-[35px] md:mt-0 md:grid md:grid-cols-2 md:gap-10 md:space-y-0">
             <div>
               <h3 className="text-[15px] font-black">Company</h3>
               <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-[#b9bdca]">
@@ -728,13 +739,14 @@ export default function DmcLandingPage() {
               </ul>
             </div>
           </div>
+          </div>
 
           <div className="mt-[46px] border-t border-white/5 px-[15px] pt-[32px] text-[13px] font-medium text-[#878b9d]">
             &copy; 2024 3Musafir Travels (Pvt) Ltd. All rights reserved.
           </div>
         </footer>
 
-        <div className="fixed bottom-0 left-1/2 z-[60] flex w-full max-w-[500px] -translate-x-1/2 gap-3 bg-white/95 px-3 pb-[14px] pt-[15px] backdrop-blur">
+        <div className="fixed bottom-0 left-1/2 z-[60] flex w-full max-w-[500px] -translate-x-1/2 gap-3 bg-white/95 px-3 pb-[14px] pt-[15px] backdrop-blur lg:hidden">
           <a
             href="#partner"
             className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-[#f2f3f5] text-[12px] font-extrabold text-[#2d2f49]"
