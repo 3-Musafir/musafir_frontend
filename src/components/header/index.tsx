@@ -86,6 +86,14 @@ export default function Header({
           >
             Explore
           </Link>
+          <Link
+            href='/pakistan-dmc'
+            className={`text-base font-medium transition-colors ${
+              pathname === '/pakistan-dmc' ? 'text-brand-primary' : 'text-gray-600 hover:text-brand-primary'
+            }`}
+          >
+            Pakistan DMC
+          </Link>
           {status === 'authenticated' && !isAdmin && tabLinks.map(({ href, label, tabId }) => {
             const isActive = onTabChange ? externalActiveTab === tabId : pathname === href;
 

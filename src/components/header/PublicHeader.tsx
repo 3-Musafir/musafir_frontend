@@ -9,6 +9,7 @@ import UserProfileMenu from "@/components/header/UserProfileMenu";
 
 const resolveLabel = (path: string) => {
   if (path === "/explore") return "Explore";
+  if (path === "/pakistan-dmc") return "Pakistan DMC";
   if (path === "/about-3musafir") return "About 3Musafir";
   if (path === "/community/voices") return "Community Voices";
   if (path === "/reviews") return "Reviews";
@@ -33,31 +34,46 @@ export default function PublicHeader({ hideAuthCta = false }: { hideAuthCta?: bo
 
   return (
     <header className="w-full bg-white border-b">
-      <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 xl:px-10 h-16 lg:h-20 overflow-visible">
-        <div className="flex items-center gap-3 overflow-visible">
-          <Link href="/home" aria-label="3Musafir home" className="flex items-center">
+      <div className="flex h-16 items-center justify-between gap-3 overflow-visible px-3 sm:px-4 md:px-6 lg:h-20 lg:px-8 xl:px-10">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+          <Link href="/home" aria-label="3Musafir home" className="flex shrink-0 items-center">
             <Image
               src="/primarylogo.svg"
               alt="3Musafir"
               width={200}
               height={200}
-              className="h-20 w-20 lg:h-28 lg:w-28 -my-2"
+              className="h-14 w-14 sm:h-16 sm:w-16 lg:h-20 lg:w-20"
             />
           </Link>
-          {label ? <span className="text-xs text-text">{label}</span> : null}
+          {label ? (
+            <span className="hidden min-w-0 truncate text-xs text-text sm:inline">
+              {label}
+            </span>
+          ) : null}
         </div>
-        <div className="flex items-center h-full">
+        <div className="flex h-full shrink-0 items-center gap-2 sm:gap-3">
+          <Link
+            href="/pakistan-dmc"
+            className={`hidden rounded-full border px-3 py-2 text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary md:inline-flex lg:text-sm ${
+              rawPath === "/pakistan-dmc"
+                ? "border-brand-primary text-brand-primary"
+                : "border-gray-200 text-text hover:border-brand-primary hover:text-brand-primary"
+            }`}
+          >
+            Pakistan DMC
+          </Link>
           {status === "authenticated" ? (
             <UserProfileMenu />
           ) : hideAuthCta ? null : status === "loading" ? (
-            <Skeleton className="h-9 w-36 rounded-full" />
+            <Skeleton className="h-9 w-20 rounded-full sm:w-36" />
           ) : (
             <Link
               href={`/login?callbackUrl=${callbackUrl}`}
               aria-label="Already a Musafir? Sign in"
-              className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-text hover:border-brand-primary hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+              className="rounded-full border border-gray-200 px-3 py-2 text-xs font-medium text-text transition hover:border-brand-primary hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary sm:px-4 sm:text-sm"
             >
-              Already a Musafir?
+              <span className="sm:hidden">Sign in</span>
+              <span className="hidden sm:inline">Already a Musafir?</span>
             </Link>
           )}
         </div>

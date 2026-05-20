@@ -15,18 +15,21 @@ export default function FounderHeroFallback({
   priority = false,
 }: FounderHeroFallbackProps) {
   return (
-    <div className={cn("absolute inset-0 overflow-hidden", className)}>
+    <div
+      className={cn(
+        "relative min-h-[300px] overflow-hidden bg-canvas-soft md:min-h-[440px]",
+        className
+      )}
+    >
       <Image
         src={imageSrc}
         alt={alt}
         fill
         priority={priority}
-        sizes="(max-width: 768px) 100vw, 1200px"
-        className="object-cover"
+        sizes="(max-width: 768px) 100vw, 560px"
+        className="object-cover object-[52%_42%]"
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/60 to-transparent" />
-      <div className="absolute -left-20 top-0 h-64 w-64 rounded-full bg-brand-primary/15 blur-3xl" />
-      <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-canvas-line/70 blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/10" />
     </div>
   );
 }

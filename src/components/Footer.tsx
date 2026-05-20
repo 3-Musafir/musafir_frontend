@@ -21,6 +21,7 @@ const footerSections: FooterSection[] = [
     links: [
       { label: 'Trips', href: '/home' },
       { label: 'Explore', href: '/explore' },
+      { label: 'Pakistan DMC', href: '/pakistan-dmc' },
       { label: 'Why 3Musafir', href: '/why' },
       { label: 'Reviews', href: '/reviews' },
     ],
@@ -247,7 +248,7 @@ export default function Footer() {
               </svg>
             </a>
             <a
-              href="https://www.linkedin.com"
+              href="https://www.linkedin.com/company/3musafirinternational/"
               className="text-muted-foreground hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
             >
               <span className="sr-only">LinkedIn</span>

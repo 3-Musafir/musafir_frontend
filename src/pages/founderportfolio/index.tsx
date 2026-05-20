@@ -1,14 +1,9 @@
 import Head from "next/head";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import FounderHeroFallback from "@/components/founderportfolio/FounderHeroFallback";
 import SkillTiles from "@/components/founderportfolio/SkillTiles";
 import ImageCarousel from "@/components/founderportfolio/ImageCarousel";
 import FaqAccordion from "@/components/founderportfolio/FaqAccordion";
-
-const FounderHero3D = dynamic(() => import("@/components/founderportfolio/FounderHero3D"), {
-  ssr: false,
-});
 
 const title = "Founder Portfolio - 3Musafir";
 const description =
@@ -186,38 +181,44 @@ export default function FounderPortfolioPage() {
 
       <main className="min-h-screen bg-gray-50 px-4 py-10 md:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
-          <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-canvas-base via-white to-canvas-soft shadow-card">
-            <FounderHeroFallback
-              alt="Founders standing together with community backdrop and travel skyline"
-              priority
-            />
-            <div className="absolute inset-0 pointer-events-none">
-              <FounderHero3D />
-            </div>
-            <div className="relative z-10 p-6 md:p-10 lg:p-12">
-              <div className="max-w-2xl space-y-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-text">Founder Portfolio</p>
-                <h1 className="text-3xl font-semibold text-heading md:text-4xl">
-                  Our Story & Vision
-                </h1>
-                <p className="text-sm text-text leading-relaxed md:text-base">
-                  Biography, vision, and impact - powered by community and traveltech.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/founderportfolio/biography"
-                    className="inline-flex items-center rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-primary-hover"
-                  >
-                    View biography
-                  </Link>
-                  <Link
-                    href="#impact"
-                    className="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-text transition hover:border-brand-primary hover:text-brand-primary"
-                  >
-                    Explore impact
-                  </Link>
+          <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-canvas-base via-white to-canvas-soft shadow-card">
+            <div className="grid min-h-[360px] md:grid-cols-[minmax(0,0.95fr)_minmax(320px,0.9fr)] lg:min-h-[440px]">
+              <div className="relative z-10 flex items-center p-6 md:p-10 lg:p-12">
+                <div className="max-w-xl space-y-4">
+                  <div className="pointer-events-none absolute -left-20 top-0 h-64 w-64 rounded-full bg-brand-primary/15 blur-3xl" />
+                  <div className="pointer-events-none absolute bottom-0 right-0 h-72 w-72 rounded-full bg-canvas-line/60 blur-3xl" />
+                  <div className="relative space-y-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-text">
+                      Founder Portfolio
+                    </p>
+                    <h1 className="text-3xl font-semibold text-heading md:text-4xl">
+                      Our Story & Vision
+                    </h1>
+                    <p className="text-sm text-text leading-relaxed md:text-base">
+                      Biography, vision, and impact - powered by community and traveltech.
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      <Link
+                        href="/founderportfolio/biography"
+                        className="inline-flex items-center rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-primary-hover"
+                      >
+                        View biography
+                      </Link>
+                      <Link
+                        href="#impact"
+                        className="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-text transition hover:border-brand-primary hover:text-brand-primary"
+                      >
+                        Explore impact
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <FounderHeroFallback
+                alt="Founders standing together with community backdrop and travel skyline"
+                className="min-h-[320px] md:min-h-full"
+                priority
+              />
             </div>
           </section>
 
@@ -241,19 +242,39 @@ export default function FounderPortfolioPage() {
             <SkillTiles skills={skills} />
           </section>
 
-          <section id="impact" className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm">
-            <div className="space-y-3">
-              <h2 className="text-xl font-semibold text-heading">Impact</h2>
-              <p className="text-2xl font-semibold text-heading md:text-3xl">
-                3Musafir has raised a community of 10,000+ verified Musafirs
-              </p>
-            </div>
-            <div className="mt-6">
-              <ImageCarousel
-                images={communityImages}
-                ariaLabel="Community impact gallery"
-                enableCoverflow
-              />
+          <section id="impact" className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <div className="grid gap-6 p-6 md:p-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:p-10">
+              <div className="space-y-5">
+                <div className="space-y-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-primary">
+                    Impact
+                  </p>
+                  <h2 className="text-2xl font-semibold leading-tight text-heading md:text-3xl">
+                    10,000+ verified Musafirs across our travel community
+                  </h2>
+                  <p className="max-w-xl text-sm leading-relaxed text-text md:text-base">
+                    From youth forums to mountain journeys, our community has grown through
+                    shared experiences, trust, and the belief that travel can help people belong.
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                    <p className="text-xl font-semibold text-heading">10k+</p>
+                    <p className="text-xs font-medium text-text">Verified members</p>
+                  </div>
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                    <p className="text-xl font-semibold text-heading">Pakistan</p>
+                    <p className="text-xs font-medium text-text">Community reach</p>
+                  </div>
+                </div>
+              </div>
+              <div className="min-w-0">
+                <ImageCarousel
+                  images={communityImages}
+                  ariaLabel="Community impact gallery"
+                  aspectClassName="aspect-[4/3] sm:aspect-[16/10]"
+                />
+              </div>
             </div>
           </section>
 
@@ -266,7 +287,7 @@ export default function FounderPortfolioPage() {
               <div>
                 <h2 className="text-lg font-semibold text-heading">Ready to go deeper?</h2>
                 <p className="mt-2 text-sm text-text">
-                  Read the full biography to understand the founders' journey and future vision.
+                  Read the full biography to understand the founders&apos; journey and future vision.
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">

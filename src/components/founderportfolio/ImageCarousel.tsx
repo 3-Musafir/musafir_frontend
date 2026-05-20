@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type TouchEvent } from "react";
+import { useId, useRef, useState, type KeyboardEvent, type TouchEvent } from "react";
 import { cn } from "@/lib/utils";
 
 type CarouselImage = {
@@ -24,23 +24,8 @@ export default function ImageCarousel({
 }: ImageCarouselProps) {
   const total = images.length;
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isDesktop, setIsDesktop] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const id = useId();
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 768px)");
-    const update = () => setIsDesktop(mediaQuery.matches);
-    update();
-
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", update);
-      return () => mediaQuery.removeEventListener("change", update);
-    }
-
-    mediaQuery.addListener(update);
-    return () => mediaQuery.removeListener(update);
-  }, []);
 
   const goTo = (index: number) => {
     const next = (index + total) % total;
@@ -100,9 +85,9 @@ export default function ImageCarousel({
         Slide {activeIndex + 1} of {total}: {images[activeIndex]?.alt}
       </p>
 
-      {enableCoverflow && isDesktop ? (
+      {enableCoverflow ? (
         <div
-          className="relative h-80 overflow-hidden"
+          className="relative hidden h-80 overflow-hidden md:block"
           style={{ perspective: "1200px" }}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -146,34 +131,38 @@ export default function ImageCarousel({
             })}
           </div>
         </div>
-      ) : (
-        <div
-          className={cn("relative overflow-hidden rounded-2xl", aspectClassName)}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          <div
-            className="flex h-full w-full transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(-${activeIndex * 100}%)` }}
-            id={`carousel-track-${id}`}
-          >
-            {images.map((image) => (
-              <div key={image.src} className="relative h-full w-full shrink-0">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 720px"
-                  className="object-cover"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      ) : null}
 
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex gap-2">
+      <div
+        className={cn(
+          "relative overflow-hidden rounded-2xl",
+          enableCoverflow ? "md:hidden" : "",
+          aspectClassName
+        )}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div
+          className="flex h-full w-full transition-transform duration-500 ease-out"
+          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+          id={`carousel-track-${id}`}
+        >
+          {images.map((image) => (
+            <div key={image.src} className="relative h-full w-full shrink-0">
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                sizes="(max-width: 768px) 100vw, 720px"
+                className="object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex shrink-0 gap-2">
           <button
             type="button"
             onClick={goPrev}
@@ -191,7 +180,7 @@ export default function ImageCarousel({
             Next
           </button>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           {images.map((_, index) => (
             <button
               key={`${id}-${index}`}

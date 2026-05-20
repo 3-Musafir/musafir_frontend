@@ -17,9 +17,9 @@ export default function FaqAccordion({ title, items }: FaqAccordionProps) {
       <div className="mt-4 divide-y divide-gray-200/70">
         {items.map((item) => (
           <details key={item.question} className="py-3">
-            <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-brand-primary list-none [&::-webkit-details-marker]:hidden">
-              <span>{item.question}</span>
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            <summary className="flex cursor-pointer items-center justify-between gap-3 text-sm font-semibold text-brand-primary list-none [&::-webkit-details-marker]:hidden">
+              <span className="min-w-0">{item.question}</span>
+              <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
             </summary>
             <p className="mt-2 text-sm text-text leading-relaxed">{item.answer}</p>
           </details>
