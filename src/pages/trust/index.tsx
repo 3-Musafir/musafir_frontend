@@ -146,16 +146,18 @@ export default function TrustHubPage() {
 
           <section id="links" className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-text shadow-sm">
             <p>
-              Learn more about the community on the
-              <Link href="/about-3musafir" className="ml-1 text-brand-primary hover:underline">
+              Learn more about the community on the{" "}
+              <Link href="/about-3musafir" className="text-brand-primary hover:underline">
                 About 3Musafir
               </Link>
-              page, see how travelers describe their trips on the
-              <Link href="/reviews" className="ml-1 text-brand-primary hover:underline">
-                reviews page
+              {" "}
+              page, see how travelers describe their trips on the{" "}
+              <Link href="/reviews" className="text-brand-primary hover:underline">
+                reviews
               </Link>
-              page, or
-              <Link href="/explore" className="ml-1 text-brand-primary hover:underline">
+              {" "}
+              page, or{" "}
+              <Link href="/explore" className="text-brand-primary hover:underline">
                 explore upcoming trips
               </Link>
               .

@@ -179,8 +179,8 @@ export default function FounderPortfolioPage() {
         />
       </Head>
 
-      <main className="min-h-screen bg-gray-50 px-4 py-10 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
+      <main className="min-h-screen bg-gray-50 px-4 py-10 sm:px-5 md:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-screen-2xl space-y-10 lg:space-y-12">
           <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-canvas-base via-white to-canvas-soft shadow-card">
             <div className="grid min-h-[360px] md:grid-cols-[minmax(0,0.95fr)_minmax(320px,0.9fr)] lg:min-h-[440px]">
               <div className="relative z-10 flex items-center p-6 md:p-10 lg:p-12">

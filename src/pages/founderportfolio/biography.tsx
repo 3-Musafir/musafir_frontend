@@ -101,8 +101,8 @@ export default function FounderBiographyPage() {
         />
       </Head>
 
-      <main className="min-h-screen bg-gray-50 px-4 py-10 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
+      <main className="min-h-screen bg-gray-50 px-4 py-10 sm:px-5 md:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-screen-2xl space-y-10 lg:space-y-12">
           <section className="rounded-3xl border border-gray-200 bg-white p-6 md:p-10 shadow-sm">
             <div className="grid gap-6 md:grid-cols-[1.1fr_1fr] md:items-center">
               <div className="space-y-4">
@@ -111,7 +111,7 @@ export default function FounderBiographyPage() {
                   3Musafir Biography
                 </h1>
                 <p className="text-sm text-text leading-relaxed">
-                  Learn how community building and technology combine to empower Pakistan's youth through travel.
+                  Learn how community building and technology combine to empower Pakistan&apos;s youth through travel.
                 </p>
                 <Link
                   href="/founderportfolio"
@@ -139,7 +139,7 @@ export default function FounderBiographyPage() {
               Connecting community building and technology in the modern world
             </h2>
             <p className="mt-3 text-sm text-text leading-relaxed">
-              At 3Musafir, we blend community building with technology to empower Pakistan's youth. Through digital platforms, we connect adventurers, organize immersive travel experiences, and foster lasting relationships. Technology amplifies our mission - making exploration, cultural exchange, and meaningful community growth accessible to more people, from anywhere. Join the movement.
+              At 3Musafir, we blend community building with technology to empower Pakistan&apos;s youth. Through digital platforms, we connect adventurers, organize immersive travel experiences, and foster lasting relationships. Technology amplifies our mission - making exploration, cultural exchange, and meaningful community growth accessible to more people, from anywhere. Join the movement.
             </p>
           </section>
 
