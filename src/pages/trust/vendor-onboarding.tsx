@@ -69,14 +69,14 @@ export default function VendorOnboardingPage() {
             <details className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
                 <div className="flex items-start justify-between gap-4">
-                  <h2 className="text-lg font-semibold text-heading">What we don't do</h2>
+                  <h2 className="text-lg font-semibold text-heading">What we don&apos;t do</h2>
                   <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
                 </div>
               </summary>
               <ul className="mt-3 space-y-2 text-sm text-text">
-                <li>We don't work with vendors without verified ownership.</li>
-                <li>We don't ignore traveler feedback on safety issues.</li>
-                <li>We don't onboard partners who refuse safety expectations.</li>
+                <li>We don&apos;t work with vendors without verified ownership.</li>
+                <li>We don&apos;t ignore traveler feedback on safety issues.</li>
+                <li>We don&apos;t onboard partners who refuse safety expectations.</li>
               </ul>
             </details>
           </section>
@@ -85,15 +85,15 @@ export default function VendorOnboardingPage() {
 
           <section className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-text shadow-sm">
             <p>
-              Next: learn how we prepare travelers on
-              <Link href="/trust/travel-education" className="ml-1 text-brand-primary hover:underline">
+              Next: learn how we prepare travelers on{" "}
+              <Link href="/trust/travel-education" className="text-brand-primary hover:underline">
                 Travel education
               </Link>
-              , or
-              <Link href="/explore" className="ml-1 text-brand-primary hover:underline">
+              {", or "}
+              <Link href="/explore" className="text-brand-primary hover:underline">
                 explore upcoming trips
               </Link>
-              .
+              {"."}
             </p>
           </section>
         </div>

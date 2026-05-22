@@ -68,14 +68,14 @@ export default function VerificationPage() {
             <details className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
                 <div className="flex items-start justify-between gap-4">
-                  <h2 className="text-lg font-semibold text-heading">What we don't do</h2>
+                  <h2 className="text-lg font-semibold text-heading">What we don&apos;t do</h2>
                   <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
                 </div>
               </summary>
               <ul className="mt-3 space-y-2 text-sm text-text">
-                <li>We don't approve travelers without referrals or interviews.</li>
-                <li>We don't mix groups without clarity on shared expectations.</li>
-                <li>We don't bypass safety steps to fill seats faster.</li>
+                <li>We don&apos;t approve travelers without referrals or interviews.</li>
+                <li>We don&apos;t mix groups without clarity on shared expectations.</li>
+                <li>We don&apos;t bypass safety steps to fill seats faster.</li>
               </ul>
             </details>
           </section>
@@ -84,15 +84,15 @@ export default function VerificationPage() {
 
           <section className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-text shadow-sm">
             <p>
-              Next: learn how we vet partners on
-              <Link href="/trust/vendor-onboarding" className="ml-1 text-brand-primary hover:underline">
+              Next: learn how we vet partners on{" "}
+              <Link href="/trust/vendor-onboarding" className="text-brand-primary hover:underline">
                 Vendor onboarding
               </Link>
-              , or
-              <Link href="/explore" className="ml-1 text-brand-primary hover:underline">
+              {", or "}
+              <Link href="/explore" className="text-brand-primary hover:underline">
                 explore upcoming trips
               </Link>
-              .
+              {"."}
             </p>
           </section>
         </div>

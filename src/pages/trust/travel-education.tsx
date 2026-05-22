@@ -68,14 +68,14 @@ export default function TravelEducationPage() {
             <details className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <summary className="list-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
                 <div className="flex items-start justify-between gap-4">
-                  <h2 className="text-lg font-semibold text-heading">What we don't do</h2>
+                  <h2 className="text-lg font-semibold text-heading">What we don&apos;t do</h2>
                   <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">+</span>
                 </div>
               </summary>
               <ul className="mt-3 space-y-2 text-sm text-text">
-                <li>We don't leave groups without preparation before travel.</li>
-                <li>We don't ignore regional context when planning itineraries.</li>
-                <li>We don't treat safety as an afterthought.</li>
+                <li>We don&apos;t leave groups without preparation before travel.</li>
+                <li>We don&apos;t ignore regional context when planning itineraries.</li>
+                <li>We don&apos;t treat safety as an afterthought.</li>
               </ul>
             </details>
           </section>
@@ -84,15 +84,15 @@ export default function TravelEducationPage() {
 
           <section className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-text shadow-sm">
             <p>
-              Return to the
-              <Link href="/trust" className="ml-1 text-brand-primary hover:underline">
+              Return to the{" "}
+              <Link href="/trust" className="text-brand-primary hover:underline">
                 Trust & Safety Hub
               </Link>
-              , or
-              <Link href="/explore" className="ml-1 text-brand-primary hover:underline">
+              {", or "}
+              <Link href="/explore" className="text-brand-primary hover:underline">
                 explore upcoming trips
               </Link>
-              .
+              {"."}
             </p>
           </section>
         </div>
