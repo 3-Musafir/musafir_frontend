@@ -102,26 +102,37 @@ export const dmcDestinations = [
   {
     title: "Hunza DMC support",
     body: "Route planning, hotels, local experiences, guides, and group movement for Hunza programs.",
+    href: null,
   },
   {
     title: "Skardu DMC support",
     body: "Season-aware logistics for Skardu, Shigar, Deosai-access programs, and premium group travel.",
+    href: null,
   },
   {
     title: "Chitral and Swat programs",
     body: "Custom group planning where route conditions, guest profile, and local availability fit the brief.",
+    href: null,
   },
   {
     title: "Fairy Meadows and trekking support",
     body: "Ground coordination for remote routes, including Fairy Meadows and K2 Base Camp style trekking support.",
+    href: null,
+  },
+  {
+    title: "K2 Base Camp DMC services",
+    body: "Expedition logistics, Baltoro Glacier trekking support, Concordia route planning, crew coordination, and contingency-aware field execution.",
+    href: "/pakistan-dmc/k2basecamp",
   },
   {
     title: "Cultural city programs",
     body: "Lahore, Islamabad, and Karachi cultural programs with hotel, transport, guide, and schedule coordination.",
+    href: null,
   },
   {
     title: "Corporate retreats and MICE",
     body: "Leadership offsites, incentives, retreats, and MICE support built around venue, movement, and privacy needs.",
+    href: null,
   },
 ];
 

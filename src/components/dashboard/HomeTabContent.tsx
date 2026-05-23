@@ -4,6 +4,7 @@ import React from "react";
 import { useDashboard } from "@/context/DashboardContext";
 import HomeEventCard from "@/components/cards/HomeEventCard";
 import ExploreCard from "@/components/cards/ExploreCard";
+import DmcCard from "@/components/cards/DmcCard";
 import ExploreEmptyStateCard from "@/components/cards/ExploreEmptyStateCard";
 import PassportUpcomingCard from "@/components/cards/PassportUpcomingCard";
 import CompanyProfileHero from "@/components/brand/CompanyProfileHero";
@@ -92,6 +93,7 @@ export default function HomeTabContent() {
                 <HomeEventCard key={event._id} {...event} />
               ))}
               <ExploreCard />
+              <DmcCard />
             </div>
 
           </>

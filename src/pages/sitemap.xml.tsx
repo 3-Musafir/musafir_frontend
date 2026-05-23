@@ -14,6 +14,7 @@ const ROUTES = [
   "/explore",
   "/reviews",
   "/pakistan-dmc",
+  "/pakistan-dmc/k2basecamp",
   "/why",
   "/about-3musafir",
   "/founderportfolio",

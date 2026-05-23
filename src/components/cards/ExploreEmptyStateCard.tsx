@@ -12,13 +12,22 @@ export default function ExploreEmptyStateCard() {
             Explore all trips and community journeys to find what fits.
           </p>
         </div>
-        <Link
-          href="/explore"
-          aria-label="Go to Explore"
-          className="inline-flex items-center justify-center rounded-full bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-        >
-          Go to Explore
-        </Link>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/explore"
+            aria-label="Go to Explore"
+            className="inline-flex items-center justify-center rounded-full bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            Go to Explore
+          </Link>
+          <Link
+            href="/pakistan-dmc"
+            aria-label="Go to Pakistan DMC services"
+            className="inline-flex items-center justify-center rounded-full border border-brand-primary px-5 py-2.5 text-sm font-semibold text-heading transition hover:border-brand-primary-hover hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            Pakistan DMC
+          </Link>
+        </div>
       </div>
     </div>
   );

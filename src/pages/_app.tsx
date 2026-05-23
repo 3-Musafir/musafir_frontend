@@ -51,6 +51,12 @@ const SEO_MAP: Record<
       "Pakistan DMC for international agencies. 3Musafir manages inbound tours, MICE, retreats, hotel contracting, transport, and on-ground logistics across Pakistan.",
     ogImage: "/3musafir-founders.jpg",
   },
+  "/pakistan-dmc/k2basecamp": {
+    title: "K2 Base Camp DMC Pakistan | Expedition Logistics & Ground Handling | 3Musafir",
+    description:
+      "3Musafir supports international travel agencies with K2 Base Camp expedition logistics in Pakistan, including permits, hotels, transport, guides, porters, meals, equipment coordination, and on-ground field execution.",
+    ogImage: "/communityimage14.jpg",
+  },
   "/why": {
     title: "Why 3Musafir Exists — Safer travel for women in Pakistan",
     description:

@@ -52,33 +52,6 @@ function AnswerBlock({ children }: { children: string }) {
   );
 }
 
-function TextInput({
-  label,
-  placeholder,
-  required = false,
-  type = "text",
-}: {
-  label: string;
-  placeholder: string;
-  required?: boolean;
-  type?: string;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-[6px] block text-[15px] font-extrabold leading-tight text-[#2d2f49]">
-        {label}
-        {required ? "*" : ""}
-      </span>
-      <input
-        type={type}
-        placeholder={placeholder}
-        required={required}
-        className="h-[42px] w-full rounded-[11px] border border-[#d3d8df] bg-white px-[11px] text-[15px] font-medium text-[#2d2f49] outline-none placeholder:text-[#c8c9cd] focus:border-[#ff3b0a]"
-      />
-    </label>
-  );
-}
-
 function DmcNavMenu({
   open,
   onClose,
@@ -129,7 +102,6 @@ function DmcNavMenu({
 
 export default function DmcLandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openFaq, setOpenFaq] = useState(0);
 
   return (
     <main className="min-h-screen scroll-smooth bg-[#fffaf8] font-[Outfit,Inter,sans-serif] text-[#2d2f49]">
@@ -331,7 +303,18 @@ export default function DmcLandingPage() {
                 key={item.title}
                 className="rounded-[18px] border border-[#ebe9e7] bg-[#fffdfc] px-[20px] py-[20px] shadow-[0_2px_8px_rgba(20,24,36,0.04)]"
               >
-                <h3 className="text-[18px] font-black leading-tight text-[#2d2f49]">{item.title}</h3>
+                <h3 className="text-[18px] font-black leading-tight text-[#2d2f49]">
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      className="underline decoration-[#ff3b0a]/30 underline-offset-4"
+                    >
+                      {item.title}
+                    </a>
+                  ) : (
+                    item.title
+                  )}
+                </h3>
                 <p className="mt-[9px] text-[14px] font-medium leading-[1.45] text-[#596173]">
                   {item.body}
                 </p>
@@ -598,36 +581,25 @@ export default function DmcLandingPage() {
           </p>
 
           <div className="mt-[63px] space-y-[15px] md:mx-auto md:grid md:max-w-[960px] md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
-            {dmcFaqs.map((faq, index) => {
-              const isOpen = openFaq === index;
-              const answerId = `dmc-faq-answer-${index}`;
-
-              return (
-                <article key={faq.question} className="rounded-[12px] bg-[#1e2533] px-[23px] py-[25px]">
-                  <button
-                    type="button"
-                    aria-expanded={isOpen}
-                    aria-controls={answerId}
-                    onClick={() => setOpenFaq(isOpen ? -1 : index)}
-                    className="flex w-full cursor-pointer items-center justify-between gap-4 text-left text-[16px] font-black leading-[1.55]"
-                  >
-                    {faq.question}
-                    <ChevronDown
-                      size={19}
-                      strokeWidth={3}
-                      className={`shrink-0 text-[#ff3b0a] transition ${isOpen ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                  <p
-                    id={answerId}
-                    hidden={!isOpen}
-                    className="mt-3 text-[14px] font-medium leading-[1.5] text-[#b9bdca]"
-                  >
-                    {faq.answer}
-                  </p>
-                </article>
-              );
-            })}
+            {dmcFaqs.map((faq, index) => (
+              <details
+                key={faq.question}
+                className="group rounded-[12px] bg-[#1e2533] px-[23px] py-[25px]"
+                open={index === 0}
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-black leading-[1.55] [&::-webkit-details-marker]:hidden">
+                  {faq.question}
+                  <ChevronDown
+                    size={19}
+                    strokeWidth={3}
+                    className="shrink-0 text-[#ff3b0a] transition group-open:rotate-180"
+                  />
+                </summary>
+                <p className="mt-3 text-[14px] font-medium leading-[1.5] text-[#b9bdca]">
+                  {faq.answer}
+                </p>
+              </details>
+            ))}
           </div>
         </section>
 
@@ -638,17 +610,14 @@ export default function DmcLandingPage() {
               Join our network of international agencies and unlock exclusive B2B rates.
             </p>
 
-            <form className="mt-[23px] space-y-[15px] md:grid md:grid-cols-4 md:items-end md:gap-4 md:space-y-0">
-              <TextInput label="Company Name" placeholder="Company/ Business name" />
-              <TextInput label="Country" placeholder="your country" />
-              <TextInput label="Email " placeholder="Your official email" required type="email" />
-              <button
-                type="button"
-                className="mt-[6px] h-[42px] w-full rounded-[10px] bg-[#2d2f49] text-[13px] font-black text-white md:mt-0"
-              >
-                Partner with 3Musafir
-              </button>
-            </form>
+            <a
+              href="https://wa.me/923221848940?text=Hi%203Musafir%2C%20I%20want%20to%20partner%20for%20Pakistan%20DMC%20services."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-[23px] flex h-[52px] w-full items-center justify-center rounded-[14px] bg-[#2d2f49] px-5 text-[15px] font-black text-white shadow-[0_8px_18px_rgba(20,24,36,0.12)] md:max-w-[300px]"
+            >
+              Chat on WhatsApp
+            </a>
           </div>
         </section>
 
@@ -672,36 +641,16 @@ export default function DmcLandingPage() {
             </p>
             </div>
 
-            <form className="mt-[28px] space-y-[18px] md:mt-0 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
-              <TextInput label="Full Name" placeholder="Your name" required />
-              <TextInput label="Company Name" placeholder="Company/ Business name" />
-              <TextInput label="Email " placeholder="Your official email" required type="email" />
-              <TextInput
-                label="Contact Number (with country code)"
-                placeholder="Preferably WhatsApp number"
-                required
-                type="tel"
-              />
-              <TextInput
-                label="Number of Travelers"
-                placeholder="e.g 50 (you can also enter a range)"
-                required
-              />
-
-              <label className="block md:col-span-2">
-                <span className="mb-[6px] block text-[15px] font-extrabold leading-tight text-[#2d2f49]">
-                  Requirements (Destinations, PAX, Dates)
-                </span>
-                <textarea className="h-[87px] w-full resize-none rounded-[11px] border border-[#d3d8df] bg-white px-[11px] py-3 text-[15px] font-medium text-[#2d2f49] outline-none focus:border-[#ff3b0a]" />
-              </label>
-
-              <button
-                type="button"
-                className="mt-[5px] h-[57px] w-full rounded-[14px] bg-[#ff3b0a] text-[17px] font-black text-white shadow-[0_13px_22px_rgba(255,59,10,0.22)] md:col-span-2 md:mt-0"
+            <div className="mt-[28px] md:mt-0 md:flex md:items-center">
+              <a
+                href="https://wa.me/923221848940?text=Hi%203Musafir%2C%20I%20need%20a%20Pakistan%20DMC%20quote%20for%20an%20agency%20group."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-[57px] w-full items-center justify-center rounded-[14px] bg-[#ff3b0a] px-5 text-center text-[17px] font-black text-white shadow-[0_13px_22px_rgba(255,59,10,0.22)] md:max-w-[360px]"
               >
-                Contact 3Musafir for Pakistan DMC services
-              </button>
-            </form>
+                Request Quote on WhatsApp
+              </a>
+            </div>
           </div>
         </section>
 
@@ -785,7 +734,7 @@ export default function DmcLandingPage() {
             href="#partner"
             className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-[#f2f3f5] text-[12px] font-extrabold text-[#2d2f49]"
           >
-            Brochure
+            Partner
           </a>
           <a
             href="#urgent-enquiry"
