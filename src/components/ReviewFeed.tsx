@@ -283,9 +283,9 @@ export default function ReviewFeed() {
     <section className="min-h-screen bg-gray-50 pb-16">
       <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 xl:px-10">
         <header className="pt-10 lg:pt-12">
-          <h1 className="text-3xl font-semibold text-heading sm:text-4xl">
+          <h2 className="text-3xl font-semibold text-heading sm:text-4xl">
             If youre wondering
-          </h1>
+          </h2>
           <p className="mt-2 text-base text-text sm:text-lg">
             Youre probably not the first. Heres what real Musafirs said.
           </p>

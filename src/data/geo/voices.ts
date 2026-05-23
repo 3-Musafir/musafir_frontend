@@ -22,4 +22,14 @@ export const voicesThemes = [
     summary:
       "Community discussions often mention that cultural context and respectful travel guidance improve both safety and experience quality.",
   },
+  {
+    title: "Post-trip stories",
+    summary:
+      "Many traveler reflections focus on friendships, confidence after a first group trip, trip captains, and the feeling of reaching remote destinations with a structured group.",
+  },
+  {
+    title: "Practical tradeoffs",
+    summary:
+      "Common concerns include communication during busy seasons, itinerary changes caused by mountain roads or weather, and clear room-sharing expectations before booking.",
+  },
 ];

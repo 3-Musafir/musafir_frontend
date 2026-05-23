@@ -22,9 +22,9 @@ const SEO_MAP: Record<
   { title: string; description: string; ogImage?: string }
 > = {
   "/": {
-    title: "3Musafir — Community-led travel in Pakistan",
+    title: "3Musafir | Pakistan Group Tours, Women-First Travel & DMC Services",
     description:
-      "3Musafir is a community-first travel platform focused on safety, trust, and meaningful group journeys for women in Pakistan.",
+      "3Musafir is a Pakistan-based travel company offering community-led group tours, women-first travel experiences, customized trips, international group trips, and inbound DMC services.",
     ogImage: "/flowerFields.jpg",
   },
   "/home": {
@@ -148,9 +148,11 @@ const noindexRoutes = [
   "/change-password",
   "/feedback",
   "/forgot-password",
+  "/launch",
   "/login",
   "/reset-password",
   "/unauthorized",
+  "/vendor-onboarding",
   "/verification",
   "/flagship/flagship-requirement",
   "/flagship/flagshipRequirement-dark",
@@ -162,6 +164,7 @@ const noindexRoutePrefixes = [
   "/flagship/create",
   "/flagship/payment",
   "/flagship/seats",
+  "/home",
   "/musafir",
   "/musafir-signup",
   "/notifications",
@@ -230,7 +233,7 @@ export default function App({ Component, pageProps }: AppProps) {
         description={description}
         canonical={canonicalUrl}
         noindex={shouldNoindex}
-        nofollow={shouldNoindex}
+        nofollow={false}
         openGraph={{
           type: "website",
           url: canonicalUrl,
@@ -257,7 +260,7 @@ export default function App({ Component, pageProps }: AppProps) {
         type="Organization"
         id={`${siteUrl}#organization`}
         name={siteName}
-        alternateName="3M"
+        alternateName="Teen Musafir"
         url={siteUrl}
         logo={logoUrl}
         contactPoint={contactPoints}

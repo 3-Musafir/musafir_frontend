@@ -4,5 +4,12 @@ Disallow: /admin
 Disallow: /dashboard
 Disallow: /flagship/create
 Disallow: /flagship/payment
+Disallow: /musafir/payment
+Disallow: /musafir/refund
+Disallow: /notifications
+Disallow: /passport
+Disallow: /referrals
+Disallow: /userSettings
+Disallow: /wallet
 Disallow: /api
-Sitemap: https://www.3musafir.com/sitemap.xml
+Sitemap: https://3musafir.com/sitemap.xml

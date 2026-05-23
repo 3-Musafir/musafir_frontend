@@ -44,7 +44,7 @@ export default function RefundPolicyBy3Musafir() {
       detail: "75% refund minus PKR 500 processing fee",
     },
   ];
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
   const canonicalUrl = `${siteUrl}/refundpolicyby3musafir`;
   const structuredData = {
     "@context": "https://schema.org",

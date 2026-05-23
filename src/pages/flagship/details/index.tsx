@@ -85,7 +85,7 @@ export default function FlagshipDetails() {
   const [basicWhatsapp, setBasicWhatsapp] = useState("");
   const [basicPhoneError, setBasicPhoneError] = useState<string | null>(null);
   const [basicWhatsappError, setBasicWhatsappError] = useState<string | null>(null);
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
   const basePath = "/flagship/details";
   const idParam = typeof id === "string" ? id : undefined;
   const canonicalUrl = idParam
@@ -262,20 +262,23 @@ export default function FlagshipDetails() {
       areaServed: location.name,
       url: canonicalUrl,
     }));
-  const reviewItems = rating.slice(0, 5).map((item, index) => ({
-    "@type": "Review",
-    "@id": `${canonicalUrl}#review-${index + 1}`,
-    reviewBody: item.review || "Verified 3Musafir community review.",
-    reviewRating: {
-      "@type": "Rating",
-      ratingValue: item.rating || 5,
-      bestRating: 5,
-    },
-    author: {
-      "@type": "Person",
-      name: item?.userId?.fullName || "Musafir",
-    },
-  }));
+  const reviewItems = rating
+    .filter((item) => item.review && item.rating)
+    .slice(0, 5)
+    .map((item, index) => ({
+      "@type": "Review",
+      "@id": `${canonicalUrl}#review-${index + 1}`,
+      reviewBody: item.review,
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: item.rating,
+        bestRating: 5,
+      },
+      author: {
+        "@type": "Person",
+        name: item?.userId?.fullName || "Musafir",
+      },
+    }));
   const faqSchema = faq.slice(0, 8).map((item) => ({
     "@type": "Question",
     name: item.question,

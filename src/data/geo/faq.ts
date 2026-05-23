@@ -142,18 +142,23 @@ export const educationFaq: FaqItem[] = [
 
 export const voicesFaq: FaqItem[] = [
   {
-    question: "Are these quotes from real people?",
+    question: "What are Musafir community voices?",
     answer:
-      "No. These are paraphrased themes from public commentary and are not direct quotes or testimonials.",
+      "Musafir community voices are responsible theme summaries about what travelers discuss before and after group trips, including safety, comfort, friendships, communication, and local travel expectations.",
   },
   {
-    question: "Why do you include community voices?",
+    question: "Are these direct testimonials?",
     answer:
-      "To share the kinds of questions and concerns travelers discuss before choosing group trips.",
+      "No. These are paraphrased themes from public commentary and community travel discussions. They are not direct quotes, endorsements, or individually verified testimonials.",
   },
   {
-    question: "Do you verify third-party comments?",
+    question: "How do community stories help travelers?",
     answer:
-      "We summarize sentiment responsibly without naming individuals or implying endorsement.",
+      "They help future travelers understand the real questions people ask about women-first travel, group fit, trip captains, room sharing, route changes, and safe group travel in Pakistan.",
+  },
+  {
+    question: "Where can I read 3Musafir reviews?",
+    answer:
+      "The 3Musafir reviews page includes traveler stories, community feedback, trust signals, and trip-specific review themes for Pakistan and international group trips.",
   },
 ];

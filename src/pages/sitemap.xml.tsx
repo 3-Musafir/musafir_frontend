@@ -1,6 +1,6 @@
 import type { GetServerSideProps } from "next";
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(
   /\/$/,
   ""
 );
@@ -11,12 +11,13 @@ const API_BASE = (process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "").
 
 const ROUTES = [
   "/",
-  "/home",
   "/explore",
   "/reviews",
   "/pakistan-dmc",
   "/why",
   "/about-3musafir",
+  "/founderportfolio",
+  "/founderportfolio/biography",
   "/trust",
   "/trust/verification",
   "/trust/vendor-onboarding",

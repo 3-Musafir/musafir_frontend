@@ -22,8 +22,10 @@ import {
   advantagePoints,
   credentialCards,
   credentialsAnswer,
+  dmcDestinations,
   dmcFaqs,
   dmcHeroSupport,
+  dmcServiceCapabilities,
   heroAnswer,
   internationalAnswer,
   internalLinks,
@@ -221,7 +223,7 @@ export default function DmcLandingPage() {
                 href="#urgent-enquiry"
                 className="flex h-[72px] w-full items-center justify-center rounded-[19px] bg-[#ff3b0a] text-[20px] font-extrabold text-white shadow-[0_13px_25px_rgba(255,59,10,0.22)] md:h-[62px] md:flex-1"
               >
-                Urgent Enquiry
+                Plan an inbound Pakistan group
               </a>
 
               <a
@@ -229,7 +231,7 @@ export default function DmcLandingPage() {
                 className="flex h-[70px] w-full items-center justify-center gap-4 rounded-[18px] border border-[#ebedf0] bg-white text-[20px] font-extrabold text-[#2d2f49] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:h-[62px] md:flex-1 md:text-[18px]"
               >
                 <Download size={25} strokeWidth={3} className="text-black" />
-                Request Brochure 2026
+                Partner with 3Musafir
               </a>
             </div>
           </div>
@@ -247,6 +249,17 @@ export default function DmcLandingPage() {
 
           <div className="mx-1 mt-[28px] md:mx-auto md:max-w-[780px]">
             <AnswerBlock>{servicesAnswer}</AnswerBlock>
+          </div>
+
+          <div className="mx-1 mt-[22px] flex flex-wrap gap-2 md:mx-auto md:max-w-[900px] md:justify-center">
+            {dmcServiceCapabilities.map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-[#ebe9e7] bg-[#fffaf8] px-3 py-2 text-[12.5px] font-extrabold text-[#2d2f49]"
+              >
+                {item}
+              </span>
+            ))}
           </div>
 
           <div className="mt-[42px] flex snap-x gap-[22px] overflow-x-auto px-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
@@ -293,6 +306,36 @@ export default function DmcLandingPage() {
                   {stat.label}
                 </span>
               </div>
+            ))}
+          </div>
+        </section>
+
+        <section
+          id="destinations"
+          className="scroll-mt-[100px] bg-white px-3 pb-24 pt-12 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
+        >
+          <div className="mx-auto max-w-[760px] text-center">
+            <p className="text-[14px] font-black uppercase text-[#ff3b0a]">DMC destinations</p>
+            <h2 className="mx-auto mt-[14px] max-w-[660px] text-[29px] font-black leading-[1.08] text-[#2d2f49] md:text-[42px]">
+              Pakistan destinations for inbound groups and agency programs
+            </h2>
+            <p className="mx-auto mt-5 max-w-[640px] text-[15px] font-medium leading-[1.45] text-[#596173] md:text-[17px]">
+              We plan around seasonality, road conditions, flight volatility, supplier availability,
+              privacy needs, and guest profile before confirming any route.
+            </p>
+          </div>
+
+          <div className="mt-[38px] grid gap-[14px] md:grid-cols-2 lg:grid-cols-3">
+            {dmcDestinations.map((item) => (
+              <article
+                key={item.title}
+                className="rounded-[18px] border border-[#ebe9e7] bg-[#fffdfc] px-[20px] py-[20px] shadow-[0_2px_8px_rgba(20,24,36,0.04)]"
+              >
+                <h3 className="text-[18px] font-black leading-tight text-[#2d2f49]">{item.title}</h3>
+                <p className="mt-[9px] text-[14px] font-medium leading-[1.45] text-[#596173]">
+                  {item.body}
+                </p>
+              </article>
             ))}
           </div>
         </section>
@@ -603,7 +646,7 @@ export default function DmcLandingPage() {
                 type="button"
                 className="mt-[6px] h-[42px] w-full rounded-[10px] bg-[#2d2f49] text-[13px] font-black text-white md:mt-0"
               >
-                Register Interest
+                Partner with 3Musafir
               </button>
             </form>
           </div>
@@ -656,7 +699,7 @@ export default function DmcLandingPage() {
                 type="button"
                 className="mt-[5px] h-[57px] w-full rounded-[14px] bg-[#ff3b0a] text-[17px] font-black text-white shadow-[0_13px_22px_rgba(255,59,10,0.22)] md:col-span-2 md:mt-0"
               >
-                Get Priority Quote
+                Contact 3Musafir for Pakistan DMC services
               </button>
             </form>
           </div>
@@ -748,7 +791,7 @@ export default function DmcLandingPage() {
             href="#urgent-enquiry"
             className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-[#ff3b0a] text-[12px] font-extrabold text-white shadow-[0_9px_18px_rgba(255,59,10,0.25)]"
           >
-            Urgent Enquiry
+            Contact 3Musafir
           </a>
         </div>
       </div>

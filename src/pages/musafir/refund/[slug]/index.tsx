@@ -17,7 +17,7 @@ import { RegistrationStatus } from "@/config/registration-status";
 
 const SuccessComponent = ({ refundAmount }: { refundAmount?: number }) => {
   const router = useRouter();
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
   const title = "Refund request submitted — 3Musafir";
   const description =
     "Your refund request has been submitted. Track updates and next steps within 3Musafir.";
@@ -85,7 +85,7 @@ export default function RefundForm() {
   const [retryAt, setRetryAt] = useState<string | null>(null);
   const router = useRouter();
   const { slug } = router.query;
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
   const path =
     typeof window === "undefined"
       ? "/musafir/refund"

@@ -36,6 +36,7 @@ const dmcJsonLd = pruneJsonLd({
       "@type": "Organization",
       "@id": orgId,
       name: "3Musafir",
+      alternateName: "Teen Musafir",
       legalName: "3Musafir Travels (Pvt) Ltd.",
       url: configuredSiteUrl || undefined,
       logo: absoluteUrl("/3mlogosmall.svg"),
@@ -65,6 +66,9 @@ const dmcJsonLd = pruneJsonLd({
         "Corporate retreats in Pakistan",
         "Hotel contracting in Pakistan",
         "Transport logistics in Pakistan",
+        "Hunza DMC",
+        "Skardu DMC",
+        "Women-friendly group travel Pakistan",
       ],
     },
     {

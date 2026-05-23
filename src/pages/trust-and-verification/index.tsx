@@ -4,7 +4,7 @@ import Head from "next/head";
 import Link from 'next/link';
 
 export default function TrustAndVerificationPage() {
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
   const title = "Trust & Verification — 3Musafir safety framework";
   const description =
     "See how 3Musafir builds trust and verification systems to make group travel safer for women in Pakistan.";

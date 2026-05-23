@@ -1,13 +1,13 @@
-export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
 export const siteName = "3Musafir";
-export const defaultTitle = "3Musafir — Community-led travel in Pakistan";
+export const defaultTitle = "3Musafir | Pakistan Group Tours & Women-First Travel";
 export const defaultDescription =
-  "3Musafir is a community-led travel platform focused on safety, trust, and meaningful group journeys across Pakistan and internationally.";
+  "3Musafir is a Pakistan-based travel company offering community-led group tours, women-first travel experiences, customized trips, international group trips, and inbound DMC services.";
 export const logoUrl = `${siteUrl}/3mwinterlogo.png`;
 const configuredProfiles = [
   process.env.NEXT_PUBLIC_INSTAGRAM_URL,
   process.env.NEXT_PUBLIC_TIKTOK_URL,
-  process.env.NEXT_PUBLIC_LINKEDIN_URL,
+  process.env.NEXT_PUBLIC_LINKEDIN_URL || "https://www.linkedin.com/company/3musafirinternational/",
   process.env.NEXT_PUBLIC_YOUTUBE_URL,
 ].filter(Boolean) as string[];
 

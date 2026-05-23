@@ -12,11 +12,11 @@ export default function Explore() {
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const { getProfile } = useCompanyProfile();
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.3musafir.com').replace(/\/$/, '');
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://3musafir.com').replace(/\/$/, '');
   const canonicalUrl = `${siteUrl}/explore`;
-  const title = 'Pakistan Group Tours 2026 | Hunza, Skardu, Fairy Meadows & K2 Base Camp';
+  const title = 'Pakistan Group Tours with 3Musafir | Hunza, Skardu & Fairy Meadows';
   const description =
-    'Explore verified community-led trips to Hunza Valley, Skardu, Shigar Valley, Fairy Meadows, and K2 Base Camp with 3Musafir. See pricing, safety standards, and limited-seat departures.';
+    'Explore community-led Pakistan group tours, women-first travel experiences, Hunza trips, Skardu trips, Fairy Meadows journeys, and K2 Base Camp programs with 3Musafir.';
   const faqItems = [
     {
       question: 'Is 3Musafir safe for female travelers in Pakistan?',
@@ -43,6 +43,24 @@ export default function Explore() {
       url: canonicalUrl,
       inLanguage: 'en-PK',
       about: ['Hunza Valley', 'Skardu', 'Shigar Valley', 'Fairy Meadows', 'K2 Base Camp', 'Group travel in Pakistan'],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: siteUrl,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Explore Pakistan group tours',
+          item: canonicalUrl,
+        },
+      ],
     },
     {
       '@context': 'https://schema.org',
@@ -114,6 +132,11 @@ export default function Explore() {
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={`${siteUrl}/murree.webp`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={`${siteUrl}/murree.webp`} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -123,6 +146,36 @@ export default function Explore() {
       <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
         <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
           <CompanyProfileHero companyProfile={companyProfile} loading={profileLoading} />
+          <section className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm">
+            <div className="max-w-3xl space-y-3">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                Pakistan group tours
+              </p>
+              <h1 className="text-3xl font-semibold leading-tight text-heading md:text-4xl">
+                Explore 3Musafir trips across Pakistan and beyond
+              </h1>
+              <p className="text-sm leading-relaxed text-text md:text-base">
+                3Musafir helps travelers find community-led Pakistan group tours, women-first
+                travel experiences, customized private trips, and international group trips. Popular
+                Pakistan routes include Hunza, Skardu, Fairy Meadows, Swat, Chitral, and K2 Base Camp
+                programs shaped around seasonality, safety, and group comfort.
+              </p>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link href="/reviews" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
+                Read 3Musafir reviews
+              </Link>
+              <Link href="/why" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
+                Why travel with 3Musafir
+              </Link>
+              <Link href="/pakistan-dmc" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
+                Pakistan DMC services
+              </Link>
+              <Link href="/community/voices" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
+                Community travel stories
+              </Link>
+            </div>
+          </section>
           <section id="community-led">
             <details
               open={openSection === 'community-led'}
@@ -138,9 +191,9 @@ export default function Explore() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-2">
                     <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Community-led travel</p>
-                    <h1 className="text-3xl sm:text-4xl font-semibold leading-tight text-heading">
+                    <h2 className="text-3xl sm:text-4xl font-semibold leading-tight text-heading">
                       Travel built around people, not packages
-                    </h1>
+                    </h2>
                   </div>
                   <span className="mt-2 text-brand-primary text-xl transition group-open:rotate-45">+
                   </span>
@@ -337,7 +390,7 @@ export default function Explore() {
                       title: 'Join the community',
                       description:
                         'Be part of conversations, meetups, and city-based groups where Musafirs connect beyond just trips.',
-                      href: '/community',
+                      href: '/community/voices',
                     },
                     {
                       title: 'Read Musafir reviews',
@@ -375,8 +428,8 @@ export default function Explore() {
                     {
                       title: 'Build with 3Musafir',
                       description:
-                        'Explore opportunities and collaborations for people shaping the future of community-led travel.',
-                      href: '/careers',
+                        'Explore Pakistan DMC services and collaborations for agencies shaping community-led travel.',
+                      href: '/pakistan-dmc',
                     },
                     {
                       title: 'Trust & verification',
@@ -502,6 +555,20 @@ export default function Explore() {
                 </p>
               </div>
             </details>
+          </section>
+
+          <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
+            <h2 className="text-2xl font-semibold text-heading">Explore trips FAQs</h2>
+            <div className="mt-4 space-y-3">
+              {faqItems.map((item) => (
+                <details key={item.question} className="rounded-xl border border-gray-200 p-4">
+                  <summary className="cursor-pointer font-medium text-heading">
+                    {item.question}
+                  </summary>
+                  <p className="mt-2 text-sm leading-relaxed text-text">{item.answer}</p>
+                </details>
+              ))}
+            </div>
           </section>
 
         </div>

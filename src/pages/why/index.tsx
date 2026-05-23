@@ -4,11 +4,33 @@ import Head from "next/head";
 import Link from 'next/link';
 
 export default function WhyPage() {
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
-  const title = "Why 3Musafir Exists — Safer travel for women in Pakistan";
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const title = "Why Travel with 3Musafir | Safe Community-Led Travel in Pakistan";
   const description =
-    "3Musafir was created to make travel feel safer, more intentional, and more human for women in Pakistan through community-led group travel.";
+    "Learn why 3Musafir is trusted for women-first travel, community-led Pakistan group tours, local safety systems, and on-ground travel expertise.";
   const canonicalUrl = `${siteUrl}/why`;
+  const whyFaqs = [
+    {
+      question: "Is 3Musafir safe for women to travel with in Pakistan?",
+      answer:
+        "3Musafir is built to make group travel safer for women in Pakistan through community-led groups, clear expectations, and active support before, during, and after trips.",
+    },
+    {
+      question: "What makes 3Musafir community-led?",
+      answer:
+        "Trips begin with people and shared values rather than only destinations, helping travelers build familiarity and trust before they travel together.",
+    },
+    {
+      question: "Why does community-led group travel feel safer on 3Musafir?",
+      answer:
+        "Groups are designed with comfort, safety, and clear structure in mind, which reduces uncertainty and makes travel more predictable and respectful for women.",
+    },
+    {
+      question: "Why does Pakistan travel require local on-ground expertise?",
+      answer:
+        "Pakistan routes can change quickly because of weather, road conditions, regional norms, flight volatility, and supplier availability, so local coordination improves both safety and trip quality.",
+    },
+  ];
   const structuredData = [
     {
       "@context": "https://schema.org",
@@ -34,35 +56,14 @@ export default function WhyPage() {
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: [
-        {
+      mainEntity: whyFaqs.map((item) => ({
           "@type": "Question",
-          name: "Is 3Musafir safe for women to travel with in Pakistan?",
+          name: item.question,
           acceptedAnswer: {
             "@type": "Answer",
-            text:
-              "3Musafir is built to make group travel safer for women in Pakistan through community-led groups, clear expectations, and active support before, during, and after trips.",
+            text: item.answer,
           },
-        },
-        {
-          "@type": "Question",
-          name: "What makes 3Musafir community-led?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text:
-              "Trips begin with people and shared values rather than only destinations, helping travelers build familiarity and trust before they travel together.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Why does group travel feel safer on 3Musafir?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text:
-              "Groups are designed with comfort, safety, and clear structure in mind, which reduces uncertainty and makes travel more predictable and respectful for women.",
-          },
-        },
-      ],
+        })),
     },
     {
       "@context": "https://schema.org",
@@ -93,6 +94,11 @@ export default function WhyPage() {
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={`${siteUrl}/blue-shield.png`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={`${siteUrl}/blue-shield.png`} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -113,6 +119,20 @@ export default function WhyPage() {
               <p className="text-base sm:text-lg text-text leading-relaxed">
                 In Pakistan, many women want to travel — but hesitate due to safety concerns, social barriers, and the lack of trusted travel environments. 3Musafir exists to change that by building community-led group travel experiences where trust, structure, and care come first.
               </p>
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Link href="/reviews" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
+                  3Musafir reviews
+                </Link>
+                <Link href="/explore" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
+                  Pakistan group tours
+                </Link>
+                <Link href="/pakistan-dmc" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
+                  Pakistan DMC services
+                </Link>
+                <Link href="/community/voices" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
+                  Community travel stories
+                </Link>
+              </div>
             </div>
           </section>
 
@@ -364,6 +384,32 @@ export default function WhyPage() {
                   </p>
                 </div>
               </details>
+
+              <section id="local-expertise" className="rounded-2xl bg-white border border-gray-200 p-6 md:p-8 shadow-sm">
+                <h2 className="text-2xl font-semibold text-heading">
+                  Why Pakistan travel needs local on-ground expertise
+                </h2>
+                <p className="mt-3 text-sm lg:text-base text-text leading-relaxed">
+                  Pakistan travel often depends on seasonality, mountain roads, regional norms, flight
+                  availability, hotel quality, and supplier reliability. 3Musafir applies local context
+                  to group tours, women-first travel experiences, customized trips, and inbound DMC
+                  programs so travelers and agency partners have clearer expectations before they go.
+                </p>
+              </section>
+
+              <section id="faq" className="rounded-2xl bg-white border border-gray-200 p-6 md:p-8 shadow-sm">
+                <h2 className="text-2xl font-semibold text-heading">Why 3Musafir FAQs</h2>
+                <div className="mt-4 space-y-3">
+                  {whyFaqs.map((item) => (
+                    <details key={item.question} className="rounded-xl border border-gray-200 p-4">
+                      <summary className="cursor-pointer font-medium text-heading">
+                        {item.question}
+                      </summary>
+                      <p className="mt-2 text-sm text-text leading-relaxed">{item.answer}</p>
+                    </details>
+                  ))}
+                </div>
+              </section>
 
               <section id="next" className="rounded-2xl bg-white border border-gray-200 p-6 md:p-8 shadow-sm">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
