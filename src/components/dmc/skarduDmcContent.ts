@@ -23,7 +23,7 @@ export const skarduQuickFacts = [
 export const skarduInternalLinks = [
   { href: "/pakistan-dmc", label: "Pakistan DMC services" },
   { href: "/pakistan-dmc/tours/hunza", label: "Hunza DMC services" },
-  { href: "/pakistan-dmc/tours/k2basecamp", label: "K2 Base Camp expedition logistics" },
+  { href: "/pakistan-dmc/tours/k2-basecamp-trek", label: "K2 Base Camp expedition logistics" },
   { href: "/reviews", label: "3Musafir reviews" },
   { href: "/why", label: "Why partner with 3Musafir" },
   { href: "/explore", label: "Pakistan group tours" },

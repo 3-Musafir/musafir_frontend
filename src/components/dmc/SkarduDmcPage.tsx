@@ -479,7 +479,7 @@ export default function SkarduDmcPage() {
                 <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-[#b9bdca]">
                   <li><Link href="/pakistan-dmc">Pakistan DMC services</Link></li>
                   <li><Link href="/pakistan-dmc/tours/hunza">Hunza DMC services</Link></li>
-                  <li><Link href="/pakistan-dmc/tours/k2basecamp">K2 Base Camp logistics</Link></li>
+                  <li><Link href="/pakistan-dmc/tours/k2-basecamp-trek">K2 Base Camp logistics</Link></li>
                 </ul>
               </div>
               <div>

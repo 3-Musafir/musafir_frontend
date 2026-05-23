@@ -554,7 +554,7 @@ export default function DmcLandingPage() {
           </a>
 
           <a
-            href="/pakistan-dmc/tours/k2basecamp"
+            href="/pakistan-dmc/tours/k2-basecamp-trek"
             className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] md:min-w-0"
           >
             <div className="flex justify-between gap-4">

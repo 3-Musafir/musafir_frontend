@@ -40,13 +40,13 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
-        source: "/pakistan-dmc/k2basecamp",
-        destination: "/pakistan-dmc/tours/k2basecamp",
+        source: "/pakistan-dmc/k2-basecamp-trek",
+        destination: "/pakistan-dmc/tours/k2-basecamp-trek",
         permanent: true,
       },
       {
         source: "/pakistan-dmc/k2-base-camp",
-        destination: "/pakistan-dmc/tours/k2basecamp",
+        destination: "/pakistan-dmc/tours/k2-basecamp-trek",
         permanent: true,
       },
     ];

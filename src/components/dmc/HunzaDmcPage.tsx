@@ -491,7 +491,7 @@ export default function HunzaDmcPage() {
                     <Link href="/pakistan-dmc">Pakistan DMC services</Link>
                   </li>
                   <li>
-                    <Link href="/pakistan-dmc/tours/k2basecamp">K2 Base Camp logistics</Link>
+                    <Link href="/pakistan-dmc/tours/k2-basecamp-trek">K2 Base Camp logistics</Link>
                   </li>
                   <li>
                     <Link href="/reviews">3Musafir reviews</Link>

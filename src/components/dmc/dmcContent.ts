@@ -122,7 +122,7 @@ export const dmcDestinations = [
   {
     title: "K2 Base Camp DMC services",
     body: "Expedition logistics, Baltoro Glacier trekking support, Concordia route planning, crew coordination, and contingency-aware field execution.",
-    href: "/pakistan-dmc/tours/k2basecamp",
+    href: "/pakistan-dmc/tours/k2-basecamp-trek",
   },
   {
     title: "Cultural city programs",
