@@ -1,4 +1,4 @@
-export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
 export const siteName = "3Musafir";
 export const defaultTitle = "3Musafir — Community-led travel in Pakistan";
 export const defaultDescription =

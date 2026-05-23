@@ -170,13 +170,6 @@ export const trustProofs = [
   "On-ground support framing for active programs",
 ];
 
-export const futureTrustTodos = [
-  "TODO: Add registration number",
-  "TODO: Add credentials PDF",
-  "TODO: Publish emergency protocol",
-  "TODO: Add operational coverage map",
-];
-
 export const standardIncludes = [
   "3-Star Accommodation",
   "Standard Coaster/Hiace Transport",
@@ -194,22 +187,22 @@ export const dmcFaqs = [
   {
     question: "What does a destination management company in Pakistan do?",
     answer:
-      "3Musafir is destination management company in Pakistan, we act as the local operating partner for travel agencies, tour operators, and group planners. We handle itinerary design, hotels, transport, guides, vendor coordination, and on-ground troubleshooting, so an overseas partner can sell Pakistan confidently without building their own local operations team.",
+      "3Musafir is a destination management company in Pakistan. We act as the local operating partner for travel agencies, tour operators, and group planners, handling itinerary design, hotels, transport, guides, vendor coordination, and on-ground troubleshooting so overseas partners can sell Pakistan confidently without building their own local operations team.",
   },
   {
     question: "Is 3Musafir a Pakistan DMC for international travel agencies?",
     answer:
-      "Yes. 3Musafir positions itself as a Pakistan-based destination management partner for international agencies that need reliable local execution for groups, retreats, corporate movements, and special-interest travel. The page should speak to agency buyers directly, not only to retail travelers.",
+      "Yes. 3Musafir positions itself as a Pakistan-based destination management partner for international agencies that need reliable local execution for groups, retreats, corporate movements, and special-interest travel.",
   },
   {
     question: "Do you provide visa assistance for international groups?",
     answer:
-      "3Musafir can guide agencies on trip documentation, invitation requirements, and travel-readiness planning where applicable, but visa decisions remain with the relevant embassy and Pakistani authorities. If full visa handling is not offered in this business unit, make that clear in the final copy.",
+      "3Musafir can guide agencies on trip documentation, invitation requirements, and travel-readiness planning where applicable, but visa decisions remain with the relevant embassy and Pakistani authorities. Final visa-support scope is confirmed during partner scoping.",
   },
   {
     question: "Can you operate trips across Hunza, Skardu, Lahore, Islamabad, Karachi, and Northern Pakistan?",
     answer:
-      "3Musafir supports multi-stop programs across Northern Pakistan and major gateway cities where operationally available, with planning built around seasonality, route realities, flight volatility, road conditions, and guest profile. If any destination on this list is not truly supported in the current business model, remove it everywhere consistently.",
+      "3Musafir supports multi-stop programs across Northern Pakistan and major gateway cities where operationally available, with planning built around seasonality, route realities, flight volatility, road conditions, and guest profile.",
   },
   {
     question: "Do you handle MICE and corporate retreats in Pakistan?",
@@ -219,17 +212,17 @@ export const dmcFaqs = [
   {
     question: "Do you provide hotel contracting and transport logistics?",
     answer:
-      "Yes. 3Musafir can coordinate hotel sourcing, group rooming, transport planning, fleet allocation, and route management for inbound groups. Clarify in the surrounding copy whether these services are delivered as part of a full DMC program, standalone agency support, or both.",
+      "Yes. 3Musafir can coordinate hotel sourcing, group rooming, transport planning, fleet allocation, and route management for inbound groups. These services are scoped around the confirmed agency brief and program requirements.",
   },
   {
     question: "Do you offer white-label Pakistan tours for foreign agencies?",
     answer:
-      "Yes, where agreed. 3Musafir can operate behind the scenes as the local fulfillment partner while the overseas agency owns the end-customer relationship. If white-label delivery is limited to selected programs or partner tiers, state those conditions clearly.",
+      "Yes, where agreed. 3Musafir can operate behind the scenes as the local fulfillment partner while the overseas agency owns the end-customer relationship. White-label delivery is confirmed during partner scoping and depends on program fit.",
   },
   {
     question: "How do you handle safety, insurance, and emergency support?",
     answer:
-      "3Musafir manages safety through vetted suppliers, season-aware route planning, clear communication chains, contingency options, and local escalation protocols. Insurance wording should remain conservative: travelers and agencies should hold appropriate coverage, while 3Musafir explains its own operating process and emergency response clearly.",
+      "3Musafir manages safety through vetted suppliers, season-aware route planning, clear communication chains, contingency options, and local escalation protocols. Travelers and agencies should hold appropriate coverage, while 3Musafir explains its own operating process and emergency response clearly.",
   },
 ];
 

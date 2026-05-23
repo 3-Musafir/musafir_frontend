@@ -143,6 +143,36 @@ const authStandalonePrefixes = ["/signup", "/signup-dark", "/musafir-signup"];
 
 const publicStandaloneRoutes = ["/flagship/details"];
 
+const noindexRoutes = [
+  "/auth-callback",
+  "/change-password",
+  "/feedback",
+  "/forgot-password",
+  "/login",
+  "/reset-password",
+  "/unauthorized",
+  "/verification",
+  "/flagship/flagship-requirement",
+  "/flagship/flagshipRequirement-dark",
+];
+
+const noindexRoutePrefixes = [
+  "/admin",
+  "/dashboard",
+  "/flagship/create",
+  "/flagship/payment",
+  "/flagship/seats",
+  "/musafir",
+  "/musafir-signup",
+  "/notifications",
+  "/passport",
+  "/referrals",
+  "/signup",
+  "/signup-dark",
+  "/userSettings",
+  "/wallet",
+];
+
 const publicShellRoutes = [
   "/about-3musafir",
   "/community/voices",
@@ -188,6 +218,9 @@ export default function App({ Component, pageProps }: AppProps) {
   const description = matchedSeo?.description || DEFAULT_DESCRIPTION;
   const ogImagePath = matchedSeo?.ogImage || DEFAULT_OG_IMAGE;
   const ogImage = `${siteUrl}${ogImagePath.startsWith("/") ? "" : "/"}${ogImagePath}`;
+  const shouldNoindex =
+    noindexRoutes.includes(normalizedPath) ||
+    noindexRoutePrefixes.some((prefix) => matchesRoutePrefix(normalizedPath, prefix));
 
   return (
     <>
@@ -196,6 +229,8 @@ export default function App({ Component, pageProps }: AppProps) {
         defaultTitle={defaultTitle}
         description={description}
         canonical={canonicalUrl}
+        noindex={shouldNoindex}
+        nofollow={shouldNoindex}
         openGraph={{
           type: "website",
           url: canonicalUrl,

@@ -5,4 +5,4 @@ Disallow: /dashboard
 Disallow: /flagship/create
 Disallow: /flagship/payment
 Disallow: /api
-Sitemap: https://3musafir.com/sitemap.xml
+Sitemap: https://www.3musafir.com/sitemap.xml

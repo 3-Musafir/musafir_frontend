@@ -17,7 +17,7 @@ export default function TermsAndConditionsBy3Musafir() {
     "Refunds/cancellations follow the refund policy and timelines.",
     "Media captured by 3Musafir may be used for marketing per these terms.",
   ];
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
   const canonicalUrl = `${siteUrl}/terms&conditonsby3musafir`;
   const structuredData = {
     "@context": "https://schema.org",

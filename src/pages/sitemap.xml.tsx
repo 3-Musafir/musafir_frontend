@@ -1,6 +1,6 @@
 import type { GetServerSideProps } from "next";
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(
   /\/$/,
   ""
 );
@@ -26,22 +26,6 @@ const ROUTES = [
   "/refundpolicyby3musafir",
   "/musafircommunityequityframework",
   "/terms&conditonsby3musafir",
-  "/login",
-  "/signup/create-account",
-  "/signup/registrationform",
-  "/signup/additionalinfo",
-  "/signup/password-setup",
-  "/signup/email-verify",
-  "/forgot-password",
-  "/reset-password",
-  "/verification",
-  "/userSettings",
-  "/notifications",
-  "/referrals",
-  "/wallet",
-  "/passport",
-  "/launch",
-  "/feedback",
 ];
 
 type FlagshipLite = { id?: string; _id?: string };
@@ -70,11 +54,10 @@ const fetchFlagships = async (endpoint: string) => {
 };
 
 const buildSiteMap = (dynamicRoutes: string[]) => {
-  const lastmod = new Date().toISOString().split("T")[0];
   const allRoutes = [...ROUTES, ...dynamicRoutes];
   const urls = allRoutes.map((route) => {
     const loc = `${SITE_URL}${route === "/" ? "" : route}`;
-    return `<url><loc>${escapeXml(loc)}</loc><lastmod>${lastmod}</lastmod></url>`;
+    return `<url><loc>${escapeXml(loc)}</loc></url>`;
   }).join("");
 
   return `<?xml version="1.0" encoding="UTF-8"?>` +

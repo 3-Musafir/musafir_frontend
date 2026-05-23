@@ -4,7 +4,7 @@ import Head from "next/head";
 import Link from 'next/link';
 
 export default function WhyPage() {
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
   const title = "Why 3Musafir Exists — Safer travel for women in Pakistan";
   const description =
     "3Musafir was created to make travel feel safer, more intentional, and more human for women in Pakistan through community-led group travel.";

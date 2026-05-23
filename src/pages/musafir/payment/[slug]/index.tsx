@@ -130,7 +130,7 @@ export default function TripPayment() {
   const [selectedMethod, setSelectedMethod] = useState<"bank" | "wallet" | "card">("bank");
   const router = useRouter();
   const params = useParams();
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
   const path =
     typeof window === "undefined"
       ? "/musafir/payment"

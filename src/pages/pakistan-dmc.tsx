@@ -2,8 +2,9 @@ import Head from "next/head";
 
 import DmcLandingPage from "@/components/dmc/DmcLandingPage";
 import { dmcDescription, dmcFaqs, dmcTitle } from "@/components/dmc/dmcContent";
+import { siteUrl } from "@/lib/seo/seoConfig";
 
-const configuredSiteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "");
+const configuredSiteUrl = siteUrl;
 const absoluteUrl = (path: string) =>
   configuredSiteUrl ? `${configuredSiteUrl}${path === "/" ? "" : path}` : undefined;
 

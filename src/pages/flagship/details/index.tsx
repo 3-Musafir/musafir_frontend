@@ -85,7 +85,7 @@ export default function FlagshipDetails() {
   const [basicWhatsapp, setBasicWhatsapp] = useState("");
   const [basicPhoneError, setBasicPhoneError] = useState<string | null>(null);
   const [basicWhatsappError, setBasicWhatsappError] = useState<string | null>(null);
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
   const basePath = "/flagship/details";
   const idParam = typeof id === "string" ? id : undefined;
   const canonicalUrl = idParam

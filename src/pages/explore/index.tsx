@@ -12,7 +12,7 @@ export default function Explore() {
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const { getProfile } = useCompanyProfile();
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://3musafir.com').replace(/\/$/, '');
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.3musafir.com').replace(/\/$/, '');
   const canonicalUrl = `${siteUrl}/explore`;
   const title = 'Pakistan Group Tours 2026 | Hunza, Skardu, Fairy Meadows & K2 Base Camp';
   const description =

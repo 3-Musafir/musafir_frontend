@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/accordion";
 
 export default function MusafirCommunityEquityFramework() {
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.3musafir.com").replace(/\/$/, "");
   const canonicalUrl = `${siteUrl}/musafircommunityequityframework`;
   const structuredData = {
     "@context": "https://schema.org",

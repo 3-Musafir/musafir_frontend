@@ -4,6 +4,7 @@ import FounderHeroFallback from "@/components/founderportfolio/FounderHeroFallba
 import SkillTiles from "@/components/founderportfolio/SkillTiles";
 import ImageCarousel from "@/components/founderportfolio/ImageCarousel";
 import FaqAccordion from "@/components/founderportfolio/FaqAccordion";
+import { siteUrl as baseSiteUrl } from "@/lib/seo/seoConfig";
 
 const title = "Founder Portfolio - 3Musafir";
 const description =
@@ -103,33 +104,33 @@ const communityImages = [
 ];
 
 export default function FounderPortfolioPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+  const siteUrl = baseSiteUrl;
   const canonicalPath = "/founderportfolio";
-  const pageUrl = siteUrl ? `${siteUrl}${canonicalPath}` : undefined;
-  const ogImage = siteUrl ? `${siteUrl}/mainfounderphoto.jpeg` : undefined;
+  const pageUrl = `${siteUrl}${canonicalPath}`;
+  const ogImage = `${siteUrl}/mainfounderphoto.jpeg`;
 
   const organization = {
     "@type": "Organization",
-    "@id": siteUrl ? `${siteUrl}#organization` : undefined,
+    "@id": `${siteUrl}#organization`,
     name: "3Musafir",
-    url: siteUrl || undefined,
+    url: siteUrl,
   };
 
   const founders = ["Hameez", "Ahmed", "Ali"].map((name) => ({
     "@type": "Person",
-    "@id": pageUrl ? `${pageUrl}#${name.toLowerCase()}` : undefined,
+    "@id": `${pageUrl}#${name.toLowerCase()}`,
     name,
     jobTitle: "Co-founder",
     worksFor: {
       "@type": "Organization",
       name: "3Musafir",
-      url: siteUrl || undefined,
+      url: siteUrl,
     },
   }));
 
   const webPage = {
     "@type": "WebPage",
-    "@id": pageUrl ? `${pageUrl}#webpage` : undefined,
+    "@id": `${pageUrl}#webpage`,
     name: "Founder Portfolio",
     description,
     url: pageUrl,
@@ -163,16 +164,14 @@ export default function FounderPortfolioPage() {
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="3Musafir" />
-        {pageUrl ? <meta property="og:url" content={pageUrl} /> : null}
-        {ogImage ? <meta property="og:image" content={ogImage} /> : null}
-        {ogImage ? (
-          <meta property="og:image:alt" content="3Musafir founders portfolio hero" />
-        ) : null}
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:alt" content="3Musafir founders portfolio hero" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
-        {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
-        {pageUrl ? <link rel="canonical" href={pageUrl} /> : null}
+        <meta name="twitter:image" content={ogImage} />
+        <link rel="canonical" href={pageUrl} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

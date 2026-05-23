@@ -24,7 +24,6 @@ import {
   credentialsAnswer,
   dmcFaqs,
   dmcHeroSupport,
-  futureTrustTodos,
   heroAnswer,
   internationalAnswer,
   internalLinks,
@@ -424,14 +423,6 @@ export default function DmcLandingPage() {
                 </article>
               );
             })}
-          </div>
-
-          <div className="mt-[24px] rounded-[16px] border border-dashed border-[#ffc9bb] bg-[#fff4f0] px-[16px] py-[16px] md:px-6">
-            <ul className="space-y-[8px] text-[13px] font-bold leading-[1.35] text-[#596173] md:grid md:grid-cols-4 md:gap-3 md:space-y-0">
-              {futureTrustTodos.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
           </div>
 
           <a
