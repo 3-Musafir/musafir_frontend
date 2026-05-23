@@ -16,6 +16,7 @@ const ROUTES = [
   "/pakistan-dmc",
   "/pakistan-dmc/tours/hunza",
   "/pakistan-dmc/tours/skardu",
+  "/pakistan-dmc/tours/chitral",
   "/pakistan-dmc/tours/k2-basecamp-trek",
   "/why",
   "/about-3musafir",

@@ -11,20 +11,20 @@ import {
 } from "lucide-react";
 
 import {
-  skarduAddOns,
-  skarduDetailedItinerary,
-  skarduDirectAnswer,
-  skarduExclusions,
-  skarduFaqs,
-  skarduHeroCopy,
-  skarduIdealFor,
-  skarduImportantNotes,
-  skarduInclusions,
-  skarduInternalLinks,
-  skarduOpening,
-  skarduQuickFacts,
-  skarduSummaryItinerary,
-} from "./skarduDmcContent";
+  chitralAddOns,
+  chitralDetailedItinerary,
+  chitralDirectAnswer,
+  chitralExclusions,
+  chitralFaqs,
+  chitralHeroCopy,
+  chitralIdealFor,
+  chitralImportantNotes,
+  chitralInclusions,
+  chitralInternalLinks,
+  chitralOpening,
+  chitralQuickFacts,
+  chitralSummaryItinerary,
+} from "./chitralDmcContent";
 
 function AnswerBlock({ children }: { children: string }) {
   return (
@@ -62,7 +62,7 @@ function SectionHeading({
   );
 }
 
-export default function SkarduDmcPage() {
+export default function ChitralDmcPage() {
   return (
     <main className="min-h-screen scroll-smooth bg-[#fffaf8] font-[Outfit,Inter,sans-serif] text-[#2d2f49]">
       <div className="mx-auto min-h-screen w-full max-w-[500px] overflow-hidden bg-[#fffaf8] md:max-w-none">
@@ -96,7 +96,7 @@ export default function SkarduDmcPage() {
           <div className="relative h-[232px] w-full overflow-hidden bg-[#2f3143] grayscale md:order-2 md:h-auto md:aspect-[780/500] md:min-h-0 md:rounded-[28px]">
             <Image
               src="/communityimage14.jpg"
-              alt="4x4 road logistics for Skardu and Gilgit-Baltistan group tours"
+              alt="Chitral and Kalash Valley cultural travel logistics in Northern Pakistan"
               fill
               priority
               sizes="(max-width: 767px) 100vw, (max-width: 1279px) 44vw, 520px"
@@ -117,23 +117,23 @@ export default function SkarduDmcPage() {
                 Pakistan DMC
               </Link>
               <span className="px-2 text-[#a0a5b0]">/</span>
-              <span>Skardu</span>
+              <span>Chitral</span>
             </nav>
 
             <h1 className="max-w-[455px] text-[39px] font-black leading-[1.16] text-[#2d2f49] md:max-w-none md:text-[54px] md:leading-[1.04] lg:text-[64px]">
-              Skardu DMC for <span className="text-[#ff3b0a]">10-Day Northern Pakistan Group Tours</span>
+              Chitral DMC for <span className="text-[#ff3b0a]">Kalash Valley, Heritage Travel & Immersive Cultural Tours</span>
             </h1>
 
             <p className="mt-[25px] max-w-[440px] text-[20px] font-medium leading-[1.5] text-[#596173] md:max-w-[620px] md:text-[23px]">
-              {skarduHeroCopy}
+              {chitralHeroCopy}
             </p>
 
             <div className="mt-[25px]">
-              <AnswerBlock>{skarduDirectAnswer}</AnswerBlock>
+              <AnswerBlock>{chitralDirectAnswer}</AnswerBlock>
             </div>
 
             <div className="mt-[20px] flex flex-wrap gap-2 text-[13px] font-extrabold">
-              {skarduInternalLinks.map((link) => (
+              {chitralInternalLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -145,7 +145,7 @@ export default function SkarduDmcPage() {
             </div>
 
             <div className="mt-[34px] grid gap-[12px] md:grid-cols-2">
-              {skarduQuickFacts.map((fact) => (
+              {chitralQuickFacts.map((fact) => (
                 <div
                   key={fact.label}
                   className="rounded-[16px] border border-[#ece8e5] bg-white px-[18px] py-[15px] shadow-[0_3px_10px_rgba(29,31,50,0.05)]"
@@ -169,7 +169,7 @@ export default function SkarduDmcPage() {
                 href="#urgent-enquiry"
                 className="flex h-[70px] w-full items-center justify-center rounded-[18px] border border-[#ebedf0] bg-white px-4 text-center text-[18px] font-extrabold text-[#2d2f49] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:h-[62px] md:flex-1 md:text-[16px]"
               >
-                Request Skardu Itinerary
+                Request Chitral Itinerary
               </a>
             </div>
           </div>
@@ -180,18 +180,18 @@ export default function SkarduDmcPage() {
             <div>
               <p className="text-[14px] font-black uppercase text-[#ff3b0a]">Direct answer</p>
               <h2 className="mt-[14px] text-[32px] font-black leading-[1.12] text-[#2d2f49] md:text-[44px]">
-                10-Day Skardu Valley DMC Itinerary for Foreign Travel Agencies
+                10-Day Chitral & Kalash Valley DMC Itinerary for Foreign Travel Agencies
               </h2>
             </div>
-            <AnswerBlock>{skarduOpening}</AnswerBlock>
+            <AnswerBlock>{chitralOpening}</AnswerBlock>
           </div>
         </section>
 
         <section className="bg-[#fffaf8] px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
           <SectionHeading
             label="Route and buyer fit"
-            title="Built for Skardu Valley and Gilgit-Baltistan programs"
-            body="This itinerary combines dramatic landscapes, heritage architecture, local culture, lakes, cold desert scenery, and safety-aware logistics for foreign groups."
+            title="Built for Chitral, Kalash Valley, and heritage travel programs"
+            body="This itinerary is designed for agencies that need local execution for Chitral, Ayun, Bumburet, Rumbur, heritage stays, responsible cultural access, and slow travel in Northern Pakistan."
           />
 
           <div className="mt-[38px] grid gap-[14px] md:grid-cols-[0.9fr_1.1fr]">
@@ -199,13 +199,13 @@ export default function SkarduDmcPage() {
               <Route size={24} strokeWidth={2.5} className="text-[#ff3b0a]" />
               <h3 className="mt-[14px] text-[20px] font-black leading-tight text-[#2d2f49]">Operating route</h3>
               <p className="mt-[9px] text-[15px] font-medium leading-[1.55] text-[#596173]">
-                Islamabad to Skardu, Shigar, Khaplu, Deosai or Basho Valley, Manthoka, Katpana,
-                and back to Islamabad.
+                Islamabad to Chitral, Hindukush Sarai, Ayun, Bumburet Valley, Rumbur
+                Valley, Chitral Town, and Islamabad.
               </p>
             </article>
 
             <div className="flex snap-x gap-[14px] overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:snap-none md:grid-cols-3 md:overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden">
-              {skarduIdealFor.map((item) => (
+              {chitralIdealFor.map((item) => (
                 <article
                   key={item}
                   className="min-w-[190px] snap-start rounded-[16px] border border-[#ebe9e7] bg-white px-[18px] py-[16px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:min-w-0"
@@ -223,12 +223,12 @@ export default function SkarduDmcPage() {
         >
           <SectionHeading
             label="Summary itinerary"
-            title="10-day Skardu Valley DMC itinerary"
-            body="A practical agency-ready route built around Skardu flight realities, heritage valleys, cold desert landscapes, lakes, Deosai or Basho flexibility, and an Islamabad buffer."
+            title="10-day Chitral and Kalash Valley DMC itinerary"
+            body="A practical agency-ready route from Islamabad into Chitral and the Kalash Valleys, with careful pacing for culture, road conditions, flight disruption, and responsible community access."
           />
 
           <div className="mt-[42px] flex snap-x gap-[14px] overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:snap-none md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-5 [&::-webkit-scrollbar]:hidden">
-            {skarduSummaryItinerary.map((item) => (
+            {chitralSummaryItinerary.map((item) => (
               <article
                 key={`${item.day}-${item.route}`}
                 className="min-w-[240px] snap-start rounded-[18px] border border-[#ebe9e7] bg-[#fffdfc] px-[18px] py-[18px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:min-w-0"
@@ -251,12 +251,12 @@ export default function SkarduDmcPage() {
         <section className="bg-[#fffaf8] px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
           <SectionHeading
             label="Detailed itinerary"
-            title="Day-by-day Skardu group tour execution"
-            body="Written for foreign agencies that need clarity on experience flow, flight contingency, route assumptions, hotels, highlights, and operating notes."
+            title="Day-by-day Chitral cultural tour execution"
+            body="Written for foreign agencies that need clarity on cultural access, responsible visitor conduct, route assumptions, heritage stays, and operating notes."
           />
 
           <div className="mx-auto mt-[42px] max-w-[980px] space-y-[12px]">
-            {skarduDetailedItinerary.map((item) => (
+            {chitralDetailedItinerary.map((item) => (
               <article
                 key={`${item.day}-${item.title}`}
                 className="rounded-[18px] border border-[#ebe9e7] bg-white px-[18px] py-[18px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:grid md:grid-cols-[120px_1fr] md:gap-4"
@@ -269,6 +269,7 @@ export default function SkarduDmcPage() {
                   <p className="mt-[8px] text-[14px] font-medium leading-[1.5] text-[#596173]">
                     {item.body}
                   </p>
+
                   <div className="mt-[15px] grid gap-3 md:grid-cols-2">
                     <div>
                       <p className="text-[12px] font-black uppercase text-[#2d2f49]">Experience highlights</p>
@@ -293,6 +294,7 @@ export default function SkarduDmcPage() {
                       </ul>
                     </div>
                   </div>
+
                   <p className="mt-[14px] text-[13px] font-extrabold leading-[1.4] text-[#2d2f49]">
                     {item.overnight}
                   </p>
@@ -306,11 +308,11 @@ export default function SkarduDmcPage() {
           <SectionHeading
             label="Optional upgrades"
             title="Recommended add-on experiences"
-            body="These can be scoped as optional upgrades depending on agency positioning, group size, season, venue permissions, and traveler profile."
+            body="These can be scoped as optional upgrades depending on agency positioning, group profile, local permissions, host availability, and season."
           />
 
           <div className="mt-[42px] grid gap-[14px] md:grid-cols-3">
-            {skarduAddOns.map((group) => (
+            {chitralAddOns.map((group) => (
               <article
                 key={group.title}
                 className="rounded-[18px] border border-[#ebe9e7] bg-[#fffdfc] px-[20px] py-[20px] shadow-[0_2px_8px_rgba(20,24,36,0.04)]"
@@ -336,14 +338,14 @@ export default function SkarduDmcPage() {
           <SectionHeading
             label="Operating scope"
             title="Services included and not included"
-            body="Final inclusions should be confirmed against the agency brief, flight scope, group size, season, rooming, transport type, hotel availability, and service level."
+            body="Final inclusions should be confirmed against the agency brief, group size, season, rooming, transport type, local permissions, hotel availability, and service level."
           />
 
           <div className="mt-[42px] grid gap-[18px] lg:grid-cols-[1fr_0.8fr]">
             <article className="rounded-[18px] border border-[#ebe9e7] bg-white px-[20px] py-[20px] shadow-[0_2px_8px_rgba(20,24,36,0.04)]">
               <h3 className="text-[20px] font-black leading-tight text-[#2d2f49]">Services included</h3>
               <ul className="mt-[15px] grid gap-[10px] md:grid-cols-2">
-                {skarduInclusions.map((item) => (
+                {chitralInclusions.map((item) => (
                   <li key={item} className="flex gap-[10px] text-[14px] font-medium leading-[1.42] text-[#596173]">
                     <Check size={17} strokeWidth={3} className="mt-[2px] shrink-0 text-[#ff3b0a]" />
                     {item}
@@ -351,10 +353,11 @@ export default function SkarduDmcPage() {
                 ))}
               </ul>
             </article>
+
             <article className="rounded-[18px] border border-[#ffd9cf] bg-[#fff4f0] px-[20px] py-[20px]">
               <h3 className="text-[20px] font-black leading-tight text-[#2d2f49]">Services not included</h3>
               <ul className="mt-[15px] space-y-[11px]">
-                {skarduExclusions.map((item) => (
+                {chitralExclusions.map((item) => (
                   <li key={item} className="flex gap-[10px] text-[14px] font-medium leading-[1.42] text-[#596173]">
                     <BadgeCheck size={17} strokeWidth={2.7} className="mt-[2px] shrink-0 text-[#ff3b0a]" />
                     {item}
@@ -363,8 +366,9 @@ export default function SkarduDmcPage() {
               </ul>
             </article>
           </div>
+
           <div className="mt-[18px] grid gap-[12px] md:grid-cols-2 lg:grid-cols-3">
-            {skarduImportantNotes.map((note) => (
+            {chitralImportantNotes.map((note) => (
               <div key={note} className="rounded-[16px] border border-[#ebe9e7] bg-white px-[18px] py-[16px]">
                 <p className="text-[14px] font-medium leading-[1.5] text-[#596173]">{note}</p>
               </div>
@@ -377,14 +381,15 @@ export default function SkarduDmcPage() {
           className="scroll-mt-[100px] bg-[#2d2f49] px-3 pb-[48px] pt-[75px] text-white md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
         >
           <h2 className="mx-auto max-w-[720px] text-center text-[35px] font-black leading-[1.05] text-white md:text-[48px]">
-            Skardu DMC FAQs
+            Chitral DMC FAQs
           </h2>
           <p className="mx-auto mt-[27px] max-w-[620px] text-center text-[17px] font-medium leading-[1.55] text-[#b9bdca] md:text-[18px]">
-            Practical answers for agencies evaluating Skardu group tours, flight contingency, local
-            logistics, cultural experiences, and DMC execution in Gilgit-Baltistan.
+            Practical answers for agencies evaluating Chitral, Ayun, Bumburet, Rumbur, Kalash
+            Valley access, heritage stays, cultural sensitivity, and local DMC execution.
           </p>
+
           <div className="mt-[63px] space-y-[15px] md:mx-auto md:grid md:max-w-[960px] md:grid-cols-2 md:items-start md:gap-4 md:space-y-0">
-            {skarduFaqs.map((faq) => (
+            {chitralFaqs.map((faq) => (
               <details key={faq.question} className="group rounded-[12px] bg-[#1e2533] px-[23px] py-[25px]">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-black leading-[1.55] [&::-webkit-details-marker]:hidden">
                   {faq.question}
@@ -404,14 +409,16 @@ export default function SkarduDmcPage() {
         >
           <div className="rounded-[20px] border border-[#ebe9e7] bg-[#f8f8fa] px-[31px] pb-[25px] pt-[32px] shadow-[0_1px_4px_rgba(20,24,36,0.03)] md:px-8 md:py-8">
             <h2 className="text-[24px] font-black leading-tight text-[#2d2f49] md:text-[34px]">
-              Partner with 3Musafir for Skardu
+              Partner with 3Musafir for Chitral
             </h2>
             <p className="mt-[17px] max-w-[720px] text-[13.5px] font-medium leading-[1.45] text-[#596173] md:text-[16px]">
-              Share your agency brief and we will scope flight assumptions, route options, hotels,
-              transport, local experiences, inclusions, exclusions, and Skardu ground handling needs.
+              Share your agency brief and we will scope the route, heritage stay assumptions,
+              cultural access, transport, local guides, inclusions, exclusions, and Chitral ground
+              handling requirements.
             </p>
+
             <a
-              href="https://wa.me/923221848940?text=Hi%203Musafir%2C%20I%20want%20to%20partner%20for%20Skardu%20DMC%20services."
+              href="https://wa.me/923221848940?text=Hi%203Musafir%2C%20I%20want%20to%20partner%20for%20Chitral%20and%20Kalash%20Valley%20DMC%20services."
               target="_blank"
               rel="noopener noreferrer"
               className="mt-[23px] flex h-[52px] w-full items-center justify-center rounded-[14px] bg-[#2d2f49] px-5 text-[15px] font-black text-white shadow-[0_8px_18px_rgba(20,24,36,0.12)] md:max-w-[300px]"
@@ -432,19 +439,22 @@ export default function SkarduDmcPage() {
                   <Zap size={21} fill="white" strokeWidth={2.5} />
                 </div>
                 <h2 className="text-[25px] font-black leading-[1.25] text-[#2d2f49] md:text-[36px]">
-                  Request Skardu
+                  Request Chitral
                   <br />
                   DMC Itinerary
                 </h2>
               </div>
+
               <p className="mt-[31px] text-[15.5px] font-medium leading-[1.5] text-[#596173] md:text-[17px]">
-                Use this contact path for agency groups, corporate retreats, MICE groups, cultural
-                travel companies, and private groups that need Skardu logistics in Pakistan.
+                Use this contact path for cultural travel companies, foreign agencies, heritage
+                operators, responsible tourism groups, and private international groups that need
+                Chitral and Kalash Valley logistics.
               </p>
             </div>
+
             <div className="mt-[28px] md:mt-0 md:flex md:items-center">
               <a
-                href="https://wa.me/923221848940?text=Hi%203Musafir%2C%20I%20need%20a%2010-day%20Skardu%20DMC%20itinerary%20for%20an%20agency%20group."
+                href="https://wa.me/923221848940?text=Hi%203Musafir%2C%20I%20need%20a%2010-day%20Chitral%20and%20Kalash%20Valley%20DMC%20itinerary%20for%20an%20agency%20group."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex h-[57px] w-full items-center justify-center rounded-[14px] bg-[#ff3b0a] px-5 text-center text-[17px] font-black text-white shadow-[0_13px_22px_rgba(255,59,10,0.22)] md:max-w-[360px]"
@@ -469,40 +479,63 @@ export default function SkarduDmcPage() {
                 <strong className="text-[16px] font-black">3Musafir Travels</strong>
               </div>
               <p className="mt-[23px] max-w-[460px] text-[15.5px] font-medium leading-[1.55] text-[#b9bdca] md:text-[16px]">
-                Pakistan-based DMC support for Skardu Valley group tours, Gilgit-Baltistan programs,
-                corporate retreats, and inbound agency groups.
+                Pakistan-based DMC support for Chitral and Kalash Valley cultural programs,
+                heritage travel, and inbound agency groups that need local execution in Northern
+                Pakistan.
               </p>
             </div>
+
             <div className="mt-[34px] grid grid-cols-2 gap-8 md:mt-0">
               <div>
                 <h3 className="text-[15px] font-black">DMC</h3>
                 <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-[#b9bdca]">
-                  <li><Link href="/pakistan-dmc">Pakistan DMC services</Link></li>
-                  <li><Link href="/pakistan-dmc/tours/hunza">Hunza DMC services</Link></li>
-                  <li><Link href="/pakistan-dmc/tours/chitral">Chitral DMC services</Link></li>
-                  <li><Link href="/pakistan-dmc/tours/k2-basecamp-trek">K2 Base Camp logistics</Link></li>
+                  <li>
+                    <Link href="/pakistan-dmc">Pakistan DMC services</Link>
+                  </li>
+                  <li>
+                    <Link href="/pakistan-dmc/tours/hunza">Hunza DMC services</Link>
+                  </li>
+                  <li>
+                    <Link href="/pakistan-dmc/tours/skardu">Skardu DMC services</Link>
+                  </li>
+                  <li>
+                    <Link href="/reviews">3Musafir reviews</Link>
+                  </li>
                 </ul>
               </div>
               <div>
                 <h3 className="text-[15px] font-black">Route</h3>
                 <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-[#b9bdca]">
-                  <li><a href="#itinerary">Skardu itinerary</a></li>
-                  <li><a href="#urgent-enquiry">Request Skardu plan</a></li>
-                  <li><Link href="/explore">Pakistan group tours</Link></li>
+                  <li>
+                    <a href="#itinerary">Chitral itinerary</a>
+                  </li>
+                  <li>
+                    <a href="#urgent-enquiry">Request Chitral plan</a>
+                  </li>
+                  <li>
+                    <Link href="/explore">Pakistan group tours</Link>
+                  </li>
                 </ul>
               </div>
             </div>
           </div>
+
           <div className="mt-[46px] border-t border-white/5 px-[15px] pt-[32px] text-[13px] font-medium text-[#878b9d]">
             &copy; 2024 3Musafir Travels (Pvt) Ltd. All rights reserved.
           </div>
         </footer>
 
         <div className="fixed bottom-0 left-1/2 z-[60] flex w-full max-w-[500px] -translate-x-1/2 gap-3 bg-white/95 px-3 pb-[14px] pt-[15px] backdrop-blur lg:hidden">
-          <a href="#partner" className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-[#f2f3f5] text-[12px] font-extrabold text-[#2d2f49]">
+          <a
+            href="#partner"
+            className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-[#f2f3f5] text-[12px] font-extrabold text-[#2d2f49]"
+          >
             Partner
           </a>
-          <a href="#urgent-enquiry" className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-[#ff3b0a] text-[12px] font-extrabold text-white shadow-[0_9px_18px_rgba(255,59,10,0.25)]">
+          <a
+            href="#urgent-enquiry"
+            className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-[#ff3b0a] text-[12px] font-extrabold text-white shadow-[0_9px_18px_rgba(255,59,10,0.25)]"
+          >
             Request Plan
           </a>
         </div>

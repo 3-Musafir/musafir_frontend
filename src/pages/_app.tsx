@@ -63,6 +63,12 @@ const SEO_MAP: Record<
       "3Musafir is a Pakistan DMC and inbound tour operator offering 10-day Skardu Valley group tours for foreign travel agencies, including hotels, transport, guides, cultural experiences, Deosai, Shigar, Khaplu, and on-ground logistics across Northern Pakistan.",
     ogImage: "/communityimage14.jpg",
   },
+  "/pakistan-dmc/tours/chitral": {
+    title: "Chitral DMC | 10-Day Kalash Valley & Heritage Tour Itinerary | 3Musafir",
+    description:
+      "3Musafir is a Pakistan DMC offering immersive Chitral and Kalash Valley itineraries for foreign travel agencies, including Bumburet, Rumbur, Ayun, heritage stays, cultural experiences, transport, guides, and on-ground logistics.",
+    ogImage: "/communityimage14.jpg",
+  },
   "/pakistan-dmc/tours/k2-basecamp-trek": {
     title: "K2 Base Camp DMC Pakistan | Expedition Logistics & Ground Handling | 3Musafir",
     description:

@@ -515,6 +515,45 @@ export default function DmcLandingPage() {
           </a>
 
           <a
+            href="/pakistan-dmc/tours/chitral"
+            className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] md:min-w-0"
+          >
+            <div className="flex justify-between gap-4">
+              <div>
+                <p className="text-[12px] font-black uppercase text-[#ff3b0a]">Direct tour package</p>
+                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-[#2d2f49]">
+                  Chitral & Kalash
+                  <br />
+                  DMC Itinerary
+                </h3>
+                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-[#596173]">
+                  10-day heritage and cultural tour for foreign agencies.
+                </p>
+              </div>
+            </div>
+
+            <ul className="mt-[28px] space-y-[15px]">
+              {[
+                "Chitral, Ayun, Bumburet, Rumbur, and Kalash Valley",
+                "Heritage stays, local guides, transport, and cultural access",
+                "Responsible tourism briefing and on-ground group coordination",
+              ].map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-[#2d2f49]"
+                >
+                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-[#ff3b0a]" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,59,10,0.18)] md:mt-auto">
+              View Chitral Package
+            </span>
+          </a>
+
+          <a
             href="/pakistan-dmc/tours/hunza"
             className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] md:min-w-0"
           >

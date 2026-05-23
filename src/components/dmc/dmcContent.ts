@@ -110,9 +110,9 @@ export const dmcDestinations = [
     href: "/pakistan-dmc/tours/skardu",
   },
   {
-    title: "Chitral and Swat programs",
-    body: "Custom group planning where route conditions, guest profile, and local availability fit the brief.",
-    href: null,
+    title: "Chitral and Kalash Valley DMC support",
+    body: "Heritage stays, Kalash Valley cultural access, local guides, transport, and responsible group logistics for Chitral programs.",
+    href: "/pakistan-dmc/tours/chitral",
   },
   {
     title: "Fairy Meadows and trekking support",
