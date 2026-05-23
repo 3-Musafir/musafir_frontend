@@ -297,11 +297,11 @@ export default function DmcLandingPage() {
             </p>
           </div>
 
-          <div className="mt-[38px] grid gap-[14px] md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-[38px] flex snap-x gap-[14px] overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:snap-none md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
             {dmcDestinations.map((item) => (
               <article
                 key={item.title}
-                className="rounded-[18px] border border-[#ebe9e7] bg-[#fffdfc] px-[20px] py-[20px] shadow-[0_2px_8px_rgba(20,24,36,0.04)]"
+                className="min-w-[290px] snap-start rounded-[18px] border border-[#ebe9e7] bg-[#fffdfc] px-[20px] py-[20px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:min-w-0"
               >
                 <h3 className="text-[18px] font-black leading-tight text-[#2d2f49]">
                   {item.href ? (
@@ -344,11 +344,11 @@ export default function DmcLandingPage() {
               </div>
             </div>
 
-            <div className="mt-[28px] grid gap-[12px] md:mt-0 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-[28px] flex snap-x gap-[14px] overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:mt-0 md:grid md:snap-none md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
               {agencyMarkets.map((market) => (
                 <article
                   key={market.market}
-                  className="rounded-[16px] border border-[#ebe9e7] bg-white px-[18px] py-[16px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:min-h-[150px]"
+                  className="min-w-[290px] snap-start rounded-[16px] border border-[#ebe9e7] bg-white px-[18px] py-[16px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:min-h-[150px] md:min-w-0"
                 >
                   <h3 className="text-[18px] font-black leading-tight text-[#2d2f49]">
                     {market.market}
@@ -474,8 +474,47 @@ export default function DmcLandingPage() {
             <AnswerBlock>{pricingAnswer}</AnswerBlock>
           </div>
 
-          <div className="mt-[44px] grid gap-[30px] md:grid-cols-2 md:items-stretch">
-          <div className="rounded-[20px] border border-[#ebe9e7] bg-white px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] md:flex md:flex-col">
+          <div className="mt-[44px] flex snap-x gap-[22px] overflow-x-auto pb-3 [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:snap-none md:grid-cols-3 md:items-stretch md:overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden">
+          <a
+            href="/pakistan-dmc/k2basecamp"
+            className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] md:min-w-0"
+          >
+            <div className="flex justify-between gap-4">
+              <div>
+                <p className="text-[12px] font-black uppercase text-[#ff3b0a]">Direct package</p>
+                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-[#2d2f49]">
+                  K2 Base Camp
+                  <br />
+                  DMC Services
+                </h3>
+                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-[#596173]">
+                  Expedition logistics for agencies and adventure operators.
+                </p>
+              </div>
+            </div>
+
+            <ul className="mt-[28px] space-y-[15px]">
+              {[
+                "Baltoro Glacier trekking logistics",
+                "Skardu, Askole, Concordia route planning",
+                "Guides, porters, meals, camping, and contingency support",
+              ].map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-[#2d2f49]"
+                >
+                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-[#ff3b0a]" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,59,10,0.18)] md:mt-auto">
+              View K2 Package
+            </span>
+          </a>
+
+          <div className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ebe9e7] bg-white px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] md:min-w-0">
             <div className="flex justify-between gap-4">
               <div>
                 <h3 className="text-[24px] font-black leading-tight text-[#2d2f49]">
@@ -516,7 +555,7 @@ export default function DmcLandingPage() {
             </a>
           </div>
 
-          <div className="relative overflow-hidden rounded-[20px] bg-[#2d2f49] px-[32px] pb-[31px] pt-[33px] text-white shadow-[0_15px_28px_rgba(20,24,36,0.18)] md:flex md:flex-col">
+          <div className="relative flex min-w-[290px] snap-start flex-col overflow-hidden rounded-[20px] bg-[#2d2f49] px-[32px] pb-[31px] pt-[33px] text-white shadow-[0_15px_28px_rgba(20,24,36,0.18)] md:min-w-0">
             <div className="absolute right-0 top-0 rounded-bl-[18px] bg-[#ff3b0a] px-[18px] py-[8px] text-[11px] font-black uppercase">
               Recommended
             </div>
