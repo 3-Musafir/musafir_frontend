@@ -8,7 +8,7 @@ import {
 } from "@/components/dmc/k2BasecampContent";
 import { siteUrl } from "@/lib/seo/seoConfig";
 
-const pagePath = "/pakistan-dmc/k2basecamp";
+const pagePath = "/pakistan-dmc/tours/k2basecamp";
 const pageUrl = `${siteUrl}${pagePath}`;
 const orgId = `${siteUrl}#organization`;
 const ogImage = `${siteUrl}/communityimage14.jpg`;

@@ -102,12 +102,12 @@ export const dmcDestinations = [
   {
     title: "Hunza DMC support",
     body: "Route planning, hotels, local experiences, guides, and group movement for Hunza programs.",
-    href: null,
+    href: "/pakistan-dmc/tours/hunza",
   },
   {
     title: "Skardu DMC support",
     body: "Season-aware logistics for Skardu, Shigar, Deosai-access programs, and premium group travel.",
-    href: null,
+    href: "/pakistan-dmc/tours/skardu",
   },
   {
     title: "Chitral and Swat programs",
@@ -122,7 +122,7 @@ export const dmcDestinations = [
   {
     title: "K2 Base Camp DMC services",
     body: "Expedition logistics, Baltoro Glacier trekking support, Concordia route planning, crew coordination, and contingency-aware field execution.",
-    href: "/pakistan-dmc/k2basecamp",
+    href: "/pakistan-dmc/tours/k2basecamp",
   },
   {
     title: "Cultural city programs",

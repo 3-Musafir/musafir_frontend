@@ -26,6 +26,31 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  async redirects() {
+    return [
+      {
+        source: "/pakistan-dmc/hunza",
+        destination: "/pakistan-dmc/tours/hunza",
+        permanent: true,
+      },
+      {
+        source: "/pakistan-dmc/skardu",
+        destination: "/pakistan-dmc/tours/skardu",
+        permanent: true,
+      },
+      {
+        source: "/pakistan-dmc/k2basecamp",
+        destination: "/pakistan-dmc/tours/k2basecamp",
+        permanent: true,
+      },
+      {
+        source: "/pakistan-dmc/k2-base-camp",
+        destination: "/pakistan-dmc/tours/k2basecamp",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
