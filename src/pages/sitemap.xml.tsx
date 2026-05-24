@@ -1,5 +1,7 @@
 import type { GetServerSideProps } from "next";
 
+import { specialInterestFestivalRoutes } from "@/components/dmc/specialInterestFestivalContent";
+
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(
   /\/$/,
   ""
@@ -18,6 +20,7 @@ const ROUTES = [
   "/pakistan-dmc/tours/skardu",
   "/pakistan-dmc/tours/chitral",
   "/pakistan-dmc/tours/k2-basecamp-trek",
+  ...specialInterestFestivalRoutes,
   "/why",
   "/about-3musafir",
   "/founderportfolio",

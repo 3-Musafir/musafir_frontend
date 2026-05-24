@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Script from "next/script";
 import {
   BadgeCheck,
   Check,
@@ -38,6 +39,67 @@ import {
   stats,
   trustProofs,
 } from "./dmcContent";
+
+const specialInterestNavItems = [
+  {
+    label: "Festivals of Pakistan",
+    href: "/pakistan-dmc/special-interests/festivals-of-pakistan",
+  },
+  {
+    label: "Kalash Festival 2027",
+    href: "/pakistan-dmc/special-interests/kalash-festival-2027",
+  },
+];
+
+const cultureInstagramReels = [
+  {
+    title: "3Musafir travel community Instagram reel",
+    permalink: "https://www.instagram.com/reel/DVttvrxjfvO/?utm_source=ig_embed&utm_campaign=loading",
+    captioned: true,
+  },
+  {
+    title: "Farhan Ullah Aziz culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DYejn4sqdfx/?utm_source=ig_embed&utm_campaign=loading",
+    captioned: true,
+  },
+  {
+    title: "3Musafir community Instagram post",
+    permalink: "https://www.instagram.com/p/DLprk2-NK60/?utm_source=ig_embed&utm_campaign=loading",
+    captioned: false,
+  },
+  {
+    title: "3Musafir culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DYXH3GrtUiT/?utm_source=ig_embed&utm_campaign=loading",
+    captioned: true,
+  },
+  {
+    title: "3Musafir travel culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DWtScyzAV1F/?utm_source=ig_embed&utm_campaign=loading",
+    captioned: true,
+  },
+  {
+    title: "3Musafir community Instagram reel",
+    permalink: "https://www.instagram.com/reel/DV6Mhejjeeq/?utm_source=ig_embed&utm_campaign=loading",
+    captioned: true,
+  },
+];
+
+const instagramEmbedScriptSrc = "https://www.instagram.com/embed.js";
+
+type InstagramWindow = Window &
+  typeof globalThis & {
+    instgrm?: {
+      Embeds?: {
+        process: () => void;
+      };
+    };
+  };
+
+function processInstagramEmbeds() {
+  if (typeof window === "undefined") return;
+
+  (window as InstagramWindow).instgrm?.Embeds?.process();
+}
 
 const iconMap = {
   gavel: Gavel,
@@ -84,6 +146,29 @@ function DmcNavMenu({
         </div>
 
         <div className="space-y-1">
+          <details className="group rounded-[12px]">
+            <summary className="flex cursor-pointer list-none items-center justify-between rounded-[12px] px-3 py-3 text-[15px] font-extrabold text-[#2d2f49] hover:bg-[#fff1eb] [&::-webkit-details-marker]:hidden">
+              <span>Special Interest</span>
+              <ChevronDown
+                size={18}
+                strokeWidth={3}
+                className="transition-transform group-open:rotate-180"
+              />
+            </summary>
+            <div className="mt-1 max-h-[320px] overflow-y-auto border-l border-[#ffe0d7] pl-2 pr-1">
+              {specialInterestNavItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClose}
+                  className="block rounded-[10px] px-3 py-2 text-[13px] font-bold leading-tight text-[#596173] hover:bg-[#fff1eb]"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </details>
+
           {navItems.map((item) => (
             <a
               key={item.href}
@@ -105,6 +190,13 @@ export default function DmcLandingPage() {
 
   return (
     <main className="min-h-screen scroll-smooth bg-[#fffaf8] font-[Outfit,Inter,sans-serif] text-[#2d2f49]">
+      <Script
+        src={instagramEmbedScriptSrc}
+        strategy="afterInteractive"
+        onLoad={processInstagramEmbeds}
+        onReady={processInstagramEmbeds}
+      />
+
       <DmcNavMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
       <div className="mx-auto min-h-screen w-full max-w-[500px] overflow-hidden bg-[#fffaf8] md:max-w-none">
@@ -123,11 +215,64 @@ export default function DmcLandingPage() {
             </span>
           </a>
 
+          <nav
+            aria-label="Pakistan DMC navigation"
+            className="hidden items-center gap-2 lg:flex"
+          >
+            <a
+              href="#services"
+              className="rounded-full px-3 py-2 text-[13px] font-extrabold text-[#2d2f49] hover:bg-[#fff1eb]"
+            >
+              Services
+            </a>
+            <a
+              href="#destinations"
+              className="rounded-full px-3 py-2 text-[13px] font-extrabold text-[#2d2f49] hover:bg-[#fff1eb]"
+            >
+              Destinations
+            </a>
+            <details className="group relative">
+              <summary className="flex cursor-pointer list-none items-center gap-1 rounded-full px-3 py-2 text-[13px] font-extrabold text-[#2d2f49] hover:bg-[#fff1eb] [&::-webkit-details-marker]:hidden">
+                <span>Special Interest</span>
+                <ChevronDown
+                  size={16}
+                  strokeWidth={3}
+                  className="transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <div className="absolute right-0 top-[calc(100%+12px)] z-[80] w-[360px] rounded-[18px] border border-[#ebe9e7] bg-white p-2 shadow-[0_20px_45px_rgba(45,47,73,0.16)]">
+                <div className="max-h-[68vh] overflow-y-auto pr-1">
+                  {specialInterestNavItems.map((item) => (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      className="block rounded-[12px] px-3 py-2.5 text-[13px] font-bold leading-tight text-[#596173] hover:bg-[#fff1eb] hover:text-[#2d2f49]"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </details>
+            <a
+              href="#pricing"
+              className="rounded-full px-3 py-2 text-[13px] font-extrabold text-[#2d2f49] hover:bg-[#fff1eb]"
+            >
+              Pricing
+            </a>
+            <a
+              href="#urgent-enquiry"
+              className="rounded-full bg-[#ff3b0a] px-4 py-2 text-[13px] font-extrabold text-white shadow-[0_8px_18px_rgba(255,59,10,0.24)] hover:bg-[#e7370a]"
+            >
+              Partner
+            </a>
+          </nav>
+
           <button
             type="button"
             aria-label="Open menu"
             onClick={() => setMenuOpen(true)}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#2d2f49]"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#2d2f49] lg:hidden"
           >
             <Menu size={30} strokeWidth={3} />
           </button>
@@ -193,19 +338,63 @@ export default function DmcLandingPage() {
             <div className="mt-[44px] space-y-[22px] md:flex md:max-w-[620px] md:gap-4 md:space-y-0">
               <a
                 href="#urgent-enquiry"
-                className="flex h-[72px] w-full items-center justify-center rounded-[19px] bg-[#ff3b0a] text-[20px] font-extrabold text-white shadow-[0_13px_25px_rgba(255,59,10,0.22)] md:h-[62px] md:flex-1"
+                className="flex min-h-[72px] w-full items-center justify-center rounded-[19px] bg-[#ff3b0a] px-5 py-3 text-center text-[18px] font-extrabold leading-tight text-white shadow-[0_13px_25px_rgba(255,59,10,0.22)] sm:text-[20px] md:h-[62px] md:min-h-0 md:flex-1 md:text-[18px]"
               >
                 Plan an inbound Pakistan group
               </a>
 
               <a
                 href="#partner"
-                className="flex h-[70px] w-full items-center justify-center gap-4 rounded-[18px] border border-[#ebedf0] bg-white text-[20px] font-extrabold text-[#2d2f49] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:h-[62px] md:flex-1 md:text-[18px]"
+                className="flex min-h-[70px] w-full items-center justify-center gap-3 rounded-[18px] border border-[#ebedf0] bg-white px-5 py-3 text-center text-[18px] font-extrabold leading-tight text-[#2d2f49] shadow-[0_2px_8px_rgba(20,24,36,0.04)] sm:text-[20px] md:h-[62px] md:min-h-0 md:flex-1 md:text-[18px]"
               >
-                <Download size={25} strokeWidth={3} className="text-black" />
-                Partner with 3Musafir
+                <Download size={25} strokeWidth={3} className="shrink-0 text-black" />
+                <span>Partner with 3Musafir</span>
               </a>
             </div>
+          </div>
+        </section>
+
+        <section id="culture" className="scroll-mt-[100px] bg-[#fffaf8] px-3 py-16 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <div className="mx-auto max-w-[760px] text-center">
+            <h2 className="mx-auto max-w-[620px] text-[31px] font-black leading-[1.08] text-[#2d2f49] md:text-[42px]">
+              Our Culture
+            </h2>
+            <p className="mx-auto mt-5 max-w-[590px] text-[15px] font-medium leading-[1.5] text-[#596173] md:text-[17px]">
+              A window into the community, founder voice, traveler stories, and on-ground culture behind 3Musafir.
+            </p>
+          </div>
+
+          <div className="mt-[42px] flex snap-x gap-[18px] overflow-x-auto px-1 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] md:justify-center [&::-webkit-scrollbar]:hidden">
+            {cultureInstagramReels.map((reel) => (
+              <article
+                key={reel.permalink}
+                className="min-h-[620px] w-[326px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-[#ebe9e7] bg-white shadow-[0_2px_9px_rgba(20,24,36,0.05)] md:w-[360px]"
+              >
+                <blockquote
+                  className="instagram-media"
+                  data-instgrm-captioned={reel.captioned ? "" : undefined}
+                  data-instgrm-permalink={reel.permalink}
+                  data-instgrm-version="14"
+                  title={reel.title}
+                  style={{
+                    background: "#fff",
+                    border: 0,
+                    margin: 0,
+                    minWidth: 326,
+                    width: "100%",
+                  }}
+                >
+                  <a
+                    href={reel.permalink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex min-h-[620px] items-center justify-center px-6 text-center text-[15px] font-extrabold leading-tight text-[#2d2f49]"
+                  >
+                    View this post on Instagram
+                  </a>
+                </blockquote>
+              </article>
+            ))}
           </div>
         </section>
 
@@ -453,7 +642,7 @@ export default function DmcLandingPage() {
 
           <a
             href="#urgent-enquiry"
-            className="mt-[30px] flex h-[65px] items-center justify-center rounded-[18px] border-2 border-[#2d2f49] text-[18px] font-black text-[#2d2f49] md:max-w-[360px]"
+            className="mt-[30px] flex min-h-[65px] items-center justify-center rounded-[18px] border-2 border-[#2d2f49] px-5 py-3 text-center text-[17px] font-black leading-tight text-[#2d2f49] md:max-w-[360px] md:text-[18px]"
           >
             Request Company Credentials
           </a>
@@ -550,6 +739,45 @@ export default function DmcLandingPage() {
 
             <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,59,10,0.18)] md:mt-auto">
               View Chitral Package
+            </span>
+          </a>
+
+          <a
+            href="/pakistan-dmc/special-interests/kalash-festival-2027"
+            className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] md:min-w-0"
+          >
+            <div className="flex justify-between gap-4">
+              <div>
+                <p className="text-[12px] font-black uppercase text-[#ff3b0a]">Special interest</p>
+                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-[#2d2f49]">
+                  Kalash Festival
+                  <br />
+                  2027 DMC
+                </h3>
+                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-[#596173]">
+                  Chilam Joshi festival itinerary for foreign agencies.
+                </p>
+              </div>
+            </div>
+
+            <ul className="mt-[28px] space-y-[15px]">
+              {[
+                "Suggested window: 11-18 May 2027",
+                "Chitral, Ayun, Bumburet, Rumbur, and Kalash Valleys",
+                "Responsible festival access, local guides, hotels, and transport",
+              ].map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-[#2d2f49]"
+                >
+                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-[#ff3b0a]" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,59,10,0.18)] md:mt-auto">
+              View Kalash Festival Plan
             </span>
           </a>
 
@@ -770,7 +998,7 @@ export default function DmcLandingPage() {
               href="https://wa.me/923221848940?text=Hi%203Musafir%2C%20I%20want%20to%20partner%20for%20Pakistan%20DMC%20services."
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-[23px] flex h-[52px] w-full items-center justify-center rounded-[14px] bg-[#2d2f49] px-5 text-[15px] font-black text-white shadow-[0_8px_18px_rgba(20,24,36,0.12)] md:max-w-[300px]"
+              className="mt-[23px] flex min-h-[52px] w-full items-center justify-center rounded-[14px] bg-[#2d2f49] px-5 py-3 text-center text-[15px] font-black leading-tight text-white shadow-[0_8px_18px_rgba(20,24,36,0.12)] md:max-w-[300px]"
             >
               Chat on WhatsApp
             </a>
@@ -802,7 +1030,7 @@ export default function DmcLandingPage() {
                 href="https://wa.me/923221848940?text=Hi%203Musafir%2C%20I%20need%20a%20Pakistan%20DMC%20quote%20for%20an%20agency%20group."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-[57px] w-full items-center justify-center rounded-[14px] bg-[#ff3b0a] px-5 text-center text-[17px] font-black text-white shadow-[0_13px_22px_rgba(255,59,10,0.22)] md:max-w-[360px]"
+                className="flex min-h-[57px] w-full items-center justify-center rounded-[14px] bg-[#ff3b0a] px-5 py-3 text-center text-[16px] font-black leading-tight text-white shadow-[0_13px_22px_rgba(255,59,10,0.22)] md:max-w-[360px] md:text-[17px]"
               >
                 Request Quote on WhatsApp
               </a>

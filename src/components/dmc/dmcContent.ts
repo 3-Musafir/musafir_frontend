@@ -37,6 +37,7 @@ export const pricingAnswer =
 
 export const navItems = [
   { label: "Hero", href: "#hero" },
+  { label: "Culture", href: "#culture" },
   { label: "Services", href: "#services" },
   { label: "Destinations", href: "#destinations" },
   { label: "Agencies", href: "#international-agencies" },
@@ -123,6 +124,11 @@ export const dmcDestinations = [
     title: "K2 Base Camp DMC services",
     body: "Expedition logistics, Baltoro Glacier trekking support, Concordia route planning, crew coordination, and contingency-aware field execution.",
     href: "/pakistan-dmc/tours/k2-basecamp-trek",
+  },
+  {
+    title: "Festivals of Pakistan DMC support",
+    body: "Special-interest itineraries for Shandur Polo, Hunza winter sports, Shimshal Kuch, Mayfung, Shyok, Hindukush Snow Festival, and more.",
+    href: "/pakistan-dmc/special-interests/festivals-of-pakistan",
   },
   {
     title: "Cultural city programs",
