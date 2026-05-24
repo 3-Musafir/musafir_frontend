@@ -13,9 +13,25 @@ import { NotificationsProvider } from "@/context/NotificationsProvider";
 import UserScreenShell from "@/components/UserScreenShell";
 import ClarityTracker from "@/components/analytics/ClarityTracker";
 import AnalyticsConsentBanner from "@/components/analytics/AnalyticsConsentBanner";
+import {
+  kalashFestivalDescription,
+  kalashFestivalTitle,
+} from "@/components/dmc/kalashFestivalContent";
+import { specialInterestFestivals } from "@/components/dmc/specialInterestFestivalContent";
 
 const DEFAULT_DESCRIPTION = defaultDescription;
 const DEFAULT_OG_IMAGE = "/3mwinterlogo.png";
+
+const specialInterestSeoMap = Object.fromEntries(
+  specialInterestFestivals.map((festival) => [
+    `/pakistan-dmc/special-interests/${festival.slug}`,
+    {
+      title: festival.seoTitle,
+      description: festival.metaDescription,
+      ogImage: "/communityimage14.jpg",
+    },
+  ])
+);
 
 const SEO_MAP: Record<
   string,
@@ -75,6 +91,18 @@ const SEO_MAP: Record<
       "3Musafir supports international travel agencies with K2 Base Camp expedition logistics in Pakistan, including permits, hotels, transport, guides, porters, meals, equipment coordination, and on-ground field execution.",
     ogImage: "/communityimage14.jpg",
   },
+  "/pakistan-dmc/special-interests/festivals-of-pakistan": {
+    title: "Festivals of Pakistan DMC | Cultural & Winter Festival Tours | 3Musafir",
+    description:
+      "3Musafir is a Pakistan DMC supporting foreign travel agencies with festival itineraries across Hunza, Skardu, Chitral, Shimshal, Khaplu, Taxila, Gilgit-Baltistan, and the Hindukush.",
+    ogImage: "/communityimage14.jpg",
+  },
+  "/pakistan-dmc/special-interests/kalash-festival-2027": {
+    title: kalashFestivalTitle,
+    description: kalashFestivalDescription,
+    ogImage: "/communityimage14.jpg",
+  },
+  ...specialInterestSeoMap,
   "/why": {
     title: "Why 3Musafir Exists — Safer travel for women in Pakistan",
     description:
