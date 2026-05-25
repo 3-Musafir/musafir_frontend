@@ -284,8 +284,7 @@ export default function App({ Component, pageProps }: AppProps) {
         defaultTitle={defaultTitle}
         description={description}
         canonical={canonicalUrl}
-        noindex={shouldNoindex}
-        nofollow={false}
+        norobots={true}
         openGraph={{
           type: "website",
           url: canonicalUrl,
@@ -320,6 +319,11 @@ export default function App({ Component, pageProps }: AppProps) {
         description={DEFAULT_DESCRIPTION}
       />
       <Head>
+        <meta
+          key="robots"
+          name="robots"
+          content={shouldNoindex ? "noindex,follow" : "index,follow"}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
