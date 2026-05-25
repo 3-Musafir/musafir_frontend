@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React from "react";
 import { useDashboard } from "@/context/DashboardContext";
 import HomeEventCard from "@/components/cards/HomeEventCard";
@@ -10,6 +11,14 @@ import PassportUpcomingCard from "@/components/cards/PassportUpcomingCard";
 import CompanyProfileHero from "@/components/brand/CompanyProfileHero";
 import { formatDate } from "@/utils/formatDate";
 import { RegistrationStatus } from "@/config/registration-status";
+
+const homepageEntityLinks = [
+  { href: "/explore", label: "Explore group tours" },
+  { href: "/reviews", label: "Read reviews" },
+  { href: "/why", label: "Why 3Musafir" },
+  { href: "/community/voices", label: "Community voices" },
+  { href: "/pakistan-dmc", label: "Pakistan DMC services" },
+];
 
 export default function HomeTabContent() {
   const {
@@ -42,6 +51,33 @@ export default function HomeTabContent() {
         loading={profileLoading}
         className="mt-4 mb-10"
       />
+
+      <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm md:p-7">
+        <div className="max-w-4xl space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Pakistan travel company
+          </p>
+          <h1 className="text-2xl font-semibold leading-tight text-heading md:text-3xl">
+            3Musafir group tours, women-first travel, and Pakistan DMC services
+          </h1>
+          <p className="text-sm leading-relaxed text-text md:text-base">
+            3Musafir is a Pakistan-based travel company offering community-led group tours,
+            women-first travel experiences, customized trips, international group trips, and
+            inbound DMC services for foreign travel agencies.
+          </p>
+        </div>
+        <div className="mt-5 flex flex-wrap gap-3">
+          {homepageEntityLinks.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary transition hover:border-brand-primary"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {/* Actionable Registrations */}
       {actionableRegistrations.length > 0 && (

@@ -23,8 +23,6 @@ const ROUTES = [
   ...specialInterestFestivalRoutes,
   "/why",
   "/about-3musafir",
-  "/founderportfolio",
-  "/founderportfolio/biography",
   "/trust",
   "/trust/verification",
   "/trust/vendor-onboarding",

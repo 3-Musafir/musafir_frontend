@@ -7,6 +7,15 @@ import CompanyProfileHero from '@/components/brand/CompanyProfileHero';
 import useCompanyProfile from '@/hooks/useCompanyProfile';
 import { CompanyProfile } from '@/services/types/companyProfile';
 
+const dmcInternalLinks = [
+  { href: '/pakistan-dmc', label: 'Pakistan DMC services' },
+  { href: '/pakistan-dmc/tours/hunza', label: 'Hunza DMC itinerary' },
+  { href: '/pakistan-dmc/tours/skardu', label: 'Skardu DMC itinerary' },
+  { href: '/pakistan-dmc/tours/chitral', label: 'Chitral DMC itinerary' },
+  { href: '/reviews', label: '3Musafir reviews' },
+  { href: '/why', label: 'Why partner with 3Musafir' },
+];
+
 export default function Explore() {
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
@@ -42,7 +51,7 @@ export default function Explore() {
       description,
       url: canonicalUrl,
       inLanguage: 'en-PK',
-      about: ['Hunza Valley', 'Skardu', 'Shigar Valley', 'Fairy Meadows', 'K2 Base Camp', 'Group travel in Pakistan'],
+      about: ['Hunza Valley', 'Skardu', 'Shigar Valley', 'Fairy Meadows', 'K2 Base Camp', 'Group travel in Pakistan', 'Pakistan DMC services'],
     },
     {
       '@context': 'https://schema.org',
@@ -174,6 +183,32 @@ export default function Explore() {
               <Link href="/community/voices" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
                 Community travel stories
               </Link>
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-gray-200 bg-white p-6 md:p-8 shadow-sm">
+            <div className="max-w-3xl space-y-2">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                Pakistan DMC and trust links
+              </p>
+              <h2 className="text-2xl font-semibold text-heading">
+                Useful 3Musafir pages for travelers and agency partners
+              </h2>
+              <p className="text-sm leading-relaxed text-text">
+                Explore traveler-facing trip pages alongside inbound DMC itineraries, reviews, and
+                company trust context.
+              </p>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {dmcInternalLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-heading transition hover:border-brand-primary hover:text-brand-primary"
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </section>
           <section id="community-led">
@@ -444,10 +479,10 @@ export default function Explore() {
                     href: '/about-3musafir',
                   },
                   {
-                    title: 'Founder portfolio',
+                    title: 'About 3Musafir',
                     description:
-                      'A closer look at the founder’s journey, work, and the thinking behind 3Musafir.',
-                    href: '/founderportfolio',
+                      'A closer look at the company, community, and thinking behind 3Musafir.',
+                    href: '/about-3musafir',
                   },
                 ].map((item) => (
                     <details

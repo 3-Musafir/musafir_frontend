@@ -40,7 +40,7 @@ const SEO_MAP: Record<
   "/": {
     title: "3Musafir | Pakistan Group Tours, Women-First Travel & DMC Services",
     description:
-      "3Musafir is a Pakistan-based travel company offering community-led group tours, women-first travel experiences, customized trips, international group trips, and inbound DMC services.",
+      "3Musafir is a Pakistan-based travel company offering community-led group tours, women-first travel experiences, customized trips, international group trips, and inbound DMC services for foreign travel agencies.",
     ogImage: "/flowerFields.jpg",
   },
   "/home": {
@@ -56,9 +56,9 @@ const SEO_MAP: Record<
     ogImage: "/murree.webp",
   },
   "/reviews": {
-    title: "3Musafir Reviews — Community travel stories and trust signals",
+    title: "3Musafir Reviews: Google Reviews, Traveler Stories & Trust Signals",
     description:
-      "Read community-sourced 3Musafir testimonials about solo travel, safety, first-time group trips, and the people behind each journey.",
+      "Read real 3Musafir reviews, traveler stories, Google review signals, Trustpilot profile, safety feedback, and post-trip experiences from Pakistan and international group trips.",
     ogImage: "/sc.png",
   },
   "/pakistan-dmc": {
@@ -216,6 +216,7 @@ const noindexRoutePrefixes = [
   "/flagship/create",
   "/flagship/payment",
   "/flagship/seats",
+  "/founderportfolio",
   "/home",
   "/musafir",
   "/musafir-signup",

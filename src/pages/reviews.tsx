@@ -8,7 +8,7 @@ import { buildCanonical } from "@/lib/seo/seoConfig";
 
 const title = "3Musafir Reviews: Google Reviews, Traveler Stories & Trust Signals";
 const description =
-  "Read real 3Musafir reviews, traveler stories, community feedback, safety signals, and post-trip experiences from Pakistan and international group trips.";
+  "Read real 3Musafir reviews, traveler stories, Google review signals, Trustpilot profile, safety feedback, and post-trip experiences from Pakistan and international group trips.";
 
 const reviewFaqs = [
   {
@@ -32,6 +32,16 @@ const reviewFaqs = [
       "Travelers often mention community, friendships, trip captains, safety, and access to remote destinations. Common improvement areas may include response times during peak season, itinerary changes due to mountain roads or weather, and room-sharing expectations.",
   },
   {
+    question: "Where can I check third-party 3Musafir trust signals?",
+    answer:
+      "Travelers can compare this page with Google Business review signals, Trustpilot profile visibility, Instagram field proof, Medium stories where available, and public recognition such as NIC Islamabad participation.",
+  },
+  {
+    question: "Does 3Musafir publish fake review ratings?",
+    answer:
+      "No. This page avoids fake aggregate ratings. It presents traveler themes, public trust signals, field proof, and direct feedback patterns without inventing Review or AggregateRating schema.",
+  },
+  {
     question: "Does 3Musafir organize Pakistan group tours?",
     answer:
       "Yes. 3Musafir organizes Pakistan group tours and community-led trip programs, including popular northern routes and selected international group trips.",
@@ -46,6 +56,49 @@ const reviewFaqs = [
     answer:
       "3Musafir commonly serves young adults and community-minded travelers, while exact suitability depends on the specific trip, route difficulty, rooming model, and group expectations.",
   },
+];
+
+const trustSignalCards = [
+  {
+    title: "Google Business reviews",
+    body: "Use Google Business review signals to cross-check recent traveler sentiment, location trust, response patterns, and public reputation outside the 3Musafir website.",
+    href: "https://www.google.com/search?q=3Musafir+reviews",
+    cta: "Search Google reviews",
+  },
+  {
+    title: "Trustpilot profile",
+    body: "Trustpilot can provide another third-party reputation checkpoint where profile data is available. Treat it as one signal alongside traveler stories and route-specific feedback.",
+    href: "https://www.trustpilot.com/review/3musafir.com",
+    cta: "Check Trustpilot",
+  },
+  {
+    title: "Medium archive",
+    body: "Long-form stories and founder notes help explain the thinking behind community-led travel, women-first trip design, and the operating culture behind 3Musafir.",
+    href: "https://medium.com/search?q=3Musafir",
+    cta: "Search Medium stories",
+  },
+  {
+    title: "NIC Islamabad recognition",
+    body: "Public startup ecosystem recognition is useful context when evaluating 3Musafir as a traveltech and community-first company operating from Pakistan.",
+  },
+  {
+    title: "Instagram field proof",
+    body: "Instagram gives visual field proof of real groups, captains, destinations, culture, weather, and the kind of people who actually travel with 3Musafir.",
+    href: "https://www.instagram.com/teen_musafir/",
+    cta: "View Instagram",
+  },
+  {
+    title: "Traveler feedback themes",
+    body: "The most useful signals are recurring themes: safety comfort, captain quality, group fit, communication, rooming expectations, and how disruptions are handled.",
+  },
+];
+
+const travelerFeedbackThemes = [
+  "Community, friendships, and post-trip connection",
+  "Women-first comfort, group fit, and trip captain support",
+  "Access to Northern Pakistan routes that feel difficult to manage alone",
+  "Clearer expectations around room sharing, road delays, and mountain weather",
+  "More proactive communication during peak season or itinerary changes",
 ];
 
 export default function ReviewsPage() {
@@ -143,37 +196,56 @@ export default function ReviewsPage() {
           </section>
 
           <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                title: "What travelers say about 3Musafir",
-                body: "Traveler stories often focus on community, friendships, trip captains, shared comfort, and reaching destinations that feel difficult to manage alone.",
-              },
-              {
-                title: "Public reputation and Google review signals",
-                body: "Review signals should be read alongside itinerary details, route difficulty, rooming expectations, and the traveler’s own comfort with group travel.",
-              },
-              {
-                title: "Women traveler feedback",
-                body: "Women travelers often look for clarity on group composition, safety expectations, captain support, room sharing, and communication before departure.",
-              },
-              {
-                title: "Trip-specific review themes",
-                body: "Northern Pakistan routes can involve weather shifts, road conditions, and flight changes, so reviews are most useful when read with the exact route in mind.",
-              },
-              {
-                title: "Common praise",
-                body: "Travelers often mention community, friendships, trip captains, safety, access to remote destinations, and the confidence to join a first group trip.",
-              },
-              {
-                title: "Common improvement areas",
-                body: "Common improvement areas may include response times during peak season, itinerary changes due to mountain roads or weather, and room-sharing expectations.",
-              },
-            ].map((item) => (
+            {trustSignalCards.map((item) => (
               <article key={item.title} className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                 <h2 className="text-lg font-semibold text-heading">{item.title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-text">{item.body}</p>
+                {item.href && item.cta ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex text-sm font-semibold text-brand-primary hover:text-brand-primary-hover"
+                  >
+                    {item.cta}
+                  </a>
+                ) : null}
               </article>
             ))}
+          </section>
+
+          <section className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+            <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-heading">
+                Common praise in 3Musafir reviews
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-text">
+                Travelers often mention community, friendships, trip captains, safety, access to
+                remote destinations, and the confidence to join a first group trip.
+              </p>
+            </article>
+            <article className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-heading">
+                Common improvement areas
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-text">
+                Common improvement areas may include response times during peak season, itinerary
+                changes due to mountain roads or weather, and room-sharing expectations.
+              </p>
+            </article>
+          </section>
+
+          <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-heading">
+              Traveler feedback themes
+            </h2>
+            <ul className="mt-4 grid gap-3 text-sm leading-relaxed text-text md:grid-cols-2">
+              {travelerFeedbackThemes.map((theme) => (
+                <li key={theme} className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
+                  {theme}
+                </li>
+              ))}
+            </ul>
           </section>
 
           <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
