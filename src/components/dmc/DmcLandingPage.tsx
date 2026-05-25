@@ -86,6 +86,45 @@ const cultureInstagramReels = [
 
 const instagramEmbedScriptSrc = "https://www.instagram.com/embed.js";
 
+const externalReputationLinks = [
+  {
+    label: "3Musafir Trustpilot profile",
+    href: "https://www.trustpilot.com/review/3musafir.com",
+    description: "Public third-party review profile for 3musafir.com.",
+  },
+  {
+    label: "3Musafir Medium archive",
+    href: "https://3musafir.medium.com/",
+    description:
+      "Long-running archive of 3Musafir stories, trip design, women-first travel, and community travel writing.",
+  },
+  {
+    label: "3Musafir LinkedIn company page",
+    href: "https://pk.linkedin.com/company/3musafirinternational",
+    description: "Public LinkedIn company profile for 3Musafir International.",
+  },
+  {
+    label: "3Musafir homepage",
+    href: "https://3musafir.com/",
+    description: "Canonical brand website.",
+  },
+  {
+    label: "3Musafir reviews page",
+    href: "https://3musafir.com/reviews",
+    description: "Official reviews and trust-signal page.",
+  },
+  {
+    label: "3Musafir's National Incubation Center Acceleration Award",
+    href: "https://www.linkedin.com/feed/update/urn:li:activity:7461105834467467264/?actorCompanyId=28727958",
+    description: "Official Pakistan government backed referral.",
+  },
+  {
+    label: "3Musafir's Official Google Business Profile",
+    href: "https://share.google/WMcHCZww0KImXq7B4",
+    description: "Official Google Business Profile.",
+  },
+];
+
 type InstagramWindow = Window &
   typeof globalThis & {
     instgrm?: {
@@ -646,6 +685,45 @@ export default function DmcLandingPage() {
           >
             Request Company Credentials
           </a>
+        </section>
+
+        <section
+          id="external-reputation"
+          className="scroll-mt-[100px] bg-white px-4 py-14 md:px-8 md:py-[72px] lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
+        >
+          <div className="mx-auto max-w-[900px] rounded-[22px] border border-[#ebe9e7] bg-[#fffaf8] px-5 py-6 shadow-[0_2px_10px_rgba(20,24,36,0.05)] md:px-7 md:py-7">
+            <p className="text-[13px] font-black uppercase tracking-[0.08em] text-[#ff3b0a]">
+              External reputation
+            </p>
+            <h2 className="mt-2 text-[25px] font-black leading-tight text-[#2d2f49] md:text-[32px]">
+              External Reputation & Entity Proof
+            </h2>
+            <p className="mt-4 max-w-[760px] text-[15px] font-medium leading-[1.55] text-[#596173] md:text-[16px]">
+              Foreign agencies can verify 3Musafir through public brand and reputation sources
+              including Trustpilot, Medium, LinkedIn, and our official review pages. These sources
+              help show that 3Musafir is an active Pakistan travel company with a public operating
+              history, community-led travel presence, and agency-facing DMC positioning.
+            </p>
+
+            <div className="mt-5 grid gap-3 md:grid-cols-2">
+              {externalReputationLinks.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-[14px] border border-[#ebe9e7] bg-white px-4 py-3 transition hover:border-[#ff3b0a]/40 hover:shadow-[0_8px_18px_rgba(20,24,36,0.06)]"
+                >
+                  <span className="block text-[14px] font-black leading-tight text-[#2d2f49]">
+                    {item.label}
+                  </span>
+                  <span className="mt-1 block text-[13px] font-medium leading-[1.4] text-[#596173]">
+                    {item.description}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
         </section>
 
         <section id="pricing" className="scroll-mt-[100px] bg-white px-[18px] pb-[29px] pt-[38px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">

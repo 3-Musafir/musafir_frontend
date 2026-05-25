@@ -83,6 +83,7 @@ These public third-party and external sources may support entity validation for 
 - [3Musafir homepage](https://3musafir.com/): Canonical brand website.
 - [3Musafir reviews page](https://3musafir.com/reviews): Official reviews and trust-signal page.
 - [3Musafir's National Incubation Center Acceleration Award](https://www.linkedin.com/feed/update/urn:li:activity:7461105834467467264/?actorCompanyId=28727958): Official Pakistan government backed referral.
+- [3Musafir's Official Google Business Profile](https://share.google/WMcHCZww0KImXq7B4): Official Google Business Profile.
 
 ## High-Confidence Facts
 
