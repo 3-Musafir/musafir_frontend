@@ -6,21 +6,16 @@ const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").re
   /\/$/,
   ""
 );
+
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "").replace(
   /\/$/,
   ""
 );
 
-const ROUTES = [
+const STATIC_ROUTES = [
   "/",
   "/explore",
   "/reviews",
-  "/pakistan-dmc",
-  "/pakistan-dmc/tours/hunza",
-  "/pakistan-dmc/tours/skardu",
-  "/pakistan-dmc/tours/chitral",
-  "/pakistan-dmc/tours/k2-basecamp-trek",
-  ...specialInterestFestivalRoutes,
   "/why",
   "/about-3musafir",
   "/trust",
@@ -28,20 +23,41 @@ const ROUTES = [
   "/trust/vendor-onboarding",
   "/trust/travel-education",
   "/community/voices",
-  "/trust-and-verification",
-  "/refundpolicyby3musafir",
   "/musafircommunityequityframework",
-  "/terms&conditonsby3musafir",
+
+  // DMC pillar and child pages
+  "/pakistan-dmc",
+  "/pakistan-dmc/hunza",
+  "/pakistan-dmc/skardu",
+  "/pakistan-dmc/chitral",
+  "/pakistan-dmc/k2-base-camp",
+
+  // Special interest pages
+  ...specialInterestFestivalRoutes,
 ];
 
 type FlagshipLite = { id?: string; _id?: string };
 
-const escapeXml = (value: string) => value.replace(/&/g, "&amp;");
+const escapeXml = (value: string) =>
+  value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+
+const normalizeRoute = (route: string) => {
+  if (!route) return "/";
+  if (route === "/") return "/";
+  const path = route.startsWith("/") ? route : `/${route}`;
+  return path.endsWith("/") ? path.slice(0, -1) : path;
+};
 
 const extractFlagshipIds = (payload: any): string[] => {
   if (!payload) return [];
   const list = Array.isArray(payload) ? payload : payload?.data || payload?.items || [];
   if (!Array.isArray(list)) return [];
+
   return list
     .map((item: FlagshipLite) => item?.id || item?._id)
     .filter(Boolean) as string[];
@@ -49,9 +65,11 @@ const extractFlagshipIds = (payload: any): string[] => {
 
 const fetchFlagships = async (endpoint: string) => {
   if (!API_BASE) return [];
+
   try {
     const res = await fetch(`${API_BASE}${endpoint}`, { method: "GET" });
     if (!res.ok) return [];
+
     const data = await res.json();
     return extractFlagshipIds(data);
   } catch {
@@ -59,27 +77,58 @@ const fetchFlagships = async (endpoint: string) => {
   }
 };
 
+const priorityForRoute = (route: string) => {
+  if (route === "/") return "1.0";
+  if (route === "/pakistan-dmc") return "0.95";
+  if (route.startsWith("/pakistan-dmc/")) return "0.85";
+  if (["/explore", "/reviews", "/why", "/trust"].includes(route)) return "0.85";
+  return "0.60";
+};
+
+const changeFreqForRoute = (route: string) => {
+  if (route === "/" || route === "/explore") return "weekly";
+  if (route.startsWith("/pakistan-dmc")) return "weekly";
+  return "monthly";
+};
+
 const buildSiteMap = (dynamicRoutes: string[]) => {
-  const allRoutes = [...ROUTES, ...dynamicRoutes];
-  const urls = allRoutes.map((route) => {
-    const loc = `${SITE_URL}${route === "/" ? "" : route}`;
-    return `<url><loc>${escapeXml(loc)}</loc></url>`;
-  }).join("");
+  const allRoutes = Array.from(
+    new Set([...STATIC_ROUTES, ...dynamicRoutes].map(normalizeRoute))
+  );
+
+  const urls = allRoutes
+    .map((route) => {
+      const loc = `${SITE_URL}${route === "/" ? "" : route}`;
+
+      return `
+  <url>
+    <loc>${escapeXml(loc)}</loc>
+    <changefreq>${changeFreqForRoute(route)}</changefreq>
+    <priority>${priorityForRoute(route)}</priority>
+  </url>`;
+    })
+    .join("");
 
   return `<?xml version="1.0" encoding="UTF-8"?>` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`;
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  const [upcoming, live, past] = await Promise.all([
+  const [upcoming, live] = await Promise.all([
     fetchFlagships("/flagship/upcoming-trips"),
     fetchFlagships("/flagship/live-trips"),
-    fetchFlagships("/flagship/past-trips"),
   ]);
-  const uniqueIds = Array.from(new Set([...upcoming, ...live, ...past]));
-  const dynamicRoutes = uniqueIds.map((id) => `/flagship/details?id=${id}`);
+
+  const uniqueIds = Array.from(new Set([...upcoming, ...live]));
+
+  // Keep only if these pages are public, indexable, and return 200.
+  const dynamicRoutes = uniqueIds.map((id) => `/flagship/details?id=${encodeURIComponent(id)}`);
+
   const sitemap = buildSiteMap(dynamicRoutes);
-  res.setHeader("Content-Type", "text/xml");
+
+  res.setHeader("Content-Type", "application/xml");
+  res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate");
+
   res.write(sitemap);
   res.end();
 
