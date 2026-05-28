@@ -5,18 +5,19 @@ export const defaultDescription =
   "3Musafir is a Pakistan-based travel company offering community-led group tours, women-first travel experiences, customized trips, international group trips, and inbound DMC services for foreign travel agencies.";
 export const logoUrl = `${siteUrl}/3mwinterlogo.png`;
 const configuredProfiles = [
-  process.env.NEXT_PUBLIC_INSTAGRAM_URL,
+  process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/teen_musafir/",
   process.env.NEXT_PUBLIC_TIKTOK_URL,
   process.env.NEXT_PUBLIC_LINKEDIN_URL || "https://www.linkedin.com/company/3musafirinternational/",
   process.env.NEXT_PUBLIC_YOUTUBE_URL,
+  process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL || "https://share.google/WMcHCZww0KImXq7B4",
 ].filter(Boolean) as string[];
 
-// TODO: Replace placeholder contact details and social profiles before launch.
 export const contactPoints = [
   {
     "@type": "ContactPoint",
     contactType: "customer support",
-    email: "support@3musafir.com",
+    email: "hello@3musafir.com",
+    telephone: "+923221848940",
     areaServed: "PK",
     availableLanguage: ["en", "ur"],
   },

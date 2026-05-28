@@ -36,7 +36,7 @@ export default function PublicHeader({ hideAuthCta = false }: { hideAuthCta?: bo
     <header className="w-full bg-white border-b">
       <div className="flex h-16 items-center justify-between gap-3 overflow-visible px-3 sm:px-4 md:px-6 lg:h-20 lg:px-8 xl:px-10">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-          <Link href="/home" aria-label="3Musafir home" className="flex shrink-0 items-center">
+          <Link href="/" aria-label="3Musafir home" className="flex shrink-0 items-center">
             <Image
               src="/primarylogo.svg"
               alt="3Musafir"

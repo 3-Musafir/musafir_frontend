@@ -19,7 +19,7 @@ const footerSections: FooterSection[] = [
     id: 'explore',
     title: 'Explore',
     links: [
-      { label: 'Trips', href: '/home' },
+      { label: 'Trips', href: '/' },
       { label: 'Explore', href: '/explore' },
       { label: 'Pakistan DMC', href: '/pakistan-dmc' },
       { label: 'Why 3Musafir', href: '/why' },
@@ -49,6 +49,10 @@ const footerSections: FooterSection[] = [
 ];
 
 const trustChips = ['Verified Musafirs', 'Vetted Vendors', 'On-trip Support'];
+const instagramUrl = process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/teen_musafir/';
+const tiktokUrl = process.env.NEXT_PUBLIC_TIKTOK_URL;
+const linkedinUrl =
+  process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/company/3musafirinternational/';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -230,7 +234,7 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-4">
             <a
-              href="https://www.instagram.com"
+              href={instagramUrl}
               className="text-muted-foreground hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
             >
               <span className="sr-only">Instagram</span>
@@ -238,17 +242,19 @@ export default function Footer() {
                 <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm10 2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm-5 3.2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6zm0 2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6zm5.6-.7a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0z" />
               </svg>
             </a>
+            {tiktokUrl ? (
+              <a
+                href={tiktokUrl}
+                className="text-muted-foreground hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
+              >
+                <span className="sr-only">TikTok</span>
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
+                  <path d="M16.5 3a6.5 6.5 0 0 0 4.5 2v3a9.4 9.4 0 0 1-4.5-1.3v7.3a6.5 6.5 0 1 1-6.5-6.5c.5 0 1 .1 1.5.2v3.2a2.8 2.8 0 1 0 2.2 2.7V3h2.8z" />
+                </svg>
+              </a>
+            ) : null}
             <a
-              href="https://www.tiktok.com"
-              className="text-muted-foreground hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
-            >
-              <span className="sr-only">TikTok</span>
-              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-                <path d="M16.5 3a6.5 6.5 0 0 0 4.5 2v3a9.4 9.4 0 0 1-4.5-1.3v7.3a6.5 6.5 0 1 1-6.5-6.5c.5 0 1 .1 1.5.2v3.2a2.8 2.8 0 1 0 2.2 2.7V3h2.8z" />
-              </svg>
-            </a>
-            <a
-              href="https://www.linkedin.com/company/3musafirinternational/"
+              href={linkedinUrl}
               className="text-muted-foreground hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
             >
               <span className="sr-only">LinkedIn</span>

@@ -53,34 +53,100 @@ const specialInterestNavItems = [
 
 const cultureInstagramReels = [
   {
-    title: "3Musafir travel community Instagram reel",
-    permalink: "https://www.instagram.com/reel/DVttvrxjfvO/?utm_source=ig_embed&utm_campaign=loading",
-    captioned: true,
+    title: "Maryam culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DY4mD4LsPQC/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "realme Pakistan community Instagram post",
+    permalink: "https://www.instagram.com/p/DY2r2FxMo8s/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Hameez Qureshi culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DYzqMmaJ0fR/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Hameez Qureshi community Instagram post",
+    permalink: "https://www.instagram.com/p/DYubkw1icyJ/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Sana Nawaz Khan community Instagram post",
+    permalink: "https://www.instagram.com/p/DYuXRohCmPh/?utm_source=ig_embed&utm_campaign=loading",
   },
   {
     title: "Farhan Ullah Aziz culture Instagram reel",
     permalink: "https://www.instagram.com/reel/DYejn4sqdfx/?utm_source=ig_embed&utm_campaign=loading",
-    captioned: true,
   },
   {
-    title: "3Musafir community Instagram post",
-    permalink: "https://www.instagram.com/p/DLprk2-NK60/?utm_source=ig_embed&utm_campaign=loading",
-    captioned: false,
+    title: "Hameez Qureshi community Instagram post",
+    permalink: "https://www.instagram.com/p/DYZxQYKiVKG/?utm_source=ig_embed&utm_campaign=loading",
   },
   {
     title: "3Musafir culture Instagram reel",
     permalink: "https://www.instagram.com/reel/DYXH3GrtUiT/?utm_source=ig_embed&utm_campaign=loading",
-    captioned: true,
+  },
+  {
+    title: "Kashuf Naeem community Instagram post",
+    permalink: "https://www.instagram.com/p/DYZpjvcDGe9/?utm_source=ig_embed&utm_campaign=loading",
   },
   {
     title: "3Musafir travel culture Instagram reel",
     permalink: "https://www.instagram.com/reel/DWtScyzAV1F/?utm_source=ig_embed&utm_campaign=loading",
-    captioned: true,
   },
   {
-    title: "3Musafir community Instagram reel",
-    permalink: "https://www.instagram.com/reel/DV6Mhejjeeq/?utm_source=ig_embed&utm_campaign=loading",
-    captioned: true,
+    title: "Arucca creative culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DYNF_DmCcKA/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Ahsan archives culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DYacvqgBU9P/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "MM Talks culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DYPYXkFouZB/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Afroze Ghani community Instagram post",
+    permalink: "https://www.instagram.com/p/DYPCevvjMi8/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Rizz culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DYKw99vsuUP/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Mukhtar Hussain community Instagram post",
+    permalink: "https://www.instagram.com/p/DYKpS-YCPsL/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Roheen Ghauri community Instagram post",
+    permalink: "https://www.instagram.com/p/DYFHz7hDCnE/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Batool Naqvi culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DXysXuPM1M5/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Hameez Qureshi culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DX1lo5KKEye/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Sana Nawaz Khan culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DXzp1qNKTHu/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Ali Zaidi community Instagram post",
+    permalink: "https://www.instagram.com/p/DXyov05l517/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Anum Ahmed community Instagram post",
+    permalink: "https://www.instagram.com/p/DXwkHDIkwCg/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Muzz Pakistan culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DXot2D-Dg3L/?utm_source=ig_embed&utm_campaign=loading",
+  },
+  {
+    title: "Hameez Qureshi culture Instagram reel",
+    permalink: "https://www.instagram.com/reel/DXksafEiiv-/?utm_source=ig_embed&utm_campaign=loading",
   },
 ];
 
@@ -396,22 +462,24 @@ export default function DmcLandingPage() {
         <section id="culture" className="scroll-mt-[100px] bg-[#fffaf8] px-3 py-16 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
           <div className="mx-auto max-w-[760px] text-center">
             <h2 className="mx-auto max-w-[620px] text-[31px] font-black leading-[1.08] text-[#2d2f49] md:text-[42px]">
-              Our Culture
+              Our Partner Culture
             </h2>
             <p className="mx-auto mt-5 max-w-[590px] text-[15px] font-medium leading-[1.5] text-[#596173] md:text-[17px]">
               A window into the community, founder voice, traveler stories, and on-ground culture behind 3Musafir.
             </p>
           </div>
 
-          <div className="mt-[42px] flex snap-x gap-[18px] overflow-x-auto px-1 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] md:justify-center [&::-webkit-scrollbar]:hidden">
+          <div
+            aria-label="3Musafir culture Instagram posts"
+            className="mt-[42px] flex snap-x snap-mandatory items-start gap-[18px] overflow-x-auto px-1 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
             {cultureInstagramReels.map((reel) => (
               <article
                 key={reel.permalink}
-                className="min-h-[620px] w-[326px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-[#ebe9e7] bg-white shadow-[0_2px_9px_rgba(20,24,36,0.05)] md:w-[360px]"
+                className="h-[540px] w-[326px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-[#ebe9e7] bg-white shadow-[0_2px_9px_rgba(20,24,36,0.05)] sm:w-[360px]"
               >
                 <blockquote
                   className="instagram-media"
-                  data-instgrm-captioned={reel.captioned ? "" : undefined}
                   data-instgrm-permalink={reel.permalink}
                   data-instgrm-version="14"
                   title={reel.title}
@@ -419,7 +487,8 @@ export default function DmcLandingPage() {
                     background: "#fff",
                     border: 0,
                     margin: 0,
-                    minWidth: 326,
+                    maxWidth: "100%",
+                    minWidth: "100%",
                     width: "100%",
                   }}
                 >
@@ -427,7 +496,7 @@ export default function DmcLandingPage() {
                     href={reel.permalink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex min-h-[620px] items-center justify-center px-6 text-center text-[15px] font-extrabold leading-tight text-[#2d2f49]"
+                    className="flex h-[540px] items-center justify-center px-6 text-center text-[15px] font-extrabold leading-tight text-[#2d2f49]"
                   >
                     View this post on Instagram
                   </a>
@@ -741,11 +810,14 @@ export default function DmcLandingPage() {
             <AnswerBlock>{pricingAnswer}</AnswerBlock>
           </div>
 
-          <div className="mt-[44px] flex snap-x gap-[22px] overflow-x-auto pb-3 [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:snap-none md:grid-cols-3 md:items-stretch md:overflow-visible md:pb-0 [&::-webkit-scrollbar]:hidden">
-          <a
-            href="/pakistan-dmc/tours/skardu"
-            className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] md:min-w-0"
+          <div
+            aria-label="3Musafir DMC pricing programs"
+            className="mt-[44px] flex snap-x snap-mandatory items-stretch gap-[22px] overflow-x-auto px-1 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
+            <a
+              href="/pakistan-dmc/tours/skardu"
+              className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
+            >
             <div className="flex justify-between gap-4">
               <div>
                 <p className="text-[12px] font-black uppercase text-[#ff3b0a]">Direct tour package</p>
@@ -783,7 +855,7 @@ export default function DmcLandingPage() {
 
           <a
             href="/pakistan-dmc/tours/chitral"
-            className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] md:min-w-0"
+            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
           >
             <div className="flex justify-between gap-4">
               <div>
@@ -822,7 +894,7 @@ export default function DmcLandingPage() {
 
           <a
             href="/pakistan-dmc/special-interests/kalash-festival-2027"
-            className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] md:min-w-0"
+            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
           >
             <div className="flex justify-between gap-4">
               <div>
@@ -861,7 +933,7 @@ export default function DmcLandingPage() {
 
           <a
             href="/pakistan-dmc/tours/hunza"
-            className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] md:min-w-0"
+            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
           >
             <div className="flex justify-between gap-4">
               <div>
@@ -900,7 +972,7 @@ export default function DmcLandingPage() {
 
           <a
             href="/pakistan-dmc/tours/k2-basecamp-trek"
-            className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] md:min-w-0"
+            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
           >
             <div className="flex justify-between gap-4">
               <div>
@@ -937,7 +1009,7 @@ export default function DmcLandingPage() {
             </span>
           </a>
 
-          <div className="flex min-w-[290px] snap-start flex-col rounded-[20px] border border-[#ebe9e7] bg-white px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] md:min-w-0">
+          <div className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ebe9e7] bg-white px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] sm:w-[340px] lg:w-[360px]">
             <div className="flex justify-between gap-4">
               <div>
                 <h3 className="text-[24px] font-black leading-tight text-[#2d2f49]">
@@ -978,7 +1050,7 @@ export default function DmcLandingPage() {
             </a>
           </div>
 
-          <div className="relative flex min-w-[290px] snap-start flex-col overflow-hidden rounded-[20px] bg-[#2d2f49] px-[32px] pb-[31px] pt-[33px] text-white shadow-[0_15px_28px_rgba(20,24,36,0.18)] md:min-w-0">
+          <div className="relative flex w-[290px] shrink-0 snap-start flex-col overflow-hidden rounded-[20px] bg-[#2d2f49] px-[32px] pb-[31px] pt-[33px] text-white shadow-[0_15px_28px_rgba(20,24,36,0.18)] sm:w-[340px] lg:w-[360px]">
             <div className="absolute right-0 top-0 rounded-bl-[18px] bg-[#ff3b0a] px-[18px] py-[8px] text-[11px] font-black uppercase">
               Recommended
             </div>

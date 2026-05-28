@@ -111,7 +111,7 @@ export default function FlagshipDetails() {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: `${siteUrl}/home`,
+        item: siteUrl,
       },
       {
         "@type": "ListItem",

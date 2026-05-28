@@ -58,7 +58,7 @@ export default function Header({
   return (
     <header className='h-16 lg:h-20 bg-white border-b flex items-center px-4 lg:px-8'>
       {/* Logo */}
-      <Link href='/home' aria-label='3Musafir home' className='flex items-center shrink-0'>
+      <Link href='/' aria-label='3Musafir home' className='flex items-center shrink-0'>
         <Image
           src='/primarylogo.svg'
           alt='3Musafir'

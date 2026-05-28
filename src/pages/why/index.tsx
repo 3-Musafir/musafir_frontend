@@ -420,7 +420,7 @@ export default function WhyPage() {
                     </p>
                   </div>
                   <Link
-                    href="/home"
+                    href="/"
                     className="inline-flex items-center text-sm font-semibold text-brand-primary hover:text-brand-primary-hover transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                   >
                     Explore journeys →

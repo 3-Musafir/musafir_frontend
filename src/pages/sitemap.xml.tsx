@@ -27,10 +27,10 @@ const STATIC_ROUTES = [
 
   // DMC pillar and child pages
   "/pakistan-dmc",
-  "/pakistan-dmc/hunza",
-  "/pakistan-dmc/skardu",
-  "/pakistan-dmc/chitral",
-  "/pakistan-dmc/k2-base-camp",
+  "/pakistan-dmc/tours/hunza",
+  "/pakistan-dmc/tours/skardu",
+  "/pakistan-dmc/tours/chitral",
+  "/pakistan-dmc/tours/k2-basecamp-trek",
 
   // Special interest pages
   ...specialInterestFestivalRoutes,

@@ -419,7 +419,7 @@ export default function Explore() {
                       title: 'Travel with us',
                       description:
                         'Explore current flagships and upcoming journeys designed for comfort, safety, and shared experiences — led by the 3Musafir community.',
-                      href: '/home',
+                      href: '/',
                     },
                     {
                       title: 'Join the community',
