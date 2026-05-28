@@ -31,11 +31,9 @@ import {
   internationalAnswer,
   internalLinks,
   navItems,
-  premiumIncludes,
   pricingAnswer,
   services,
   servicesAnswer,
-  standardIncludes,
   stats,
   trustProofs,
 } from "./dmcContent";
@@ -1009,93 +1007,6 @@ export default function DmcLandingPage() {
             </span>
           </a>
 
-          <div className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ebe9e7] bg-white px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] sm:w-[340px] lg:w-[360px]">
-            <div className="flex justify-between gap-4">
-              <div>
-                <h3 className="text-[24px] font-black leading-tight text-[#2d2f49]">
-                  Standard Tours
-                </h3>
-                <p className="mt-[7px] text-[15.5px] font-medium leading-[1.55] text-[#596173]">
-                  Best for budget-conscious groups
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-[12px] font-extrabold uppercase leading-[1.25] text-[#6f7481]">
-                  Starting
-                  <br />
-                  From
-                </p>
-                <p className="text-[28px] font-black leading-none text-[#ff3b0a]">$45</p>
-                <p className="mt-[6px] text-[15px] font-medium text-[#596173]">/day/pax</p>
-              </div>
-            </div>
-
-            <ul className="mt-[34px] space-y-[16px]">
-              {standardIncludes.map((item) => (
-                <li
-                  key={item}
-                  className="flex items-center gap-[14px] text-[13.5px] font-medium text-[#2d2f49]"
-                >
-                  <Check size={18} strokeWidth={3} className="text-[#1db954]" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-
-            <a
-              href="#urgent-enquiry"
-              className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] border border-[#2d2f49] text-[14px] font-black text-[#2d2f49] md:mt-auto"
-            >
-              Request Quote
-            </a>
-          </div>
-
-          <div className="relative flex w-[290px] shrink-0 snap-start flex-col overflow-hidden rounded-[20px] bg-[#2d2f49] px-[32px] pb-[31px] pt-[33px] text-white shadow-[0_15px_28px_rgba(20,24,36,0.18)] sm:w-[340px] lg:w-[360px]">
-            <div className="absolute right-0 top-0 rounded-bl-[18px] bg-[#ff3b0a] px-[18px] py-[8px] text-[11px] font-black uppercase">
-              Recommended
-            </div>
-
-            <div className="flex justify-between gap-4 pt-[3px]">
-              <div>
-                <h3 className="text-[23px] font-black leading-[1.38]">
-                  Premium
-                  <br />
-                  Expeditions
-                </h3>
-                <p className="mt-[2px] text-[15px] font-medium leading-[1.45] text-[#c5c8d3]">
-                  For high-end clients & corporate
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-[12px] font-extrabold uppercase leading-[1.25] text-[#aeb3c0]">
-                  Starting
-                  <br />
-                  From
-                </p>
-                <p className="text-[28px] font-black leading-none text-white">$120</p>
-                <p className="mt-[6px] text-[15px] font-medium text-[#c5c8d3]">/day/pax</p>
-              </div>
-            </div>
-
-            <ul className="mt-[25px] space-y-[17px]">
-              {premiumIncludes.map((item) => (
-                <li
-                  key={item}
-                  className="flex items-center gap-[14px] text-[13.5px] font-medium text-white/90"
-                >
-                  <Check size={18} strokeWidth={3} className="text-[#ff3b0a]" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-
-            <a
-              href="#urgent-enquiry"
-              className="mt-[32px] flex h-[46px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[15px] font-black text-white shadow-[0_13px_22px_rgba(255,59,10,0.24)] md:mt-auto"
-            >
-              Request Quote
-            </a>
-          </div>
           </div>
 
           <p className="mx-auto mt-[58px] max-w-[314px] text-center text-[12.5px] font-medium leading-[1.5] text-[#6f7481]">
