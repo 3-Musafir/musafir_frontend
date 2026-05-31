@@ -216,7 +216,6 @@ const noindexRoutePrefixes = [
   "/flagship/create",
   "/flagship/payment",
   "/flagship/seats",
-  "/founderportfolio",
   "/home",
   "/musafir",
   "/musafir-signup",
@@ -285,7 +284,7 @@ export default function App({ Component, pageProps }: AppProps) {
         defaultTitle={defaultTitle}
         description={description}
         canonical={canonicalUrl}
-        norobots={true}
+        norobots={shouldNoindex}
         openGraph={{
           type: "website",
           url: canonicalUrl,

@@ -18,6 +18,8 @@ const STATIC_ROUTES = [
   "/reviews",
   "/why",
   "/about-3musafir",
+  "/founderportfolio",
+  "/founderportfolio/biography",
   "/trust",
   "/trust/verification",
   "/trust/vendor-onboarding",
@@ -38,6 +40,9 @@ const STATIC_ROUTES = [
 
 type FlagshipLite = { id?: string; _id?: string };
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
 const escapeXml = (value: string) =>
   value
     .replace(/&/g, "&amp;")
@@ -53,13 +58,21 @@ const normalizeRoute = (route: string) => {
   return path.endsWith("/") ? path.slice(0, -1) : path;
 };
 
-const extractFlagshipIds = (payload: any): string[] => {
+const extractFlagshipIds = (payload: unknown): string[] => {
   if (!payload) return [];
-  const list = Array.isArray(payload) ? payload : payload?.data || payload?.items || [];
+  const list = Array.isArray(payload)
+    ? payload
+    : isRecord(payload)
+      ? payload.data || payload.items || []
+      : [];
   if (!Array.isArray(list)) return [];
 
   return list
-    .map((item: FlagshipLite) => item?.id || item?._id)
+    .map((item): string | undefined => {
+      if (!isRecord(item)) return undefined;
+      const flagship = item as FlagshipLite;
+      return flagship.id || flagship._id;
+    })
     .filter(Boolean) as string[];
 };
 
