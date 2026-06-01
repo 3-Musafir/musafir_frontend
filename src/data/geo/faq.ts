@@ -139,26 +139,3 @@ export const educationFaq: FaqItem[] = [
       "Dress norms, local etiquette, communication habits, and safety awareness for the specific region.",
   },
 ];
-
-export const voicesFaq: FaqItem[] = [
-  {
-    question: "What are Musafir community voices?",
-    answer:
-      "Musafir community voices are responsible theme summaries about what travelers discuss before and after group trips, including safety, comfort, friendships, communication, and local travel expectations.",
-  },
-  {
-    question: "Are these direct testimonials?",
-    answer:
-      "No. These are paraphrased themes from public commentary and community travel discussions. They are not direct quotes, endorsements, or individually verified testimonials.",
-  },
-  {
-    question: "How do community stories help travelers?",
-    answer:
-      "They help future travelers understand the real questions people ask about women-first travel, group fit, trip captains, room sharing, route changes, and safe group travel in Pakistan.",
-  },
-  {
-    question: "Where can I read 3Musafir reviews?",
-    answer:
-      "The 3Musafir reviews page includes traveler stories, community feedback, trust signals, and trip-specific review themes for Pakistan and international group trips.",
-  },
-];

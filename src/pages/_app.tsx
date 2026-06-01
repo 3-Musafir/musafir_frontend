@@ -43,6 +43,12 @@ const SEO_MAP: Record<
       "3Musafir is a Pakistan-based travel company offering community-led group tours, women-first travel experiences, customized trips, international group trips, and inbound DMC services for foreign travel agencies.",
     ogImage: "/flowerFields.jpg",
   },
+  "/fixed-departure": {
+    title: "3Musafir Fixed Departures — Upcoming journeys",
+    description:
+      "Explore upcoming fixed departures, flagship journeys, and community-led group travel experiences with 3Musafir.",
+    ogImage: "/norwayUpcomming.jpg",
+  },
   "/home": {
     title: "3Musafir Home — Upcoming journeys",
     description:
@@ -193,7 +199,7 @@ const authStandaloneRoutes = [
 
 const authStandalonePrefixes = ["/signup", "/signup-dark", "/musafir-signup"];
 
-const publicStandaloneRoutes = ["/flagship/details"];
+const publicStandaloneRoutes = ["/fixed-departure", "/flagship/details"];
 
 const noindexRoutes = [
   "/auth-callback",
@@ -230,7 +236,6 @@ const noindexRoutePrefixes = [
 
 const publicShellRoutes = [
   "/about-3musafir",
-  "/community/voices",
   "/explore",
   "/musafircommunityequityframework",
   "/refundpolicyby3musafir",

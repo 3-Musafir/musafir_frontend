@@ -129,8 +129,8 @@ export default function WhyPage() {
                 <Link href="/pakistan-dmc" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
                   Pakistan DMC services
                 </Link>
-                <Link href="/community/voices" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
-                  Community travel stories
+                <Link href="/reviews" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
+                  Community travel reviews
                 </Link>
               </div>
             </div>

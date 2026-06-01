@@ -11,7 +11,6 @@ const resolveLabel = (path: string) => {
   if (path === "/explore") return "Explore";
   if (path === "/pakistan-dmc") return "Pakistan DMC";
   if (path === "/about-3musafir") return "About 3Musafir";
-  if (path === "/community/voices") return "Community Voices";
   if (path === "/reviews") return "Reviews";
   if (path === "/why") return "Why 3Musafir";
   if (path === "/musafircommunityequityframework") return "Community Framework";

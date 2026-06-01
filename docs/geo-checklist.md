@@ -15,7 +15,6 @@
 - [ ] /about-3musafir has definition block + AI summary
 - [ ] /trust hub links to verification, vendor onboarding, travel education
 - [ ] Trust pages include "how it works" and "what we do / don’t do"
-- [ ] /community/voices includes disclaimer and paraphrased themes
 
 ## Internal Linking
 - [ ] Trip details link to /trust and /about-3musafir

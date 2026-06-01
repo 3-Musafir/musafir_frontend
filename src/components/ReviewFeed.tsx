@@ -280,14 +280,14 @@ export default function ReviewFeed() {
   };
 
   return (
-    <section className="min-h-screen bg-gray-50 pb-16">
-      <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 xl:px-10">
-        <header className="pt-10 lg:pt-12">
+    <section className="pb-16">
+      <div className="max-w-full">
+        <header className="pt-4 lg:pt-6">
           <h2 className="text-3xl font-semibold text-heading sm:text-4xl">
-            If youre wondering
+            If you are wondering
           </h2>
           <p className="mt-2 text-base text-text sm:text-lg">
-            Youre probably not the first. Heres what real Musafirs said.
+            You are probably not the first. Heres what real Musafirs said.
           </p>
           <p className="mt-3 text-sm text-text-light">
             These questions came from real Musafirs before their first trip.
@@ -347,7 +347,7 @@ export default function ReviewFeed() {
         </section>
       </div>
 
-      <div className="sticky top-0 z-20">
+      <div className="sticky top-0 z-20 mt-6">
         <QuestionSelector
           questions={QUESTIONS}
           selectedId={selectedQuestionId}
@@ -357,7 +357,7 @@ export default function ReviewFeed() {
         />
       </div>
 
-      <div className="mx-auto mt-6 max-w-6xl px-4 md:px-6 lg:px-8 xl:px-10">
+      <div className="mt-4 max-w-full">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-text-light">{contextLine}</p>
           {showClosestExperiencesLabel ? (

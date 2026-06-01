@@ -32,7 +32,6 @@ const footerSections: FooterSection[] = [
     links: [
       { label: 'About 3Musafir', href: '/about-3musafir' },
       { label: 'Trust & Safety Hub', href: '/trust' },
-      { label: 'Community Voices', href: '/community/voices' },
       { label: 'Community Framework', href: '/musafircommunityequityframework' },
     ],
   },

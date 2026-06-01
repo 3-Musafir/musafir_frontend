@@ -14,6 +14,7 @@ const API_BASE = (process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "").
 
 const STATIC_ROUTES = [
   "/",
+  "/fixed-departure",
   "/explore",
   "/reviews",
   "/why",
@@ -24,7 +25,6 @@ const STATIC_ROUTES = [
   "/trust/verification",
   "/trust/vendor-onboarding",
   "/trust/travel-education",
-  "/community/voices",
   "/musafircommunityequityframework",
 
   // DMC pillar and child pages
@@ -92,6 +92,7 @@ const fetchFlagships = async (endpoint: string) => {
 
 const priorityForRoute = (route: string) => {
   if (route === "/") return "1.0";
+  if (route === "/fixed-departure") return "0.9";
   if (route === "/pakistan-dmc") return "0.95";
   if (route.startsWith("/pakistan-dmc/")) return "0.85";
   if (["/explore", "/reviews", "/why", "/trust"].includes(route)) return "0.85";
@@ -99,7 +100,7 @@ const priorityForRoute = (route: string) => {
 };
 
 const changeFreqForRoute = (route: string) => {
-  if (route === "/" || route === "/explore") return "weekly";
+  if (route === "/" || route === "/fixed-departure" || route === "/explore") return "weekly";
   if (route.startsWith("/pakistan-dmc")) return "weekly";
   return "monthly";
 };

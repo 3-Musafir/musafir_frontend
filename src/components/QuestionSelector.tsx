@@ -16,13 +16,13 @@ export default function QuestionSelector({
   onToggleShowAll,
 }: QuestionSelectorProps) {
   return (
-    <div className="frosted border-y border-canvas-line px-4 md:px-6 lg:px-8 xl:px-10 py-4">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-2">
+    <div className="frosted rounded-2xl border border-canvas-line px-4 py-4 md:px-5">
+      <div className="mx-auto flex max-w-6xl min-w-0 flex-col gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => onSelect(EXPLORING_ID)}
-            className={`rounded-full border px-4 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
+            className={`max-w-full rounded-full border px-4 py-2 text-left text-xs font-semibold leading-snug transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
               selectedId === EXPLORING_ID
                 ? "border-brand-primary bg-brand-primary-light text-heading"
                 : "border-canvas-line bg-white text-text"
@@ -37,7 +37,7 @@ export default function QuestionSelector({
                 key={question.id}
                 type="button"
                 onClick={() => onSelect(question.id)}
-                className={`rounded-full border px-4 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
+                className={`max-w-full rounded-full border px-4 py-2 text-left text-xs font-semibold leading-snug transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
                   selectedId === question.id
                     ? "border-brand-primary bg-brand-primary-light text-heading"
                     : "border-canvas-line bg-white text-text"
@@ -52,7 +52,7 @@ export default function QuestionSelector({
           <button type="button" onClick={onToggleShowAll} className="md:hidden">
             {showAll ? "See fewer" : "See more"}
           </button>
-          <button type="button" onClick={onToggleShowAll} className="text-text">
+          <button type="button" onClick={onToggleShowAll} className="text-text md:ml-0">
             Change question
           </button>
         </div>

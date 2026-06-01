@@ -180,8 +180,8 @@ export default function Explore() {
               <Link href="/pakistan-dmc" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
                 Pakistan DMC services
               </Link>
-              <Link href="/community/voices" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
-                Community travel stories
+              <Link href="/reviews" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
+                Community travel reviews
               </Link>
             </div>
           </section>
@@ -422,10 +422,10 @@ export default function Explore() {
                       href: '/',
                     },
                     {
-                      title: 'Join the community',
+                      title: 'Community framework',
                       description:
                         'Be part of conversations, meetups, and city-based groups where Musafirs connect beyond just trips.',
-                      href: '/community/voices',
+                      href: '/musafircommunityequityframework',
                     },
                     {
                       title: 'Read Musafir reviews',
