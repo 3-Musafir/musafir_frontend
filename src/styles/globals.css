@@ -370,3 +370,27 @@ h2 {
   padding: 0.15rem 0.35rem;
   border-radius: 0.25rem;
 }
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.review-orb-frame {
+  overflow: visible;
+  filter: drop-shadow(0 24px 34px rgba(148, 61, 0, 0.22))
+    drop-shadow(0 32px 70px rgba(255, 144, 0, 0.24));
+}
+
+.review-orb-frame::after {
+  content: "";
+  position: absolute;
+  inset: 70% 17% 6%;
+  z-index: -1;
+  border-radius: 9999px;
+  background: radial-gradient(ellipse at center, rgba(126, 54, 0, 0.2), transparent 68%);
+  filter: blur(10px);
+  pointer-events: none;
+}

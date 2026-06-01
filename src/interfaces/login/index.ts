@@ -8,7 +8,14 @@ interface VerificationSubSchema {
     VerificationRequestDate?: Date;
     RequestCall: boolean;
   }
-  
+
+interface ReviewPreferences {
+  preferredReviewIds: string[];
+  questionTags: string[];
+  personaTags: string[];
+  updatedAt?: string;
+}
+
   export interface User {
     fullName: string;
     email?: string;
@@ -30,5 +37,6 @@ interface VerificationSubSchema {
     emailVerified?: boolean;
     verification?: VerificationSubSchema;
     verificationStats?: { verifiedByMe: number };
+    reviewPreferences?: ReviewPreferences;
   }
   

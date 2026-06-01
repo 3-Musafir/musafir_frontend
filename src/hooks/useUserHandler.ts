@@ -1,6 +1,10 @@
 import api from "@/lib/api";
 import apiEndpoints from "../config/apiEndpoints";
 import { User } from "../interfaces/login";
+import type {
+  ReviewPreferences,
+  ReviewPreferencesUpdate,
+} from "@/lib/reviewPreferences";
 
 interface ResetPasswordData {
   email: string;
@@ -44,6 +48,18 @@ const useUserHandler = () => {
     return res.data;
   };
 
+  const getReviewPreferences = async (): Promise<ReviewPreferences> => {
+    const res = await api.get(USER.GET_REVIEW_PREFERENCES);
+    return res.data;
+  };
+
+  const updateReviewPreferences = async (
+    data: ReviewPreferencesUpdate
+  ): Promise<ReviewPreferences> => {
+    const res = await api.patch(USER.UPDATE_REVIEW_PREFERENCES, data);
+    return res.data;
+  };
+
   const resetPassword = async (
     data: ResetPasswordData
   ): Promise<{ message: string }> => {
@@ -55,6 +71,8 @@ const useUserHandler = () => {
     getMe,
     getVerificationStatus,
     updateUser,
+    getReviewPreferences,
+    updateReviewPreferences,
     resetPassword,
   };
 };
