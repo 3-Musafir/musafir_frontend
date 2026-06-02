@@ -136,6 +136,7 @@ const handleResponse = async (response: any) => {
 // **Handle non-auth errors globally**
 const handleError = async (error: any) => {
   let errorMessage = 'An error occurred';
+  const suppressGlobalError = error?.config?.suppressGlobalError === true;
 
   if (error?.response) {
     errorMessage = error.response.data?.message || errorMessage;
@@ -149,10 +150,14 @@ const handleError = async (error: any) => {
   } else if (error?.request) {
     if (error.code === 'ECONNABORTED') {
       errorMessage = 'Request timed out. Check your connection or try with smaller files.';
-      showAlert(errorMessage, 'error');
+      if (!suppressGlobalError) {
+        showAlert(errorMessage, 'error');
+      }
     } else {
       errorMessage = 'No response from server. Please try again.';
-      showAlert(errorMessage, 'error');
+      if (!suppressGlobalError) {
+        showAlert(errorMessage, 'error');
+      }
     }
     console.error('API Request Error:', {
       url: error.config?.url,
@@ -175,8 +180,8 @@ const handleError = async (error: any) => {
 
 // Define API functions
 const apiService = {
-  get: (url: string, params = {}, headers = {}) =>
-    axiosInstance.get(url, { headers, params }).then(handleResponse).catch(handleError),
+  get: (url: string, params = {}, headers = {}, config: any = {}) =>
+    axiosInstance.get(url, { headers, params, ...config }).then(handleResponse).catch(handleError),
 
   post: (url: string, data = {}, config: any = {}) =>
     axiosInstance.post(url, data, config).then(handleResponse).catch(handleError),

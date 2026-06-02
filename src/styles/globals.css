@@ -394,3 +394,15 @@ h2 {
   filter: blur(10px);
   pointer-events: none;
 }
+
+.brand-sphere-text h1,
+.brand-sphere-text h2,
+.brand-sphere-text p {
+  transition: color 600ms ease;
+}
+
+.brand-sphere-popped .brand-sphere-text h1,
+.brand-sphere-popped .brand-sphere-text h2,
+.brand-sphere-popped .brand-sphere-text p {
+  color: #2a2b3f !important;
+}

@@ -39,4 +39,3 @@ interface ReviewPreferences {
     verificationStats?: { verifiedByMe: number };
     reviewPreferences?: ReviewPreferences;
   }
-  

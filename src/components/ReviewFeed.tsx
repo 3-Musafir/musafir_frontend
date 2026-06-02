@@ -19,7 +19,6 @@ import QuestionSelector from "@/components/QuestionSelector";
 import useUserHandler from "@/hooks/useUserHandler";
 import {
   EMPTY_REVIEW_PREFERENCES,
-  areReviewPreferencesEqual,
   buildPreferenceFromReview,
   hasUnsyncedLocalPreferences,
   loadLocalReviewPreferences,
@@ -341,12 +340,10 @@ export default function ReviewFeed() {
         const serverPreferences = normalizeReviewPreferences(
           await preferenceApiRef.current.getReviewPreferences()
         );
-        const mergedPreferences = mergeReviewPreferences(localPreferences, serverPreferences);
-        const shouldPersistMergedPreferences =
-          hasUnsyncedLocalPreferences(localPreferences) ||
-          !areReviewPreferencesEqual(mergedPreferences, serverPreferences);
+        const hasLocalChanges = hasUnsyncedLocalPreferences(localPreferences);
 
-        if (shouldPersistMergedPreferences) {
+        if (hasLocalChanges) {
+          const mergedPreferences = mergeReviewPreferences(localPreferences, serverPreferences);
           const savedPreferences = normalizeReviewPreferences(
             await preferenceApiRef.current.updateReviewPreferences(
               toReviewPreferencesUpdate(mergedPreferences)
@@ -360,7 +357,7 @@ export default function ReviewFeed() {
           return;
         }
 
-        const syncedPreferences = markReviewPreferencesSynced(mergedPreferences);
+        const syncedPreferences = markReviewPreferencesSynced(serverPreferences);
         saveLocalReviewPreferences(syncedPreferences);
         if (!cancelled) setReviewPreferences(syncedPreferences);
       } catch {

@@ -29,12 +29,12 @@ export default function CompanyProfileHero({
   return (
     <BrandSphere3D
       className={cn(
-        "relative overflow-visible p-6",
+        "relative grid place-items-center overflow-hidden px-6 py-12 md:py-14",
         className,
       )}
-      contentClassName="flex flex-col items-center text-center space-y-4"
+      contentClassName="flex flex-col items-center text-center space-y-2.5 max-w-[17rem] md:max-w-[18.5rem]"
     >
-      <div className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden bg-transparent shadow-none">
+      <div className="h-[4.5rem] w-[4.5rem] md:h-20 md:w-20 rounded-full flex items-center justify-center overflow-hidden bg-transparent shadow-none">
         {loading ? (
           <Skeleton className="h-16 w-16 rounded-full" />
         ) : companyProfile?.logoUrl ? (
@@ -55,9 +55,9 @@ export default function CompanyProfileHero({
           />
         )}
       </div>
-      <div className="space-y-2 max-w-3xl">
-        <TitleTag className="text-3xl font-bold text-white leading-tight">{title}</TitleTag>
-        <p className="text-base text-white/90 max-w-xs mx-auto">{description}</p>
+      <div className="space-y-2">
+        <TitleTag className="text-2xl md:text-[1.7rem] font-bold text-[#2a2b3f] leading-tight">{title}</TitleTag>
+        <p className="text-sm md:text-[0.95rem] text-[#2a2b3f] leading-relaxed">{description}</p>
       </div>
     </BrandSphere3D>
   );

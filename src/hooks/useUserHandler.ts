@@ -49,14 +49,21 @@ const useUserHandler = () => {
   };
 
   const getReviewPreferences = async (): Promise<ReviewPreferences> => {
-    const res = await api.get(USER.GET_REVIEW_PREFERENCES);
+    const res = await api.get(
+      USER.GET_REVIEW_PREFERENCES,
+      {},
+      {},
+      { suppressGlobalError: true }
+    );
     return res.data;
   };
 
   const updateReviewPreferences = async (
     data: ReviewPreferencesUpdate
   ): Promise<ReviewPreferences> => {
-    const res = await api.patch(USER.UPDATE_REVIEW_PREFERENCES, data);
+    const res = await api.patch(USER.UPDATE_REVIEW_PREFERENCES, data, {
+      suppressGlobalError: true,
+    });
     return res.data;
   };
 

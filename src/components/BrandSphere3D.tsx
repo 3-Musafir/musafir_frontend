@@ -66,8 +66,11 @@ export default function BrandSphere3D({
   const [canRender, setCanRender] = useState(true);
   const [textVisible, setTextVisible] = useState(false);
   const [skipAnimation, setSkipAnimation] = useState(false);
+  const [bubblePopped, setBubblePopped] = useState(false);
+  const [contentSize, setContentSize] = useState({ width: 360, height: 260 });
   const timeoutRef = useRef<number | null>(null);
   const startedRef = useRef(false);
+  const contentRef = useRef<HTMLDivElement | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
 
   const enableParallax = useMemo(() => {
@@ -83,6 +86,32 @@ export default function BrandSphere3D({
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!contentRef.current || typeof window === "undefined") return undefined;
+
+    const node = contentRef.current;
+    const updateSize = () => {
+      const rect = node.getBoundingClientRect();
+      setContentSize({
+        width: Math.max(280, rect.width),
+        height: Math.max(190, rect.height),
+      });
+    };
+
+    updateSize();
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", updateSize);
+      return () => window.removeEventListener("resize", updateSize);
+    }
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     const supported = supportsWebGL();
     setCanRender(supported);
@@ -118,24 +147,41 @@ export default function BrandSphere3D({
   };
 
   return (
-    <section className={cn("relative overflow-visible", className)}>
+    <section
+      className={cn(
+        "relative overflow-hidden brand-sphere-shell",
+        bubblePopped && "brand-sphere-popped",
+        className,
+      )}
+    >
       <noscript>
         <style>{`.brand-sphere-text{opacity:1!important;transform:none!important;}`}</style>
       </noscript>
       {canRender ? (
-        <div aria-hidden="true" className="absolute -inset-x-6 -inset-y-8">
+        <div
+          aria-hidden="true"
+          className="absolute -inset-y-20 left-1/2 -translate-x-1/2"
+          style={{ width: "min(100vw, calc(100% + 8rem))" }}
+        >
           <BrandSphereCanvas
             reducedMotion={prefersReducedMotion}
             enableParallax={enableParallax}
             onFormationComplete={handleFormationComplete}
+            onBubblePop={() => setBubblePopped(true)}
             shouldAnimate={!prefersReducedMotion && !skipAnimation}
+            contentSize={contentSize}
           />
         </div>
       ) : null}
       <div
+        ref={contentRef}
         className={cn(
-          "brand-sphere-text relative z-10 pointer-events-none transition-all duration-800 ease-out",
-          textVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2",
+          "brand-sphere-text relative z-10 mx-auto w-fit max-w-full pointer-events-none transition-all duration-800 ease-out",
+          textVisible
+            ? bubblePopped
+              ? "opacity-100 -translate-y-6 md:-translate-y-8"
+              : "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-2",
           contentClassName,
         )}
       >
