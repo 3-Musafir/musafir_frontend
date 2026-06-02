@@ -15,11 +15,13 @@ type BrandSphereCanvasProps = {
   };
 };
 
-type WavePoint = {
+type MountainPoint = {
   u: number;
-  lane: number;
+  v: number;
+  x: number;
+  depth: number;
+  height: number;
   phase: number;
-  amp: number;
   tone: number;
 };
 
@@ -34,15 +36,14 @@ type SphereNetwork = {
   rimColors: Float32Array;
 };
 
-const WAVE_COLUMNS = 164;
-const WAVE_ROWS = 54;
-const WAVE_COUNT = WAVE_COLUMNS * WAVE_ROWS;
+const MOUNTAIN_COLUMNS = 304;
+const MOUNTAIN_ROWS = 122;
+const MOUNTAIN_COUNT = MOUNTAIN_COLUMNS * MOUNTAIN_ROWS;
 const SPHERE_COLUMNS = 48;
 const SPHERE_ROWS = 26;
 const SPHERE_SURFACE_COUNT = SPHERE_COLUMNS * SPHERE_ROWS;
 const SPHERE_OUTER_CLUSTERS = 6;
 const SPHERE_OUTER_POINTS_PER_CLUSTER = 6;
-const SPHERE_OUTER_COUNT = SPHERE_OUTER_CLUSTERS * SPHERE_OUTER_POINTS_PER_CLUSTER;
 const BRAND_ORANGE = new THREE.Color("#fd6705");
 const SOFT_ORANGE = new THREE.Color("#ff9000");
 const PALE_ORANGE = new THREE.Color("#ffd6a3");
@@ -57,30 +58,84 @@ const seeded = (value: number) => {
   return result - Math.floor(result);
 };
 
-const createWavePoints = () =>
-  Array.from({ length: WAVE_COUNT }, (_, index): WavePoint => {
-    const column = index % WAVE_COLUMNS;
-    const row = Math.floor(index / WAVE_COLUMNS);
-    const u = column / (WAVE_COLUMNS - 1);
-    const v = row / (WAVE_ROWS - 1);
-    const centerWeight = 1 - Math.abs(v - 0.5) * 2;
+const mountainPeak = (
+  x: number,
+  z: number,
+  peakX: number,
+  peakZ: number,
+  widthX: number,
+  widthZ: number,
+  height: number,
+) => {
+  const dx = (x - peakX) / widthX;
+  const dz = (z - peakZ) / widthZ;
+
+  return Math.exp(-(dx * dx + dz * dz)) * height;
+};
+
+const createMountainPoints = () =>
+  Array.from({ length: MOUNTAIN_COUNT }, (_, index): MountainPoint => {
+    const column = index % MOUNTAIN_COLUMNS;
+    const row = Math.floor(index / MOUNTAIN_COLUMNS);
+    const u = column / (MOUNTAIN_COLUMNS - 1);
+    const v = row / (MOUNTAIN_ROWS - 1);
+    const rawX = THREE.MathUtils.lerp(-1, 1, u);
+    const x = Math.sign(rawX) * Math.pow(Math.abs(rawX), 0.72);
+    const z = THREE.MathUtils.lerp(-1, 1, v);
+    const centerValley = Math.exp(-(x * x) / 0.055) * Math.exp(-(z * z) / 0.92);
+    const centerClear = 1 - centerValley * 0.92;
+    const sideMass = Math.pow(Math.abs(x), 0.9);
+    const nearMass = Math.pow(1 - v, 0.72);
+    const ridge =
+      mountainPeak(x, z, -0.98, -0.55, 0.1, 0.34, 2.05) +
+      mountainPeak(x, z, -0.9, 0.08, 0.13, 0.66, 2.18) +
+      mountainPeak(x, z, -0.73, 0.5, 0.11, 0.42, 1.65) +
+      mountainPeak(x, z, -0.54, -0.34, 0.12, 0.34, 1.38) +
+      mountainPeak(x, z, 0.54, -0.44, 0.12, 0.42, 1.48) +
+      mountainPeak(x, z, 0.72, 0.22, 0.11, 0.5, 1.72) +
+      mountainPeak(x, z, 0.9, -0.12, 0.12, 0.58, 2.02) +
+      mountainPeak(x, z, 0.98, 0.54, 0.09, 0.42, 1.9);
+    const distantRange =
+      mountainPeak(x, z, -0.72, 0.82, 0.18, 0.22, 0.72) +
+      mountainPeak(x, z, -0.28, 0.76, 0.2, 0.24, 0.58) +
+      mountainPeak(x, z, 0.24, 0.78, 0.22, 0.22, 0.62) +
+      mountainPeak(x, z, 0.74, 0.82, 0.18, 0.22, 0.76);
+    const troughs =
+      mountainPeak(x, z, -0.24, -0.04, 0.16, 0.68, 0.58) +
+      mountainPeak(x, z, 0.22, 0.02, 0.18, 0.72, 0.54) +
+      centerValley * 0.96;
+    const strata =
+      Math.sin(x * 16.4 + z * 4.8) * 0.095 +
+      Math.cos(z * 17.2 - x * 3.8) * 0.07 +
+      Math.sin((x + z) * 23.0) * 0.035 +
+      (seeded(index * 3.91) - 0.5) * 0.055;
+    const ridgeHeight =
+      (ridge * centerClear + distantRange * 0.88) *
+      (0.52 + sideMass * 0.92 + nearMass * 0.28);
+    const baseSlope = 0.06 + nearMass * 0.16 + sideMass * 0.12;
+    const height = THREE.MathUtils.clamp(ridgeHeight - troughs + strata + baseSlope, 0, 2.35);
 
     return {
       u,
-      lane: THREE.MathUtils.lerp(-0.5, 0.5, v),
-      phase: u * Math.PI * 4.2 + v * Math.PI * 0.95,
-      amp: 0.78 + centerWeight * 0.34 + seeded(index * 4.91) * 0.04,
-      tone: THREE.MathUtils.clamp(0.18 + u * 0.52 + centerWeight * 0.24, 0, 1),
+      v,
+      x,
+      depth: z,
+      height,
+      phase: x * Math.PI * 2.4 + z * Math.PI * 2.1,
+      tone: THREE.MathUtils.clamp(0.12 + height * 0.58 + (1 - v) * 0.2, 0, 1),
     };
   });
 
-const createWaveColors = (points: WavePoint[]) => {
-  const colors = new Float32Array(WAVE_COUNT * 3);
+const createMountainColors = (points: MountainPoint[]) => {
+  const colors = new Float32Array(MOUNTAIN_COUNT * 3);
 
   points.forEach((point, index) => {
-    const color = BRAND_ORANGE.clone().lerp(SOFT_ORANGE, point.tone * 0.7);
-    if (point.tone > 0.86) {
-      color.lerp(PALE_ORANGE, 0.4);
+    const color = BRAND_ORANGE.clone().lerp(SOFT_ORANGE, point.tone * 0.55);
+    if (point.height > 0.78) {
+      color.lerp(PALE_ORANGE, 0.42);
+    }
+    if (point.height > 1.02) {
+      color.lerp(WARM_WHITE, 0.34);
     }
 
     colors[index * 3] = color.r;
@@ -334,9 +389,9 @@ function BubbleHeroCore({
   const doneRef = useRef(false);
   const timeRef = useRef(0);
 
-  const wavePoints = useMemo(createWavePoints, []);
-  const wavePositions = useMemo(() => new Float32Array(WAVE_COUNT * 3), []);
-  const waveColors = useMemo(() => createWaveColors(wavePoints), [wavePoints]);
+  const wavePoints = useMemo(createMountainPoints, []);
+  const wavePositions = useMemo(() => new Float32Array(MOUNTAIN_COUNT * 3), []);
+  const waveColors = useMemo(() => createMountainColors(wavePoints), [wavePoints]);
   const sphereNetwork = useMemo(createSphereNetwork, []);
 
   const handleBubbleClick = useCallback(
@@ -417,30 +472,52 @@ function BubbleHeroCore({
     if (networkFaceMaterialRef.current) {
       networkFaceMaterialRef.current.opacity = 0.11 * bubbleOpacity;
     }
-    const waveAge = popAge - 0.1;
-    const waveReveal = reducedMotion ? 0 : easeOutCubic(waveAge / 1.55);
-    const waveSettle = easeOutCubic(Math.max(0, waveAge - 0.55) / 1.8);
+    const waveAge = popAge - 0.12;
+    const waveReveal = reducedMotion ? 0 : easeOutCubic(waveAge / 1.65);
+    const waveSettle = easeOutCubic(Math.max(0, waveAge - 0.55) / 1.9);
     const centerY = -0.1;
-    const waveWorldWidth = Math.max(viewport.width * 0.96, 5.4);
-    const waveBaseY = -Math.max(0.48, Math.min(0.68, adaptiveY * 0.26));
+    const mountainWorldWidth = compactCanvas
+      ? Math.max(viewport.width * 1.34, 4.85)
+      : Math.max(viewport.width * 1.18, 7.2);
+    const mountainDepth = compactCanvas
+      ? Math.max(2.2, Math.min(3.05, viewport.height * 0.62))
+      : Math.max(3.15, Math.min(4.85, viewport.height * 0.76));
+    const mountainBaseY = compactCanvas
+      ? -Math.max(0.82, Math.min(1.02, adaptiveY * 0.48))
+      : -Math.max(1.02, Math.min(1.34, adaptiveY * 0.58));
+    const peakScale = compactCanvas ? 0.68 : 1.04;
+    const valleyCut = compactCanvas ? 0.34 : 0.52;
 
     wavePoints.forEach((point, index) => {
-      const finalX = THREE.MathUtils.lerp(-waveWorldWidth / 2, waveWorldWidth / 2, point.u);
+      const depthPerspective = THREE.MathUtils.lerp(
+        compactCanvas ? 1.08 : 1.22,
+        compactCanvas ? 0.72 : 0.54,
+        point.v,
+      );
+      const terrainX =
+        THREE.MathUtils.lerp(-mountainWorldWidth / 2, mountainWorldWidth / 2, (point.x + 1) / 2) *
+        depthPerspective;
+      const terrainZ = THREE.MathUtils.lerp(mountainDepth * 0.72, -mountainDepth * 0.64, point.v);
+      const distanceFromCenter = Math.hypot((point.u - 0.5) * 1.35, (point.v - 0.52) * 0.95);
       const distanceDelay =
-        Math.abs(point.u - 0.5) * 1.25 +
-        Math.abs(point.lane) * 0.28;
-      const localReveal = easeOutCubic((waveAge - distanceDelay) / 1.35);
-      const stream =
-        Math.sin(finalX * 1.3 + elapsed * 0.36 + point.phase) * 0.15 * point.amp +
-        Math.sin(finalX * 2.45 + point.lane * 4.8 + elapsed * 0.24) * 0.075;
-      const ridge =
-        Math.sin((finalX + point.lane * 1.6) * 2.05 + elapsed * 0.18 + point.phase) *
-        0.07 *
-        waveSettle;
-      const finalY = waveBaseY + point.lane * 0.28 + stream + ridge;
+        distanceFromCenter * 1.25 +
+        Math.abs(point.depth) * 0.18;
+      const localReveal = easeOutCubic((waveAge - distanceDelay) / 1.4);
+      const terrainBreath =
+        Math.sin(elapsed * 0.22 + point.phase) * 0.035 +
+        Math.cos(elapsed * 0.16 + point.phase * 0.7) * 0.02;
+      const finalX =
+        terrainX +
+        Math.sin(point.depth * 4.7 + elapsed * 0.11) * 0.045 * waveSettle;
+      const finalY =
+        mountainBaseY +
+        point.height * peakScale +
+        (1 - point.v) * (compactCanvas ? 0.14 : 0.28) +
+        terrainBreath * waveSettle -
+        Math.exp(-Math.pow((point.u - 0.5) / 0.2, 2)) * valleyCut;
       const finalZ =
-        point.lane * 0.52 +
-        Math.sin(finalX * 1.05 + point.phase + elapsed * 0.16) * 0.08;
+        terrainZ +
+        Math.sin(terrainX * 0.95 + point.phase + elapsed * 0.12) * 0.13 * waveSettle;
       const originPull = 1 - localReveal;
 
       wavePositions[index * 3] = finalX * localReveal;
@@ -453,8 +530,10 @@ function BubbleHeroCore({
       wavePositionAttribute.needsUpdate = true;
     }
     if (waveMaterialRef.current) {
-      waveMaterialRef.current.opacity = 0.86 * waveReveal;
-      waveMaterialRef.current.size = 0.008 + waveReveal * 0.009;
+      waveMaterialRef.current.opacity = (compactCanvas ? 0.92 : 0.98) * waveReveal;
+      waveMaterialRef.current.size =
+        (compactCanvas ? 0.007 : 0.0072) +
+        waveReveal * (compactCanvas ? 0.0075 : 0.0094);
     }
 
     if (sceneGroupRef.current) {
