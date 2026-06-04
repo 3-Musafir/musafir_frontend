@@ -5,7 +5,17 @@ import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import { useMemo } from "react";
 import { useRouter } from "next/router";
-import { contactPoints, defaultDescription, defaultTitle, logoUrl, sameAs, siteName, siteUrl as baseSiteUrl } from "@/lib/seo/seoConfig";
+import {
+  contactPoints,
+  defaultDescription,
+  defaultTitle,
+  isIndexablePath,
+  logoUrl,
+  normalizeSeoPath,
+  sameAs,
+  siteName,
+  siteUrl as baseSiteUrl,
+} from "@/lib/seo/seoConfig";
 import { RecoilRoot } from "recoil";
 import AlertContainer from "./alert";
 import { Toaster } from "@/components/ui/toaster";
@@ -201,39 +211,6 @@ const authStandalonePrefixes = ["/signup", "/signup-dark", "/musafir-signup"];
 
 const publicStandaloneRoutes = ["/fixed-departure", "/flagship/details"];
 
-const noindexRoutes = [
-  "/auth-callback",
-  "/change-password",
-  "/feedback",
-  "/forgot-password",
-  "/launch",
-  "/login",
-  "/reset-password",
-  "/unauthorized",
-  "/vendor-onboarding",
-  "/verification",
-  "/flagship/flagship-requirement",
-  "/flagship/flagshipRequirement-dark",
-];
-
-const noindexRoutePrefixes = [
-  "/admin",
-  "/dashboard",
-  "/flagship/create",
-  "/flagship/payment",
-  "/flagship/seats",
-  "/home",
-  "/musafir",
-  "/musafir-signup",
-  "/notifications",
-  "/passport",
-  "/referrals",
-  "/signup",
-  "/signup-dark",
-  "/userSettings",
-  "/wallet",
-];
-
 const publicShellRoutes = [
   "/about-3musafir",
   "/explore",
@@ -268,9 +245,7 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [router.pathname]);
 
   const siteUrl = baseSiteUrl;
-  const rawPath = (router.asPath || "/").split("?")[0].split("#")[0] || "/";
-  const normalizedPath =
-    rawPath !== "/" && rawPath.endsWith("/") ? rawPath.slice(0, -1) : rawPath;
+  const normalizedPath = normalizeSeoPath(router.asPath || "/");
   const canonicalUrl = `${siteUrl}${normalizedPath === "/" ? "" : normalizedPath}`;
 
   const matchedSeo = SEO_MAP[normalizedPath];
@@ -278,9 +253,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const description = matchedSeo?.description || DEFAULT_DESCRIPTION;
   const ogImagePath = matchedSeo?.ogImage || DEFAULT_OG_IMAGE;
   const ogImage = `${siteUrl}${ogImagePath.startsWith("/") ? "" : "/"}${ogImagePath}`;
-  const shouldNoindex =
-    noindexRoutes.includes(normalizedPath) ||
-    noindexRoutePrefixes.some((prefix) => matchesRoutePrefix(normalizedPath, prefix));
+  const shouldNoindex = !isIndexablePath(normalizedPath);
 
   return (
     <>
@@ -327,6 +300,11 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta
           key="robots"
           name="robots"
+          content={shouldNoindex ? "noindex,follow" : "index,follow"}
+        />
+        <meta
+          key="googlebot"
+          name="googlebot"
           content={shouldNoindex ? "noindex,follow" : "index,follow"}
         />
         <script

@@ -4,7 +4,7 @@ import FounderHeroFallback from "@/components/founderportfolio/FounderHeroFallba
 import SkillTiles from "@/components/founderportfolio/SkillTiles";
 import ImageCarousel from "@/components/founderportfolio/ImageCarousel";
 import FaqAccordion from "@/components/founderportfolio/FaqAccordion";
-import { siteUrl as baseSiteUrl } from "@/lib/seo/seoConfig";
+import { isIndexablePath, siteUrl as baseSiteUrl } from "@/lib/seo/seoConfig";
 
 const title = "Founder Portfolio - 3Musafir";
 const description =
@@ -159,7 +159,10 @@ export default function FounderPortfolioPage() {
         <title>{title}</title>
         <meta name="description" content={description} />
         <meta name="keywords" content={keywords} />
-        <meta name="robots" content="index, follow" />
+        <meta
+          name="robots"
+          content={isIndexablePath(canonicalPath) ? "index, follow" : "noindex, follow"}
+        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />

@@ -1,5 +1,10 @@
 import { DefaultSeoProps, FAQPageJsonLd, NextSeo, WebPageJsonLd } from "next-seo";
-import { buildCanonical, siteName, toAbsoluteUrl } from "@/lib/seo/seoConfig";
+import {
+  buildCanonical,
+  isIndexablePath,
+  siteName,
+  toAbsoluteUrl,
+} from "@/lib/seo/seoConfig";
 
 export type FaqItem = { question: string; answer: string };
 
@@ -21,6 +26,7 @@ export default function SeoHead({
   faqItems,
 }: SeoHeadProps) {
   const canonicalUrl = buildCanonical(canonicalPath);
+  const shouldNoindex = noindex ?? !isIndexablePath(canonicalPath);
   const imageUrl = toAbsoluteUrl(ogImage);
   const openGraph: DefaultSeoProps["openGraph"] = {
     type: "website",
@@ -38,8 +44,8 @@ export default function SeoHead({
         title={title}
         description={description}
         canonical={canonicalUrl}
-        noindex={noindex}
-        nofollow={noindex}
+        noindex={shouldNoindex}
+        nofollow={false}
         openGraph={openGraph}
         twitter={{
           cardType: "summary_large_image",

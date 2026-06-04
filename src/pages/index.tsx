@@ -21,9 +21,8 @@ import {
 
 import {
   specialInterestFestivals,
-  specialInterestFestivalRoutes,
 } from '@/components/dmc/specialInterestFestivalContent';
-import { siteName, siteUrl } from '@/lib/seo/seoConfig';
+import { INDEXABLE_PATHS, siteName, siteUrl } from '@/lib/seo/seoConfig';
 
 type HubLink = {
   href: string;
@@ -196,6 +195,11 @@ const hubSections: HubSection[] = [
         description: 'Founder profile and work.',
       },
       {
+        href: '/login',
+        label: 'Login',
+        description: 'Account access for Musafirs.',
+      },
+      {
         href: '/founderportfolio/biography',
         label: 'Founder biography',
         description: 'Long-form biography and background.',
@@ -214,28 +218,7 @@ const hubSections: HubSection[] = [
   },
 ];
 
-const expectedStaticRoutes = new Set([
-  '/',
-  '/fixed-departure',
-  '/explore',
-  '/reviews',
-  '/why',
-  '/about-3musafir',
-  '/founderportfolio',
-  '/founderportfolio/biography',
-  '/trust',
-  '/trust/verification',
-  '/trust/vendor-onboarding',
-  '/trust/travel-education',
-  '/musafircommunityequityframework',
-  '/pakistan-dmc',
-  '/pakistan-dmc/tours/hunza',
-  '/pakistan-dmc/tours/skardu',
-  '/pakistan-dmc/tours/chitral',
-  '/pakistan-dmc/tours/k2-basecamp-trek',
-  '/pakistan-dmc/special-interests/festivals-of-pakistan',
-  ...specialInterestFestivalRoutes,
-]);
+const expectedStaticRoutes = new Set(INDEXABLE_PATHS);
 
 const linkedRoutes = new Set(
   hubSections.flatMap((section) => section.links.map((link) => link.href))
@@ -378,13 +361,12 @@ export default function PublicHomePage() {
                   Public route hub
                 </p>
                 <h2 className="mt-4 text-3xl font-semibold leading-tight text-[#171717] sm:text-4xl">
-                  Everything indexable, one clear path in.
+                  Main public paths, one clear way in.
                 </h2>
               </div>
               <p className="text-base leading-8 text-[#5f625f]">
-                Browse the public 3Musafir pages currently meant for search discovery, from fixed
-                departures and traveler trust to Pakistan DMC itineraries and special-interest
-                festival products.
+                Browse the main 3Musafir entry points and supporting reference pages, from fixed
+                departures and traveler trust to Pakistan DMC information and company policies.
               </p>
             </div>
 

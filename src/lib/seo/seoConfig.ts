@@ -4,6 +4,32 @@ export const defaultTitle = "3Musafir | Pakistan Group Tours & Women-First Trave
 export const defaultDescription =
   "3Musafir is a Pakistan-based travel company offering community-led group tours, women-first travel experiences, customized trips, international group trips, and inbound DMC services for foreign travel agencies.";
 export const logoUrl = `${siteUrl}/3mwinterlogo.png`;
+
+export const INDEXABLE_PATHS = [
+  "/fixed-departure",
+  "/explore",
+  "/reviews",
+  "/why",
+  "/about-3musafir",
+  "/founderportfolio",
+  "/trust",
+  "/musafircommunityequityframework",
+  "/pakistan-dmc",
+  "/login",
+] as const;
+
+const indexablePathSet = new Set<string>(INDEXABLE_PATHS);
+
+export const normalizeSeoPath = (path: string) => {
+  const cleanPath = (path || "/").split("?")[0].split("#")[0] || "/";
+  if (cleanPath === "/") return "/";
+  const withSlash = cleanPath.startsWith("/") ? cleanPath : `/${cleanPath}`;
+  return withSlash.endsWith("/") ? withSlash.slice(0, -1) : withSlash;
+};
+
+export const isIndexablePath = (path: string) =>
+  indexablePathSet.has(normalizeSeoPath(path));
+
 const configuredProfiles = [
   process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/teen_musafir/",
   process.env.NEXT_PUBLIC_TIKTOK_URL,

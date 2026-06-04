@@ -1,15 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /dashboard
-Disallow: /flagship/create
-Disallow: /flagship/payment
-Disallow: /musafir/payment
-Disallow: /musafir/refund
-Disallow: /notifications
-Disallow: /passport
-Disallow: /referrals
-Disallow: /userSettings
-Disallow: /wallet
 Disallow: /api
 Sitemap: https://3musafir.com/sitemap.xml

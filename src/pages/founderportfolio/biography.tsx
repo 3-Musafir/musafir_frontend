@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ImageCarousel from "@/components/founderportfolio/ImageCarousel";
 import StatsGrid from "@/components/founderportfolio/StatsGrid";
-import { siteUrl as baseSiteUrl } from "@/lib/seo/seoConfig";
+import { isIndexablePath, siteUrl as baseSiteUrl } from "@/lib/seo/seoConfig";
 
 const title = "3Musafir Biography";
 const description =
@@ -81,7 +81,10 @@ export default function FounderBiographyPage() {
         <title>{title}</title>
         <meta name="description" content={description} />
         <meta name="keywords" content={keywords} />
-        <meta name="robots" content="index, follow" />
+        <meta
+          name="robots"
+          content={isIndexablePath(canonicalPath) ? "index, follow" : "noindex, follow"}
+        />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />

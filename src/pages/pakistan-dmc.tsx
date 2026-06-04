@@ -2,7 +2,7 @@ import Head from "next/head";
 
 import DmcLandingPage from "@/components/dmc/DmcLandingPage";
 import { dmcDescription, dmcFaqs, dmcTitle } from "@/components/dmc/dmcContent";
-import { siteUrl } from "@/lib/seo/seoConfig";
+import { isIndexablePath, siteUrl } from "@/lib/seo/seoConfig";
 
 const configuredSiteUrl = siteUrl;
 const absoluteUrl = (path: string) =>
@@ -24,7 +24,8 @@ const pruneJsonLd = (value: unknown): unknown => {
   return value === undefined ? undefined : value;
 };
 
-const pageUrl = absoluteUrl("/pakistan-dmc");
+const pagePath = "/pakistan-dmc";
+const pageUrl = absoluteUrl(pagePath);
 const orgId = configuredSiteUrl ? `${configuredSiteUrl}#organization` : undefined;
 const dmcId = pageUrl ? `${pageUrl}#travelagency` : undefined;
 const provider = orgId ? { "@id": orgId } : { name: "3Musafir" };
@@ -166,7 +167,10 @@ export default function DmcPage() {
       <Head>
         <title>{dmcTitle}</title>
         <meta name="description" content={dmcDescription} />
-        <meta name="robots" content="index, follow" />
+        <meta
+          name="robots"
+          content={isIndexablePath(pagePath) ? "index, follow" : "noindex, follow"}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
