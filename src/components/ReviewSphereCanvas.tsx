@@ -1,4 +1,5 @@
 import { Canvas, useFrame } from "@react-three/fiber";
+import type { PropsWithChildren } from "react";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
@@ -20,6 +21,10 @@ type StreamSeed = {
   speed: number;
   wave: number;
 };
+
+type FlowLineProps = PropsWithChildren<{
+  renderOrder: number;
+}>;
 
 const SPHERE_RADIUS = 1.12;
 const STREAM_COUNT = 184;
@@ -96,6 +101,20 @@ const createParticlePositions = () => {
 
 const projectToTangent = (normal: THREE.Vector3, vector: THREE.Vector3) =>
   vector.sub(normal.clone().multiplyScalar(vector.dot(normal)));
+
+function FlowLine({ children, renderOrder }: FlowLineProps) {
+  const line = useMemo(() => {
+    const object = new THREE.Line();
+    object.renderOrder = renderOrder;
+    return object;
+  }, []);
+
+  useEffect(() => {
+    line.renderOrder = renderOrder;
+  }, [line, renderOrder]);
+
+  return <primitive object={line}>{children}</primitive>;
+}
 
 const flowDirection = (
   point: THREE.Vector3,
@@ -256,7 +275,7 @@ function ReviewSplineSphere({ rotation }: ReviewSphereCanvasProps) {
       </mesh>
 
       {streamPositions.map((positions, index) => (
-        <line key={`review-flow-${index}`} renderOrder={2}>
+        <FlowLine key={`review-flow-${index}`} renderOrder={2}>
           <bufferGeometry
             ref={(node) => {
               lineGeometries.current[index] = node;
@@ -271,7 +290,7 @@ function ReviewSplineSphere({ rotation }: ReviewSphereCanvasProps) {
             blending={THREE.AdditiveBlending}
             depthWrite={false}
           />
-        </line>
+        </FlowLine>
       ))}
 
       <points renderOrder={3}>

@@ -168,6 +168,7 @@ export default function BrandSphere3D({
             enableParallax={enableParallax}
             onFormationComplete={handleFormationComplete}
             onBubblePop={() => setBubblePopped(true)}
+            onBubbleRestore={() => setBubblePopped(false)}
             shouldAnimate={!prefersReducedMotion && !skipAnimation}
             contentSize={contentSize}
           />

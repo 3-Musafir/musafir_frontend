@@ -1,11 +1,12 @@
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
 export const siteName = "3Musafir";
-export const defaultTitle = "3Musafir | Pakistan Group Tours & Women-First Travel";
+export const defaultTitle = "3Musafir | Pakistan Group Tours, Women-First Travel & DMC";
 export const defaultDescription =
-  "3Musafir is a Pakistan-based travel company offering community-led group tours, women-first travel experiences, customized trips, international group trips, and inbound DMC services for foreign travel agencies.";
-export const logoUrl = `${siteUrl}/3mwinterlogo.png`;
+  "3Musafir is a Pakistan-based travel company for verified community-led group tours, women-first travel experiences, customized journeys, international group trips, and inbound Pakistan DMC services.";
+export const logoUrl = `${siteUrl}/primarylogo.svg`;
 
 export const INDEXABLE_PATHS = [
+  "/",
   "/fixed-departure",
   "/explore",
   "/reviews",

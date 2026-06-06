@@ -8,6 +8,7 @@ type BrandSphereCanvasProps = {
   enableParallax: boolean;
   onFormationComplete?: () => void;
   onBubblePop?: () => void;
+  onBubbleRestore?: () => void;
   shouldAnimate?: boolean;
   contentSize?: {
     width: number;
@@ -36,8 +37,18 @@ type SphereNetwork = {
   rimColors: Float32Array;
 };
 
-const MOUNTAIN_COLUMNS = 304;
-const MOUNTAIN_ROWS = 122;
+type MountainConnections = {
+  indices: Uint32Array;
+  colors: Float32Array;
+};
+
+type MountainSurface = {
+  indices: Uint32Array;
+  colors: Float32Array;
+};
+
+const MOUNTAIN_COLUMNS = 360;
+const MOUNTAIN_ROWS = 138;
 const MOUNTAIN_COUNT = MOUNTAIN_COLUMNS * MOUNTAIN_ROWS;
 const SPHERE_COLUMNS = 48;
 const SPHERE_ROWS = 26;
@@ -48,6 +59,7 @@ const BRAND_ORANGE = new THREE.Color("#fd6705");
 const SOFT_ORANGE = new THREE.Color("#ff9000");
 const PALE_ORANGE = new THREE.Color("#ffd6a3");
 const WARM_WHITE = new THREE.Color("#fff8ec");
+const DEEP_ORANGE = new THREE.Color("#b83b05");
 
 const clamp01 = (value: number) => THREE.MathUtils.clamp(value, 0, 1);
 const easeOutCubic = (value: number) => 1 - Math.pow(1 - clamp01(value), 3);
@@ -132,10 +144,10 @@ const createMountainColors = (points: MountainPoint[]) => {
   points.forEach((point, index) => {
     const color = BRAND_ORANGE.clone().lerp(SOFT_ORANGE, point.tone * 0.55);
     if (point.height > 0.78) {
-      color.lerp(PALE_ORANGE, 0.42);
+      color.lerp(PALE_ORANGE, 0.32);
     }
     if (point.height > 1.02) {
-      color.lerp(WARM_WHITE, 0.34);
+      color.lerp(WARM_WHITE, 0.2);
     }
 
     colors[index * 3] = color.r;
@@ -144,6 +156,102 @@ const createMountainColors = (points: MountainPoint[]) => {
   });
 
   return colors;
+};
+
+const createMountainConnections = (points: MountainPoint[]): MountainConnections => {
+  const indices: number[] = [];
+  const colors: number[] = [];
+
+  const addConnection = (from: number, to: number) => {
+    const start = points[from];
+    const end = points[to];
+    const tone = THREE.MathUtils.clamp((start.height + end.height) * 0.24, 0, 1);
+    const startColor = DEEP_ORANGE.clone().lerp(BRAND_ORANGE, 0.36 + tone * 0.34);
+    const endColor = BRAND_ORANGE.clone().lerp(PALE_ORANGE, tone * 0.24);
+
+    indices.push(from, to);
+    colors.push(
+      startColor.r,
+      startColor.g,
+      startColor.b,
+      endColor.r,
+      endColor.g,
+      endColor.b,
+    );
+  };
+
+  for (let row = 1; row < MOUNTAIN_ROWS - 1; row += 2) {
+    for (let column = 1; column < MOUNTAIN_COLUMNS - 1; column += 3) {
+      const index = row * MOUNTAIN_COLUMNS + column;
+      const point = points[index];
+      const ridgePoint = point.height > 0.58 && Math.abs(point.x) > 0.24;
+
+      if (!ridgePoint) continue;
+
+      if (points[index + 1].height > 0.5 && seeded(index * 5.17) > 0.16) {
+        addConnection(index, index + 1);
+      }
+
+      if (points[index + MOUNTAIN_COLUMNS].height > 0.54 && seeded(index * 6.31) > 0.48) {
+        addConnection(index, index + MOUNTAIN_COLUMNS);
+      }
+
+      if (
+        points[index + MOUNTAIN_COLUMNS + 1].height > 0.68 &&
+        seeded(index * 7.83) > 0.72
+      ) {
+        addConnection(index, index + MOUNTAIN_COLUMNS + 1);
+      }
+    }
+  }
+
+  return {
+    indices: new Uint32Array(indices),
+    colors: new Float32Array(colors),
+  };
+};
+
+const createMountainSurface = (points: MountainPoint[]): MountainSurface => {
+  const indices: number[] = [];
+  const colors: number[] = [];
+
+  const addTriangle = (a: number, b: number, c: number) => {
+    const height = (points[a].height + points[b].height + points[c].height) / 3;
+    const side = (Math.abs(points[a].x) + Math.abs(points[b].x) + Math.abs(points[c].x)) / 3;
+    const tone = THREE.MathUtils.clamp(height * 0.26 + side * 0.22, 0, 1);
+    const color = DEEP_ORANGE.clone().lerp(BRAND_ORANGE, 0.36 + tone * 0.34).lerp(PALE_ORANGE, tone * 0.18);
+
+    indices.push(a, b, c);
+
+    for (let vertex = 0; vertex < 3; vertex += 1) {
+      colors.push(color.r, color.g, color.b);
+    }
+  };
+
+  for (let row = 2; row < MOUNTAIN_ROWS - 3; row += 3) {
+    for (let column = 2; column < MOUNTAIN_COLUMNS - 3; column += 4) {
+      const a = row * MOUNTAIN_COLUMNS + column;
+      const b = a + 1;
+      const c = a + MOUNTAIN_COLUMNS;
+      const d = c + 1;
+      const avgHeight = (points[a].height + points[b].height + points[c].height + points[d].height) / 4;
+      const sideMass = Math.abs(points[a].x);
+      const inMountainBody = avgHeight > 0.4 || sideMass > 0.34;
+
+      if (!inMountainBody || seeded(a * 9.91) < 0.18) continue;
+
+      addTriangle(a, c, d);
+
+      if (avgHeight > 0.62 || seeded(a * 4.37) > 0.46) {
+        addTriangle(a, d, b);
+      }
+    }
+  }
+
+  return {
+    indices: new Uint32Array(indices),
+    colors: new Float32Array(colors),
+  };
 };
 
 const createSphereNetwork = (): SphereNetwork => {
@@ -177,12 +285,12 @@ const createSphereNetwork = (): SphereNetwork => {
         Math.sin(phi) * Math.sin(theta) * radius,
       );
       const glow = Math.pow(ringWeight, 0.35);
-      const color = BRAND_ORANGE.clone().lerp(SOFT_ORANGE, glow * 0.55);
+      const color = DEEP_ORANGE.clone().lerp(BRAND_ORANGE, 0.44 + glow * 0.34);
 
       if (seeded(index * 3.17) > 0.83) {
-        color.lerp(WARM_WHITE, 0.72);
+        color.lerp(WARM_WHITE, 0.24);
       } else if (seeded(index * 2.91) > 0.72) {
-        color.lerp(PALE_ORANGE, 0.42);
+        color.lerp(PALE_ORANGE, 0.26);
       }
 
       positions[index] = position;
@@ -220,10 +328,10 @@ const createSphereNetwork = (): SphereNetwork => {
         .clone()
         .multiplyScalar(1.05 + step * reach + seeded(seed * 3.11) * 0.05)
         .add(tangentOffset);
-      const color = BRAND_ORANGE.clone().lerp(PALE_ORANGE, 0.28 + step * 0.28);
+      const color = DEEP_ORANGE.clone().lerp(BRAND_ORANGE, 0.42 + step * 0.28);
 
       if (seeded(seed * 4.71) > 0.72) {
-        color.lerp(WARM_WHITE, 0.68);
+        color.lerp(WARM_WHITE, 0.22);
       }
 
       positions.push(position);
@@ -257,17 +365,17 @@ const createSphereNetwork = (): SphereNetwork => {
 
     rimPositions.push(start.x, start.y, start.z, end.x, end.y, end.z);
     rimColors.push(
-      WARM_WHITE.r,
-      WARM_WHITE.g,
-      WARM_WHITE.b,
-      WARM_WHITE.r,
-      WARM_WHITE.g,
-      WARM_WHITE.b,
+      PALE_ORANGE.r,
+      PALE_ORANGE.g,
+      PALE_ORANGE.b,
+      PALE_ORANGE.r,
+      PALE_ORANGE.g,
+      PALE_ORANGE.b,
     );
   };
 
   const pushTriangle = (a: number, b: number, c: number, tone: number) => {
-    const color = BRAND_ORANGE.clone().lerp(PALE_ORANGE, tone).lerp(WARM_WHITE, 0.12);
+    const color = BRAND_ORANGE.clone().lerp(PALE_ORANGE, tone * 0.82).lerp(WARM_WHITE, 0.06);
 
     [a, b, c].forEach((index) => {
       const position = positions[index];
@@ -372,19 +480,27 @@ function BubbleHeroCore({
   enableParallax,
   onFormationComplete,
   onBubblePop,
+  onBubbleRestore,
   shouldAnimate = true,
   contentSize = { width: 360, height: 260 },
 }: BrandSphereCanvasProps) {
   const sceneGroupRef = useRef<THREE.Group>(null);
   const bubbleGroupRef = useRef<THREE.Group>(null);
   const waveGeometryRef = useRef<THREE.BufferGeometry>(null);
+  const mountainSurfaceGeometryRef = useRef<THREE.BufferGeometry>(null);
+  const mountainConnectionGeometryRef = useRef<THREE.BufferGeometry>(null);
   const networkFaceMaterialRef = useRef<THREE.MeshBasicMaterial>(null);
   const networkRimMaterialRef = useRef<THREE.LineBasicMaterial>(null);
   const networkPointMaterialRef = useRef<THREE.PointsMaterial>(null);
   const networkLineMaterialRef = useRef<THREE.LineBasicMaterial>(null);
+  const mountainSurfaceMaterialRef = useRef<THREE.MeshBasicMaterial>(null);
+  const mountainConnectionMaterialRef = useRef<THREE.LineBasicMaterial>(null);
   const waveMaterialRef = useRef<THREE.PointsMaterial>(null);
   const startRef = useRef<number | null>(null);
-  const popStartRef = useRef<number | null>(null);
+  const transitionStartRef = useRef<number | null>(null);
+  const transitionFromRef = useRef(0);
+  const transitionToRef = useRef(0);
+  const mountainProgressRef = useRef(0);
   const poppedRef = useRef(false);
   const doneRef = useRef(false);
   const timeRef = useRef(0);
@@ -392,18 +508,37 @@ function BubbleHeroCore({
   const wavePoints = useMemo(createMountainPoints, []);
   const wavePositions = useMemo(() => new Float32Array(MOUNTAIN_COUNT * 3), []);
   const waveColors = useMemo(() => createMountainColors(wavePoints), [wavePoints]);
+  const mountainConnections = useMemo(() => createMountainConnections(wavePoints), [wavePoints]);
+  const mountainSurface = useMemo(() => createMountainSurface(wavePoints), [wavePoints]);
+  const mountainConnectionPositions = useMemo(
+    () => new Float32Array(mountainConnections.indices.length * 3),
+    [mountainConnections],
+  );
+  const mountainSurfacePositions = useMemo(
+    () => new Float32Array(mountainSurface.indices.length * 3),
+    [mountainSurface],
+  );
   const sphereNetwork = useMemo(createSphereNetwork, []);
 
   const handleBubbleClick = useCallback(
     (event: ThreeEvent<PointerEvent>) => {
       event.stopPropagation();
-      if (reducedMotion || poppedRef.current) return;
+      if (reducedMotion) return;
 
-      poppedRef.current = true;
-      popStartRef.current = timeRef.current;
-      onBubblePop?.();
+      const next = poppedRef.current ? 0 : 1;
+
+      transitionFromRef.current = mountainProgressRef.current;
+      transitionToRef.current = next;
+      transitionStartRef.current = timeRef.current;
+      poppedRef.current = next === 1;
+
+      if (next === 1) {
+        onBubblePop?.();
+      } else {
+        onBubbleRestore?.();
+      }
     },
-    [onBubblePop, reducedMotion],
+    [onBubblePop, onBubbleRestore, reducedMotion],
   );
 
   useFrame(({ clock, pointer, size, viewport }) => {
@@ -415,14 +550,35 @@ function BubbleHeroCore({
     timeRef.current = elapsed;
 
     const introProgress = shouldAnimate ? easeOutCubic(elapsed / 1.35) : 1;
-    const popAge = popStartRef.current === null ? -1 : elapsed - popStartRef.current;
-    const tension = popAge >= 0 ? easeInOutSine(popAge / 0.18) : 0;
-    const release = popAge > 0.16 ? easeOutCubic((popAge - 0.16) / 0.62) : 0;
-    const bubbleOpacity = reducedMotion ? 1 : Math.max(0, 1 - release);
+    const transitionAge =
+      transitionStartRef.current === null ? -1 : elapsed - transitionStartRef.current;
+    const transitionDuration = 1.15;
+    const transitionProgress =
+      transitionAge < 0 ? 1 : easeInOutSine(transitionAge / transitionDuration);
+    const mountainProgress =
+      transitionStartRef.current === null
+        ? transitionToRef.current
+        : THREE.MathUtils.lerp(
+            transitionFromRef.current,
+            transitionToRef.current,
+            transitionProgress,
+          );
+    mountainProgressRef.current = mountainProgress;
+
+    if (transitionAge >= transitionDuration) {
+      transitionStartRef.current = null;
+      mountainProgressRef.current = transitionToRef.current;
+    }
+
+    const tension =
+      transitionAge >= 0 && transitionAge < 0.24
+        ? Math.sin((transitionAge / 0.24) * Math.PI)
+        : 0;
+    const bubbleOpacity = reducedMotion ? 1 : 1 - mountainProgress;
     const introScale = reducedMotion ? 1 : 0.72 + introProgress * 0.28;
-    const compressionX = 1 - tension * 0.075 + release * 0.22;
-    const compressionY = 1 + tension * 0.045 + release * 0.18;
-    const compressionZ = 1 - tension * 0.035 + release * 0.16;
+    const compressionX = 1 - tension * 0.075 + mountainProgress * 0.22;
+    const compressionY = 1 + tension * 0.045 + mountainProgress * 0.18;
+    const compressionZ = 1 - tension * 0.035 + mountainProgress * 0.16;
     const compactCanvas = size.width < 640;
     const bubblePadding = compactCanvas ? 82 : 112;
     const desiredBubbleDiameter = Math.max(
@@ -437,7 +593,7 @@ function BubbleHeroCore({
     const adaptiveZ = Math.max(0.38, bubbleRadius * 0.58);
 
     if (bubbleGroupRef.current) {
-      bubbleGroupRef.current.visible = bubbleOpacity > 0.015;
+      bubbleGroupRef.current.visible = true;
       bubbleGroupRef.current.scale.set(
         introScale * adaptiveX * compressionX,
         introScale * adaptiveY * compressionY,
@@ -460,21 +616,20 @@ function BubbleHeroCore({
     }
 
     if (networkPointMaterialRef.current) {
-      networkPointMaterialRef.current.opacity = 0.9 * bubbleOpacity;
+      networkPointMaterialRef.current.opacity = 0.76 * bubbleOpacity;
       networkPointMaterialRef.current.size = 0.013 + Math.sin(elapsed * 0.6) * 0.0015;
     }
     if (networkLineMaterialRef.current) {
-      networkLineMaterialRef.current.opacity = 0.34 * bubbleOpacity;
+      networkLineMaterialRef.current.opacity = 0.24 * bubbleOpacity;
     }
     if (networkRimMaterialRef.current) {
-      networkRimMaterialRef.current.opacity = 0.88 * bubbleOpacity;
+      networkRimMaterialRef.current.opacity = 0.48 * bubbleOpacity;
     }
     if (networkFaceMaterialRef.current) {
-      networkFaceMaterialRef.current.opacity = 0.11 * bubbleOpacity;
+      networkFaceMaterialRef.current.opacity = 0.08 * bubbleOpacity;
     }
-    const waveAge = popAge - 0.12;
-    const waveReveal = reducedMotion ? 0 : easeOutCubic(waveAge / 1.65);
-    const waveSettle = easeOutCubic(Math.max(0, waveAge - 0.55) / 1.9);
+    const waveReveal = reducedMotion ? 0 : mountainProgress;
+    const waveSettle = easeOutCubic(mountainProgress);
     const centerY = -0.1;
     const mountainWorldWidth = compactCanvas
       ? Math.max(viewport.width * 1.34, 4.85)
@@ -499,10 +654,8 @@ function BubbleHeroCore({
         depthPerspective;
       const terrainZ = THREE.MathUtils.lerp(mountainDepth * 0.72, -mountainDepth * 0.64, point.v);
       const distanceFromCenter = Math.hypot((point.u - 0.5) * 1.35, (point.v - 0.52) * 0.95);
-      const distanceDelay =
-        distanceFromCenter * 1.25 +
-        Math.abs(point.depth) * 0.18;
-      const localReveal = easeOutCubic((waveAge - distanceDelay) / 1.4);
+      const distanceDelay = distanceFromCenter * 0.42 + Math.abs(point.depth) * 0.08;
+      const localReveal = easeOutCubic((mountainProgress - distanceDelay) / 0.72);
       const terrainBreath =
         Math.sin(elapsed * 0.22 + point.phase) * 0.035 +
         Math.cos(elapsed * 0.16 + point.phase * 0.7) * 0.02;
@@ -525,15 +678,101 @@ function BubbleHeroCore({
       wavePositions[index * 3 + 2] = finalZ * localReveal;
     });
 
+    for (let index = 0; index < mountainConnections.indices.length; index += 2) {
+      const from = mountainConnections.indices[index];
+      const to = mountainConnections.indices[index + 1];
+      const fromOffset = from * 3;
+      const toOffset = to * 3;
+      const lineOffset = index * 3;
+      const fromX = wavePositions[fromOffset];
+      const fromY = wavePositions[fromOffset + 1];
+      const fromZ = wavePositions[fromOffset + 2];
+      const toX = wavePositions[toOffset];
+      const toY = wavePositions[toOffset + 1];
+      const toZ = wavePositions[toOffset + 2];
+      const dx = toX - fromX;
+      const dy = toY - fromY;
+      const dz = toZ - fromZ;
+      const maxSegmentLength = compactCanvas ? 0.12 : 0.16;
+      const shouldDraw = dx * dx + dy * dy + dz * dz < maxSegmentLength * maxSegmentLength;
+
+      mountainConnectionPositions[lineOffset] = fromX;
+      mountainConnectionPositions[lineOffset + 1] = fromY;
+      mountainConnectionPositions[lineOffset + 2] = fromZ;
+      mountainConnectionPositions[lineOffset + 3] = shouldDraw ? toX : fromX;
+      mountainConnectionPositions[lineOffset + 4] = shouldDraw ? toY : fromY;
+      mountainConnectionPositions[lineOffset + 5] = shouldDraw ? toZ : fromZ;
+    }
+
+    for (let index = 0; index < mountainSurface.indices.length; index += 3) {
+      const a = mountainSurface.indices[index];
+      const b = mountainSurface.indices[index + 1];
+      const c = mountainSurface.indices[index + 2];
+      const aOffset = a * 3;
+      const bOffset = b * 3;
+      const cOffset = c * 3;
+      const surfaceOffset = index * 3;
+      const ax = wavePositions[aOffset];
+      const ay = wavePositions[aOffset + 1];
+      const az = wavePositions[aOffset + 2];
+      const bx = wavePositions[bOffset];
+      const by = wavePositions[bOffset + 1];
+      const bz = wavePositions[bOffset + 2];
+      const cx = wavePositions[cOffset];
+      const cy = wavePositions[cOffset + 1];
+      const cz = wavePositions[cOffset + 2];
+      const maxEdgeLength = compactCanvas ? 0.16 : 0.22;
+      const maxEdgeSq = maxEdgeLength * maxEdgeLength;
+      const ab =
+        (bx - ax) * (bx - ax) +
+        (by - ay) * (by - ay) +
+        (bz - az) * (bz - az);
+      const bc =
+        (cx - bx) * (cx - bx) +
+        (cy - by) * (cy - by) +
+        (cz - bz) * (cz - bz);
+      const ca =
+        (ax - cx) * (ax - cx) +
+        (ay - cy) * (ay - cy) +
+        (az - cz) * (az - cz);
+      const shouldDraw = ab < maxEdgeSq && bc < maxEdgeSq && ca < maxEdgeSq;
+
+      mountainSurfacePositions[surfaceOffset] = ax;
+      mountainSurfacePositions[surfaceOffset + 1] = ay;
+      mountainSurfacePositions[surfaceOffset + 2] = az;
+      mountainSurfacePositions[surfaceOffset + 3] = shouldDraw ? bx : ax;
+      mountainSurfacePositions[surfaceOffset + 4] = shouldDraw ? by : ay;
+      mountainSurfacePositions[surfaceOffset + 5] = shouldDraw ? bz : az;
+      mountainSurfacePositions[surfaceOffset + 6] = shouldDraw ? cx : ax;
+      mountainSurfacePositions[surfaceOffset + 7] = shouldDraw ? cy : ay;
+      mountainSurfacePositions[surfaceOffset + 8] = shouldDraw ? cz : az;
+    }
+
     const wavePositionAttribute = waveGeometryRef.current?.getAttribute("position");
     if (wavePositionAttribute) {
       wavePositionAttribute.needsUpdate = true;
+    }
+    const mountainSurfacePositionAttribute =
+      mountainSurfaceGeometryRef.current?.getAttribute("position");
+    if (mountainSurfacePositionAttribute) {
+      mountainSurfacePositionAttribute.needsUpdate = true;
+    }
+    const mountainConnectionPositionAttribute =
+      mountainConnectionGeometryRef.current?.getAttribute("position");
+    if (mountainConnectionPositionAttribute) {
+      mountainConnectionPositionAttribute.needsUpdate = true;
     }
     if (waveMaterialRef.current) {
       waveMaterialRef.current.opacity = (compactCanvas ? 0.92 : 0.98) * waveReveal;
       waveMaterialRef.current.size =
         (compactCanvas ? 0.007 : 0.0072) +
         waveReveal * (compactCanvas ? 0.0075 : 0.0094);
+    }
+    if (mountainConnectionMaterialRef.current) {
+      mountainConnectionMaterialRef.current.opacity = (compactCanvas ? 0.15 : 0.2) * waveReveal;
+    }
+    if (mountainSurfaceMaterialRef.current) {
+      mountainSurfaceMaterialRef.current.opacity = (compactCanvas ? 0.045 : 0.065) * waveReveal;
     }
 
     if (sceneGroupRef.current) {
@@ -548,6 +787,11 @@ function BubbleHeroCore({
 
   return (
     <group ref={sceneGroupRef}>
+      <mesh position={[0, 0, 1.15]} onPointerDown={handleBubbleClick}>
+        <planeGeometry args={[24, 14]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+
       <group ref={bubbleGroupRef}>
         <mesh onPointerDown={handleBubbleClick}>
           <sphereGeometry args={[1.12, 24, 24]} />
@@ -568,7 +812,7 @@ function BubbleHeroCore({
             ref={networkFaceMaterialRef}
             vertexColors
             transparent
-            opacity={0.11}
+            opacity={0.08}
             blending={THREE.AdditiveBlending}
             depthWrite={false}
             side={THREE.DoubleSide}
@@ -584,7 +828,7 @@ function BubbleHeroCore({
             ref={networkLineMaterialRef}
             vertexColors
             transparent
-            opacity={0.34}
+            opacity={0.24}
             blending={THREE.AdditiveBlending}
             depthWrite={false}
           />
@@ -599,7 +843,7 @@ function BubbleHeroCore({
             ref={networkRimMaterialRef}
             vertexColors
             transparent
-            opacity={0.88}
+            opacity={0.48}
             blending={THREE.AdditiveBlending}
             depthWrite={false}
           />
@@ -616,14 +860,45 @@ function BubbleHeroCore({
             size={0.014}
             sizeAttenuation
             transparent
-            opacity={0.9}
+            opacity={0.76}
             blending={THREE.AdditiveBlending}
             depthWrite={false}
           />
         </points>
       </group>
 
-      <points renderOrder={4}>
+      <mesh renderOrder={4}>
+        <bufferGeometry ref={mountainSurfaceGeometryRef}>
+          <bufferAttribute attach="attributes-position" args={[mountainSurfacePositions, 3]} />
+          <bufferAttribute attach="attributes-color" args={[mountainSurface.colors, 3]} />
+        </bufferGeometry>
+        <meshBasicMaterial
+          ref={mountainSurfaceMaterialRef}
+          vertexColors
+          transparent
+          opacity={0}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      <lineSegments renderOrder={4}>
+        <bufferGeometry ref={mountainConnectionGeometryRef}>
+          <bufferAttribute attach="attributes-position" args={[mountainConnectionPositions, 3]} />
+          <bufferAttribute attach="attributes-color" args={[mountainConnections.colors, 3]} />
+        </bufferGeometry>
+        <lineBasicMaterial
+          ref={mountainConnectionMaterialRef}
+          vertexColors
+          transparent
+          opacity={0}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </lineSegments>
+
+      <points renderOrder={5}>
         <bufferGeometry ref={waveGeometryRef}>
           <bufferAttribute attach="attributes-position" args={[wavePositions, 3]} />
           <bufferAttribute attach="attributes-color" args={[waveColors, 3]} />
@@ -648,6 +923,7 @@ export default function BrandSphereCanvas({
   enableParallax,
   onFormationComplete,
   onBubblePop,
+  onBubbleRestore,
   shouldAnimate = true,
   contentSize,
 }: BrandSphereCanvasProps) {
@@ -668,6 +944,7 @@ export default function BrandSphereCanvas({
         enableParallax={enableParallax}
         onFormationComplete={onFormationComplete}
         onBubblePop={onBubblePop}
+        onBubbleRestore={onBubbleRestore}
         shouldAnimate={shouldAnimate}
         contentSize={contentSize}
       />

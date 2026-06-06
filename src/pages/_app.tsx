@@ -48,10 +48,10 @@ const SEO_MAP: Record<
   { title: string; description: string; ogImage?: string }
 > = {
   "/": {
-    title: "3Musafir | Pakistan Group Tours, Women-First Travel & DMC Services",
+    title: "3Musafir | Pakistan Group Tours, Women-First Travel & DMC",
     description:
-      "3Musafir is a Pakistan-based travel company offering community-led group tours, women-first travel experiences, customized trips, international group trips, and inbound DMC services for foreign travel agencies.",
-    ogImage: "/flowerFields.jpg",
+      "Explore Pakistan with verified community-led group tours, women-first travel experiences, trusted captains, custom journeys, international trips, and inbound DMC services by 3Musafir.",
+    ogImage: "/communityimage7.jpg",
   },
   "/fixed-departure": {
     title: "3Musafir Fixed Departures — Upcoming journeys",
