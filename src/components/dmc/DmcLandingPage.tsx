@@ -211,8 +211,8 @@ const iconMap = {
 
 function AnswerBlock({ children }: { children: string }) {
   return (
-    <div className="rounded-[18px] border border-[#ffe0d7] bg-white px-[18px] py-[18px] shadow-[0_2px_9px_rgba(20,24,36,0.04)] md:px-6 md:py-5">
-      <p className="text-[15px] font-medium leading-[1.55] text-[#596173] md:text-[16px]">{children}</p>
+    <div className="rounded-[18px] border border-brand-primary/30 bg-white px-[18px] py-[18px] shadow-[0_2px_9px_rgba(20,24,36,0.04)] md:px-6 md:py-5">
+      <p className="text-[15px] font-medium leading-[1.55] text-text md:text-[16px]">{children}</p>
     </div>
   );
 }
@@ -228,7 +228,7 @@ function DmcNavMenu({
 
   return (
     <div
-      className="fixed inset-0 z-[70] bg-[#2d2f49]/40 backdrop-blur-sm"
+      className="fixed inset-0 z-[70] bg-heading/40 backdrop-blur-sm"
       onClick={onClose}
     >
       <nav
@@ -237,12 +237,12 @@ function DmcNavMenu({
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
-          <span className="text-[16px] font-black text-[#2d2f49]">Navigate</span>
+          <span className="text-[16px] font-black text-heading">Navigate</span>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close menu"
-            className="rounded-full p-2 text-[#2d2f49]"
+            className="rounded-full p-2 text-heading"
           >
             <X size={22} strokeWidth={3} />
           </button>
@@ -250,7 +250,7 @@ function DmcNavMenu({
 
         <div className="space-y-1">
           <details className="group rounded-[12px]">
-            <summary className="flex cursor-pointer list-none items-center justify-between rounded-[12px] px-3 py-3 text-[15px] font-extrabold text-[#2d2f49] hover:bg-[#fff1eb] [&::-webkit-details-marker]:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between rounded-[12px] px-3 py-3 text-[15px] font-extrabold text-heading hover:bg-canvas-soft [&::-webkit-details-marker]:hidden">
               <span>Special Interest</span>
               <ChevronDown
                 size={18}
@@ -258,13 +258,13 @@ function DmcNavMenu({
                 className="transition-transform group-open:rotate-180"
               />
             </summary>
-            <div className="mt-1 max-h-[320px] overflow-y-auto border-l border-[#ffe0d7] pl-2 pr-1">
+            <div className="mt-1 max-h-[320px] overflow-y-auto border-l border-brand-primary/30 pl-2 pr-1">
               {specialInterestNavItems.map((item) => (
                 <a
                   key={item.href}
                   href={item.href}
                   onClick={onClose}
-                  className="block rounded-[10px] px-3 py-2 text-[13px] font-bold leading-tight text-[#596173] hover:bg-[#fff1eb]"
+                  className="block rounded-[10px] px-3 py-2 text-[13px] font-bold leading-tight text-text hover:bg-canvas-soft"
                 >
                   {item.label}
                 </a>
@@ -277,7 +277,7 @@ function DmcNavMenu({
               key={item.href}
               href={item.href}
               onClick={onClose}
-              className="block rounded-[12px] px-3 py-3 text-[15px] font-extrabold text-[#2d2f49] hover:bg-[#fff1eb]"
+              className="block rounded-[12px] px-3 py-3 text-[15px] font-extrabold text-heading hover:bg-canvas-soft"
             >
               {item.label}
             </a>
@@ -292,7 +292,7 @@ export default function DmcLandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <main className="min-h-screen scroll-smooth bg-[#fffaf8] font-[Outfit,Inter,sans-serif] text-[#2d2f49]">
+    <main className="min-h-screen scroll-smooth bg-canvas-base font-[Outfit,Inter,sans-serif] text-heading">
       <Script
         src={instagramEmbedScriptSrc}
         strategy="afterInteractive"
@@ -302,20 +302,17 @@ export default function DmcLandingPage() {
 
       <DmcNavMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
-      <div className="mx-auto min-h-screen w-full max-w-[500px] overflow-hidden bg-[#fffaf8] md:max-w-none">
+      <div className="mx-auto min-h-screen w-full max-w-[500px] overflow-hidden bg-canvas-base md:max-w-none">
         <header className="sticky top-0 z-50 flex h-[100px] items-center justify-between bg-white px-[22px] md:h-[92px] md:px-8 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
-          <a href="#hero" className="flex min-w-0 items-center gap-3">
+          <a href="/" className="relative block h-12 w-44 shrink-0 overflow-hidden sm:w-52" aria-label="3Musafir home">
             <Image
-              src="/3mlogosmall.svg"
-              alt="3Musafir Travels logo"
-              width={42}
-              height={42}
+              src="/primarylogo.svg"
+              alt="3Musafir"
+              fill
               priority
-              className="h-[38px] w-[42px] shrink-0 object-contain"
+              sizes="(min-width: 640px) 208px, 176px"
+              className="object-contain object-left"
             />
-            <span className="text-[25px] font-extrabold leading-none text-[#2d2f49]">
-              3 Musafir Travels
-            </span>
           </a>
 
           <nav
@@ -324,18 +321,18 @@ export default function DmcLandingPage() {
           >
             <a
               href="#services"
-              className="rounded-full px-3 py-2 text-[13px] font-extrabold text-[#2d2f49] hover:bg-[#fff1eb]"
+              className="rounded-full px-3 py-2 text-[13px] font-extrabold text-heading hover:bg-canvas-soft"
             >
               Services
             </a>
             <a
               href="#destinations"
-              className="rounded-full px-3 py-2 text-[13px] font-extrabold text-[#2d2f49] hover:bg-[#fff1eb]"
+              className="rounded-full px-3 py-2 text-[13px] font-extrabold text-heading hover:bg-canvas-soft"
             >
               Destinations
             </a>
             <details className="group relative">
-              <summary className="flex cursor-pointer list-none items-center gap-1 rounded-full px-3 py-2 text-[13px] font-extrabold text-[#2d2f49] hover:bg-[#fff1eb] [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center gap-1 rounded-full px-3 py-2 text-[13px] font-extrabold text-heading hover:bg-canvas-soft [&::-webkit-details-marker]:hidden">
                 <span>Special Interest</span>
                 <ChevronDown
                   size={16}
@@ -343,13 +340,13 @@ export default function DmcLandingPage() {
                   className="transition-transform group-open:rotate-180"
                 />
               </summary>
-              <div className="absolute right-0 top-[calc(100%+12px)] z-[80] w-[360px] rounded-[18px] border border-[#ebe9e7] bg-white p-2 shadow-[0_20px_45px_rgba(45,47,73,0.16)]">
+              <div className="absolute right-0 top-[calc(100%+12px)] z-[80] w-[360px] rounded-[18px] border border-canvas-line bg-white p-2 shadow-[0_20px_45px_rgba(45,47,73,0.16)]">
                 <div className="max-h-[68vh] overflow-y-auto pr-1">
                   {specialInterestNavItems.map((item) => (
                     <a
                       key={item.href}
                       href={item.href}
-                      className="block rounded-[12px] px-3 py-2.5 text-[13px] font-bold leading-tight text-[#596173] hover:bg-[#fff1eb] hover:text-[#2d2f49]"
+                      className="block rounded-[12px] px-3 py-2.5 text-[13px] font-bold leading-tight text-text hover:bg-canvas-soft hover:text-heading"
                     >
                       {item.label}
                     </a>
@@ -359,13 +356,13 @@ export default function DmcLandingPage() {
             </details>
             <a
               href="#pricing"
-              className="rounded-full px-3 py-2 text-[13px] font-extrabold text-[#2d2f49] hover:bg-[#fff1eb]"
+              className="rounded-full px-3 py-2 text-[13px] font-extrabold text-heading hover:bg-canvas-soft"
             >
               Pricing
             </a>
             <a
               href="#urgent-enquiry"
-              className="rounded-full bg-[#ff3b0a] px-4 py-2 text-[13px] font-extrabold text-white shadow-[0_8px_18px_rgba(255,59,10,0.24)] hover:bg-[#e7370a]"
+              className="rounded-full bg-brand-primary px-4 py-2 text-[13px] font-extrabold text-white shadow-[0_8px_18px_rgba(255,144,0,0.24)] hover:bg-brand-primary-hover"
             >
               Partner
             </a>
@@ -375,14 +372,14 @@ export default function DmcLandingPage() {
             type="button"
             aria-label="Open menu"
             onClick={() => setMenuOpen(true)}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#2d2f49] lg:hidden"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-heading lg:hidden"
           >
             <Menu size={30} strokeWidth={3} />
           </button>
         </header>
 
         <section id="hero" className="scroll-mt-[100px] md:grid md:grid-cols-[0.92fr_1.08fr] md:items-center md:gap-8 md:px-8 md:py-10 lg:gap-12 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
-          <div className="relative h-[212px] w-full overflow-hidden bg-[#2f3143] grayscale md:order-2 md:h-auto md:aspect-[780/454] md:min-h-0 md:rounded-[28px]">
+          <div className="relative h-[212px] w-full overflow-hidden bg-heading grayscale md:order-2 md:h-auto md:aspect-[780/454] md:min-h-0 md:rounded-[28px]">
             <Image
               src="/3musafir-founders.jpg"
               alt="3Musafir team for Pakistan destination management services"
@@ -391,25 +388,25 @@ export default function DmcLandingPage() {
               sizes="(max-width: 767px) 100vw, (max-width: 1279px) 44vw, 520px"
               className="object-cover object-center opacity-70"
             />
-            <div className="absolute inset-0 bg-[#151625]/25" />
+            <div className="absolute inset-0 bg-heading/25" />
           </div>
 
           <div className="relative px-[21px] pb-12 pt-[24px] md:order-1 md:flex md:min-h-[650px] md:flex-col md:justify-center md:px-0 md:py-0">
-            <div className="pointer-events-none absolute right-[-70px] top-[230px] h-[280px] w-[280px] rounded-full bg-[#ff3b0a]/10 blur-3xl md:left-[40%] md:right-auto md:top-[68%]" />
+            <div className="pointer-events-none absolute right-[-70px] top-[230px] h-[280px] w-[280px] rounded-full bg-brand-primary/10 blur-3xl md:left-[40%] md:right-auto md:top-[68%]" />
 
-            <nav aria-label="Breadcrumb" className="mb-[19px] text-[13px] font-bold text-[#747b8c]">
-              <a href="/" className="text-[#2d2f49] underline decoration-[#ff3b0a]/30 underline-offset-4">
+            <nav aria-label="Breadcrumb" className="mb-[19px] text-[13px] font-bold text-text-light">
+              <a href="/" className="text-heading underline decoration-brand-primary/30 underline-offset-4">
                 Home
               </a>
-              <span className="px-2 text-[#a0a5b0]">/</span>
+              <span className="px-2 text-text-light">/</span>
               <span>Pakistan DMC</span>
             </nav>
 
-            <h1 className="max-w-[455px] text-[40px] font-black leading-[1.18] text-[#2d2f49] md:max-w-none md:text-[54px] md:leading-[1.04] lg:text-[64px]">
-              Pakistan DMC for <span className="text-[#ff3b0a]">International Travel Agencies</span>
+            <h1 className="max-w-[455px] text-[40px] font-black leading-[1.18] text-heading md:max-w-none md:text-[54px] md:leading-[1.04] lg:text-[64px]">
+              Pakistan DMC for <span className="text-brand-primary">International Travel Agencies</span>
             </h1>
 
-            <p className="mt-[25px] max-w-[440px] text-[21px] font-medium leading-[1.5] text-[#596173] md:max-w-[620px] md:text-[23px]">
+            <p className="mt-[25px] max-w-[440px] text-[21px] font-medium leading-[1.5] text-text md:max-w-[620px] md:text-[23px]">
               {dmcHeroSupport}
             </p>
 
@@ -422,16 +419,16 @@ export default function DmcLandingPage() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="rounded-full border border-[#ece8e5] bg-white px-3 py-2 text-[#2d2f49]"
+                  className="rounded-full border border-canvas-line bg-white px-3 py-2 text-heading"
                 >
                   {link.label}
                 </a>
               ))}
             </div>
 
-            <div className="mt-[34px] flex min-h-[73px] w-full max-w-[378px] items-center gap-4 rounded-[16px] border border-[#ece8e5] bg-white px-[23px] shadow-[0_3px_10px_rgba(29,31,50,0.06)]">
-              <BadgeCheck size={25} strokeWidth={2.7} className="shrink-0 text-[#ff3b0a]" />
-              <p className="text-[18px] font-extrabold leading-[1.25] text-[#2d2f49]">
+            <div className="mt-[34px] flex min-h-[73px] w-full max-w-[378px] items-center gap-4 rounded-[16px] border border-canvas-line bg-white px-[23px] shadow-[0_3px_10px_rgba(29,31,50,0.06)]">
+              <BadgeCheck size={25} strokeWidth={2.7} className="shrink-0 text-brand-primary" />
+              <p className="text-[18px] font-extrabold leading-[1.25] text-heading">
                 NIC and Aga Khan Foundation
                 <br />
                 backed company
@@ -441,14 +438,14 @@ export default function DmcLandingPage() {
             <div className="mt-[44px] space-y-[22px] md:flex md:max-w-[620px] md:gap-4 md:space-y-0">
               <a
                 href="#urgent-enquiry"
-                className="flex min-h-[72px] w-full items-center justify-center rounded-[19px] bg-[#ff3b0a] px-5 py-3 text-center text-[18px] font-extrabold leading-tight text-white shadow-[0_13px_25px_rgba(255,59,10,0.22)] sm:text-[20px] md:h-[62px] md:min-h-0 md:flex-1 md:text-[18px]"
+                className="flex min-h-[72px] w-full items-center justify-center rounded-[19px] bg-brand-primary px-5 py-3 text-center text-[18px] font-extrabold leading-tight text-white shadow-[0_13px_25px_rgba(255,144,0,0.22)] sm:text-[20px] md:h-[62px] md:min-h-0 md:flex-1 md:text-[18px]"
               >
                 Plan an inbound Pakistan group
               </a>
 
               <a
                 href="#partner"
-                className="flex min-h-[70px] w-full items-center justify-center gap-3 rounded-[18px] border border-[#ebedf0] bg-white px-5 py-3 text-center text-[18px] font-extrabold leading-tight text-[#2d2f49] shadow-[0_2px_8px_rgba(20,24,36,0.04)] sm:text-[20px] md:h-[62px] md:min-h-0 md:flex-1 md:text-[18px]"
+                className="flex min-h-[70px] w-full items-center justify-center gap-3 rounded-[18px] border border-canvas-line bg-white px-5 py-3 text-center text-[18px] font-extrabold leading-tight text-heading shadow-[0_2px_8px_rgba(20,24,36,0.04)] sm:text-[20px] md:h-[62px] md:min-h-0 md:flex-1 md:text-[18px]"
               >
                 <Download size={25} strokeWidth={3} className="shrink-0 text-black" />
                 <span>Partner with 3Musafir</span>
@@ -457,12 +454,12 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="culture" className="scroll-mt-[100px] bg-[#fffaf8] px-3 py-16 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section id="culture" className="scroll-mt-[100px] bg-canvas-base px-3 py-16 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
           <div className="mx-auto max-w-[760px] text-center">
-            <h2 className="mx-auto max-w-[620px] text-[31px] font-black leading-[1.08] text-[#2d2f49] md:text-[42px]">
+            <h2 className="mx-auto max-w-[620px] text-[31px] font-black leading-[1.08] text-heading md:text-[42px]">
               Our Partner Culture
             </h2>
-            <p className="mx-auto mt-5 max-w-[590px] text-[15px] font-medium leading-[1.5] text-[#596173] md:text-[17px]">
+            <p className="mx-auto mt-5 max-w-[590px] text-[15px] font-medium leading-[1.5] text-text md:text-[17px]">
               A window into the community, founder voice, traveler stories, and on-ground culture behind 3Musafir.
             </p>
           </div>
@@ -474,7 +471,7 @@ export default function DmcLandingPage() {
             {cultureInstagramReels.map((reel) => (
               <article
                 key={reel.permalink}
-                className="h-[540px] w-[326px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-[#ebe9e7] bg-white shadow-[0_2px_9px_rgba(20,24,36,0.05)] sm:w-[360px]"
+                className="h-[540px] w-[326px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-canvas-line bg-white shadow-[0_2px_9px_rgba(20,24,36,0.05)] sm:w-[360px]"
               >
                 <blockquote
                   className="instagram-media"
@@ -494,7 +491,7 @@ export default function DmcLandingPage() {
                     href={reel.permalink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-[540px] items-center justify-center px-6 text-center text-[15px] font-extrabold leading-tight text-[#2d2f49]"
+                    className="flex h-[540px] items-center justify-center px-6 text-center text-[15px] font-extrabold leading-tight text-heading"
                   >
                     View this post on Instagram
                   </a>
@@ -506,10 +503,10 @@ export default function DmcLandingPage() {
 
         <section id="services" className="scroll-mt-[100px] bg-white px-3 pb-24 pt-12 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
           <div className="mx-auto max-w-[760px] text-center">
-            <h2 className="mx-auto max-w-[620px] text-[29px] font-black leading-[1.08] text-[#2d2f49] md:text-[42px]">
+            <h2 className="mx-auto max-w-[620px] text-[29px] font-black leading-[1.08] text-heading md:text-[42px]">
               Comprehensive DMC Services in Pakistan
             </h2>
-            <p className="mx-auto mt-5 max-w-[560px] text-[15px] font-medium leading-[1.45] text-[#596173] md:text-[17px]">
+            <p className="mx-auto mt-5 max-w-[560px] text-[15px] font-medium leading-[1.45] text-text md:text-[17px]">
               Tailored solutions for every type of traveler and every type of agency brief.
             </p>
           </div>
@@ -522,7 +519,7 @@ export default function DmcLandingPage() {
             {dmcServiceCapabilities.map((item) => (
               <span
                 key={item}
-                className="rounded-full border border-[#ebe9e7] bg-[#fffaf8] px-3 py-2 text-[12.5px] font-extrabold text-[#2d2f49]"
+                className="rounded-full border border-canvas-line bg-canvas-base px-3 py-2 text-[12.5px] font-extrabold text-heading"
               >
                 {item}
               </span>
@@ -533,9 +530,9 @@ export default function DmcLandingPage() {
             {services.map((service) => (
               <article
                 key={service.title}
-                className="min-w-[238px] snap-start overflow-hidden rounded-[13px] border border-[#ebe9e7] bg-[#fffdfc] shadow-[0_1px_4px_rgba(20,24,36,0.04)] md:min-w-0"
+                className="min-w-[238px] snap-start overflow-hidden rounded-[13px] border border-canvas-line bg-white shadow-[0_1px_4px_rgba(20,24,36,0.04)] md:min-w-0"
               >
-                <div className="relative h-[171px] w-full overflow-hidden rounded-t-[13px] bg-[#f1eeeb] md:h-[220px]">
+                <div className="relative h-[171px] w-full overflow-hidden rounded-t-[13px] bg-canvas-soft md:h-[220px]">
                   <Image
                     src={service.image}
                     alt={service.alt}
@@ -545,10 +542,10 @@ export default function DmcLandingPage() {
                   />
                 </div>
                 <div className="px-[18px] py-[22px] text-left">
-                  <h3 className="text-[19px] font-black leading-tight text-[#2d2f49]">
+                  <h3 className="text-[19px] font-black leading-tight text-heading">
                     {service.title}
                   </h3>
-                  <p className="mt-[11px] text-[13.5px] font-medium leading-[1.45] text-[#596173]">
+                  <p className="mt-[11px] text-[13.5px] font-medium leading-[1.45] text-text">
                     {service.description}
                   </p>
                 </div>
@@ -560,16 +557,16 @@ export default function DmcLandingPage() {
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="flex h-[103px] flex-col justify-center rounded-[18px] border border-[#eceef0] bg-white px-[20px] text-left shadow-[0_2px_8px_rgba(20,24,36,0.05)] md:h-[128px] md:px-7"
+                className="flex h-[103px] flex-col justify-center rounded-[18px] border border-canvas-line bg-white px-[20px] text-left shadow-[0_2px_8px_rgba(20,24,36,0.05)] md:h-[128px] md:px-7"
               >
                 <strong
                   className={`text-[34px] font-black leading-none ${
-                    stat.orange ? "text-[#ff3b0a]" : "text-[#2d2f49]"
+                    stat.orange ? "text-brand-primary" : "text-heading"
                   }`}
                 >
                   {stat.value}
                 </strong>
-                <span className="mt-[11px] text-[12.5px] font-bold leading-tight text-[#747b8c]">
+                <span className="mt-[11px] text-[12.5px] font-bold leading-tight text-text-light">
                   {stat.label}
                 </span>
               </div>
@@ -582,11 +579,11 @@ export default function DmcLandingPage() {
           className="scroll-mt-[100px] bg-white px-3 pb-24 pt-12 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
         >
           <div className="mx-auto max-w-[760px] text-center">
-            <p className="text-[14px] font-black uppercase text-[#ff3b0a]">DMC destinations</p>
-            <h2 className="mx-auto mt-[14px] max-w-[660px] text-[29px] font-black leading-[1.08] text-[#2d2f49] md:text-[42px]">
+            <p className="text-[14px] font-black uppercase text-brand-primary">DMC destinations</p>
+            <h2 className="mx-auto mt-[14px] max-w-[660px] text-[29px] font-black leading-[1.08] text-heading md:text-[42px]">
               Pakistan destinations for inbound groups and agency programs
             </h2>
-            <p className="mx-auto mt-5 max-w-[640px] text-[15px] font-medium leading-[1.45] text-[#596173] md:text-[17px]">
+            <p className="mx-auto mt-5 max-w-[640px] text-[15px] font-medium leading-[1.45] text-text md:text-[17px]">
               We plan around seasonality, road conditions, flight volatility, supplier availability,
               privacy needs, and guest profile before confirming any route.
             </p>
@@ -596,13 +593,13 @@ export default function DmcLandingPage() {
             {dmcDestinations.map((item) => (
               <article
                 key={item.title}
-                className="min-w-[290px] snap-start rounded-[18px] border border-[#ebe9e7] bg-[#fffdfc] px-[20px] py-[20px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:min-w-0"
+                className="min-w-[290px] snap-start rounded-[18px] border border-canvas-line bg-white px-[20px] py-[20px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:min-w-0"
               >
-                <h3 className="text-[18px] font-black leading-tight text-[#2d2f49]">
+                <h3 className="text-[18px] font-black leading-tight text-heading">
                   {item.href ? (
                     <a
                       href={item.href}
-                      className="underline decoration-[#ff3b0a]/30 underline-offset-4"
+                      className="underline decoration-brand-primary/30 underline-offset-4"
                     >
                       {item.title}
                     </a>
@@ -610,7 +607,7 @@ export default function DmcLandingPage() {
                     item.title
                   )}
                 </h3>
-                <p className="mt-[9px] text-[14px] font-medium leading-[1.45] text-[#596173]">
+                <p className="mt-[9px] text-[14px] font-medium leading-[1.45] text-text">
                   {item.body}
                 </p>
               </article>
@@ -620,15 +617,15 @@ export default function DmcLandingPage() {
 
         <section
           id="international-agencies"
-          className="scroll-mt-[100px] bg-[#fffaf8] px-3 pb-[76px] pt-[48px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
+          className="scroll-mt-[100px] bg-canvas-base px-3 pb-[76px] pt-[48px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
         >
           <div className="md:grid md:grid-cols-[0.9fr_1.1fr] md:gap-10 lg:gap-14">
             <div>
-              <p className="text-[14px] font-black uppercase text-[#ff3b0a]">International buyers</p>
-              <h2 className="mt-[14px] text-[32px] font-black leading-[1.16] text-[#2d2f49] md:text-[44px]">
+              <p className="text-[14px] font-black uppercase text-brand-primary">International buyers</p>
+              <h2 className="mt-[14px] text-[32px] font-black leading-[1.16] text-heading md:text-[44px]">
                 Built for International Travel Agencies
               </h2>
-              <p className="mt-[22px] text-[18px] font-medium leading-[1.52] text-[#596173] md:text-[20px]">
+              <p className="mt-[22px] text-[18px] font-medium leading-[1.52] text-text md:text-[20px]">
                 3Musafir exists to help overseas tour operators and agency partners run Pakistan with
                 more confidence through local execution, clearer communication, and dependable ground
                 support.
@@ -643,12 +640,12 @@ export default function DmcLandingPage() {
               {agencyMarkets.map((market) => (
                 <article
                   key={market.market}
-                  className="min-w-[290px] snap-start rounded-[16px] border border-[#ebe9e7] bg-white px-[18px] py-[16px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:min-h-[150px] md:min-w-0"
+                  className="min-w-[290px] snap-start rounded-[16px] border border-canvas-line bg-white px-[18px] py-[16px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:min-h-[150px] md:min-w-0"
                 >
-                  <h3 className="text-[18px] font-black leading-tight text-[#2d2f49]">
+                  <h3 className="text-[18px] font-black leading-tight text-heading">
                     {market.market}
                   </h3>
-                  <p className="mt-[8px] text-[14px] font-medium leading-[1.4] text-[#596173]">
+                  <p className="mt-[8px] text-[14px] font-medium leading-[1.4] text-text">
                     {market.body}
                   </p>
                 </article>
@@ -657,9 +654,9 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="advantage" className="scroll-mt-[100px] bg-[#fffaf8] px-3 pb-[66px] pt-[10px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
-          <p className="text-[16px] font-black uppercase text-[#ff3b0a]">WHY IT MATTERS</p>
-          <h2 className="mt-[16px] max-w-[780px] text-[34px] font-black leading-[1.18] text-[#2d2f49] md:text-[46px]">
+        <section id="advantage" className="scroll-mt-[100px] bg-canvas-base px-3 pb-[66px] pt-[10px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <p className="text-[16px] font-black uppercase text-brand-primary">WHY IT MATTERS</p>
+          <h2 className="mt-[16px] max-w-[780px] text-[34px] font-black leading-[1.18] text-heading md:text-[46px]">
             Why International Agencies Use Local Execution in Pakistan
           </h2>
 
@@ -667,24 +664,24 @@ export default function DmcLandingPage() {
             <AnswerBlock>{advantageAnswer}</AnswerBlock>
           </div>
 
-          <p className="mt-[28px] max-w-[820px] text-[21px] font-medium leading-[1.52] text-[#596173] md:text-[23px]">
+          <p className="mt-[28px] max-w-[820px] text-[21px] font-medium leading-[1.52] text-text md:text-[23px]">
             International agencies often struggle with Pakistan&apos;s unique logistical
             challenges. Our deep local roots turn these obstacles into smooth operations.
           </p>
 
           <div className="mt-[38px] space-y-[25px] md:grid md:grid-cols-3 md:gap-6 md:space-y-0">
             {advantagePoints.map((point) => (
-              <div key={point.title} className="flex gap-[14px] md:flex-col md:rounded-[18px] md:border md:border-[#ebe9e7] md:bg-white md:p-[20px] md:shadow-[0_2px_8px_rgba(20,24,36,0.04)]">
+              <div key={point.title} className="flex gap-[14px] md:flex-col md:rounded-[18px] md:border md:border-canvas-line md:bg-white md:p-[20px] md:shadow-[0_2px_8px_rgba(20,24,36,0.04)]">
                 <CheckCircle2
                   size={26}
                   strokeWidth={2.4}
-                  className="mt-1 shrink-0 text-[#ff3b0a]"
+                  className="mt-1 shrink-0 text-brand-primary"
                 />
                 <div>
-                  <h3 className="text-[19px] font-black leading-tight text-[#2d2f49]">
+                  <h3 className="text-[19px] font-black leading-tight text-heading">
                     {point.title}
                   </h3>
-                  <p className="mt-[7px] text-[16.5px] font-medium leading-[1.35] text-[#596173]">
+                  <p className="mt-[7px] text-[16.5px] font-medium leading-[1.35] text-text">
                     {point.body}
                   </p>
                 </div>
@@ -693,8 +690,8 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="credentials" className="scroll-mt-[100px] bg-[#fffaf8] px-[29px] pb-[106px] pt-[47px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
-          <h2 className="text-[30px] font-black leading-[1.35] text-[#2d2f49] md:text-[44px]">
+        <section id="credentials" className="scroll-mt-[100px] bg-canvas-base px-[29px] pb-[106px] pt-[47px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <h2 className="text-[30px] font-black leading-[1.35] text-heading md:text-[44px]">
             Structured. Registered.
             <br />
             Mature.
@@ -704,16 +701,16 @@ export default function DmcLandingPage() {
             <AnswerBlock>{credentialsAnswer}</AnswerBlock>
           </div>
 
-          <p className="mt-[20px] max-w-[720px] text-[16.5px] font-medium leading-[1.45] text-[#596173] md:text-[18px]">
+          <p className="mt-[20px] max-w-[720px] text-[16.5px] font-medium leading-[1.45] text-text md:text-[18px]">
             We aren&apos;t freelancers. We are an operationally mature DMC designed for B2B
             reliability.
           </p>
 
-          <div className="mt-[26px] rounded-[18px] border border-[#ebe9e7] bg-white px-[18px] py-[18px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:px-6">
+          <div className="mt-[26px] rounded-[18px] border border-canvas-line bg-white px-[18px] py-[18px] shadow-[0_2px_8px_rgba(20,24,36,0.04)] md:px-6">
             <ul className="space-y-[12px] md:grid md:grid-cols-3 md:gap-4 md:space-y-0">
               {trustProofs.map((item) => (
-                <li key={item} className="flex gap-[10px] text-[14px] font-bold leading-[1.35] text-[#2d2f49]">
-                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-[#ff3b0a]" />
+                <li key={item} className="flex gap-[10px] text-[14px] font-bold leading-[1.35] text-heading">
+                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-brand-primary" />
                   {item}
                 </li>
               ))}
@@ -726,7 +723,7 @@ export default function DmcLandingPage() {
               return (
                 <article
                   key={card.title}
-                  className="flex min-h-[116px] items-center gap-[20px] rounded-[20px] border border-[#ebe9e7] bg-white px-[20px] py-[20px] shadow-[0_2px_9px_rgba(20,24,36,0.05)] md:min-h-[210px] md:flex-col md:items-start"
+                  className="flex min-h-[116px] items-center gap-[20px] rounded-[20px] border border-canvas-line bg-white px-[20px] py-[20px] shadow-[0_2px_9px_rgba(20,24,36,0.05)] md:min-h-[210px] md:flex-col md:items-start"
                 >
                   <div
                     className={`flex h-[51px] w-[51px] shrink-0 items-center justify-center rounded-full ${card.bg}`}
@@ -734,10 +731,10 @@ export default function DmcLandingPage() {
                     <Icon size={25} strokeWidth={3} className={card.color} />
                   </div>
                   <div>
-                    <h3 className="text-[18px] font-black leading-tight text-[#2d2f49]">
+                    <h3 className="text-[18px] font-black leading-tight text-heading">
                       {card.title}
                     </h3>
-                    <p className="mt-[9px] text-[14px] font-medium leading-[1.3] text-[#596173]">
+                    <p className="mt-[9px] text-[14px] font-medium leading-[1.3] text-text">
                       {card.body}
                     </p>
                   </div>
@@ -748,7 +745,7 @@ export default function DmcLandingPage() {
 
           <a
             href="#urgent-enquiry"
-            className="mt-[30px] flex min-h-[65px] items-center justify-center rounded-[18px] border-2 border-[#2d2f49] px-5 py-3 text-center text-[17px] font-black leading-tight text-[#2d2f49] md:max-w-[360px] md:text-[18px]"
+            className="mt-[30px] flex min-h-[65px] items-center justify-center rounded-[18px] border-2 border-heading px-5 py-3 text-center text-[17px] font-black leading-tight text-heading md:max-w-[360px] md:text-[18px]"
           >
             Request Company Credentials
           </a>
@@ -758,14 +755,14 @@ export default function DmcLandingPage() {
           id="external-reputation"
           className="scroll-mt-[100px] bg-white px-4 py-14 md:px-8 md:py-[72px] lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
         >
-          <div className="mx-auto max-w-[900px] rounded-[22px] border border-[#ebe9e7] bg-[#fffaf8] px-5 py-6 shadow-[0_2px_10px_rgba(20,24,36,0.05)] md:px-7 md:py-7">
-            <p className="text-[13px] font-black uppercase tracking-[0.08em] text-[#ff3b0a]">
+          <div className="mx-auto max-w-[900px] rounded-[22px] border border-canvas-line bg-canvas-base px-5 py-6 shadow-[0_2px_10px_rgba(20,24,36,0.05)] md:px-7 md:py-7">
+            <p className="text-[13px] font-black uppercase tracking-[0.08em] text-brand-primary">
               External reputation
             </p>
-            <h2 className="mt-2 text-[25px] font-black leading-tight text-[#2d2f49] md:text-[32px]">
+            <h2 className="mt-2 text-[25px] font-black leading-tight text-heading md:text-[32px]">
               External Reputation & Entity Proof
             </h2>
-            <p className="mt-4 max-w-[760px] text-[15px] font-medium leading-[1.55] text-[#596173] md:text-[16px]">
+            <p className="mt-4 max-w-[760px] text-[15px] font-medium leading-[1.55] text-text md:text-[16px]">
               Foreign agencies can verify 3Musafir through public brand and reputation sources
               including Trustpilot, Medium, LinkedIn, and our official review pages. These sources
               help show that 3Musafir is an active Pakistan travel company with a public operating
@@ -779,12 +776,12 @@ export default function DmcLandingPage() {
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-[14px] border border-[#ebe9e7] bg-white px-4 py-3 transition hover:border-[#ff3b0a]/40 hover:shadow-[0_8px_18px_rgba(20,24,36,0.06)]"
+                  className="rounded-[14px] border border-canvas-line bg-white px-4 py-3 transition hover:border-brand-primary/40 hover:shadow-[0_8px_18px_rgba(20,24,36,0.06)]"
                 >
-                  <span className="block text-[14px] font-black leading-tight text-[#2d2f49]">
+                  <span className="block text-[14px] font-black leading-tight text-heading">
                     {item.label}
                   </span>
-                  <span className="mt-1 block text-[13px] font-medium leading-[1.4] text-[#596173]">
+                  <span className="mt-1 block text-[13px] font-medium leading-[1.4] text-text">
                     {item.description}
                   </span>
                 </a>
@@ -795,11 +792,11 @@ export default function DmcLandingPage() {
 
         <section id="pricing" className="scroll-mt-[100px] bg-white px-[18px] pb-[29px] pt-[38px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
           <div className="text-center">
-            <p className="text-[14px] font-black uppercase text-[#ff3b0a]">VALUE PROPOSITION</p>
-            <h2 className="mx-auto mt-[14px] max-w-[720px] text-[29px] font-black leading-tight text-[#2d2f49] md:text-[42px]">
+            <p className="text-[14px] font-black uppercase text-brand-primary">VALUE PROPOSITION</p>
+            <h2 className="mx-auto mt-[14px] max-w-[720px] text-[29px] font-black leading-tight text-heading md:text-[42px]">
               Transparent B2B Pricing for Pakistan Programs
             </h2>
-            <p className="mx-auto mt-[18px] max-w-[540px] text-[15px] font-medium text-[#596173] md:text-[17px]">
+            <p className="mx-auto mt-[18px] max-w-[540px] text-[15px] font-medium text-text md:text-[17px]">
               Competitive rates designed for agency margins.
             </p>
           </div>
@@ -814,17 +811,17 @@ export default function DmcLandingPage() {
           >
             <a
               href="/pakistan-dmc/tours/skardu"
-              className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
+              className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-brand-primary/30 bg-canvas-soft px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
             >
             <div className="flex justify-between gap-4">
               <div>
-                <p className="text-[12px] font-black uppercase text-[#ff3b0a]">Direct tour package</p>
-                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-[#2d2f49]">
+                <p className="text-[12px] font-black uppercase text-brand-primary">Direct tour package</p>
+                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-heading">
                   Skardu Valley
                   <br />
                   DMC Itinerary
                 </h3>
-                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-[#596173]">
+                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-text">
                   10-day Gilgit-Baltistan group tour for foreign agencies.
                 </p>
               </div>
@@ -838,32 +835,32 @@ export default function DmcLandingPage() {
               ].map((item) => (
                 <li
                   key={item}
-                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-[#2d2f49]"
+                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-heading"
                 >
-                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-[#ff3b0a]" />
+                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-brand-primary" />
                   {item}
                 </li>
               ))}
             </ul>
 
-            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,59,10,0.18)] md:mt-auto">
+            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-brand-primary text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,144,0,0.18)] md:mt-auto">
               View Skardu Package
             </span>
           </a>
 
           <a
             href="/pakistan-dmc/tours/chitral"
-            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
+            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-brand-primary/30 bg-canvas-soft px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
           >
             <div className="flex justify-between gap-4">
               <div>
-                <p className="text-[12px] font-black uppercase text-[#ff3b0a]">Direct tour package</p>
-                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-[#2d2f49]">
+                <p className="text-[12px] font-black uppercase text-brand-primary">Direct tour package</p>
+                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-heading">
                   Chitral & Kalash
                   <br />
                   DMC Itinerary
                 </h3>
-                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-[#596173]">
+                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-text">
                   10-day heritage and cultural tour for foreign agencies.
                 </p>
               </div>
@@ -877,32 +874,32 @@ export default function DmcLandingPage() {
               ].map((item) => (
                 <li
                   key={item}
-                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-[#2d2f49]"
+                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-heading"
                 >
-                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-[#ff3b0a]" />
+                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-brand-primary" />
                   {item}
                 </li>
               ))}
             </ul>
 
-            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,59,10,0.18)] md:mt-auto">
+            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-brand-primary text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,144,0,0.18)] md:mt-auto">
               View Chitral Package
             </span>
           </a>
 
           <a
             href="/pakistan-dmc/special-interests/kalash-festival-2027"
-            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
+            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-brand-primary/30 bg-canvas-soft px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
           >
             <div className="flex justify-between gap-4">
               <div>
-                <p className="text-[12px] font-black uppercase text-[#ff3b0a]">Special interest</p>
-                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-[#2d2f49]">
+                <p className="text-[12px] font-black uppercase text-brand-primary">Special interest</p>
+                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-heading">
                   Kalash Festival
                   <br />
                   2027 DMC
                 </h3>
-                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-[#596173]">
+                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-text">
                   Chilam Joshi festival itinerary for foreign agencies.
                 </p>
               </div>
@@ -916,32 +913,32 @@ export default function DmcLandingPage() {
               ].map((item) => (
                 <li
                   key={item}
-                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-[#2d2f49]"
+                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-heading"
                 >
-                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-[#ff3b0a]" />
+                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-brand-primary" />
                   {item}
                 </li>
               ))}
             </ul>
 
-            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,59,10,0.18)] md:mt-auto">
+            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-brand-primary text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,144,0,0.18)] md:mt-auto">
               View Kalash Festival Plan
             </span>
           </a>
 
           <a
             href="/pakistan-dmc/tours/hunza"
-            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
+            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-brand-primary/30 bg-canvas-soft px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
           >
             <div className="flex justify-between gap-4">
               <div>
-                <p className="text-[12px] font-black uppercase text-[#ff3b0a]">Direct tour package</p>
-                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-[#2d2f49]">
+                <p className="text-[12px] font-black uppercase text-brand-primary">Direct tour package</p>
+                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-heading">
                   Hunza Valley
                   <br />
                   DMC Itinerary
                 </h3>
-                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-[#596173]">
+                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-text">
                   10-day Northern Pakistan group tour for foreign agencies.
                 </p>
               </div>
@@ -955,32 +952,32 @@ export default function DmcLandingPage() {
               ].map((item) => (
                 <li
                   key={item}
-                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-[#2d2f49]"
+                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-heading"
                 >
-                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-[#ff3b0a]" />
+                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-brand-primary" />
                   {item}
                 </li>
               ))}
             </ul>
 
-            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,59,10,0.18)] md:mt-auto">
+            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-brand-primary text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,144,0,0.18)] md:mt-auto">
               View Hunza Package
             </span>
           </a>
 
           <a
             href="/pakistan-dmc/tours/k2-basecamp-trek"
-            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-[#ffd2c6] bg-[#fff4f0] px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
+            className="flex w-[290px] shrink-0 snap-start flex-col rounded-[20px] border border-brand-primary/30 bg-canvas-soft px-[31px] pb-[30px] pt-[34px] shadow-[0_2px_8px_rgba(20,24,36,0.05)] transition hover:-translate-y-1 hover:shadow-[0_10px_24px_rgba(20,24,36,0.09)] sm:w-[340px] lg:w-[360px]"
           >
             <div className="flex justify-between gap-4">
               <div>
-                <p className="text-[12px] font-black uppercase text-[#ff3b0a]">Direct tour package</p>
-                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-[#2d2f49]">
+                <p className="text-[12px] font-black uppercase text-brand-primary">Direct tour package</p>
+                <h3 className="mt-[9px] text-[24px] font-black leading-tight text-heading">
                   K2 Base Camp
                   <br />
                   DMC Services
                 </h3>
-                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-[#596173]">
+                <p className="mt-[8px] text-[15.5px] font-medium leading-[1.5] text-text">
                   Expedition logistics for agencies and adventure operators.
                 </p>
               </div>
@@ -994,33 +991,33 @@ export default function DmcLandingPage() {
               ].map((item) => (
                 <li
                   key={item}
-                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-[#2d2f49]"
+                  className="flex items-start gap-[14px] text-[13.5px] font-medium leading-[1.4] text-heading"
                 >
-                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-[#ff3b0a]" />
+                  <Check size={18} strokeWidth={3} className="mt-[1px] shrink-0 text-brand-primary" />
                   {item}
                 </li>
               ))}
             </ul>
 
-            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-[#ff3b0a] text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,59,10,0.18)] md:mt-auto">
+            <span className="mt-[31px] flex h-[49px] items-center justify-center rounded-[14px] bg-brand-primary text-[14px] font-black text-white shadow-[0_10px_20px_rgba(255,144,0,0.18)] md:mt-auto">
               View K2 Package
             </span>
           </a>
 
           </div>
 
-          <p className="mx-auto mt-[58px] max-w-[314px] text-center text-[12.5px] font-medium leading-[1.5] text-[#6f7481]">
+          <p className="mx-auto mt-[58px] max-w-[314px] text-center text-[12.5px] font-medium leading-[1.5] text-text">
             * Prices are indicative and vary based on season, group size, and itinerary.
           </p>
         </section>
 
-        <section id="faqs" className="scroll-mt-[100px] bg-[#2d2f49] px-3 pb-[48px] pt-[75px] text-white md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section id="faqs" className="scroll-mt-[100px] bg-heading px-3 pb-[48px] pt-[75px] text-white md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
           <h2 className="mx-auto max-w-[640px] text-center text-[35px] font-black leading-[1.05] text-white md:text-[48px]">
             Frequently Asked
             <br />
             Questions
           </h2>
-          <p className="mx-auto mt-[27px] max-w-[620px] text-center text-[17px] font-medium leading-[1.55] text-[#b9bdca] md:text-[18px]">
+          <p className="mx-auto mt-[27px] max-w-[620px] text-center text-[17px] font-medium leading-[1.55] text-white/70 md:text-[18px]">
             Answers for international agencies evaluating 3Musafir as a Pakistan DMC, inbound tour
             operator, ground handler, and logistics partner.
           </p>
@@ -1029,7 +1026,7 @@ export default function DmcLandingPage() {
             {dmcFaqs.map((faq, index) => (
               <details
                 key={faq.question}
-                className="group rounded-[12px] bg-[#1e2533] px-[23px] py-[25px]"
+                className="group rounded-[12px] bg-heading/80 px-[23px] py-[25px]"
                 open={index === 0}
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-black leading-[1.55] [&::-webkit-details-marker]:hidden">
@@ -1037,10 +1034,10 @@ export default function DmcLandingPage() {
                   <ChevronDown
                     size={19}
                     strokeWidth={3}
-                    className="shrink-0 text-[#ff3b0a] transition group-open:rotate-180"
+                    className="shrink-0 text-brand-primary transition group-open:rotate-180"
                   />
                 </summary>
-                <p className="mt-3 text-[14px] font-medium leading-[1.5] text-[#b9bdca]">
+                <p className="mt-3 text-[14px] font-medium leading-[1.5] text-white/70">
                   {faq.answer}
                 </p>
               </details>
@@ -1049,9 +1046,9 @@ export default function DmcLandingPage() {
         </section>
 
         <section id="partner" className="scroll-mt-[100px] bg-white px-[15px] pb-[24px] pt-[42px] md:px-8 md:py-20 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
-          <div className="rounded-[20px] border border-[#ebe9e7] bg-[#f8f8fa] px-[31px] pb-[25px] pt-[32px] shadow-[0_1px_4px_rgba(20,24,36,0.03)] md:px-8 md:py-8">
-            <h2 className="text-[24px] font-black leading-tight text-[#2d2f49] md:text-[34px]">Become a Partner</h2>
-            <p className="mt-[17px] max-w-[620px] text-[13.5px] font-medium leading-[1.45] text-[#596173] md:text-[16px]">
+          <div className="rounded-[20px] border border-canvas-line bg-canvas-soft px-[31px] pb-[25px] pt-[32px] shadow-[0_1px_4px_rgba(20,24,36,0.03)] md:px-8 md:py-8">
+            <h2 className="text-[24px] font-black leading-tight text-heading md:text-[34px]">Become a Partner</h2>
+            <p className="mt-[17px] max-w-[620px] text-[13.5px] font-medium leading-[1.45] text-text md:text-[16px]">
               Join our network of international agencies and unlock exclusive B2B rates.
             </p>
 
@@ -1059,7 +1056,7 @@ export default function DmcLandingPage() {
               href="https://wa.me/923221848940?text=Hi%203Musafir%2C%20I%20want%20to%20partner%20for%20Pakistan%20DMC%20services."
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-[23px] flex min-h-[52px] w-full items-center justify-center rounded-[14px] bg-[#2d2f49] px-5 py-3 text-center text-[15px] font-black leading-tight text-white shadow-[0_8px_18px_rgba(20,24,36,0.12)] md:max-w-[300px]"
+              className="mt-[23px] flex min-h-[52px] w-full items-center justify-center rounded-[14px] bg-heading px-5 py-3 text-center text-[15px] font-black leading-tight text-white shadow-[0_8px_18px_rgba(20,24,36,0.12)] md:max-w-[300px]"
             >
               Chat on WhatsApp
             </a>
@@ -1067,20 +1064,20 @@ export default function DmcLandingPage() {
         </section>
 
         <section id="urgent-enquiry" className="scroll-mt-[100px] bg-white px-[17px] pb-[37px] pt-[4px] md:px-8 md:pb-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
-          <div className="rounded-[20px] border border-[#ffc9bb] bg-[#fff4f0] px-[31px] pb-[30px] pt-[27px] md:grid md:grid-cols-[0.8fr_1.2fr] md:gap-8 md:px-8 md:py-8 lg:gap-12">
+          <div className="rounded-[20px] border border-brand-primary/30 bg-canvas-soft px-[31px] pb-[30px] pt-[27px] md:grid md:grid-cols-[0.8fr_1.2fr] md:gap-8 md:px-8 md:py-8 lg:gap-12">
             <div>
             <div className="flex items-center gap-[13px]">
-              <div className="flex h-[38px] w-[38px] items-center justify-center rounded-full bg-[#ff3b0a] text-white">
+              <div className="flex h-[38px] w-[38px] items-center justify-center rounded-full bg-brand-primary text-white">
                 <Zap size={21} fill="white" strokeWidth={2.5} />
               </div>
-              <h2 className="text-[25px] font-black leading-[1.25] text-[#2d2f49] md:text-[36px]">
+              <h2 className="text-[25px] font-black leading-[1.25] text-heading md:text-[36px]">
                 Urgent Inquiry /
                 <br />
                 Quote
               </h2>
             </div>
 
-            <p className="mt-[31px] text-[15.5px] font-medium leading-[1.5] text-[#596173] md:text-[17px]">
+            <p className="mt-[31px] text-[15.5px] font-medium leading-[1.5] text-text md:text-[17px]">
               Have a group ready to go? Need a quote within 24 hours? Fill out the details below
               for priority handling.
             </p>
@@ -1091,7 +1088,7 @@ export default function DmcLandingPage() {
                 href="https://wa.me/923221848940?text=Hi%203Musafir%2C%20I%20need%20a%20Pakistan%20DMC%20quote%20for%20an%20agency%20group."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex min-h-[57px] w-full items-center justify-center rounded-[14px] bg-[#ff3b0a] px-5 py-3 text-center text-[16px] font-black leading-tight text-white shadow-[0_13px_22px_rgba(255,59,10,0.22)] md:max-w-[360px] md:text-[17px]"
+                className="flex min-h-[57px] w-full items-center justify-center rounded-[14px] bg-brand-primary px-5 py-3 text-center text-[16px] font-black leading-tight text-white shadow-[0_13px_22px_rgba(255,144,0,0.22)] md:max-w-[360px] md:text-[17px]"
               >
                 Request Quote on WhatsApp
               </a>
@@ -1099,20 +1096,19 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <footer id="footer" className="scroll-mt-[100px] bg-[#2d2f49] px-2 pb-[83px] pt-[24px] text-white md:px-8 md:py-16 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <footer id="footer" className="scroll-mt-[100px] bg-heading px-2 pb-[83px] pt-[24px] text-white md:px-8 md:py-16 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
           <div className="md:grid md:grid-cols-[1.1fr_0.9fr] md:gap-12">
           <div>
-            <div className="flex items-center gap-[8px]">
+            <a href="/" className="relative block h-12 w-44 overflow-hidden rounded-[10px] bg-white px-2" aria-label="3Musafir home">
               <Image
-                src="/3mlogosmall.svg"
-                alt="3Musafir Travels logo"
-                width={24}
-                height={24}
-                className="h-[24px] w-[24px] object-contain"
+                src="/primarylogo.svg"
+                alt="3Musafir"
+                fill
+                sizes="176px"
+                className="object-contain object-left"
               />
-              <strong className="text-[16px] font-black">3Musafir Travels</strong>
-            </div>
-            <p className="mt-[23px] max-w-[420px] text-[15.5px] font-medium leading-[1.55] text-[#b9bdca] md:text-[16px]">
+            </a>
+            <p className="mt-[23px] max-w-[420px] text-[15.5px] font-medium leading-[1.55] text-white/70 md:text-[16px]">
               Your trusted B2B Destination Management Company in Pakistan. Registered, insured, and
               operationally ready.
             </p>
@@ -1133,7 +1129,7 @@ export default function DmcLandingPage() {
           <div className="mt-[34px] space-y-[35px] md:mt-0 md:grid md:grid-cols-2 md:gap-10 md:space-y-0">
             <div>
               <h3 className="text-[15px] font-black">Company</h3>
-              <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-[#b9bdca]">
+              <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-white/70">
                 <li>
                   <a href="/about-3musafir">About 3Musafir</a>
                 </li>
@@ -1151,7 +1147,7 @@ export default function DmcLandingPage() {
 
             <div>
               <h3 className="text-[15px] font-black">Services</h3>
-              <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-[#b9bdca]">
+              <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-white/70">
                 <li>
                   <a href="#services">Pakistan DMC services</a>
                 </li>
@@ -1169,7 +1165,7 @@ export default function DmcLandingPage() {
           </div>
           </div>
 
-          <div className="mt-[46px] border-t border-white/5 px-[15px] pt-[32px] text-[13px] font-medium text-[#878b9d]">
+          <div className="mt-[46px] border-t border-white/5 px-[15px] pt-[32px] text-[13px] font-medium text-white/45">
             &copy; 2024 3Musafir Travels (Pvt) Ltd. All rights reserved.
           </div>
         </footer>
@@ -1177,13 +1173,13 @@ export default function DmcLandingPage() {
         <div className="fixed bottom-0 left-1/2 z-[60] flex w-full max-w-[500px] -translate-x-1/2 gap-3 bg-white/95 px-3 pb-[14px] pt-[15px] backdrop-blur lg:hidden">
           <a
             href="#partner"
-            className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-[#f2f3f5] text-[12px] font-extrabold text-[#2d2f49]"
+            className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-canvas-soft text-[12px] font-extrabold text-heading"
           >
             Partner
           </a>
           <a
             href="#urgent-enquiry"
-            className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-[#ff3b0a] text-[12px] font-extrabold text-white shadow-[0_9px_18px_rgba(255,59,10,0.25)]"
+            className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-brand-primary text-[12px] font-extrabold text-white shadow-[0_9px_18px_rgba(255,144,0,0.25)]"
           >
             Contact 3Musafir
           </a>

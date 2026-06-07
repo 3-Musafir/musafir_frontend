@@ -201,22 +201,22 @@ export const credentialCards = [
     title: "Legal Compliance",
     body: "Full tax compliance and regulatory adherence in all operating regions.",
     icon: "gavel",
-    bg: "bg-[#edf3ff]",
-    color: "text-[#2764e7]",
+    bg: "bg-brand-primary/10",
+    color: "text-brand-primary",
   },
   {
     title: "Service Level Agreements (SLAs)",
     body: "Everything is written down for your clarity and peace of mind.",
     icon: "gavel",
-    bg: "bg-[#ecfbf2]",
-    color: "text-[#13a665]",
+    bg: "bg-canvas-soft",
+    color: "text-heading",
   },
   {
     title: "24/7 On-Ground Support",
     body: "Dedicated dispatch teams monitoring every movement.",
     icon: "headphones",
-    bg: "bg-[#ffe9e2]",
-    color: "text-[#ff3b0a]",
+    bg: "bg-brand-primary/10",
+    color: "text-brand-primary",
   },
 ];
 
