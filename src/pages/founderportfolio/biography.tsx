@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ImageCarousel from "@/components/founderportfolio/ImageCarousel";
 import StatsGrid from "@/components/founderportfolio/StatsGrid";
+import { PublicPageContainer } from "@/components/layout/PublicLayout";
 import { isIndexablePath, siteUrl as baseSiteUrl } from "@/lib/seo/seoConfig";
 
 const title = "3Musafir Biography";
@@ -103,7 +104,7 @@ export default function FounderBiographyPage() {
         />
       </Head>
 
-      <main className="min-h-screen bg-gray-50 px-4 py-10 sm:px-5 md:px-6 lg:px-8">
+      <PublicPageContainer as="main" className="min-h-screen bg-gray-50">
         <div className="mx-auto w-full max-w-screen-2xl space-y-10 lg:space-y-12">
           <section className="rounded-3xl border border-gray-200 bg-white p-6 md:p-10 shadow-sm">
             <div className="grid gap-6 md:grid-cols-[1.1fr_1fr] md:items-center">
@@ -163,7 +164,7 @@ export default function FounderBiographyPage() {
             </div>
           </section>
         </div>
-      </main>
+      </PublicPageContainer>
     </>
   );
 }

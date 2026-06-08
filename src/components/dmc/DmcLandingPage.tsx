@@ -10,13 +10,14 @@ import {
   Download,
   Gavel,
   Headphones,
-  Linkedin,
   Menu,
   X,
   Zap,
 } from "lucide-react";
 import { useState } from "react";
 
+import Footer from "@/components/Footer";
+import PublicHeader from "@/components/header/PublicHeader";
 import {
   agencyMarkets,
   advantageAnswer,
@@ -302,19 +303,8 @@ export default function DmcLandingPage() {
 
       <DmcNavMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
-      <div className="mx-auto min-h-screen w-full max-w-[500px] overflow-hidden bg-canvas-base md:max-w-none">
-        <header className="sticky top-0 z-50 flex h-[100px] items-center justify-between bg-white px-[22px] md:h-[92px] md:px-8 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
-          <a href="/" className="relative block h-12 w-44 shrink-0 overflow-hidden sm:w-52" aria-label="3Musafir home">
-            <Image
-              src="/primarylogo.svg"
-              alt="3Musafir"
-              fill
-              priority
-              sizes="(min-width: 640px) 208px, 176px"
-              className="object-contain object-left"
-            />
-          </a>
-
+      <div className="min-h-screen w-full overflow-x-hidden bg-canvas-base">
+        <PublicHeader variant="dmc" hideAuthCta>
           <nav
             aria-label="Pakistan DMC navigation"
             className="hidden items-center gap-2 lg:flex"
@@ -340,7 +330,7 @@ export default function DmcLandingPage() {
                   className="transition-transform group-open:rotate-180"
                 />
               </summary>
-              <div className="absolute right-0 top-[calc(100%+12px)] z-[80] w-[360px] rounded-[18px] border border-canvas-line bg-white p-2 shadow-[0_20px_45px_rgba(45,47,73,0.16)]">
+              <div className="absolute right-0 top-[calc(100%+12px)] z-[80] w-[min(90vw,360px)] rounded-[18px] border border-canvas-line bg-white p-2 shadow-[0_20px_45px_rgba(45,47,73,0.16)]">
                 <div className="max-h-[68vh] overflow-y-auto pr-1">
                   {specialInterestNavItems.map((item) => (
                     <a
@@ -376,9 +366,9 @@ export default function DmcLandingPage() {
           >
             <Menu size={30} strokeWidth={3} />
           </button>
-        </header>
+        </PublicHeader>
 
-        <section id="hero" className="scroll-mt-[100px] md:grid md:grid-cols-[0.92fr_1.08fr] md:items-center md:gap-8 md:px-8 md:py-10 lg:gap-12 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section id="hero" className="mx-auto w-full max-w-6xl scroll-mt-20 md:grid md:grid-cols-[0.92fr_1.08fr] md:items-center md:gap-8 md:px-8 md:py-10 lg:gap-12 xl:px-10">
           <div className="relative h-[212px] w-full overflow-hidden bg-heading grayscale md:order-2 md:h-auto md:aspect-[780/454] md:min-h-0 md:rounded-[28px]">
             <Image
               src="/3musafir-founders.jpg"
@@ -402,7 +392,7 @@ export default function DmcLandingPage() {
               <span>Pakistan DMC</span>
             </nav>
 
-            <h1 className="max-w-[455px] text-[40px] font-black leading-[1.18] text-heading md:max-w-none md:text-[54px] md:leading-[1.04] lg:text-[64px]">
+            <h1 className="max-w-[455px] text-[40px] font-black leading-[1.18] text-heading md:max-w-none md:text-[54px] md:leading-[1.04] lg:text-[60px]">
               Pakistan DMC for <span className="text-brand-primary">International Travel Agencies</span>
             </h1>
 
@@ -454,7 +444,7 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="culture" className="scroll-mt-[100px] bg-canvas-base px-3 py-16 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section id="culture" className="scroll-mt-[100px] bg-canvas-base px-3 py-16 md:px-8 md:py-24 lg:px-12 xl:px-10">
           <div className="mx-auto max-w-[760px] text-center">
             <h2 className="mx-auto max-w-[620px] text-[31px] font-black leading-[1.08] text-heading md:text-[42px]">
               Our Partner Culture
@@ -471,7 +461,7 @@ export default function DmcLandingPage() {
             {cultureInstagramReels.map((reel) => (
               <article
                 key={reel.permalink}
-                className="h-[540px] w-[326px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-canvas-line bg-white shadow-[0_2px_9px_rgba(20,24,36,0.05)] sm:w-[360px]"
+                className="h-[540px] w-[82vw] max-w-[326px] shrink-0 snap-start overflow-hidden rounded-[18px] border border-canvas-line bg-white shadow-[0_2px_9px_rgba(20,24,36,0.05)] sm:w-[360px]"
               >
                 <blockquote
                   className="instagram-media"
@@ -501,7 +491,7 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="services" className="scroll-mt-[100px] bg-white px-3 pb-24 pt-12 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section id="services" className="scroll-mt-[100px] bg-white px-3 pb-24 pt-12 md:px-8 md:py-24 lg:px-12 xl:px-10">
           <div className="mx-auto max-w-[760px] text-center">
             <h2 className="mx-auto max-w-[620px] text-[29px] font-black leading-[1.08] text-heading md:text-[42px]">
               Comprehensive DMC Services in Pakistan
@@ -576,7 +566,7 @@ export default function DmcLandingPage() {
 
         <section
           id="destinations"
-          className="scroll-mt-[100px] bg-white px-3 pb-24 pt-12 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
+          className="scroll-mt-[100px] bg-white px-3 pb-24 pt-12 md:px-8 md:py-24 lg:px-12 xl:px-10"
         >
           <div className="mx-auto max-w-[760px] text-center">
             <p className="text-[14px] font-black uppercase text-brand-primary">DMC destinations</p>
@@ -617,7 +607,7 @@ export default function DmcLandingPage() {
 
         <section
           id="international-agencies"
-          className="scroll-mt-[100px] bg-canvas-base px-3 pb-[76px] pt-[48px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
+          className="scroll-mt-[100px] bg-canvas-base px-3 pb-[76px] pt-[48px] md:px-8 md:py-24 lg:px-12 xl:px-10"
         >
           <div className="md:grid md:grid-cols-[0.9fr_1.1fr] md:gap-10 lg:gap-14">
             <div>
@@ -654,7 +644,7 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="advantage" className="scroll-mt-[100px] bg-canvas-base px-3 pb-[66px] pt-[10px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section id="advantage" className="scroll-mt-[100px] bg-canvas-base px-3 pb-[66px] pt-[10px] md:px-8 md:py-24 lg:px-12 xl:px-10">
           <p className="text-[16px] font-black uppercase text-brand-primary">WHY IT MATTERS</p>
           <h2 className="mt-[16px] max-w-[780px] text-[34px] font-black leading-[1.18] text-heading md:text-[46px]">
             Why International Agencies Use Local Execution in Pakistan
@@ -690,7 +680,7 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="credentials" className="scroll-mt-[100px] bg-canvas-base px-[29px] pb-[106px] pt-[47px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section id="credentials" className="scroll-mt-[100px] bg-canvas-base px-[29px] pb-[106px] pt-[47px] md:px-8 md:py-24 lg:px-12 xl:px-10">
           <h2 className="text-[30px] font-black leading-[1.35] text-heading md:text-[44px]">
             Structured. Registered.
             <br />
@@ -753,7 +743,7 @@ export default function DmcLandingPage() {
 
         <section
           id="external-reputation"
-          className="scroll-mt-[100px] bg-white px-4 py-14 md:px-8 md:py-[72px] lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
+          className="scroll-mt-[100px] bg-white px-4 py-14 md:px-8 md:py-[72px] lg:px-12 xl:px-10"
         >
           <div className="mx-auto max-w-[900px] rounded-[22px] border border-canvas-line bg-canvas-base px-5 py-6 shadow-[0_2px_10px_rgba(20,24,36,0.05)] md:px-7 md:py-7">
             <p className="text-[13px] font-black uppercase tracking-[0.08em] text-brand-primary">
@@ -790,7 +780,7 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="pricing" className="scroll-mt-[100px] bg-white px-[18px] pb-[29px] pt-[38px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section id="pricing" className="scroll-mt-[100px] bg-white px-[18px] pb-[29px] pt-[38px] md:px-8 md:py-24 lg:px-12 xl:px-10">
           <div className="text-center">
             <p className="text-[14px] font-black uppercase text-brand-primary">VALUE PROPOSITION</p>
             <h2 className="mx-auto mt-[14px] max-w-[720px] text-[29px] font-black leading-tight text-heading md:text-[42px]">
@@ -1011,7 +1001,7 @@ export default function DmcLandingPage() {
           </p>
         </section>
 
-        <section id="faqs" className="scroll-mt-[100px] bg-heading px-3 pb-[48px] pt-[75px] text-white md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section id="faqs" className="scroll-mt-[100px] bg-heading px-3 pb-[48px] pt-[75px] text-white md:px-8 md:py-24 lg:px-12 xl:px-10">
           <h2 className="mx-auto max-w-[640px] text-center text-[35px] font-black leading-[1.05] text-white md:text-[48px]">
             Frequently Asked
             <br />
@@ -1045,7 +1035,7 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="partner" className="scroll-mt-[100px] bg-white px-[15px] pb-[24px] pt-[42px] md:px-8 md:py-20 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section id="partner" className="scroll-mt-[100px] bg-white px-[15px] pb-[24px] pt-[42px] md:px-8 md:py-20 lg:px-12 xl:px-10">
           <div className="rounded-[20px] border border-canvas-line bg-canvas-soft px-[31px] pb-[25px] pt-[32px] shadow-[0_1px_4px_rgba(20,24,36,0.03)] md:px-8 md:py-8">
             <h2 className="text-[24px] font-black leading-tight text-heading md:text-[34px]">Become a Partner</h2>
             <p className="mt-[17px] max-w-[620px] text-[13.5px] font-medium leading-[1.45] text-text md:text-[16px]">
@@ -1063,7 +1053,7 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <section id="urgent-enquiry" className="scroll-mt-[100px] bg-white px-[17px] pb-[37px] pt-[4px] md:px-8 md:pb-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section id="urgent-enquiry" className="scroll-mt-[100px] bg-white px-[17px] pb-[37px] pt-[4px] md:px-8 md:pb-24 lg:px-12 xl:px-10">
           <div className="rounded-[20px] border border-brand-primary/30 bg-canvas-soft px-[31px] pb-[30px] pt-[27px] md:grid md:grid-cols-[0.8fr_1.2fr] md:gap-8 md:px-8 md:py-8 lg:gap-12">
             <div>
             <div className="flex items-center gap-[13px]">
@@ -1096,81 +1086,9 @@ export default function DmcLandingPage() {
           </div>
         </section>
 
-        <footer id="footer" className="scroll-mt-[100px] bg-heading px-2 pb-[83px] pt-[24px] text-white md:px-8 md:py-16 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
-          <div className="md:grid md:grid-cols-[1.1fr_0.9fr] md:gap-12">
-          <div>
-            <a href="/" className="relative block h-12 w-44 overflow-hidden rounded-[10px] bg-white px-2" aria-label="3Musafir home">
-              <Image
-                src="/primarylogo.svg"
-                alt="3Musafir"
-                fill
-                sizes="176px"
-                className="object-contain object-left"
-              />
-            </a>
-            <p className="mt-[23px] max-w-[420px] text-[15.5px] font-medium leading-[1.55] text-white/70 md:text-[16px]">
-              Your trusted B2B Destination Management Company in Pakistan. Registered, insured, and
-              operationally ready.
-            </p>
+        <Footer />
 
-            <div className="mt-[24px] flex gap-[15px]">
-              <a
-                href="https://www.linkedin.com/company/3musafirinternational/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="3Musafir International on LinkedIn"
-                className="flex h-[31px] w-[31px] items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-              >
-                <Linkedin size={14} />
-              </a>
-            </div>
-          </div>
-
-          <div className="mt-[34px] space-y-[35px] md:mt-0 md:grid md:grid-cols-2 md:gap-10 md:space-y-0">
-            <div>
-              <h3 className="text-[15px] font-black">Company</h3>
-              <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-white/70">
-                <li>
-                  <a href="/about-3musafir">About 3Musafir</a>
-                </li>
-                <li>
-                  <a href="/why">why 3Musafir</a>
-                </li>
-                <li>
-                  <a href="/trust-and-verification">trust and verification</a>
-                </li>
-                <li>
-                  <a href="/terms&conditonsby3musafir">Terms and conditions</a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-[15px] font-black">Services</h3>
-              <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-white/70">
-                <li>
-                  <a href="#services">Pakistan DMC services</a>
-                </li>
-                <li>
-                  <a href="#pricing">corporate retreats in Pakistan</a>
-                </li>
-                <li>
-                  <a href="#services">hotel and transport logistics</a>
-                </li>
-                <li>
-                  <a href="#urgent-enquiry">contact 3Musafir</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          </div>
-
-          <div className="mt-[46px] border-t border-white/5 px-[15px] pt-[32px] text-[13px] font-medium text-white/45">
-            &copy; 2024 3Musafir Travels (Pvt) Ltd. All rights reserved.
-          </div>
-        </footer>
-
-        <div className="fixed bottom-0 left-1/2 z-[60] flex w-full max-w-[500px] -translate-x-1/2 gap-3 bg-white/95 px-3 pb-[14px] pt-[15px] backdrop-blur lg:hidden">
+        <div className="fixed bottom-0 left-1/2 z-[60] flex w-full max-w-6xl -translate-x-1/2 gap-3 bg-white/95 px-3 pb-[14px] pt-[15px] backdrop-blur lg:hidden">
           <a
             href="#partner"
             className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-canvas-soft text-[12px] font-extrabold text-heading"

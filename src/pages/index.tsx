@@ -9,11 +9,7 @@ import {
   CheckCircle2,
   Globe2,
   HeartHandshake,
-  Instagram,
-  Linkedin,
-  Mail,
   Map,
-  MessageCircle,
   Mountain,
   ShieldCheck,
   Sparkles,
@@ -21,6 +17,8 @@ import {
   Users,
 } from 'lucide-react';
 
+import Footer from '@/components/Footer';
+import PublicHeader from '@/components/header/PublicHeader';
 import {
   INDEXABLE_PATHS,
   contactPoints,
@@ -60,10 +58,6 @@ const title = '3Musafir | Verified Pakistan Group Tours & Women-First Travel';
 const description =
   'Explore Pakistan with verified community-led group tours, women-first travel experiences, trusted captains, custom journeys, international trips, and inbound DMC services by 3Musafir.';
 const trustpilotUrl = 'https://www.trustpilot.com/review/3musafir.com';
-const instagramUrl = process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/teen_musafir/';
-const linkedinUrl =
-  process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/company/3musafirinternational/';
-const whatsappUrl = 'https://wa.me/923221848940';
 
 const discoveryGroups: DiscoveryGroup[] = [
   {
@@ -453,7 +447,7 @@ export default function PublicHomePage() {
           'Travel verification',
         ],
         contactPoint: contactPoints,
-        sameAs: [...sameAs, trustpilotUrl],
+        sameAs,
         makesOffer: [
           {
             '@type': 'Offer',
@@ -571,7 +565,7 @@ export default function PublicHomePage() {
         />
       </Head>
 
-      <main className="min-h-screen bg-canvas-base text-heading">
+      <main className="min-h-screen overflow-x-hidden bg-canvas-base text-heading">
         <section className="relative flex min-h-[92vh] flex-col overflow-hidden bg-heading text-white">
           <Image
             src="/communityimage7.jpg"
@@ -584,18 +578,7 @@ export default function PublicHomePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-heading/95 via-heading/70 to-heading/25" />
           <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-heading/90 to-heading/0" />
 
-          <header className="relative z-10 flex items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
-            <Link href="/" className="flex items-center" aria-label="3Musafir home">
-              <span className="relative block h-12 w-44 overflow-hidden sm:w-52">
-                <Image
-                  src="/primarylogo.svg"
-                  alt="3Musafir"
-                  fill
-                  sizes="(min-width: 640px) 208px, 176px"
-                  className="object-contain"
-                />
-              </span>
-            </Link>
+          <PublicHeader variant="transparentOverlay" hideAuthCta>
             <nav className="hidden items-center gap-5 text-sm font-medium text-white/82 md:flex">
               <Link href="/fixed-departure" className="hover:text-white">
                 Trips
@@ -610,9 +593,9 @@ export default function PublicHomePage() {
                 DMC
               </Link>
             </nav>
-          </header>
+          </PublicHeader>
 
-          <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-end px-5 pb-8 pt-20 sm:px-8 lg:px-12 lg:pb-12">
+          <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-end px-4 pb-8 pt-20 sm:px-6 lg:px-8 xl:px-10 lg:pb-12">
             <div className="max-w-4xl">
               <p className="mb-5 inline-flex items-center gap-2 rounded-md border border-white/24 bg-white/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/88 backdrop-blur">
                 <HeartHandshake className="h-4 w-4" />
@@ -955,108 +938,7 @@ export default function PublicHomePage() {
           </div>
         </section>
 
-        <footer className="border-t border-canvas-line bg-canvas-soft px-5 py-12 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-7xl">
-            <div className="grid gap-10 lg:grid-cols-[1.15fr_1.85fr]">
-              <div className="space-y-6">
-                <Link href="/" className="relative block h-14 w-56" aria-label="3Musafir home">
-                  <Image
-                    src="/primarylogo.svg"
-                    alt="3Musafir"
-                    fill
-                    sizes="224px"
-                    className="object-contain object-left"
-                  />
-                </Link>
-                <p className="max-w-md text-sm leading-7 text-text">
-                  Community-led Pakistan group tours, women-first travel experiences, and inbound
-                  DMC services built around trust, comfort, and responsible movement.
-                </p>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                  {[
-                    {
-                      label: 'Email',
-                      href: 'mailto:hello@3musafir.com',
-                      value: 'hello@3musafir.com',
-                      icon: Mail,
-                    },
-                    {
-                      label: 'WhatsApp',
-                      href: whatsappUrl,
-                      value: '+92 322 1848940',
-                      icon: MessageCircle,
-                    },
-                  ].map(({ label, href, value, icon: Icon }) => (
-                    <a
-                      key={label}
-                      href={href}
-                      className="group flex items-center gap-3 rounded-md border border-canvas-line bg-white p-3 text-sm shadow-sm transition hover:border-brand-primary/50"
-                    >
-                      <span className="flex h-9 w-9 items-center justify-center rounded-md bg-brand-primary/10 text-brand-primary">
-                        <Icon className="h-4 w-4" />
-                      </span>
-                      <span>
-                        <span className="block text-xs font-bold uppercase tracking-[0.12em] text-text">
-                          {label}
-                        </span>
-                        <span className="mt-0.5 block font-semibold text-heading transition group-hover:text-brand-primary">
-                          {value}
-                        </span>
-                      </span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                {footerLinkGroups.map((group) => (
-                  <div key={group.title}>
-                    <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-heading">
-                      {group.title}
-                    </h2>
-                    <ul className="mt-4 space-y-3">
-                      {group.links.map((link) => (
-                        <li key={link.href}>
-                          <Link
-                            href={link.href}
-                            className="group inline-flex items-start gap-2 text-sm font-medium text-text transition hover:text-brand-primary"
-                          >
-                            <span>{link.label}</span>
-                            <ArrowUpRight className="mt-0.5 h-3.5 w-3.5 opacity-0 transition group-hover:opacity-100" />
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-10 flex flex-col gap-5 border-t border-canvas-line pt-6 md:flex-row md:items-center md:justify-between">
-              <p className="text-xs font-medium text-text">
-                &copy; {new Date().getFullYear()} 3Musafir Travels (Pvt) Ltd. All rights reserved.
-              </p>
-              <div className="flex items-center gap-3">
-                {[
-                  { label: 'Instagram', href: instagramUrl, icon: Instagram },
-                  { label: 'LinkedIn', href: linkedinUrl, icon: Linkedin },
-                  { label: 'Trustpilot', href: trustpilotUrl, icon: Star },
-                ].map(({ label, href, icon: Icon }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={label}
-                    className="flex h-10 w-10 items-center justify-center rounded-md border border-canvas-line bg-white text-heading transition hover:border-brand-primary/60 hover:text-brand-primary"
-                  >
-                    <Icon className="h-4 w-4" />
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </main>
     </>
   );

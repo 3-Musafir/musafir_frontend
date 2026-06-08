@@ -77,6 +77,12 @@ const SEO_MAP: Record<
       "Read real 3Musafir reviews, traveler stories, Google review signals, Trustpilot profile, safety feedback, and post-trip experiences from Pakistan and international group trips.",
     ogImage: "/sc.png",
   },
+  "/intlterms": {
+    title: "International Experience Terms & Refund Policy — 3Musafir",
+    description:
+      "Review 3Musafir international experience booking terms, flight rules, visa document policy, payment timelines, and refund conditions.",
+    ogImage: "/3mwinterlogo.png",
+  },
   "/pakistan-dmc": {
     title: "Pakistan DMC for International Travel Agencies | 3Musafir",
     description:
@@ -214,6 +220,7 @@ const publicStandaloneRoutes = ["/fixed-departure", "/flagship/details"];
 const publicShellRoutes = [
   "/about-3musafir",
   "/explore",
+  "/intlterms",
   "/musafircommunityequityframework",
   "/refundpolicyby3musafir",
   "/reviews",

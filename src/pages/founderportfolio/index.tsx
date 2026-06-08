@@ -4,6 +4,7 @@ import FounderHeroFallback from "@/components/founderportfolio/FounderHeroFallba
 import SkillTiles from "@/components/founderportfolio/SkillTiles";
 import ImageCarousel from "@/components/founderportfolio/ImageCarousel";
 import FaqAccordion from "@/components/founderportfolio/FaqAccordion";
+import { PublicPageContainer } from "@/components/layout/PublicLayout";
 import { isIndexablePath, siteUrl as baseSiteUrl } from "@/lib/seo/seoConfig";
 
 const title = "Founder Portfolio - 3Musafir";
@@ -181,7 +182,7 @@ export default function FounderPortfolioPage() {
         />
       </Head>
 
-      <main className="min-h-screen bg-gray-50 px-4 py-10 sm:px-5 md:px-6 lg:px-8">
+      <PublicPageContainer as="main" className="min-h-screen bg-gray-50">
         <div className="mx-auto w-full max-w-screen-2xl space-y-10 lg:space-y-12">
           <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-canvas-base via-white to-canvas-soft shadow-card">
             <div className="grid min-h-[360px] md:grid-cols-[minmax(0,0.95fr)_minmax(320px,0.9fr)] lg:min-h-[440px]">
@@ -309,7 +310,7 @@ export default function FounderPortfolioPage() {
             </div>
           </section>
         </div>
-      </main>
+      </PublicPageContainer>
     </>
   );
 }

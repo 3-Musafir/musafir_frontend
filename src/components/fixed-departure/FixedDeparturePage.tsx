@@ -2,6 +2,7 @@
 
 import Head from 'next/head';
 import Dashboard from '@/components/dashboard/Dashboard';
+import Footer from '@/components/Footer';
 import { siteName, siteUrl } from '@/lib/seo/seoConfig';
 
 const fixedDeparturePath = '/fixed-departure';
@@ -44,6 +45,7 @@ export default function FixedDeparturePage() {
         />
       </Head>
       <Dashboard />
+      <Footer />
     </>
   );
 }

@@ -2,6 +2,7 @@
 
 import Head from "next/head";
 import Link from 'next/link';
+import { PublicPageContainer } from "@/components/layout/PublicLayout";
 
 export default function TrustAndVerificationPage() {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
@@ -101,9 +102,8 @@ export default function TrustAndVerificationPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </Head>
-    <div className="min-h-screen w-full bg-gray-50">
-      <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
-        <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
+      <PublicPageContainer as="main" className="min-h-screen bg-gray-50">
+        <div className="space-y-10 lg:space-y-12">
           <section className="rounded-2xl bg-white border border-gray-200 p-6 md:p-8 lg:p-10 shadow-sm">
             <div className="max-w-3xl space-y-4">
               <p className="text-xs uppercase tracking-[0.2em] text-text">Trust & safety</p>
@@ -328,8 +328,7 @@ export default function TrustAndVerificationPage() {
             </div>
           </section>
         </div>
-      </main>
-    </div>
+      </PublicPageContainer>
     </>
   );
 }

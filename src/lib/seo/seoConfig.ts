@@ -31,13 +31,50 @@ export const normalizeSeoPath = (path: string) => {
 export const isIndexablePath = (path: string) =>
   indexablePathSet.has(normalizeSeoPath(path));
 
-const configuredProfiles = [
-  process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/teen_musafir/",
-  process.env.NEXT_PUBLIC_TIKTOK_URL,
-  process.env.NEXT_PUBLIC_LINKEDIN_URL || "https://www.linkedin.com/company/3musafirinternational/",
-  process.env.NEXT_PUBLIC_YOUTUBE_URL,
-  process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL || "https://share.google/WMcHCZww0KImXq7B4",
-].filter(Boolean) as string[];
+export const socialProfiles = [
+  {
+    label: "Instagram",
+    href: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/teen_musafir/",
+  },
+  {
+    label: "TikTok",
+    href: process.env.NEXT_PUBLIC_TIKTOK_URL || "https://www.tiktok.com/@3musafir",
+  },
+  {
+    label: "LinkedIn",
+    href:
+      process.env.NEXT_PUBLIC_LINKEDIN_URL ||
+      "https://www.linkedin.com/company/3musafirinternational/",
+  },
+  {
+    label: "Google Business",
+    href: process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL || "https://share.google/WMcHCZww0KImXq7B4",
+  },
+  {
+    label: "Pinterest",
+    href: process.env.NEXT_PUBLIC_PINTEREST_URL || "https://ie.pinterest.com/3musafiir/",
+  },
+  {
+    label: "Substack",
+    href: process.env.NEXT_PUBLIC_SUBSTACK_URL || "https://3musafir.substack.com/",
+  },
+  {
+    label: "Medium",
+    href: process.env.NEXT_PUBLIC_MEDIUM_URL || "https://3musafir.medium.com/",
+  },
+  {
+    label: "Facebook",
+    href: process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://www.facebook.com/3Musafir",
+  },
+  {
+    label: "YouTube",
+    href: process.env.NEXT_PUBLIC_YOUTUBE_URL || "https://www.youtube.com/@3musafir",
+  },
+  {
+    label: "Trustpilot",
+    href: process.env.NEXT_PUBLIC_TRUSTPILOT_URL || "https://www.trustpilot.com/review/3musafir.com",
+  },
+].filter((profile) => Boolean(profile.href));
 
 export const contactPoints = [
   {
@@ -50,7 +87,7 @@ export const contactPoints = [
   },
 ];
 
-export const sameAs: string[] = configuredProfiles;
+export const sameAs: string[] = socialProfiles.map((profile) => profile.href);
 
 export const buildCanonical = (path: string) => {
   const normalized = path && path !== "/" && path.endsWith("/") ? path.slice(0, -1) : path || "/";

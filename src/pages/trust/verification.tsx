@@ -1,6 +1,7 @@
 import Link from "next/link";
 import SeoHead from "@/components/seo/SeoHead";
 import FaqSection from "@/components/seo/FaqSection";
+import { PublicPageContainer } from "@/components/layout/PublicLayout";
 import { verificationFaq } from "@/data/geo/faq";
 
 const title = "Verification — Trust & Safety | 3Musafir";
@@ -17,7 +18,7 @@ export default function VerificationPage() {
         ogImage="/star_shield.png"
         faqItems={verificationFaq}
       />
-      <main className="min-h-screen bg-gray-50 px-4 py-10 md:px-6 lg:px-8">
+      <PublicPageContainer as="main" className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-4xl space-y-8">
           <header className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Trust & Safety</p>
@@ -96,7 +97,7 @@ export default function VerificationPage() {
             </p>
           </section>
         </div>
-      </main>
+      </PublicPageContainer>
     </>
   );
 }

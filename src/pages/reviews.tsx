@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import ReviewFeed from "@/components/ReviewFeed";
 import SeoHead from "@/components/seo/SeoHead";
+import { PublicPageContainer } from "@/components/layout/PublicLayout";
 import { REVIEWS } from "@/data/reviews";
 import { buildCanonical } from "@/lib/seo/seoConfig";
 
@@ -108,8 +109,8 @@ export default function ReviewsPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </Head>
-      <main className="overflow-x-hidden bg-gray-50 px-4 pt-10 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl space-y-8">
+      <PublicPageContainer as="main" className="overflow-x-hidden bg-gray-50">
+        <div className="space-y-8">
           <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white p-6 shadow-sm md:p-10">
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
               3Musafir reviews
@@ -162,7 +163,7 @@ export default function ReviewsPage() {
 
           <ReviewFeed />
         </div>
-      </main>
+      </PublicPageContainer>
     </>
   );
 }

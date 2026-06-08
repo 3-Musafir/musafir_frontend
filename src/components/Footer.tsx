@@ -1,7 +1,13 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { FormEvent, useMemo, useState } from 'react';
+import Image from "next/image";
+import Link from "next/link";
+import { FormEvent, useMemo, useState } from "react";
+import { ArrowUpRight, Mail, MessageCircle } from "lucide-react";
+import {
+  INDEXABLE_PATHS,
+  socialProfiles,
+} from "@/lib/seo/seoConfig";
 
 type FooterLink = {
   label: string;
@@ -14,57 +20,107 @@ type FooterSection = {
   links: FooterLink[];
 };
 
+const routeLabels: Record<string, string> = {
+  "/": "Home",
+  "/fixed-departure": "Fixed departures",
+  "/explore": "Explore",
+  "/reviews": "Reviews",
+  "/why": "Why 3Musafir",
+  "/about-3musafir": "About 3Musafir",
+  "/founderportfolio": "Founder portfolio",
+  "/trust": "Trust & Safety",
+  "/musafircommunityequityframework": "Community framework",
+  "/pakistan-dmc": "Pakistan DMC",
+  "/login": "Login",
+};
+
+const makeRouteLink = (href: string): FooterLink => ({
+  href,
+  label:
+    routeLabels[href] ||
+    href
+      .replace(/^\//, "")
+      .replace(/[-/]/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase()),
+});
+
 const footerSections: FooterSection[] = [
   {
-    id: 'explore',
-    title: 'Explore',
-    links: [
-      { label: 'Trips', href: '/' },
-      { label: 'Explore', href: '/explore' },
-      { label: 'Pakistan DMC', href: '/pakistan-dmc' },
-      { label: 'Why 3Musafir', href: '/why' },
-      { label: 'Reviews', href: '/reviews' },
-    ],
+    id: "travel",
+    title: "Travel",
+    links: ["/", "/fixed-departure", "/explore", "/reviews", "/why"]
+      .filter((href) => INDEXABLE_PATHS.includes(href as (typeof INDEXABLE_PATHS)[number]))
+      .map(makeRouteLink),
   },
   {
-    id: 'company',
-    title: 'Company',
-    links: [
-      { label: 'About 3Musafir', href: '/about-3musafir' },
-      { label: 'Trust & Safety Hub', href: '/trust' },
-      { label: 'Community Framework', href: '/musafircommunityequityframework' },
-    ],
+    id: "company",
+    title: "Company",
+    links: ["/about-3musafir", "/founderportfolio", "/trust", "/musafircommunityequityframework"]
+      .filter((href) => INDEXABLE_PATHS.includes(href as (typeof INDEXABLE_PATHS)[number]))
+      .map(makeRouteLink),
   },
   {
-    id: 'support',
-    title: 'Support',
+    id: "services",
+    title: "Services",
+    links: ["/pakistan-dmc", "/login"]
+      .filter((href) => INDEXABLE_PATHS.includes(href as (typeof INDEXABLE_PATHS)[number]))
+      .map(makeRouteLink),
+  },
+  {
+    id: "policies",
+    title: "Policies",
     links: [
-      { label: 'Refund Policy', href: '/refundpolicyby3musafir' },
-      { label: 'Terms', href: '/terms&conditonsby3musafir' },
-      { label: 'Verification', href: '/trust/verification' },
-      { label: 'Vendor onboarding', href: '/trust/vendor-onboarding' },
+      { label: "Refund policy", href: "/refundpolicyby3musafir" },
+      { label: "Terms", href: "/terms&conditonsby3musafir" },
+      { label: "International terms", href: "/intlterms" },
+      { label: "Verification", href: "/trust/verification" },
+      { label: "Vendor onboarding", href: "/trust/vendor-onboarding" },
     ],
   },
 ];
 
-const trustChips = ['Verified Musafirs', 'Vetted Vendors', 'On-trip Support'];
-const instagramUrl = process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://www.instagram.com/teen_musafir/';
-const tiktokUrl = process.env.NEXT_PUBLIC_TIKTOK_URL;
-const linkedinUrl =
-  process.env.NEXT_PUBLIC_LINKEDIN_URL || 'https://www.linkedin.com/company/3musafirinternational/';
+const assignedIndexablePaths = new Set(
+  footerSections.flatMap((section) => section.links.map((link) => link.href)),
+);
+
+const additionalIndexableLinks = INDEXABLE_PATHS
+  .filter((href) => !assignedIndexablePaths.has(href))
+  .map(makeRouteLink);
+
+if (additionalIndexableLinks.length > 0) {
+  footerSections.push({
+    id: "more",
+    title: "More",
+    links: additionalIndexableLinks,
+  });
+}
+
+const contactLinks = [
+  {
+    label: "Email",
+    href: "mailto:hello@3musafir.com",
+    value: "hello@3musafir.com",
+    icon: Mail,
+  },
+  {
+    label: "WhatsApp",
+    href: "https://wa.me/923221848940",
+    value: "+92 322 1848940",
+    icon: MessageCircle,
+  },
+];
 
 export default function Footer() {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
-
   const currentYear = useMemo(() => new Date().getFullYear(), []);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const normalized = email.trim();
-    const isValid = normalized.includes('@') && normalized.includes('.');
-    setStatus(isValid ? 'success' : 'error');
+    const isValid = normalized.includes("@") && normalized.includes(".");
+    setStatus(isValid ? "success" : "error");
   };
 
   const toggleSection = (id: string) => {
@@ -72,196 +128,186 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-background text-foreground border-t border-border" aria-labelledby="footer-heading">
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-primary/30 to-transparent" />
-      <div className="mx-auto max-w-6xl px-4 md:px-6 lg:px-8 xl:px-10 py-12 lg:py-16">
+    <footer
+      className="border-t border-canvas-line bg-canvas-soft px-4 py-12 text-heading sm:px-6 lg:px-8 xl:px-10"
+      aria-labelledby="footer-heading"
+    >
+      <div className="mx-auto w-full max-w-6xl">
         <h2 id="footer-heading" className="sr-only">
           Footer
         </h2>
 
-        <div className="flex flex-col gap-6 md:gap-8 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-lg space-y-3">
-            <h3 className="text-lg font-semibold text-heading">Get trip drops in your inbox</h3>
-            <p className="text-sm text-muted-foreground">
-              Monthly updates. Zero spam. Just upcoming experiences.
-            </p>
-          </div>
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-lg space-y-3"
-            aria-label="Subscribe for updates"
-          >
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <label className="sr-only" htmlFor="footer-email">
-                Email address
-              </label>
-              <input
-                id="footer-email"
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@email.com"
-                className="w-full rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_1.85fr]">
+          <div className="space-y-6">
+            <Link href="/" className="relative block h-14 w-56" aria-label="3Musafir home">
+              <Image
+                src="/primarylogo.svg"
+                alt="3Musafir"
+                fill
+                sizes="224px"
+                className="object-contain object-left"
               />
-              <button
-                type="submit"
-                className="rounded-full bg-brand-primary px-5 py-2 text-sm font-semibold text-white transition hover:bg-brand-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-              >
-                Subscribe
-              </button>
-            </div>
-            <div aria-live="polite">
-              {status === 'success' && (
-                <p className="text-xs text-brand-primary">Subscribed — welcome aboard ✨</p>
-              )}
-              {status === 'error' && (
-                <p className="text-xs text-muted-foreground">Please enter a valid email.</p>
-              )}
-            </div>
-          </form>
-        </div>
+            </Link>
+            <p className="max-w-md text-sm leading-7 text-text">
+              Community-led Pakistan group tours, women-first travel experiences, and inbound DMC
+              services built around trust, comfort, and responsible movement.
+            </p>
 
-        <div className="mt-12 grid gap-8 lg:grid-cols-4">
-          <div className="space-y-4">
-            <div>
-              <p className="text-lg font-semibold text-heading">3Musafir</p>
-              <p className="text-sm text-muted-foreground">
-                Community-first travel, designed for safety.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {trustChips.map((chip) => (
-                <span
-                  key={chip}
-                  className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground"
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              {contactLinks.map(({ label, href, value, icon: Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  className="group flex items-center gap-3 rounded-md border border-canvas-line bg-white p-3 text-sm shadow-sm transition hover:border-brand-primary/50"
                 >
-                  {chip}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="hidden md:block">
-            <h3 className="text-sm font-semibold text-heading">Explore</h3>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              {footerSections[0].links.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="hidden md:block">
-            <h3 className="text-sm font-semibold text-heading">Company</h3>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              {footerSections[1].links.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="hidden md:block">
-            <h3 className="text-sm font-semibold text-heading">Support</h3>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              {footerSections[2].links.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <div className="mt-10 space-y-4 md:hidden">
-          {footerSections.map((section) => {
-            const isOpen = Boolean(openSections[section.id]);
-            const panelId = `footer-${section.id}`;
-            return (
-              <div key={section.id} className="rounded-2xl border border-border bg-card">
-                <button
-                  type="button"
-                  className="w-full px-4 py-4 text-left text-sm font-semibold text-heading flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-                  aria-expanded={isOpen}
-                  aria-controls={panelId}
-                  onClick={() => toggleSection(section.id)}
-                >
-                  {section.title}
-                  <span className="text-brand-primary text-base transition">
-                    {isOpen ? '−' : '+'}
+                  <span className="flex h-9 w-9 items-center justify-center rounded-md bg-brand-primary/10 text-brand-primary">
+                    <Icon className="h-4 w-4" />
                   </span>
-                </button>
-                <div id={panelId} className={`px-4 pb-4 ${isOpen ? '' : 'hidden'}`}>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    {section.links.map((link) => (
-                      <li key={link.label}>
+                  <span>
+                    <span className="block text-xs font-bold uppercase tracking-[0.12em] text-text">
+                      {label}
+                    </span>
+                    <span className="mt-0.5 block font-semibold text-heading transition group-hover:text-brand-primary">
+                      {value}
+                    </span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <div className="flex flex-col gap-6 rounded-md border border-canvas-line bg-white p-5 shadow-sm md:flex-row md:items-start md:justify-between">
+              <div className="max-w-md">
+                <h3 className="text-base font-semibold text-heading">Get trip drops in your inbox</h3>
+                <p className="mt-1 text-sm text-text">
+                  Monthly updates. Zero spam. Just upcoming experiences.
+                </p>
+              </div>
+              <form
+                onSubmit={handleSubmit}
+                className="w-full max-w-md space-y-2"
+                aria-label="Subscribe for updates"
+              >
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <label className="sr-only" htmlFor="footer-email">
+                    Email address
+                  </label>
+                  <input
+                    id="footer-email"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="you@email.com"
+                    className="w-full rounded-md border border-canvas-line bg-canvas-base px-4 py-2 text-sm text-heading placeholder:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                  />
+                  <button
+                    type="submit"
+                    className="rounded-md bg-brand-primary px-5 py-2 text-sm font-bold text-heading transition hover:bg-brand-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                  >
+                    Subscribe
+                  </button>
+                </div>
+                <div aria-live="polite">
+                  {status === "success" && (
+                    <p className="text-xs text-brand-primary">Subscribed. Welcome aboard.</p>
+                  )}
+                  {status === "error" && (
+                    <p className="text-xs text-text">Please enter a valid email.</p>
+                  )}
+                </div>
+              </form>
+            </div>
+
+            <div className="hidden grid-cols-4 gap-8 md:grid">
+              {footerSections.map((group) => (
+                <div key={group.id}>
+                  <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-heading">
+                    {group.title}
+                  </h3>
+                  <ul className="mt-4 space-y-3">
+                    {group.links.map((link) => (
+                      <li key={link.href}>
                         <Link
                           href={link.href}
-                          className="hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
+                          className="group inline-flex items-start gap-2 text-sm font-medium text-text transition hover:text-brand-primary"
                         >
-                          {link.label}
+                          <span>{link.label}</span>
+                          <ArrowUpRight className="mt-0.5 h-3.5 w-3.5 opacity-0 transition group-hover:opacity-100" />
                         </Link>
                       </li>
                     ))}
                   </ul>
                 </div>
+              ))}
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              {footerSections.map((section) => {
+                const isOpen = Boolean(openSections[section.id]);
+                const panelId = `footer-${section.id}`;
+                return (
+                  <div key={section.id} className="rounded-md border border-canvas-line bg-white shadow-sm">
+                    <button
+                      type="button"
+                      className="flex w-full items-center justify-between px-4 py-4 text-left text-sm font-bold text-heading focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      onClick={() => toggleSection(section.id)}
+                    >
+                      {section.title}
+                      <span className="text-brand-primary">{isOpen ? "-" : "+"}</span>
+                    </button>
+                    <div id={panelId} className={`px-4 pb-4 ${isOpen ? "" : "hidden"}`}>
+                      <ul className="space-y-2">
+                        {section.links.map((link) => (
+                          <li key={link.href}>
+                            <Link
+                              href={link.href}
+                              className="text-sm font-medium text-text transition hover:text-brand-primary"
+                            >
+                              {link.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-heading">
+                Social profiles
+              </h3>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {socialProfiles.map((profile) => (
+                  <a
+                    key={profile.label}
+                    href={profile.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-md border border-canvas-line bg-white px-3 py-2 text-xs font-bold text-heading transition hover:border-brand-primary/60 hover:text-brand-primary"
+                  >
+                    {profile.label}
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                  </a>
+                ))}
               </div>
-            );
-          })}
+            </div>
+          </div>
         </div>
 
-        <div className="mt-12 border-t border-border pt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <p className="text-xs text-muted-foreground">
-            © {currentYear} 3Musafir. All rights reserved.
+        <div className="mt-10 flex flex-col gap-5 border-t border-canvas-line pt-6 md:flex-row md:items-center md:justify-between">
+          <p className="text-xs font-medium text-text">
+            &copy; {currentYear} 3Musafir Travels (Pvt) Ltd. All rights reserved.
           </p>
-          <div className="flex items-center gap-4">
-            <a
-              href={instagramUrl}
-              className="text-muted-foreground hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
-            >
-              <span className="sr-only">Instagram</span>
-              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-                <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm10 2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm-5 3.2a4.8 4.8 0 1 1 0 9.6 4.8 4.8 0 0 1 0-9.6zm0 2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6zm5.6-.7a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0z" />
-              </svg>
-            </a>
-            {tiktokUrl ? (
-              <a
-                href={tiktokUrl}
-                className="text-muted-foreground hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
-              >
-                <span className="sr-only">TikTok</span>
-                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-                  <path d="M16.5 3a6.5 6.5 0 0 0 4.5 2v3a9.4 9.4 0 0 1-4.5-1.3v7.3a6.5 6.5 0 1 1-6.5-6.5c.5 0 1 .1 1.5.2v3.2a2.8 2.8 0 1 0 2.2 2.7V3h2.8z" />
-                </svg>
-              </a>
-            ) : null}
-            <a
-              href={linkedinUrl}
-              className="text-muted-foreground hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
-            >
-              <span className="sr-only">LinkedIn</span>
-              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-                <path d="M6.94 8.5H4.1V19.5h2.84V8.5zm-1.42-4a1.64 1.64 0 1 0 0 3.28 1.64 1.64 0 0 0 0-3.28zM20 13.1c0-2.6-1.4-4.3-3.7-4.3a3.2 3.2 0 0 0-2.9 1.6V8.5H10.6V19.5h2.84v-5.6c0-1.5.6-2.5 2-2.5s1.6 1 1.6 2.5v5.6H20v-6.4z" />
-              </svg>
-            </a>
-          </div>
+          <p className="text-xs font-medium text-text">
+            Verified travel, DMC operations, and community safety systems from Pakistan.
+          </p>
         </div>
       </div>
     </footer>

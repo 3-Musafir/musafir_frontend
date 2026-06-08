@@ -3,6 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays, Check, MapPin, Route, Zap } from "lucide-react";
 
+import Footer from "@/components/Footer";
+import PublicHeader from "@/components/header/PublicHeader";
+
 import {
   festivalPageNote,
   specialInterestFestivals,
@@ -97,31 +100,17 @@ export default function FestivalsOfPakistanHub() {
       </Head>
 
       <main className="min-h-screen scroll-smooth bg-[#fffaf8] font-[Outfit,Inter,sans-serif] text-[#2d2f49]">
-        <div className="mx-auto min-h-screen w-full max-w-[500px] overflow-hidden bg-[#fffaf8] md:max-w-none">
-          <header className="sticky top-0 z-50 flex h-[100px] items-center justify-between bg-white px-[22px] md:h-[92px] md:px-8 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
-            <Link href="/pakistan-dmc" className="flex min-w-0 items-center gap-3">
-              <Image
-                src="/3mlogosmall.svg"
-                alt="3Musafir Travels logo"
-                width={42}
-                height={42}
-                priority
-                className="h-[38px] w-[42px] shrink-0 object-contain"
-              />
-              <span className="text-[25px] font-extrabold leading-none text-[#2d2f49]">
-                3 Musafir Travels
-              </span>
-            </Link>
-
-            <a
+        <div className="min-h-screen w-full overflow-x-hidden bg-[#fffaf8]">
+          <PublicHeader variant="dmc" hideAuthCta>
+          <a
               href="#urgent-enquiry"
               className="hidden h-11 items-center justify-center rounded-full bg-[#ff3b0a] px-5 text-[14px] font-black text-white md:flex"
             >
               Request Festival Portfolio
             </a>
-          </header>
+        </PublicHeader>
 
-          <section className="md:grid md:grid-cols-[0.92fr_1.08fr] md:items-center md:gap-8 md:px-8 md:py-10 lg:gap-12 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <section className="mx-auto w-full max-w-6xl md:grid md:grid-cols-[0.92fr_1.08fr] md:items-center md:gap-8 md:px-8 md:py-10 lg:gap-12 xl:px-10">
             <div className="relative h-[232px] w-full overflow-hidden bg-[#2f3143] grayscale md:order-2 md:aspect-[780/500] md:h-auto md:min-h-0 md:rounded-[28px]">
               <Image
                 src="/communityimage14.jpg"
@@ -146,7 +135,7 @@ export default function FestivalsOfPakistanHub() {
               </nav>
 
               <p className="text-[14px] font-black uppercase text-[#ff3b0a]">Festival DMC hub</p>
-              <h1 className="mt-[14px] max-w-[455px] text-[39px] font-black leading-[1.16] text-[#2d2f49] md:max-w-none md:text-[54px] md:leading-[1.04] lg:text-[64px]">
+              <h1 className="mt-[14px] max-w-[455px] text-[39px] font-black leading-[1.16] text-[#2d2f49] md:max-w-none md:text-[54px] md:leading-[1.04] lg:text-[60px]">
                 Festivals of Pakistan DMC Itineraries for Foreign Travel Agencies
               </h1>
 
@@ -176,7 +165,7 @@ export default function FestivalsOfPakistanHub() {
             </div>
           </section>
 
-          <section className="bg-white px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <section className="bg-white px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-10">
             <div className="mx-auto max-w-[860px] text-center">
               <p className="text-[14px] font-black uppercase text-[#ff3b0a]">Recommended architecture</p>
               <h2 className="mt-[14px] text-[30px] font-black leading-[1.08] text-[#2d2f49] md:text-[44px]">
@@ -213,7 +202,7 @@ export default function FestivalsOfPakistanHub() {
             </div>
           </section>
 
-          <section className="bg-[#fffaf8] px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+          <section className="bg-[#fffaf8] px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-10">
             <div className="grid gap-[18px] lg:grid-cols-[1fr_0.8fr]">
               <article className="rounded-[18px] border border-[#ebe9e7] bg-white px-[20px] py-[20px] shadow-[0_2px_8px_rgba(20,24,36,0.04)]">
                 <Route size={24} strokeWidth={2.5} className="text-[#ff3b0a]" />
@@ -252,7 +241,7 @@ export default function FestivalsOfPakistanHub() {
 
           <section
             id="urgent-enquiry"
-            className="scroll-mt-[100px] bg-white px-[17px] pb-[37px] pt-[42px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
+            className="scroll-mt-[100px] bg-white px-[17px] pb-[37px] pt-[42px] md:px-8 md:py-24 lg:px-12 xl:px-10"
           >
             <div className="rounded-[20px] border border-[#ffc9bb] bg-[#fff4f0] px-[31px] pb-[30px] pt-[27px] md:grid md:grid-cols-[0.8fr_1.2fr] md:gap-8 md:px-8 md:py-8 lg:gap-12">
               <div>
@@ -286,6 +275,7 @@ export default function FestivalsOfPakistanHub() {
               </div>
             </div>
           </section>
+          <Footer />
         </div>
       </main>
     </>

@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { PublicPageContainer } from "@/components/layout/PublicLayout";
 
 export default function RefundPolicyBy3Musafir() {
   const standardTiers = [
@@ -74,10 +75,8 @@ export default function RefundPolicyBy3Musafir() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </Head>
-    <div className="min-h-screen bg-gray-50 text-foreground flex flex-col">
-
-      <main className="px-4 md:px-6 lg:px-8 xl:px-10 py-10 lg:py-14">
-        <div className="mx-auto w-full max-w-6xl space-y-8 lg:space-y-10">
+      <PublicPageContainer as="main" className="min-h-screen bg-gray-50 text-foreground">
+        <div className="space-y-8 lg:space-y-10">
           <div className="space-y-2">
             <h1 className="text-2xl font-semibold text-heading">
               3Musafir Trip Cancellation, Refund, Wallet Credit &amp; Transfer Policy
@@ -415,9 +414,7 @@ export default function RefundPolicyBy3Musafir() {
           </Accordion>
         </section>
         </div>
-      </main>
-
-    </div>
+      </PublicPageContainer>
     </>
   );
 }

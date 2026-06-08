@@ -3,6 +3,7 @@ import Link from "next/link";
 import SeoHead from "@/components/seo/SeoHead";
 import AiQuotableSummary from "@/components/seo/AiQuotableSummary";
 import FaqSection from "@/components/seo/FaqSection";
+import { PublicPageContainer } from "@/components/layout/PublicLayout";
 import { aboutFaq } from "@/data/geo/faq";
 
 const title = "About 3Musafir — Community-led travel in Pakistan";
@@ -65,8 +66,8 @@ export default function About3MusafirPage() {
         faqItems={aboutFaq}
       />
 
-      <main className="min-h-screen bg-gray-50 px-4 py-10 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl space-y-10 lg:space-y-12">
+      <PublicPageContainer as="main" className="min-h-screen bg-gray-50">
+        <div className="space-y-10 lg:space-y-12">
           <section className="rounded-3xl bg-gradient-to-br from-[#515778] via-[#3e425f] to-[#2c3047] p-6 md:p-10 text-white shadow-sm">
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="space-y-4">
@@ -228,7 +229,7 @@ export default function About3MusafirPage() {
             </p>
           </section>
         </div>
-      </main>
+      </PublicPageContainer>
     </>
   );
 }

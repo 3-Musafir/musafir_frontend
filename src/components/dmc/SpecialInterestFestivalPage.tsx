@@ -2,6 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { BadgeCheck, CalendarDays, Check, CheckCircle2, MapPin, Route, Zap } from "lucide-react";
 
+import Footer from "@/components/Footer";
+import PublicHeader from "@/components/header/PublicHeader";
+
 import {
   festivalPageNote,
   sharedFestivalExclusions,
@@ -40,33 +43,19 @@ export default function SpecialInterestFestivalPage({
 }) {
   return (
     <main className="min-h-screen scroll-smooth bg-[#fffaf8] font-[Outfit,Inter,sans-serif] text-[#2d2f49]">
-      <div className="mx-auto min-h-screen w-full max-w-[500px] overflow-hidden bg-[#fffaf8] md:max-w-none">
-        <header className="sticky top-0 z-50 flex h-[100px] items-center justify-between bg-white px-[22px] md:h-[92px] md:px-8 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
-          <Link href="/pakistan-dmc" className="flex min-w-0 items-center gap-3">
-            <Image
-              src="/3mlogosmall.svg"
-              alt="3Musafir Travels logo"
-              width={42}
-              height={42}
-              priority
-              className="h-[38px] w-[42px] shrink-0 object-contain"
-            />
-            <span className="text-[25px] font-extrabold leading-none text-[#2d2f49]">
-              3 Musafir Travels
-            </span>
-          </Link>
-
+      <div className="min-h-screen w-full overflow-x-hidden bg-[#fffaf8]">
+        <PublicHeader variant="dmc" hideAuthCta>
           <a
             href="#urgent-enquiry"
             className="hidden h-11 items-center justify-center rounded-full bg-[#ff3b0a] px-5 text-[14px] font-black text-white md:flex"
           >
             Request Festival Plan
           </a>
-        </header>
+        </PublicHeader>
 
         <section
           id="hero"
-          className="scroll-mt-[100px] md:grid md:grid-cols-[0.92fr_1.08fr] md:items-center md:gap-8 md:px-8 md:py-10 lg:gap-12 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
+          className="mx-auto w-full max-w-6xl scroll-mt-20 md:grid md:grid-cols-[0.92fr_1.08fr] md:items-center md:gap-8 md:px-8 md:py-10 lg:gap-12 xl:px-10"
         >
           <div className="relative h-[232px] w-full overflow-hidden bg-[#2f3143] grayscale md:order-2 md:aspect-[780/500] md:h-auto md:min-h-0 md:rounded-[28px]">
             <Image
@@ -99,7 +88,7 @@ export default function SpecialInterestFestivalPage({
             </nav>
 
             <p className="text-[14px] font-black uppercase text-[#ff3b0a]">Special-interest DMC</p>
-            <h1 className="mt-[14px] max-w-[455px] text-[39px] font-black leading-[1.16] text-[#2d2f49] md:max-w-none md:text-[54px] md:leading-[1.04] lg:text-[64px]">
+            <h1 className="mt-[14px] max-w-[455px] text-[39px] font-black leading-[1.16] text-[#2d2f49] md:max-w-none md:text-[54px] md:leading-[1.04] lg:text-[60px]">
               {festival.h1}
             </h1>
 
@@ -157,7 +146,7 @@ export default function SpecialInterestFestivalPage({
           </div>
         </section>
 
-        <section className="bg-white px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section className="bg-white px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-10">
           <div className="grid gap-6 md:grid-cols-[0.85fr_1.15fr] md:items-start">
             <div>
               <p className="text-[14px] font-black uppercase text-[#ff3b0a]">Agency positioning</p>
@@ -178,7 +167,7 @@ export default function SpecialInterestFestivalPage({
 
         <section
           id="itinerary"
-          className="scroll-mt-[100px] bg-[#fffaf8] px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
+          className="scroll-mt-[100px] bg-[#fffaf8] px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-10"
         >
           <SectionHeading
             label="Basic itinerary"
@@ -201,7 +190,7 @@ export default function SpecialInterestFestivalPage({
           </div>
         </section>
 
-        <section className="bg-white px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section className="bg-white px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-10">
           <SectionHeading
             label="DMC operating scope"
             title="Shared inclusions and exclusions for festival pages"
@@ -235,7 +224,7 @@ export default function SpecialInterestFestivalPage({
           </div>
         </section>
 
-        <section className="bg-[#fffaf8] px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
+        <section className="bg-[#fffaf8] px-3 py-20 md:px-8 md:py-24 lg:px-12 xl:px-10">
           <div className="grid gap-[14px] md:grid-cols-3">
             {[
               {
@@ -272,7 +261,7 @@ export default function SpecialInterestFestivalPage({
 
         <section
           id="urgent-enquiry"
-          className="scroll-mt-[100px] bg-white px-[17px] pb-[37px] pt-[42px] md:px-8 md:py-24 lg:px-12 xl:px-[calc((100vw-1180px)/2)]"
+          className="scroll-mt-[100px] bg-white px-[17px] pb-[37px] pt-[42px] md:px-8 md:py-24 lg:px-12 xl:px-10"
         >
           <div className="rounded-[20px] border border-[#ffc9bb] bg-[#fff4f0] px-[31px] pb-[30px] pt-[27px] md:grid md:grid-cols-[0.8fr_1.2fr] md:gap-8 md:px-8 md:py-8 lg:gap-12">
             <div>
@@ -306,53 +295,9 @@ export default function SpecialInterestFestivalPage({
           </div>
         </section>
 
-        <footer className="bg-[#2d2f49] px-2 pb-[83px] pt-[24px] text-white md:px-8 md:py-16 lg:px-12 xl:px-[calc((100vw-1180px)/2)]">
-          <div className="md:grid md:grid-cols-[1.1fr_0.9fr] md:gap-12">
-            <div>
-              <div className="flex items-center gap-[8px]">
-                <Image
-                  src="/3mlogosmall.svg"
-                  alt="3Musafir Travels logo"
-                  width={24}
-                  height={24}
-                  className="h-[24px] w-[24px] object-contain"
-                />
-                <strong className="text-[16px] font-black">3Musafir Travels</strong>
-              </div>
-              <p className="mt-[23px] max-w-[460px] text-[15.5px] font-medium leading-[1.55] text-[#b9bdca] md:text-[16px]">
-                Pakistan DMC support for special-interest festivals, cultural sports, remote
-                routes, heritage travel, and inbound agency groups.
-              </p>
-            </div>
+        <Footer />
 
-            <div className="mt-[34px] grid grid-cols-2 gap-8 md:mt-0">
-              <div>
-                <h3 className="text-[15px] font-black">DMC</h3>
-                <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-[#b9bdca]">
-                  <li><Link href="/pakistan-dmc">Pakistan DMC services</Link></li>
-                  <li><Link href="/pakistan-dmc/special-interests/festivals-of-pakistan">Festivals of Pakistan</Link></li>
-                  <li><Link href="/pakistan-dmc/tours/chitral">Chitral DMC services</Link></li>
-                  <li><Link href="/pakistan-dmc/tours/hunza">Hunza DMC services</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-[15px] font-black">Route</h3>
-                <ul className="mt-[22px] space-y-[14px] text-[14px] font-medium text-[#b9bdca]">
-                  <li><a href="#itinerary">Basic itinerary</a></li>
-                  <li><a href="#urgent-enquiry">Request plan</a></li>
-                  <li><Link href="/reviews">3Musafir reviews</Link></li>
-                  <li><Link href="/explore">Pakistan group tours</Link></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-[46px] border-t border-white/5 px-[15px] pt-[32px] text-[13px] font-medium text-[#878b9d]">
-            &copy; 2024 3Musafir Travels (Pvt) Ltd. All rights reserved.
-          </div>
-        </footer>
-
-        <div className="fixed bottom-0 left-1/2 z-[60] flex w-full max-w-[500px] -translate-x-1/2 gap-3 bg-white/95 px-3 pb-[14px] pt-[15px] backdrop-blur lg:hidden">
+        <div className="fixed bottom-0 left-1/2 z-[60] flex w-full max-w-6xl -translate-x-1/2 gap-3 bg-white/95 px-3 pb-[14px] pt-[15px] backdrop-blur lg:hidden">
           <a
             href="/pakistan-dmc/special-interests/festivals-of-pakistan"
             className="flex h-[39px] flex-1 items-center justify-center rounded-[9px] bg-[#f2f3f5] text-[12px] font-extrabold text-[#2d2f49]"
