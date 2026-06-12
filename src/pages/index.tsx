@@ -11,10 +11,8 @@ import {
   HeartHandshake,
   Map,
   Mountain,
-  ShieldCheck,
   Sparkles,
   Star,
-  Users,
 } from 'lucide-react';
 
 import Footer from '@/components/Footer';
@@ -125,15 +123,6 @@ const discoveryGroups: DiscoveryGroup[] = [
   },
 ];
 
-const proofItems = [
-  { value: 'Certified', label: 'Founder Institute' },
-  { value: '4.6', label: 'Trustpilot score' },
-  { value: '25', label: 'Public Trustpilot reviews' },
-  { value: 'Verified', label: 'Musafir onboarding' },
-  { value: 'Vetted', label: 'Local partners' },
-  { value: 'On-trip', label: 'Captain support' },
-];
-
 const answerCards = [
   {
     question: 'What is 3Musafir?',
@@ -153,42 +142,38 @@ const answerCards = [
   {
     question: 'Why choose 3Musafir over a regular tour group?',
     answer:
-      'The model prioritizes verified people, women-first comfort, vetted partners, on-trip captains, route-aware planning, and post-trip community instead of only dates and destinations.',
+      'Our model prioritizes verified people, women-first comfort, vetted partners, on-trip captains, route-aware planning, and post-trip community instead of only dates and destinations.',
   },
 ];
 
-const whyCards: LandingCard[] = [
+const whySteps = [
   {
-    title: 'Verified people before the trip',
-    description:
-      'Groups are shaped around identity, intent, referrals, and shared expectations before anyone gets on the road.',
-    href: '/trust/verification',
     image: '/communityimage5.jpg',
-    icon: ShieldCheck,
+    alt: '3Musafir travelers together in Northern Pakistan',
+    before: 'Join verified people with',
+    highlight: 'shared expectations',
+    after: '',
   },
   {
-    title: 'Women-first comfort',
-    description:
-      'Trips are designed with rooming clarity, group boundaries, support channels, and comfort checks that matter in Pakistan.',
-    href: '/why',
     image: '/communityimage10.jpg',
-    icon: HeartHandshake,
+    alt: 'Women travelers on a 3Musafir community trip',
+    before: 'Choose trips built around',
+    highlight: 'comfort and group fit',
+    after: '',
   },
   {
-    title: 'Captains handle the logistics',
-    description:
-      'Routes, stays, vendor coordination, timing, and contingency decisions are handled so travelers can stay present.',
-    href: '/explore',
     image: '/communityimage14.jpg',
-    icon: Mountain,
+    alt: '3Musafir route logistics in Pakistan',
+    before: 'Captains handle the plan so',
+    highlight: 'you stay present',
+    after: '',
   },
   {
-    title: 'Community after the journey',
-    description:
-      'The trip is only the beginning. Musafirs stay connected through stories, meetups, referrals, and future journeys.',
-    href: '/musafircommunityequityframework',
     image: '/communityimage1.jpg',
-    icon: Users,
+    alt: '3Musafir international community gathering',
+    before: 'The people you meet become',
+    highlight: 'part of the journey',
+    after: '',
   },
 ];
 
@@ -660,17 +645,36 @@ export default function PublicHomePage() {
           </div>
         </section>
 
-        <section className="border-b border-canvas-line bg-canvas-soft px-5 py-6 sm:px-8 lg:px-12">
-          <div className="mx-auto grid max-w-7xl gap-3 sm:grid-cols-2 lg:grid-cols-6">
-            {proofItems.map((item) => (
-              <div key={`${item.value}-${item.label}`} className="rounded-md bg-white px-4 py-4 shadow-sm">
-                <p className="text-xl font-black text-heading">{item.value}</p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-text">
-                  {item.label}
-                </p>
+        <section className="bg-white px-5 py-10 sm:px-8 lg:px-12">
+          <a
+            href={trustpilotUrl}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open 3Musafir reviews on Trustpilot"
+            className="group mx-auto grid max-w-5xl gap-6 text-center text-heading transition hover:text-brand-primary sm:grid-cols-[1fr_auto_1fr] sm:items-center"
+          >
+            <div className="hidden h-px bg-canvas-line sm:block" />
+            <div>
+              <h2 className="text-2xl font-black leading-tight sm:text-3xl">
+                Over 20,000 Musafirs have already experienced with us
+              </h2>
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-base font-bold text-heading">
+                <span>Excellent</span>
+                <span className="flex items-center gap-1" aria-hidden="true">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className="h-6 w-6 fill-[#00B67A] text-[#00B67A]"
+                    />
+                  ))}
+                </span>
+                <span>
+                  4.6 / 5 on Trustpilot
+                </span>
               </div>
-            ))}
-          </div>
+            </div>
+            <div className="hidden h-px bg-canvas-line sm:block" />
+          </a>
         </section>
 
         <section className="border-b border-canvas-line bg-white px-5 py-12 sm:px-8 lg:px-12">
@@ -697,51 +701,54 @@ export default function PublicHomePage() {
           </div>
         </section>
 
-        <section className="px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
+        <section className="bg-white px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <div className="mx-auto max-w-7xl">
-            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-              <div>
-                <p className="text-sm font-bold uppercase tracking-[0.18em] text-brand-primary">
-                  Why 3Musafir
-                </p>
-                <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight text-heading sm:text-4xl">
-                  Travel built around people first.
-                </h2>
-              </div>
-              <p className="text-base leading-8 text-text">
-                At 3Musafir, the group is part of the journey. Who you travel with, how
-                expectations are set, and how support works matter as much as the destination.
-              </p>
+            <div className="flex flex-col items-center gap-4 text-center md:flex-row md:items-end md:justify-between md:text-left">
+              <h2 className="text-4xl font-black leading-tight text-heading sm:text-5xl">
+                Why 3Musafir
+              </h2>
+              <Link
+                href="/why"
+                className="inline-flex items-center gap-2 text-sm font-bold text-heading transition hover:text-brand-primary"
+              >
+                Read the approach
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
             </div>
 
-            <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {whyCards.map(({ title: cardTitle, description: cardDescription, href, image, icon: Icon }) => (
+            <div className="mt-16 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-7">
+              {whySteps.map((step, index) => (
                 <Link
-                  key={cardTitle}
-                  href={href}
-                  className="group overflow-hidden rounded-md border border-canvas-line bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-brand-primary/50"
+                  key={step.highlight}
+                  href="/why"
+                  className="group relative flex min-h-[190px] flex-col items-center justify-center rounded-lg border border-canvas-line bg-white px-4 pb-5 pt-14 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-brand-primary/50 sm:min-h-[210px] sm:px-6 lg:min-h-[176px]"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden">
+                  {index < whySteps.length - 1 && (
+                    <span className="absolute left-full top-1/2 hidden h-px w-7 bg-canvas-line lg:block" />
+                  )}
+                  <span className="absolute left-1/2 top-0 h-20 w-20 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-2 border-canvas-line bg-canvas-base sm:h-24 sm:w-24">
                     <Image
-                      src={image}
-                      alt={`${cardTitle} with 3Musafir`}
+                      src={step.image}
+                      alt={step.alt}
                       fill
-                      sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"
+                      sizes="(min-width: 640px) 96px, 80px"
                       className="object-cover transition duration-500 group-hover:scale-105"
                     />
-                  </div>
-                  <div className="p-5">
-                    <Icon className="h-5 w-5 text-brand-primary" />
-                    <h3 className="mt-4 text-lg font-bold leading-6 text-heading">{cardTitle}</h3>
-                    <p className="mt-3 text-sm leading-6 text-text">{cardDescription}</p>
-                  </div>
+                  </span>
+                  <span className="text-base font-medium leading-snug text-heading sm:text-xl">
+                    {step.before}{' '}
+                    <span className="rounded-sm bg-brand-primary/18 px-1.5 py-0.5">
+                      {step.highlight}
+                    </span>
+                    {step.after}
+                  </span>
                 </Link>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="bg-white px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
+        <section className="bg-canvas-base px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
@@ -766,7 +773,7 @@ export default function PublicHomePage() {
                 <Link
                   key={cardTitle}
                   href={href}
-                  className="group grid min-h-[220px] overflow-hidden rounded-md border border-canvas-line bg-canvas-base shadow-sm transition hover:border-brand-primary/50 md:grid-cols-[0.9fr_1.1fr]"
+                  className="group grid min-h-[220px] overflow-hidden rounded-md border border-canvas-line bg-white shadow-sm transition hover:border-brand-primary/50 md:grid-cols-[0.9fr_1.1fr]"
                 >
                   <div className="relative min-h-[180px] md:min-h-full">
                     <Image
@@ -843,15 +850,6 @@ export default function PublicHomePage() {
                 Read Musafir stories
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
-              <a
-                href={trustpilotUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-md border border-white/24 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10"
-              >
-                Check Trustpilot
-                <ArrowUpRight className="h-4 w-4" />
-              </a>
             </div>
           </div>
         </section>
