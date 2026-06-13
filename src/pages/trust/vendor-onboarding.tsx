@@ -14,7 +14,7 @@ export default function VendorOnboardingPage() {
       <SeoHead
         title={title}
         description={description}
-        canonicalPath="/trust/vendor-onboarding"
+        canonicalPath="/hc/safetyframework/vendor-onboarding"
         ogImage="/blue-shield.png"
         faqItems={vendorFaq}
       />
@@ -87,7 +87,7 @@ export default function VendorOnboardingPage() {
           <section className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-text shadow-sm">
             <p>
               Next: learn how we prepare travelers on{" "}
-              <Link href="/trust/travel-education" className="text-brand-primary hover:underline">
+              <Link href="/hc/safetyframework/travel-education" className="text-brand-primary hover:underline">
                 Travel education
               </Link>
               {", or "}

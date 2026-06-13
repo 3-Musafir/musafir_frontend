@@ -302,5 +302,5 @@ export const internalLinks = [
   { href: "/reviews", label: "3Musafir reviews" },
   { href: "/about-3musafir", label: "about 3Musafir" },
   { href: "/why", label: "why 3Musafir" },
-  { href: "/trust-and-verification", label: "trust and verification" },
+  { href: "/hc", label: "trust and verification" },
 ];

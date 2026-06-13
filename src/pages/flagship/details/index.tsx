@@ -781,7 +781,7 @@ export default function FlagshipDetails() {
               Learn how 3Musafir verifies travelers, partners, and safety workflows before every departure.
             </p>
             <div className="mt-3 flex flex-wrap gap-3">
-              <Link href="/trust" className="font-semibold text-brand-primary hover:underline">Trust & Safety</Link>
+              <Link href="/hc" className="font-semibold text-brand-primary hover:underline">Trust & Safety</Link>
               <Link href="/reviews" className="font-semibold text-brand-primary hover:underline">Musafir Reviews</Link>
               <Link href="/about-3musafir" className="font-semibold text-brand-primary hover:underline">About 3Musafir</Link>
             </div>

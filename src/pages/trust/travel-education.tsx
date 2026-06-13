@@ -14,7 +14,7 @@ export default function TravelEducationPage() {
       <SeoHead
         title={title}
         description={description}
-        canonicalPath="/trust/travel-education"
+        canonicalPath="/hc/safetyframework/travel-education"
         ogImage="/globe.svg"
         faqItems={educationFaq}
       />
@@ -86,7 +86,7 @@ export default function TravelEducationPage() {
           <section className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-text shadow-sm">
             <p>
               Return to the{" "}
-              <Link href="/trust" className="text-brand-primary hover:underline">
+              <Link href="/hc/safetyframework" className="text-brand-primary hover:underline">
                 Trust & Safety Hub
               </Link>
               {", or "}

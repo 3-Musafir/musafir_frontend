@@ -12,7 +12,7 @@ export default function TrustLinks({ className = "" }: { className?: string }) {
       </p>
       <div className="mt-3 flex flex-wrap gap-3 text-sm">
         <Link
-          href="/trust"
+          href="/hc"
           className="rounded-full border border-brand-primary px-4 py-1.5 text-brand-primary hover:bg-brand-primary/10"
         >
           Trust & Safety Hub

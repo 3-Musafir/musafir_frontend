@@ -2,7 +2,7 @@ import { GetServerSideProps } from "next";
 
 export const getServerSideProps: GetServerSideProps = async () => ({
   redirect: {
-    destination: "/trust/vendor-onboarding",
+    destination: "/hc/safetyframework/vendor-onboarding",
     permanent: false,
   },
 });

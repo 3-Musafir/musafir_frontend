@@ -30,6 +30,41 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/faq",
+        destination: "/hc/faq",
+        permanent: true,
+      },
+      {
+        source: "/trust",
+        destination: "/hc/safetyframework",
+        permanent: true,
+      },
+      {
+        source: "/trust/verification",
+        destination: "/hc/safetyframework/verification",
+        permanent: true,
+      },
+      {
+        source: "/trust/vendor-onboarding",
+        destination: "/hc/safetyframework/vendor-onboarding",
+        permanent: true,
+      },
+      {
+        source: "/trust/travel-education",
+        destination: "/hc/safetyframework/travel-education",
+        permanent: true,
+      },
+      {
+        source: "/musafircommunityequityframework",
+        destination: "/hc/safetyframework/community-framework",
+        permanent: true,
+      },
+      {
+        source: "/trust-and-verification",
+        destination: "/hc/safetyframework/trust-and-verification",
+        permanent: true,
+      },
+      {
         source: "/pakistan-dmc/hunza",
         destination: "/pakistan-dmc/tours/hunza",
         permanent: true,

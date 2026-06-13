@@ -19,7 +19,15 @@ const priorityForRoute = (route: string) => {
   if (route === "/") return "1.0";
   if (route === "/fixed-departure") return "0.9";
   if (route === "/pakistan-dmc") return "0.95";
-  if (["/explore", "/reviews", "/why", "/trust", "/about-3musafir"].includes(route)) {
+  if (
+    [
+      "/explore",
+      "/reviews",
+      "/why",
+      "/hc",
+      "/about-3musafir",
+    ].includes(route)
+  ) {
     return "0.85";
   }
   return "0.60";

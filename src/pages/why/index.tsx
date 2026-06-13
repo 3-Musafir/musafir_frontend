@@ -6,30 +6,30 @@ import { PublicPageContainer } from "@/components/layout/PublicLayout";
 
 export default function WhyPage() {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
-  const title = "Why Travel with 3Musafir | Safe Community-Led Travel in Pakistan";
+  const title = "Why 3Musafir | Pakistan-Tested Travel Framework for Global Trips";
   const description =
-    "Learn why 3Musafir is trusted for women-first travel, community-led Pakistan group tours, local safety systems, and on-ground travel expertise.";
+    "See why 3Musafir uses Pakistan as proof for a community-led travel framework built to scale across complex global destinations.";
   const canonicalUrl = `${siteUrl}/why`;
   const whyFaqs = [
     {
-      question: "Is 3Musafir safe for women to travel with in Pakistan?",
+      question: "Why does 3Musafir start its trust framework in Pakistan?",
       answer:
-        "3Musafir is built to make group travel safer for women in Pakistan through community-led groups, clear expectations, and active support before, during, and after trips.",
+        "Pakistan gives the framework a demanding test environment: diverse regions, shifting routes, supplier variation, safety perceptions, social expectations, and real on-ground complexity.",
     },
     {
-      question: "What makes 3Musafir community-led?",
+      question: "How does a Pakistan-tested travel framework work globally?",
       answer:
-        "Trips begin with people and shared values rather than only destinations, helping travelers build familiarity and trust before they travel together.",
+        "If the framework can create trust, clarity, and accountability in Pakistan, it can be adapted to other destinations where travelers face uncertainty, cultural context, fragmented operators, or safety concerns.",
     },
     {
-      question: "Why does community-led group travel feel safer on 3Musafir?",
+      question: "Is 3Musafir only for Pakistan travel?",
       answer:
-        "Groups are designed with comfort, safety, and clear structure in mind, which reduces uncertainty and makes travel more predictable and respectful for women.",
+        "No. Pakistan is the proof case, but the model is global: community-led groups, local expertise, clear standards, and support before, during, and after travel.",
     },
     {
-      question: "Why does Pakistan travel require local on-ground expertise?",
+      question: "Why does local on-ground expertise matter everywhere?",
       answer:
-        "Pakistan routes can change quickly because of weather, road conditions, regional norms, flight volatility, and supplier availability, so local coordination improves both safety and trip quality.",
+        "Every destination has local realities that do not show up in a generic itinerary. 3Musafir treats local coordination, cultural context, and operator accountability as core parts of the travel product.",
     },
   ];
   const structuredData = [
@@ -38,7 +38,7 @@ export default function WhyPage() {
       "@type": "Article",
       headline: "Why 3Musafir exists",
       description,
-      inLanguage: "en-PK",
+      inLanguage: "en",
       mainEntityOfPage: canonicalUrl,
       publisher: {
         "@type": "Organization",
@@ -48,10 +48,12 @@ export default function WhyPage() {
       },
       about: [
         "Pakistan",
+        "Global travel",
         "Women travelers",
         "Group travel",
         "Safety",
         "Community-led travel",
+        "Travel framework",
       ],
     },
     {
@@ -114,23 +116,31 @@ export default function WhyPage() {
             <div className="max-w-3xl space-y-4">
               <p className="text-xs uppercase tracking-[0.2em] text-text">Why we exist</p>
               <h1 className="text-3xl sm:text-4xl font-semibold text-heading leading-tight">
-                Making travel safer, more comfortable, and more human for women in Pakistan
+                Pakistan is the proof. The framework is global.
               </h1>
               <p className="text-base sm:text-lg text-text leading-relaxed">
-                In Pakistan, many women want to travel — but hesitate due to safety concerns, social barriers, and the lack of trusted travel environments. 3Musafir exists to change that by building community-led group travel experiences where trust, structure, and care come first.
+                3Musafir was built in Pakistan because it is one of the most demanding places to make travel feel simple: safety concerns, social barriers, family expectations, inconsistent suppliers, mountain roads, weather shifts, and deep cultural diversity all meet in one market. If a trust-first travel framework can work here, it can work in complex destinations anywhere.
               </p>
+              <div className="flex flex-wrap gap-2 pt-1 text-xs font-semibold uppercase tracking-[0.16em]">
+                <span className="rounded-full border border-gray-200 px-3 py-2 text-text">
+                  40% Pakistan proof
+                </span>
+                <span className="rounded-full border border-gray-200 px-3 py-2 text-brand-primary">
+                  60% Global blueprint
+                </span>
+              </div>
               <div className="flex flex-wrap gap-3 pt-2">
-                <Link href="/reviews" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
-                  3Musafir reviews
-                </Link>
                 <Link href="/explore" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
-                  Pakistan group tours
+                  Explore journeys
+                </Link>
+                <Link href="/hc" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
+                  Trust framework
                 </Link>
                 <Link href="/pakistan-dmc" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
-                  Pakistan DMC services
+                  Pakistan DMC proof
                 </Link>
                 <Link href="/reviews" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-brand-primary">
-                  Community travel reviews
+                  Community reviews
                 </Link>
               </div>
             </div>
@@ -144,12 +154,13 @@ export default function WhyPage() {
               <p className="text-xs uppercase tracking-[0.2em] text-text mb-3">On this page</p>
               <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 no-scrollbar snap-x snap-mandatory">
                 {[
-                  { href: '#problem', label: 'The reality' },
-                  { href: '#insight', label: 'Safety insight' },
-                  { href: '#approach', label: 'Our approach' },
+                  { href: '#problem', label: 'Pakistan proof' },
+                  { href: '#insight', label: 'Global lesson' },
+                  { href: '#approach', label: 'Framework' },
                   { href: '#community', label: 'Community' },
-                  { href: '#impact', label: 'Beyond trips' },
-                  { href: '#forward', label: 'Way forward' },
+                  { href: '#impact', label: 'Beyond Pakistan' },
+                  { href: '#forward', label: 'Global way forward' },
+                  { href: '#local-expertise', label: 'Local expertise' },
                   { href: '#next', label: 'Next steps' },
                 ].map((item) => (
                   <a
@@ -174,7 +185,7 @@ export default function WhyPage() {
                       href="#problem"
                       className="hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
                     >
-                      The reality of travel for women in Pakistan
+                      Pakistan as the proof market
                     </a>
                   </li>
                   <li>
@@ -182,7 +193,7 @@ export default function WhyPage() {
                       href="#insight"
                       className="hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
                     >
-                      Safety is not just about destinations
+                      The global lesson
                     </a>
                   </li>
                   <li>
@@ -190,7 +201,7 @@ export default function WhyPage() {
                       href="#approach"
                       className="hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
                     >
-                      How 3Musafir makes travel safer for women
+                      The framework we can take anywhere
                     </a>
                   </li>
                   <li>
@@ -198,7 +209,7 @@ export default function WhyPage() {
                       href="#community"
                       className="hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
                     >
-                      Why community-led travel changes everything
+                      Why community-led travel travels across borders
                     </a>
                   </li>
                   <li>
@@ -206,7 +217,7 @@ export default function WhyPage() {
                       href="#impact"
                       className="hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
                     >
-                      Beyond trips
+                      Beyond Pakistan
                     </a>
                   </li>
                   <li>
@@ -214,7 +225,15 @@ export default function WhyPage() {
                       href="#forward"
                       className="hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
                     >
-                      An intentional way forward
+                      An intentional global way forward
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#local-expertise"
+                      className="hover:text-brand-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded"
+                    >
+                      Local expertise in every market
                     </a>
                   </li>
                   <li>
@@ -235,7 +254,7 @@ export default function WhyPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <h2 className="text-2xl font-semibold text-heading">
-                        The reality of travel for women in Pakistan
+                        Pakistan as the proof market
                       </h2>
                       <p className="text-xs text-text/70 mt-2">Tap to expand</p>
                     </div>
@@ -246,10 +265,10 @@ export default function WhyPage() {
                 </summary>
                 <div className="px-6 md:px-8 pb-6 md:pb-8 space-y-4">
                   <p className="text-sm lg:text-base text-text leading-relaxed">
-                    For many women in Pakistan, travel is not limited by curiosity or interest, but by safety concerns, unclear logistics, and the absence of reliable companions. Solo travel can feel risky, and traditional tour groups often fail to consider comfort, boundaries, and real-world challenges women face on the road.
+                    Pakistan is not a narrow use case for 3Musafir. It is the stress test. Travel here can involve long road journeys, sudden weather changes, uneven supplier quality, different regional norms, family concerns, safety perceptions, and limited room for weak coordination.
                   </p>
                   <p className="text-sm lg:text-base text-text leading-relaxed">
-                    This results in fewer opportunities to explore, delayed plans, or complete avoidance of travel — not because women don’t want to go, but because the environment does not feel safe or predictable.
+                    That is why roughly 40% of this story is Pakistan: the market where the framework had to earn trust under real constraints. The larger 60% is what those constraints teach us about building travel systems for the world.
                   </p>
                 </div>
               </details>
@@ -259,7 +278,7 @@ export default function WhyPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <h2 className="text-2xl font-semibold text-heading">
-                        Safety is not just about destinations
+                        The global lesson: safety is a system
                       </h2>
                       <p className="text-xs text-text/70 mt-2">Tap to expand</p>
                     </div>
@@ -270,34 +289,39 @@ export default function WhyPage() {
                 </summary>
                 <div className="px-6 md:px-8 pb-6 md:pb-8 space-y-4">
                   <p className="text-sm lg:text-base text-text leading-relaxed">
-                    Travel safety for women is often discussed in terms of locations. At 3Musafir, we believe safety is primarily about people, systems, and expectations. Who you travel with, how groups are managed, how communication works, and how issues are handled matter more than the destination itself.
+                    Travel safety is often discussed as a destination problem. At 3Musafir, we treat it as a systems problem. Who you travel with, who hosts you, how expectations are set, how information moves, and how issues are handled matter in Pakistan and in any market where people travel with uncertainty.
                   </p>
-                  <p className="text-sm lg:text-base text-text">This insight shaped everything we built.</p>
+                  <p className="text-sm lg:text-base text-text leading-relaxed">
+                    Pakistan made the pattern visible. The solution is not only local knowledge; it is a repeatable operating model that combines local knowledge with community, verification, clear standards, and active support.
+                  </p>
                 </div>
               </details>
 
               <section id="approach" className="space-y-6">
                 <div className="max-w-3xl space-y-2">
                   <h2 className="text-2xl font-semibold text-heading">
-                    How 3Musafir makes travel safer for women
+                    The framework we can take anywhere
                   </h2>
+                  <p className="text-sm lg:text-base text-text leading-relaxed">
+                    The destination changes. The operating logic stays consistent.
+                  </p>
                 </div>
                 <div className="grid gap-4 lg:gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {[
                     {
-                      title: 'Community-first groups',
+                      title: 'Verified people before places',
                       description:
-                        'Trips are built around vetted groups, shared values, and clear group dynamics. No random assemblies, no ambiguity about who you are traveling with.',
+                        'Trips begin with the group, not only the itinerary. Travelers need clarity on who they are joining, what behavior is expected, and how trust is maintained.',
                     },
                     {
-                      title: 'Clear structure & accountability',
+                      title: 'Local operators with shared standards',
                       description:
-                        'From itineraries to on-ground coordination, expectations are defined upfront. This reduces uncertainty, miscommunication, and uncomfortable situations.',
+                        'Local expertise matters everywhere, but it must be connected to clear standards for lodging, transport, guides, communication, and accountability.',
                     },
                     {
-                      title: 'Care beyond logistics',
+                      title: 'Support before, during, and after',
                       description:
-                        'Support does not end at bookings. The 3Musafir team stays involved before, during, and after trips to ensure concerns are addressed quickly and respectfully.',
+                        'A travel company should not disappear after booking. The framework keeps expectations, escalation, and feedback loops active across the whole journey.',
                     },
                   ].map((item) => (
                     <details
@@ -328,7 +352,7 @@ export default function WhyPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <h2 className="text-2xl font-semibold text-heading">
-                        Why community-led travel changes everything
+                        Why community-led travel travels across borders
                       </h2>
                       <p className="text-xs text-text/70 mt-2">Tap to expand</p>
                     </div>
@@ -339,10 +363,10 @@ export default function WhyPage() {
                 </summary>
                 <div className="px-6 md:px-8 pb-6 md:pb-8 space-y-4">
                   <p className="text-sm lg:text-base text-text leading-relaxed">
-                    Community-led travel creates familiarity before the journey even begins. When travelers know they are part of a shared space — not just customers on a bus — trust forms naturally. For women, this sense of collective responsibility and belonging significantly improves comfort and confidence.
+                    Community-led travel creates familiarity before the journey begins. When travelers know they are part of a shared space - not just customers on a bus - trust forms earlier, expectations become clearer, and the group becomes easier to support.
                   </p>
                   <p className="text-sm lg:text-base text-text leading-relaxed">
-                    This is why many women travel with 3Musafir for their first group experience — and continue traveling with people they’ve already met.
+                    That pattern is not limited to Pakistan. It matters anywhere people are traveling with strangers, entering unfamiliar cultures, joining women-first cohorts, or depending on local partners they cannot personally verify.
                   </p>
                 </div>
               </details>
@@ -351,7 +375,7 @@ export default function WhyPage() {
                 <summary className="list-none cursor-pointer p-6 md:p-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h2 className="text-2xl font-semibold text-heading">Beyond trips</h2>
+                      <h2 className="text-2xl font-semibold text-heading">Beyond Pakistan</h2>
                       <p className="text-xs text-text/70 mt-2">Tap to expand</p>
                     </div>
                     <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">
@@ -361,7 +385,10 @@ export default function WhyPage() {
                 </summary>
                 <div className="px-6 md:px-8 pb-6 md:pb-8 space-y-4">
                   <p className="text-sm lg:text-base text-text leading-relaxed">
-                    Our goal is not just to organize journeys, but to normalize safe, thoughtful travel for women in Pakistan. Each successful trip builds confidence, changes perceptions, and makes the next journey easier — for one person, then many more.
+                    Our goal is not just to organize journeys in one country. It is to build a way of traveling that can move from Pakistan to other complex destinations without losing the human parts: trust, context, safety, accountability, and belonging.
+                  </p>
+                  <p className="text-sm lg:text-base text-text leading-relaxed">
+                    Pakistan remains central because it keeps the framework honest. The global opportunity comes from turning those hard-earned lessons into a standard that can serve travelers, hosts, agencies, and communities across borders.
                   </p>
                 </div>
               </details>
@@ -370,7 +397,7 @@ export default function WhyPage() {
                 <summary className="list-none cursor-pointer p-6 md:p-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h2 className="text-2xl font-semibold text-heading">An intentional way forward</h2>
+                      <h2 className="text-2xl font-semibold text-heading">An intentional global way forward</h2>
                       <p className="text-xs text-text/70 mt-2">Tap to expand</p>
                     </div>
                     <span className="mt-1 text-brand-primary text-lg transition group-open:rotate-45">
@@ -380,20 +407,21 @@ export default function WhyPage() {
                 </summary>
                 <div className="px-6 md:px-8 pb-6 md:pb-8 space-y-4">
                   <p className="text-sm lg:text-base text-text leading-relaxed">
-                    3Musafir is built for people who value safety, clarity, and shared respect. Especially for women, travel should feel empowering — not stressful. We are here to make that possible, one journey and one community at a time.
+                    3Musafir is built for people who value safety, clarity, and shared respect. The Pakistan chapter proves the framework under pressure; the global chapter applies it wherever travelers need more than a packaged itinerary.
                   </p>
                 </div>
               </details>
 
               <section id="local-expertise" className="rounded-2xl bg-white border border-gray-200 p-6 md:p-8 shadow-sm">
                 <h2 className="text-2xl font-semibold text-heading">
-                  Why Pakistan travel needs local on-ground expertise
+                  Local expertise in every market
                 </h2>
                 <p className="mt-3 text-sm lg:text-base text-text leading-relaxed">
-                  Pakistan travel often depends on seasonality, mountain roads, regional norms, flight
-                  availability, hotel quality, and supplier reliability. 3Musafir applies local context
-                  to group tours, women-first travel experiences, customized trips, and inbound DMC
-                  programs so travelers and agency partners have clearer expectations before they go.
+                  Pakistan shows why local expertise cannot be optional: seasonality, mountain roads,
+                  regional norms, flight availability, hotel quality, and supplier reliability can all
+                  change the trip. The same principle applies globally. Every destination needs people
+                  who understand the ground reality and a framework that turns that knowledge into
+                  consistent standards travelers can trust.
                 </p>
               </section>
 
@@ -416,7 +444,7 @@ export default function WhyPage() {
                   <div className="max-w-2xl space-y-2">
                     <h2 className="text-xl font-semibold text-heading">Next steps</h2>
                     <p className="text-sm text-text leading-relaxed">
-                      When you’re ready, explore journeys built with the same community-led approach.
+                      When you&apos;re ready, explore journeys built with the same Pakistan-tested, globally relevant approach.
                     </p>
                   </div>
                   <Link

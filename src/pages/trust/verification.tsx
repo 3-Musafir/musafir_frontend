@@ -14,7 +14,7 @@ export default function VerificationPage() {
       <SeoHead
         title={title}
         description={description}
-        canonicalPath="/trust/verification"
+        canonicalPath="/hc/safetyframework/verification"
         ogImage="/star_shield.png"
         faqItems={verificationFaq}
       />
@@ -86,7 +86,7 @@ export default function VerificationPage() {
           <section className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-text shadow-sm">
             <p>
               Next: learn how we vet partners on{" "}
-              <Link href="/trust/vendor-onboarding" className="text-brand-primary hover:underline">
+              <Link href="/hc/safetyframework/vendor-onboarding" className="text-brand-primary hover:underline">
                 Vendor onboarding
               </Link>
               {", or "}

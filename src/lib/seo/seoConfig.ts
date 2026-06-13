@@ -11,10 +11,9 @@ export const INDEXABLE_PATHS = [
   "/explore",
   "/reviews",
   "/why",
+  "/hc",
   "/about-3musafir",
   "/founderportfolio",
-  "/trust",
-  "/musafircommunityequityframework",
   "/pakistan-dmc",
   "/login",
 ] as const;

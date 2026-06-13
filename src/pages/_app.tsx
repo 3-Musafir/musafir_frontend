@@ -131,7 +131,25 @@ const SEO_MAP: Record<
       "Learn why 3Musafir was created to make group travel safer, more comfortable, and more human for women in Pakistan.",
     ogImage: "/blue-shield.png",
   },
-  "/trust-and-verification": {
+  "/hc": {
+    title: "3Musafir Help Center — FAQs, Safety & Support",
+    description:
+      "Find 3Musafir FAQs, safety framework pages, traveler verification details, community guidelines, and support contact options.",
+    ogImage: "/communityimage7.jpg",
+  },
+  "/hc/faq": {
+    title: "3Musafir FAQs — Trips, Safety, Payments & Support",
+    description:
+      "Find answers about 3Musafir group trips, women-first travel, safety, payments, private journeys, Pakistan DMC services, and support.",
+    ogImage: "/communityimage7.jpg",
+  },
+  "/hc/safetyframework": {
+    title: "Trust & Safety Hub — 3Musafir",
+    description:
+      "Explore how 3Musafir verifies travelers, vets vendors, and prepares communities for safer group travel in Pakistan.",
+    ogImage: "/star_shield.png",
+  },
+  "/hc/safetyframework/trust-and-verification": {
     title: "Trust & Verification — 3Musafir safety framework",
     description:
       "See how 3Musafir builds trust and verification systems to make group travel safer for women in Pakistan.",
@@ -143,7 +161,7 @@ const SEO_MAP: Record<
       "Understand 3Musafir’s trip cancellation, refund, wallet credit, and transfer policies.",
     ogImage: "/payments-cover.png",
   },
-  "/musafircommunityequityframework": {
+  "/hc/safetyframework/community-framework": {
     title: "Community Equity Framework — 3Musafir",
     description:
       "Read the Musafir Community Equity Framework covering inclusivity, safety, and accountability.",
@@ -220,17 +238,16 @@ const publicStandaloneRoutes = ["/fixed-departure", "/flagship/details"];
 const publicShellRoutes = [
   "/about-3musafir",
   "/explore",
+  "/hc",
   "/intlterms",
-  "/musafircommunityequityframework",
   "/refundpolicyby3musafir",
   "/reviews",
   "/terms&conditonsby3musafir",
-  "/trust-and-verification",
   "/vendor-onboarding",
   "/why",
 ];
 
-const publicShellPrefixes = ["/alert", "/founderportfolio", "/launch", "/trust"];
+const publicShellPrefixes = ["/alert", "/founderportfolio", "/hc", "/launch"];
 
 const usesStandaloneLayout = (pathname: string) =>
   pathname === "/" ||

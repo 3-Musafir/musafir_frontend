@@ -9,7 +9,7 @@ export default function TrustAndVerificationPage() {
   const title = "Trust & Verification — 3Musafir safety framework";
   const description =
     "See how 3Musafir builds trust and verification systems to make group travel safer for women in Pakistan.";
-  const canonicalUrl = `${siteUrl}/trust-and-verification`;
+  const canonicalUrl = `${siteUrl}/hc/safetyframework/trust-and-verification`;
   const structuredData = [
     {
       "@context": "https://schema.org",

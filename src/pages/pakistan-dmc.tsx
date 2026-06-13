@@ -38,7 +38,7 @@ const dmcJsonLd = pruneJsonLd({
       "@id": orgId,
       name: "3Musafir",
       alternateName: "Teen Musafir",
-      legalName: "3Musafir Travels (Pvt) Ltd.",
+      legalName: "3Musafir (Pvt) Ltd.",
       url: configuredSiteUrl || undefined,
       logo: absoluteUrl("/3mlogosmall.svg"),
     },

@@ -16,7 +16,7 @@ const homepageEntityLinks = [
   { href: "/explore", label: "Explore group tours" },
   { href: "/reviews", label: "Read reviews" },
   { href: "/why", label: "Why 3Musafir" },
-  { href: "/musafircommunityequityframework", label: "Community framework" },
+  { href: "/hc", label: "Help center" },
   { href: "/pakistan-dmc", label: "Pakistan DMC services" },
 ];
 

@@ -37,21 +37,21 @@ const frameworkCards = [
     summary: "Female-first onboarding, community referrals, and verification checks.",
     details:
       "We use referrals, interviews, and background checks (for solo males) to create trusted groups and reduce uncertainty before travel.",
-    href: "/trust/verification",
+    href: "/hc",
   },
   {
     title: "Where you stay and go",
     summary: "Vetted lodging and vendors with safety standards.",
     details:
       "Partners are onboarded through interviews, ID checks, and ongoing reviews to ensure consistent experiences for every group.",
-    href: "/trust/vendor-onboarding",
+    href: "/hc",
   },
   {
     title: "Regional context",
     summary: "Pre-travel education on norms and expectations.",
     details:
       "Musafirs receive guidance on cultural context, safety etiquette, and local expectations to support respectful travel.",
-    href: "/trust/travel-education",
+    href: "/hc",
   },
 ];
 
@@ -87,7 +87,7 @@ export default function About3MusafirPage() {
                     Explore trips
                   </Link>
                   <Link
-                    href="/trust"
+                    href="/hc"
                     className="inline-flex items-center rounded-full border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/80"
                   >
                     Trust & Safety
@@ -218,7 +218,7 @@ export default function About3MusafirPage() {
           <section className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-text shadow-sm">
             <p>
               Want the full trust framework? Visit the
-              <Link href="/trust" className="ml-1 text-brand-primary hover:underline">
+              <Link href="/hc" className="ml-1 text-brand-primary hover:underline">
                 Trust & Safety Hub
               </Link>
               or review traveler stories on the

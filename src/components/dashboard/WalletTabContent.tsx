@@ -40,7 +40,7 @@ export default function WalletTabContent() {
             Refund policy
           </Link>
           <span className="text-border">|</span>
-          <Link href="/musafircommunityequityframework" className="text-sm text-brand-primary hover:underline">
+          <Link href="/hc" className="text-sm text-brand-primary hover:underline">
             Community equity framework
           </Link>
           <span className="text-border">|</span>
@@ -73,7 +73,7 @@ export default function WalletTabContent() {
               Refund policy
             </Link>
             <Link
-              href="/musafircommunityequityframework"
+              href="/hc"
               className="text-sm text-brand-primary hover:underline"
               onClick={() => setShowPolicies(false)}
             >

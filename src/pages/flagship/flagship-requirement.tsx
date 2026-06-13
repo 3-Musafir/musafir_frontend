@@ -1122,7 +1122,7 @@ function FlagshipRequirements() {
                       Refund Policy
                     </Link>
                     , 
-                    <Link href="/musafircommunityequityframework" className="text-brand-primary hover:underline">
+                    <Link href="/hc" className="text-brand-primary hover:underline">
                       Community Equity Framework
                     </Link>
                     , and 

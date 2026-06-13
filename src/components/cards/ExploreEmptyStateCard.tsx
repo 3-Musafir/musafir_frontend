@@ -20,13 +20,6 @@ export default function ExploreEmptyStateCard() {
           >
             Go to Explore
           </Link>
-          <Link
-            href="/pakistan-dmc"
-            aria-label="Go to Pakistan DMC services"
-            className="inline-flex items-center justify-center rounded-full border border-brand-primary px-5 py-2.5 text-sm font-semibold text-heading transition hover:border-brand-primary-hover hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-          >
-            Pakistan DMC
-          </Link>
         </div>
       </div>
     </div>

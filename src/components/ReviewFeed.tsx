@@ -62,6 +62,17 @@ const matchesSearch = (review: Review, query: string) => {
   return haystack.includes(query.toLowerCase());
 };
 
+const REVIEW_TYPE_LABELS: Record<string, string> = {
+  [EXPLORING_ID]: "First-timers",
+  safety_women: "Safety",
+  solo_awkward: "Solo travel",
+  value_money: "Value",
+  inclusive: "Inclusion",
+  no_one: "Coming alone",
+  comfort_self: "Comfort",
+  community_active: "After the trip",
+};
+
 type ReviewOrbRotatorProps = {
   reviews: Review[];
   contextLine: string;
@@ -267,7 +278,11 @@ function ReviewOrbRotator({
   );
 }
 
-export default function ReviewFeed() {
+type ReviewFeedProps = {
+  variant?: "full" | "widget";
+};
+
+export default function ReviewFeed({ variant = "full" }: ReviewFeedProps) {
   const { status } = useSession();
   const { getReviewPreferences, updateReviewPreferences } = useUserHandler();
   const [selectedQuestionId, setSelectedQuestionId] = useState(EXPLORING_ID);
@@ -311,6 +326,16 @@ export default function ReviewFeed() {
       : "People who asked this said:";
 
   const showClosestExperiencesLabel = rankResult.usedAdjacentTags;
+  const reviewTypeOptions = useMemo(
+    () => [
+      { id: EXPLORING_ID, label: REVIEW_TYPE_LABELS[EXPLORING_ID] },
+      ...QUESTIONS.map((question) => ({
+        id: question.id,
+        label: REVIEW_TYPE_LABELS[question.id] ?? question.text,
+      })),
+    ],
+    []
+  );
 
   useEffect(() => {
     preferenceApiRef.current = { getReviewPreferences, updateReviewPreferences };
@@ -400,6 +425,47 @@ export default function ReviewFeed() {
     }
   };
 
+  if (variant === "widget") {
+    return (
+      <section className="max-w-full">
+        <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-primary">
+              Review type
+            </p>
+            <p className="mt-2 text-sm text-text">
+              Choose what you want to hear from past Musafirs.
+            </p>
+          </div>
+          <div className="flex max-w-full snap-x gap-2 overflow-x-auto pb-1">
+            {reviewTypeOptions.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setSelectedQuestionId(option.id)}
+                className={`shrink-0 snap-start rounded-full border px-4 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
+                  selectedQuestionId === option.id
+                    ? "border-brand-primary bg-brand-primary-light text-heading"
+                    : "border-canvas-line bg-white text-text hover:border-brand-primary/60"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <ReviewOrbRotator
+          reviews={rankedReviews}
+          contextLine={contextLine}
+          showClosestExperiencesLabel={showClosestExperiencesLabel}
+          reviewPreferences={reviewPreferences}
+          onShowMoreLikeThis={handleShowMoreLikeThis}
+        />
+        <div className="sr-only">{EXPLORING_LABEL}</div>
+      </section>
+    );
+  }
+
   return (
     <section className="pb-16">
       <div className="max-w-full">
@@ -450,7 +516,7 @@ export default function ReviewFeed() {
                 ))}
               </div>
               <div className="mt-4 flex flex-wrap gap-3">
-                <Link href="/trust" className="font-semibold text-brand-primary hover:underline">
+                <Link href="/hc" className="font-semibold text-brand-primary hover:underline">
                   Trust hub
                 </Link>
                 <Link href="/why" className="font-semibold text-brand-primary hover:underline">

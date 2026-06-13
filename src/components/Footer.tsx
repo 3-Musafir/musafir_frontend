@@ -28,8 +28,7 @@ const routeLabels: Record<string, string> = {
   "/why": "Why 3Musafir",
   "/about-3musafir": "About 3Musafir",
   "/founderportfolio": "Founder portfolio",
-  "/trust": "Trust & Safety",
-  "/musafircommunityequityframework": "Community framework",
+  "/hc": "Help center",
   "/pakistan-dmc": "Pakistan DMC",
   "/login": "Login",
 };
@@ -55,7 +54,7 @@ const footerSections: FooterSection[] = [
   {
     id: "company",
     title: "Company",
-    links: ["/about-3musafir", "/founderportfolio", "/trust", "/musafircommunityequityframework"]
+    links: ["/about-3musafir", "/founderportfolio", "/hc"]
       .filter((href) => INDEXABLE_PATHS.includes(href as (typeof INDEXABLE_PATHS)[number]))
       .map(makeRouteLink),
   },
@@ -73,8 +72,6 @@ const footerSections: FooterSection[] = [
       { label: "Refund policy", href: "/refundpolicyby3musafir" },
       { label: "Terms", href: "/terms&conditonsby3musafir" },
       { label: "International terms", href: "/intlterms" },
-      { label: "Verification", href: "/trust/verification" },
-      { label: "Vendor onboarding", href: "/trust/vendor-onboarding" },
     ],
   },
 ];
@@ -149,8 +146,8 @@ export default function Footer() {
               />
             </Link>
             <p className="max-w-md text-sm leading-7 text-text">
-              Community-led Pakistan group tours, women-first travel experiences, and inbound DMC
-              services built around trust, comfort, and responsible movement.
+              Safe community-led group travel for people who want comfort, belonging, and clear
+              support, from Pakistan routes to selected global journeys and inbound DMC services.
             </p>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
@@ -244,29 +241,29 @@ export default function Footer() {
               ))}
             </div>
 
-            <div className="space-y-3 md:hidden">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-5 md:hidden">
               {footerSections.map((section) => {
                 const isOpen = Boolean(openSections[section.id]);
                 const panelId = `footer-${section.id}`;
                 return (
-                  <div key={section.id} className="rounded-md border border-canvas-line bg-white shadow-sm">
+                  <div key={section.id} className="rounded-lg border border-canvas-line bg-white text-center shadow-sm">
                     <button
                       type="button"
-                      className="flex w-full items-center justify-between px-4 py-4 text-left text-sm font-bold text-heading focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                      className="flex min-h-[108px] w-full flex-col items-center justify-center gap-2 px-3 py-5 text-sm font-bold text-heading focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                       aria-expanded={isOpen}
                       aria-controls={panelId}
                       onClick={() => toggleSection(section.id)}
                     >
                       {section.title}
-                      <span className="text-brand-primary">{isOpen ? "-" : "+"}</span>
+                      <span className="text-lg leading-none text-brand-primary">{isOpen ? "-" : "+"}</span>
                     </button>
-                    <div id={panelId} className={`px-4 pb-4 ${isOpen ? "" : "hidden"}`}>
-                      <ul className="space-y-2">
+                    <div id={panelId} className={`px-3 pb-4 ${isOpen ? "" : "hidden"}`}>
+                      <ul className="space-y-2 border-t border-canvas-line pt-3">
                         {section.links.map((link) => (
                           <li key={link.href}>
                             <Link
                               href={link.href}
-                              className="text-sm font-medium text-text transition hover:text-brand-primary"
+                              className="text-xs font-medium leading-5 text-text transition hover:text-brand-primary"
                             >
                               {link.label}
                             </Link>
@@ -303,10 +300,10 @@ export default function Footer() {
 
         <div className="mt-10 flex flex-col gap-5 border-t border-canvas-line pt-6 md:flex-row md:items-center md:justify-between">
           <p className="text-xs font-medium text-text">
-            &copy; {currentYear} 3Musafir Travels (Pvt) Ltd. All rights reserved.
+            &copy; {currentYear} 3Musafir (Pvt) Ltd. All rights reserved.
           </p>
           <p className="text-xs font-medium text-text">
-            Verified travel, DMC operations, and community safety systems from Pakistan.
+            Verified community travel, selected global journeys, and Pakistan DMC operations.
           </p>
         </div>
       </div>

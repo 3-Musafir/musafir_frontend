@@ -17,6 +17,7 @@ import {
 
 import Footer from '@/components/Footer';
 import PublicHeader from '@/components/header/PublicHeader';
+import ReviewFeed from '@/components/ReviewFeed';
 import {
   INDEXABLE_PATHS,
   contactPoints,
@@ -52,9 +53,9 @@ type FaqItem = {
   answer: string;
 };
 
-const title = '3Musafir | Verified Pakistan Group Tours & Women-First Travel';
+const title = '3Musafir | Safe Community Group Travel in Pakistan & Beyond';
 const description =
-  'Explore Pakistan with verified community-led group tours, women-first travel experiences, trusted captains, custom journeys, international trips, and inbound DMC services by 3Musafir.';
+  'Join verified community-led group trips designed around safety, comfort, and belonging, from Pakistan\'s mountain routes to selected international journeys, private groups, and inbound DMC services.';
 const trustpilotUrl = 'https://www.trustpilot.com/review/3musafir.com';
 
 const discoveryGroups: DiscoveryGroup[] = [
@@ -63,14 +64,14 @@ const discoveryGroups: DiscoveryGroup[] = [
     icon: Map,
     options: [
       {
-        label: 'Hunza and Skardu',
-        description: 'Northern Pakistan fixed departures',
+        label: 'Pakistan mountains',
+        description: 'Hunza, Skardu, and northern routes',
         href: '/fixed-departure',
       },
       {
-        label: 'Fairy Meadows',
-        description: 'Mountain routes with group support',
-        href: '/explore',
+        label: 'Global community trips',
+        description: 'International journeys with group support',
+        href: '/fixed-departure',
       },
       {
         label: 'Agency programs',
@@ -90,12 +91,12 @@ const discoveryGroups: DiscoveryGroup[] = [
       },
       {
         label: 'Seasonal routes',
-        description: 'Match timing to road and weather realities',
+        description: 'Match timing to weather and local realities',
         href: '/explore',
       },
       {
         label: 'Custom dates',
-        description: 'Plan private or agency-led movement',
+        description: 'Plan private, global, or agency-led movement',
         href: '/pakistan-dmc',
       },
     ],
@@ -106,7 +107,7 @@ const discoveryGroups: DiscoveryGroup[] = [
     options: [
       {
         label: 'Women-first comfort',
-        description: 'Clear expectations and support',
+        description: 'Safety-aware expectations and support',
         href: '/why',
       },
       {
@@ -127,17 +128,17 @@ const answerCards = [
   {
     question: 'What is 3Musafir?',
     answer:
-      '3Musafir is a Pakistan-based travel company for verified community-led group tours, women-first travel, private journeys, international group trips, and inbound Pakistan DMC services.',
+      '3Musafir is a Pakistan-born travel community for verified group trips, women-first travel, private journeys, selected international trips, and inbound Pakistan DMC services.',
   },
   {
     question: 'Who is 3Musafir for?',
     answer:
-      '3Musafir is for travelers who want structured group travel with safer onboarding, clear expectations, captain support, and a community that continues after the trip.',
+      '3Musafir is for travelers who want safer, structured community travel with clear onboarding, captain support, and people they can feel comfortable traveling with.',
   },
   {
     question: 'Where does 3Musafir operate?',
     answer:
-      'Core routes include Hunza, Skardu, Fairy Meadows, Chitral, Kashmir, Murree, forest retreats, and selected international community trips, with DMC support across Pakistan.',
+      'The community started on Pakistan routes like Hunza, Skardu, Fairy Meadows, Chitral, Kashmir, Murree, and forest retreats, and now includes selected international community trips. DMC support remains Pakistan-focused.',
   },
   {
     question: 'Why choose 3Musafir over a regular tour group?',
@@ -163,7 +164,7 @@ const whySteps = [
   },
   {
     image: '/communityimage14.jpg',
-    alt: '3Musafir route logistics in Pakistan',
+    alt: '3Musafir route logistics and trip coordination',
     before: 'Captains handle the plan so',
     highlight: 'you stay present',
     after: '',
@@ -181,7 +182,7 @@ const travelStyles: LandingCard[] = [
   {
     title: 'First 3Musafir trip',
     label: 'Start here',
-    description: 'For travelers who want structure, warm group dynamics, and clear expectations.',
+    description: 'For first-time community travelers who want structure, warmth, and clear expectations.',
     href: '/reviews',
     image: '/communityimage7.jpg',
     icon: Star,
@@ -189,7 +190,7 @@ const travelStyles: LandingCard[] = [
   {
     title: 'Women-first departures',
     label: 'Comfort-led',
-    description: 'For women who want safe, thoughtful, and socially comfortable group travel.',
+    description: 'For women who want safety-aware, thoughtful, and socially comfortable group travel.',
     href: '/why',
     image: '/communityimage10.jpg',
     icon: HeartHandshake,
@@ -213,7 +214,7 @@ const travelStyles: LandingCard[] = [
   {
     title: 'International community trips',
     label: 'Beyond Pakistan',
-    description: 'Community-led trips beyond Pakistan with the same group-fit and support mindset.',
+    description: 'Community-led trips beyond Pakistan with the same group-fit, comfort, and support mindset.',
     href: '/fixed-departure',
     image: '/communityimage1.jpg',
     icon: Globe2,
@@ -221,7 +222,7 @@ const travelStyles: LandingCard[] = [
   {
     title: 'Private and custom journeys',
     label: 'Custom',
-    description: 'For families, teams, agency partners, and groups needing a tailored Pakistan program.',
+    description: 'For families, teams, agency partners, and groups needing a tailored journey or Pakistan program.',
     href: '/pakistan-dmc',
     image: '/communityimage14.jpg',
     icon: Building2,
@@ -260,7 +261,7 @@ const confidenceItems = [
   },
   {
     title: 'Route and weather planning',
-    description: 'Northern Pakistan routes are handled with local context, road timing, and contingency awareness.',
+    description: 'Routes are handled with local context, weather timing, road realities, and contingency awareness.',
   },
   {
     title: 'Payment and refund clarity',
@@ -276,7 +277,7 @@ const faqItems: FaqItem[] = [
   {
     question: 'What is 3Musafir?',
     answer:
-      '3Musafir is a Pakistan-based travel company offering verified community-led group tours, women-first travel experiences, customized journeys, international group trips, and inbound Pakistan DMC services.',
+      '3Musafir is a Pakistan-born travel community offering verified group tours, women-first travel experiences, customized journeys, selected international trips, and inbound Pakistan DMC services.',
   },
   {
     question: 'What destinations does 3Musafir cover?',
@@ -284,9 +285,9 @@ const faqItems: FaqItem[] = [
       'Popular 3Musafir routes include Hunza, Skardu, Fairy Meadows, Chitral, Kashmir, Murree, forest retreats, and selected international community trips.',
   },
   {
-    question: 'Is 3Musafir safe for women to travel with in Pakistan?',
+    question: 'Is 3Musafir safe for women and solo travelers?',
     answer:
-      '3Musafir is built around women-first comfort, verified groups, clear expectations, and active support before, during, and after trips.',
+      '3Musafir is built around women-first comfort, verified groups, clear expectations, and active support before, during, and after trips in Pakistan and beyond.',
   },
   {
     question: 'Can I join if I do not know anyone?',
@@ -323,9 +324,7 @@ const footerLinkGroups = [
   {
     title: 'Trust',
     links: [
-      { href: '/trust', label: 'Trust & Safety', description: 'Verification, vendors, and safety systems.' },
-      { href: '/trust/verification', label: 'Verification', description: 'How traveler verification works.' },
-      { href: '/musafircommunityequityframework', label: 'Community framework', description: 'Respect, inclusion, and accountability.' },
+      { href: '/hc', label: 'Help center', description: 'FAQs, safety systems, support, and community standards.' },
       { href: '/about-3musafir', label: 'About 3Musafir', description: 'Company story and operating values.' },
     ],
   },
@@ -342,7 +341,6 @@ const footerLinkGroups = [
     links: [
       { href: '/refundpolicyby3musafir', label: 'Refund policy', description: 'Refund and cancellation rules.' },
       { href: '/terms&conditonsby3musafir', label: 'Terms', description: 'Trip and platform terms.' },
-      { href: '/trust/vendor-onboarding', label: 'Vendor onboarding', description: 'Partner standards.' },
     ],
   },
 ];
@@ -367,7 +365,7 @@ export default function PublicHomePage() {
         '@id': `${siteUrl}#homepage`,
         url: siteUrl,
         name: title,
-        headline: 'Explore Pakistan with a verified community, not a random tour group.',
+        headline: 'Travel with a verified community in Pakistan and beyond.',
         description,
         inLanguage: 'en-PK',
         isAccessibleForFree: true,
@@ -381,9 +379,11 @@ export default function PublicHomePage() {
           '@id': `${siteUrl}#website`,
         },
         about: [
-          { '@type': 'Thing', name: 'Pakistan group tours' },
+          { '@type': 'Thing', name: 'Safe group travel' },
+          { '@type': 'Thing', name: 'Global community travel' },
           { '@type': 'Thing', name: 'Women-first travel experiences' },
           { '@type': 'Thing', name: 'Verified community-led travel' },
+          { '@type': 'Thing', name: 'Pakistan group tours' },
           { '@type': 'Thing', name: 'Hunza and Skardu trips' },
           { '@type': 'Thing', name: 'Pakistan DMC services' },
         ],
@@ -414,6 +414,7 @@ export default function PublicHomePage() {
         description,
         areaServed: [
           'Pakistan',
+          'Selected international destinations',
           'Hunza',
           'Skardu',
           'Fairy Meadows',
@@ -422,8 +423,10 @@ export default function PublicHomePage() {
           'Gilgit-Baltistan',
         ],
         knowsAbout: [
+          'Safe group travel',
+          'Global community travel',
           'Pakistan group tours',
-          'Women-first travel in Pakistan',
+          'Women-first group travel',
           'Community-led travel',
           'Inbound Pakistan DMC services',
           'Hunza group tours',
@@ -438,9 +441,9 @@ export default function PublicHomePage() {
             '@type': 'Offer',
             itemOffered: {
               '@type': 'Service',
-              name: 'Verified Pakistan group tours',
+              name: 'Verified community group trips',
               serviceType: 'Community-led fixed departures',
-              areaServed: 'Pakistan',
+              areaServed: 'Pakistan and selected international destinations',
             },
           },
           {
@@ -449,7 +452,7 @@ export default function PublicHomePage() {
               '@type': 'Service',
               name: 'Women-first travel experiences',
               serviceType: 'Women-first group travel',
-              areaServed: 'Pakistan',
+              areaServed: 'Pakistan and selected international destinations',
             },
           },
           {
@@ -518,14 +521,14 @@ export default function PublicHomePage() {
         <meta name="description" content={description} />
         <meta
           name="keywords"
-          content="3Musafir, Pakistan group tours, women-first travel Pakistan, Hunza group tour, Skardu group tour, Fairy Meadows trip, verified group travel, community-led travel, Pakistan DMC, inbound Pakistan tour operator"
+          content="3Musafir, safe group travel, global community travel, women-first group travel, Pakistan group tours, Hunza group tour, Skardu group tour, Fairy Meadows trip, verified group travel, community-led travel, Pakistan DMC, inbound Pakistan tour operator"
         />
         <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
         <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
         <meta name="language" content="en-PK" />
         <meta name="geo.region" content="PK" />
         <meta name="geo.placename" content="Pakistan" />
-        <meta name="classification" content="Travel agency, Pakistan group tours, Pakistan DMC" />
+        <meta name="classification" content="Travel agency, safe community travel, Pakistan group tours, Pakistan DMC" />
         <link rel="canonical" href={siteUrl} key="canonical" />
         <link rel="alternate" hrefLang="en-PK" href={siteUrl} />
         <link rel="alternate" hrefLang="x-default" href={siteUrl} />
@@ -551,7 +554,7 @@ export default function PublicHomePage() {
       </Head>
 
       <main className="min-h-screen overflow-x-hidden bg-canvas-base text-heading">
-        <section className="relative flex min-h-[92vh] flex-col overflow-hidden bg-heading text-white">
+        <section className="relative flex min-h-[640px] flex-col overflow-hidden bg-heading text-white md:min-h-[92vh]">
           <Image
             src="/communityimage7.jpg"
             alt="3Musafir travelers together on a mountain road in northern Pakistan"
@@ -564,34 +567,34 @@ export default function PublicHomePage() {
           <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-heading/90 to-heading/0" />
 
           <PublicHeader variant="transparentOverlay" hideAuthCta>
-            <nav className="hidden items-center gap-5 text-sm font-medium text-white/82 md:flex">
-              <Link href="/fixed-departure" className="hover:text-white">
+            <nav className="hidden items-center gap-5 text-sm font-medium text-heading/76 md:flex">
+              <Link href="/fixed-departure" className="transition hover:text-heading">
                 Trips
               </Link>
-              <Link href="/reviews" className="hover:text-white">
+              <Link href="/reviews" className="transition hover:text-heading">
                 Reviews
               </Link>
-              <Link href="/why" className="hover:text-white">
+              <Link href="/why" className="transition hover:text-heading">
                 Women-first
               </Link>
-              <Link href="/pakistan-dmc" className="hover:text-white">
+              <Link href="/pakistan-dmc" className="transition hover:text-heading">
                 DMC
               </Link>
             </nav>
           </PublicHeader>
 
-          <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-end px-4 pb-8 pt-20 sm:px-6 lg:px-8 xl:px-10 lg:pb-12">
+          <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-end px-4 pb-8 pt-28 sm:px-6 lg:px-8 lg:pb-12 lg:pt-32 xl:px-10">
             <div className="max-w-4xl">
-              <p className="mb-5 inline-flex items-center gap-2 rounded-md border border-white/24 bg-white/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/88 backdrop-blur">
+              <p className="mb-5 inline-flex max-w-full flex-wrap items-center gap-2 rounded-md border border-white/24 bg-white/10 px-3 py-2 text-left text-[0.68rem] font-semibold uppercase leading-5 tracking-[0.14em] text-white/88 backdrop-blur sm:text-xs sm:tracking-[0.18em]">
                 <HeartHandshake className="h-4 w-4" />
-                Community-led travel from Pakistan
+                Safe community travel from Pakistan to the world
               </p>
               <h1 className="max-w-4xl text-4xl font-semibold leading-[1.02] text-white sm:text-5xl lg:text-7xl">
-                Explore Pakistan with a verified community, not a random tour group.
+                Travel with a verified community, in Pakistan and beyond.
               </h1>
               <p className="mt-6 max-w-2xl text-base leading-8 text-white/84 sm:text-lg">
-                Women-first, safety-aware group trips to Hunza, Skardu, Fairy Meadows, and
-                beyond. We handle the planning, group comfort, and on-ground coordination.
+                Women-first, safety-aware group trips designed around comfort, belonging, and real
+                support, from Northern Pakistan routes to selected global journeys.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
@@ -602,10 +605,10 @@ export default function PublicHomePage() {
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  href="/pakistan-dmc"
+                  href="/why"
                   className="inline-flex items-center justify-center gap-2 rounded-md border border-white/28 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/16"
                 >
-                  Pakistan DMC services
+                  Why it works
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -656,7 +659,7 @@ export default function PublicHomePage() {
             <div className="hidden h-px bg-canvas-line sm:block" />
             <div>
               <h2 className="text-2xl font-black leading-tight sm:text-3xl">
-                Over 20,000 Musafirs have already experienced with us
+                Over 20,000 Musafirs have already traveled with us
               </h2>
               <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-base font-bold text-heading">
                 <span>Excellent</span>
@@ -679,22 +682,24 @@ export default function PublicHomePage() {
 
         <section className="border-b border-canvas-line bg-white px-5 py-12 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-7xl">
-            <div className="max-w-3xl">
+            <div className="mx-auto max-w-3xl text-center md:mx-0 md:text-left">
               <p className="text-sm font-bold uppercase tracking-[0.18em] text-brand-primary">
                 Quick answers
               </p>
-              <h2 className="mt-4 text-3xl font-semibold leading-tight text-heading sm:text-4xl">
-                What travelers and agencies should know about 3Musafir.
+              <h2 className="mt-4 text-3xl font-semibold leading-tight text-heading sm:text-4xl md:text-4xl">
+                What travelers and agency partners should know about 3Musafir.
               </h2>
             </div>
-            <div className="mt-8 grid gap-4 md:grid-cols-2">
+            <div className="mt-8 grid grid-cols-2 gap-3 md:gap-4">
               {answerCards.map((item) => (
                 <article
                   key={item.question}
-                  className="rounded-md border border-canvas-line bg-canvas-base p-5 shadow-sm"
+                  className="rounded-lg border border-canvas-line bg-canvas-base p-4 text-center shadow-sm sm:p-5 md:text-left"
                 >
-                  <h3 className="text-base font-bold text-heading">{item.question}</h3>
-                  <p className="mt-3 text-sm leading-7 text-text">{item.answer}</p>
+                  <h3 className="text-sm font-bold leading-snug text-heading sm:text-base">{item.question}</h3>
+                  <p className="mt-3 line-clamp-5 text-xs leading-5 text-text sm:line-clamp-none sm:text-sm sm:leading-7">
+                    {item.answer}
+                  </p>
                 </article>
               ))}
             </div>
@@ -750,7 +755,7 @@ export default function PublicHomePage() {
 
         <section className="bg-canvas-base px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <div className="mx-auto max-w-7xl">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="flex flex-col items-center gap-4 text-center lg:flex-row lg:items-end lg:justify-between lg:text-left">
               <div>
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-brand-primary">
                   Find your travel style
@@ -761,21 +766,21 @@ export default function PublicHomePage() {
               </div>
               <Link
                 href="/fixed-departure"
-                className="inline-flex items-center justify-center gap-2 rounded-md border border-heading px-5 py-3 text-sm font-bold text-heading transition hover:bg-heading hover:text-white"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-heading px-5 py-3 text-sm font-bold text-heading transition hover:bg-heading hover:text-white sm:w-auto"
               >
                 See departures
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
             </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-16 grid grid-cols-2 gap-x-4 gap-y-10 md:mt-10 md:gap-4 lg:grid-cols-3">
               {travelStyles.map(({ title: cardTitle, label, description: cardDescription, href, image, icon: Icon }) => (
                 <Link
                   key={cardTitle}
                   href={href}
-                  className="group grid min-h-[220px] overflow-hidden rounded-md border border-canvas-line bg-white shadow-sm transition hover:border-brand-primary/50 md:grid-cols-[0.9fr_1.1fr]"
+                  className="group relative flex min-h-[230px] flex-col items-center justify-between rounded-lg border border-canvas-line bg-white px-3 pb-4 pt-14 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-brand-primary/50 sm:min-h-[250px] sm:px-4 md:grid md:min-h-[220px] md:grid-cols-[0.9fr_1.1fr] md:items-stretch md:overflow-hidden md:p-0 md:text-left"
                 >
-                  <div className="relative min-h-[180px] md:min-h-full">
+                  <div className="absolute left-1/2 top-0 h-20 w-20 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-2 border-canvas-line bg-canvas-base md:relative md:left-auto md:top-auto md:h-auto md:min-h-full md:w-auto md:translate-x-0 md:translate-y-0 md:rounded-none md:border-0">
                     <Image
                       src={image}
                       alt={`${cardTitle} travel style`}
@@ -784,18 +789,18 @@ export default function PublicHomePage() {
                       className="object-cover transition duration-500 group-hover:scale-105"
                     />
                   </div>
-                  <div className="flex flex-col justify-between p-5">
+                  <div className="flex flex-1 flex-col justify-between md:p-5">
                     <div>
-                      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-primary">
+                      <div className="flex items-center justify-center gap-1.5 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-brand-primary sm:text-xs md:justify-start">
                         <Icon className="h-4 w-4" />
                         {label}
                       </div>
-                      <h3 className="mt-4 text-lg font-bold leading-6 text-heading">
+                      <h3 className="mt-3 text-sm font-bold leading-snug text-heading sm:text-base md:mt-4 md:text-lg md:leading-6">
                         {cardTitle}
                       </h3>
-                      <p className="mt-3 text-sm leading-6 text-text">{cardDescription}</p>
+                      <p className="mt-2 line-clamp-3 text-xs leading-5 text-text sm:text-sm md:mt-3 md:leading-6">{cardDescription}</p>
                     </div>
-                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-heading">
+                    <span className="mt-4 inline-flex items-center justify-center gap-2 text-xs font-bold text-heading sm:text-sm md:justify-start">
                       Explore
                       <ArrowUpRight className="h-4 w-4" />
                     </span>
@@ -806,74 +811,47 @@ export default function PublicHomePage() {
           </div>
         </section>
 
-        <section className="bg-heading px-5 py-14 text-white sm:px-8 lg:px-12 lg:py-20">
+        <section className="bg-white px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <div className="mx-auto max-w-7xl">
-            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+            <div className="mb-8 grid gap-5 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
               <div>
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-brand-primary">
                   Real Musafir stories
                 </p>
-                <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight sm:text-4xl">
-                  People come for a route. They remember the group.
+                <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight text-heading sm:text-4xl">
+                  Hear from people who already took the leap.
                 </h2>
               </div>
-              <p className="text-base leading-8 text-white/76">
-                Traveler feedback repeatedly mentions safety, solo-travel nerves, captain support,
-                friendship, and the feeling of belonging. These are the signals first-time Musafirs
-                look for before joining.
+              <p className="text-base leading-8 text-text">
+                Switch the review type to see what Musafirs said about safety, arriving solo,
+                comfort, value, and the community after the trip.
               </p>
             </div>
-
-            <div className="mt-10 grid gap-4 lg:grid-cols-3">
-              {testimonials.map((testimonial) => (
-                <figure
-                  key={`${testimonial.name}-${testimonial.context}`}
-                  className="rounded-md border border-white/14 bg-white/8 p-5"
-                >
-                  <Star className="h-5 w-5 fill-brand-primary text-brand-primary" />
-                  <blockquote className="mt-5 text-base font-medium leading-8 text-white">
-                    "{testimonial.quote}"
-                  </blockquote>
-                  <figcaption className="mt-6 border-t border-white/14 pt-4">
-                    <p className="font-bold text-white">{testimonial.name}</p>
-                    <p className="mt-1 text-sm text-white/68">{testimonial.context}</p>
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/reviews"
-                className="inline-flex items-center justify-center gap-2 rounded-md bg-brand-primary px-5 py-3 text-sm font-bold text-heading transition hover:bg-brand-primary-hover"
-              >
-                Read Musafir stories
-                <ArrowUpRight className="h-4 w-4" />
-              </Link>
-            </div>
+            <ReviewFeed variant="widget" />
           </div>
         </section>
 
         <section className="px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
           <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-            <div>
+            <div className="text-center lg:text-left">
               <p className="text-sm font-bold uppercase tracking-[0.18em] text-brand-primary">
                 Book with confidence
               </p>
               <h2 className="mt-4 text-3xl font-semibold leading-tight text-heading sm:text-4xl">
-                Clarity before the road gets unpredictable.
+                Clarity before the journey gets unpredictable.
               </h2>
               <p className="mt-5 text-base leading-8 text-text">
-                Pakistan travel depends on people, weather, route conditions, and supplier quality.
-                3Musafir makes those details clearer before someone commits.
+                Safe community travel depends on people, local conditions, partners, and support.
+                For Pakistan routes and selected international journeys, 3Musafir makes those
+                details clearer before anyone commits.
               </p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {confidenceItems.map((item) => (
-                <div key={item.title} className="rounded-md border border-canvas-line bg-white p-5 shadow-sm">
-                  <CheckCircle2 className="h-5 w-5 text-brand-primary" />
-                  <h3 className="mt-4 text-base font-bold text-heading">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-text">{item.description}</p>
+                <div key={item.title} className="rounded-lg border border-canvas-line bg-white p-4 text-center shadow-sm sm:p-5 sm:text-left">
+                  <CheckCircle2 className="mx-auto h-5 w-5 text-brand-primary sm:mx-0" />
+                  <h3 className="mt-3 text-sm font-bold leading-snug text-heading sm:mt-4 sm:text-base">{item.title}</h3>
+                  <p className="mt-2 line-clamp-4 text-xs leading-5 text-text sm:line-clamp-none sm:text-sm sm:leading-6">{item.description}</p>
                 </div>
               ))}
             </div>

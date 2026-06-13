@@ -16,21 +16,21 @@ const pillarCards = [
     summary: "Female-first onboarding, community referrals, and structured checks.",
     details:
       "We prioritize women-led groups, require referrals, and interview solo male applicants before approval so groups feel safe before they meet.",
-    href: "/trust/verification",
+    href: "/hc/safetyframework/verification",
   },
   {
     title: "Vendor onboarding",
     summary: "Vetted lodging and vendors with safety standards.",
     details:
       "Partners are onboarded through interviews, staff ID checks, and ongoing reviews to keep trips consistent and safe.",
-    href: "/trust/vendor-onboarding",
+    href: "/hc/safetyframework/vendor-onboarding",
   },
   {
     title: "Travel education",
     summary: "Pre-trip guidance on local norms, context, and safety expectations.",
     details:
       "We prepare travelers with cultural context, regional etiquette, and shared expectations to reduce uncertainty on the ground.",
-    href: "/trust/travel-education",
+    href: "/hc/safetyframework/travel-education",
   },
 ];
 
@@ -40,7 +40,7 @@ export default function TrustHubPage() {
       <SeoHead
         title={title}
         description={description}
-        canonicalPath="/trust"
+        canonicalPath="/hc/safetyframework"
         ogImage="/star_shield.png"
         faqItems={trustFaq}
       />

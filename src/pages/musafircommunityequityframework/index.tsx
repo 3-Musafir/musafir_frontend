@@ -11,7 +11,7 @@ import { PublicPageContainer } from "@/components/layout/PublicLayout";
 
 export default function MusafirCommunityEquityFramework() {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://3musafir.com").replace(/\/$/, "");
-  const canonicalUrl = `${siteUrl}/musafircommunityequityframework`;
+  const canonicalUrl = `${siteUrl}/hc/safetyframework/community-framework`;
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
