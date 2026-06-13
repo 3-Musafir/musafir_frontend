@@ -1,4 +1,13 @@
 User-agent: *
 Allow: /
+
+# API routes are not public indexable documents.
 Disallow: /api
+Disallow: /api/
+
+# Keep non-indexable page routes crawlable so crawlers can see page-level noindex tags.
+Allow: /sitemap.xml
+Allow: /llms.txt
+Allow: /llm.txt
+
 Sitemap: https://3musafir.com/sitemap.xml

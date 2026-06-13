@@ -1,40 +1,29 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import type { PropsWithChildren } from "react";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
 type ReviewSphereCanvasProps = {
   rotation: number;
 };
 
-type Hub = {
-  current: THREE.Vector3;
-  target: THREE.Vector3;
-  pull: number;
-  swirl: number;
-  size: number;
+type PointCloudNetwork = {
+  pointPositions: Float32Array;
+  pointColors: Float32Array;
+  linePositions: Float32Array;
+  lineColors: Float32Array;
+  facePositions: Float32Array;
+  faceColors: Float32Array;
 };
-
-type StreamSeed = {
-  start: THREE.Vector3;
-  direction: 1 | -1;
-  speed: number;
-  wave: number;
-};
-
-type FlowLineProps = PropsWithChildren<{
-  renderOrder: number;
-}>;
 
 const SPHERE_RADIUS = 1.12;
-const STREAM_COUNT = 184;
-const STREAM_POINTS = 64;
-const HUB_COUNT = 6;
 const PARTICLE_COUNT = 260;
+const POINT_CLOUD_COLUMNS = 58;
+const POINT_CLOUD_ROWS = 32;
 
-const brandOrange = new THREE.Color("#ff9000");
-const brightOrange = new THREE.Color("#ffbd59");
-const paleOrange = new THREE.Color("#ffe2b2");
+const brandOrange = new THREE.Color("#fd6705");
+const paleOrange = new THREE.Color("#ffd6a3");
+const warmWhite = new THREE.Color("#fff8ec");
+const deepOrange = new THREE.Color("#b83b05");
 
 const seeded = (value: number) => {
   const result = Math.sin(value * 12.9898) * 43758.5453;
@@ -53,37 +42,6 @@ const pointOnSphere = (u: number, v: number) => {
   ).normalize();
 };
 
-const hubTarget = (index: number, seed: number) =>
-  pointOnSphere(
-    seeded(seed * 2.41 + index * 5.17),
-    THREE.MathUtils.lerp(0.16, 0.84, seeded(seed * 6.73 + index * 8.91)),
-  );
-
-const createStreamSeeds = () =>
-  Array.from({ length: STREAM_COUNT }, (_, index): StreamSeed => {
-    const family = index % 8;
-    const familyIndex = Math.floor(index / 8);
-    const familyOffset = family / 8;
-    const jitter = (seeded(index + 0.37) - 0.5) * 0.11;
-    const u =
-      (familyOffset +
-        familyIndex / Math.ceil(STREAM_COUNT / 8) * 0.84 +
-        seeded(index * 2.7) * 0.045) %
-      1;
-    const v = THREE.MathUtils.clamp(
-      0.07 + seeded(family * 13.9) * 0.18 + familyIndex / Math.ceil(STREAM_COUNT / 8) * 0.76 + jitter,
-      0.04,
-      0.96,
-    );
-
-    return {
-      start: pointOnSphere(u, v),
-      direction: seeded(index * 1.91) > 0.5 ? 1 : -1,
-      speed: 0.011 + seeded(index * 3.43) * 0.008,
-      wave: seeded(index * 9.21) * Math.PI * 2,
-    };
-  });
-
 const createParticlePositions = () => {
   const positions = new Float32Array(PARTICLE_COUNT * 3);
 
@@ -99,92 +57,124 @@ const createParticlePositions = () => {
   return positions;
 };
 
-const projectToTangent = (normal: THREE.Vector3, vector: THREE.Vector3) =>
-  vector.sub(normal.clone().multiplyScalar(vector.dot(normal)));
+const createPointCloudNetwork = (): PointCloudNetwork => {
+  const points: THREE.Vector3[] = [];
+  const colors: THREE.Color[] = [];
+  const linePositions: number[] = [];
+  const lineColors: number[] = [];
+  const facePositions: number[] = [];
+  const faceColors: number[] = [];
 
-function FlowLine({ children, renderOrder }: FlowLineProps) {
-  const line = useMemo(() => {
-    const object = new THREE.Line();
-    object.renderOrder = renderOrder;
-    return object;
-  }, []);
+  for (let row = 0; row < POINT_CLOUD_ROWS; row += 1) {
+    const v = row / (POINT_CLOUD_ROWS - 1);
+    const phi = v * Math.PI;
+    const ringWeight = Math.sin(phi);
 
-  useEffect(() => {
-    line.renderOrder = renderOrder;
-  }, [line, renderOrder]);
+    for (let column = 0; column < POINT_CLOUD_COLUMNS; column += 1) {
+      const index = row * POINT_CLOUD_COLUMNS + column;
+      const u = column / POINT_CLOUD_COLUMNS;
+      const surfaceNoise =
+        (seeded(index * 1.73) - 0.5) * 0.038 +
+        Math.sin(u * Math.PI * 8 + phi * 2.2) * 0.014;
+      const point = pointOnSphere(u, v)
+        .multiplyScalar(SPHERE_RADIUS + 0.034 + surfaceNoise + ringWeight * 0.015);
+      const color = deepOrange.clone().lerp(brandOrange, 0.48 + ringWeight * 0.34);
 
-  return <primitive object={line}>{children}</primitive>;
-}
+      if (seeded(index * 3.17) > 0.84) {
+        color.lerp(warmWhite, 0.26);
+      } else if (seeded(index * 2.91) > 0.72) {
+        color.lerp(paleOrange, 0.24);
+      }
 
-const flowDirection = (
-  point: THREE.Vector3,
-  hubs: Hub[],
-  time: number,
-  streamIndex: number,
-  out: THREE.Vector3,
-) => {
-  out.set(
-    -point.z * 0.38 + Math.sin(time * 0.18 + point.y * 4 + streamIndex * 0.07) * 0.08,
-    Math.sin(point.x * 5.5 + time * 0.12 + streamIndex * 0.03) * 0.11,
-    point.x * 0.38 + Math.cos(time * 0.16 + point.y * 3.4) * 0.08,
-  );
-  projectToTangent(point, out);
+      points.push(point);
+      colors.push(color);
+    }
+  }
 
-  hubs.forEach((hub, hubIndex) => {
-    const dot = THREE.MathUtils.clamp(point.dot(hub.current), -1, 1);
-    const angle = Math.acos(dot);
-    const influence = Math.exp(-(angle * angle) / 0.23);
-    if (influence < 0.004) return;
+  const pushLine = (from: number, to: number, opacityBias = 1) => {
+    const start = points[from];
+    const end = points[to];
+    const startColor = colors[from].clone().lerp(paleOrange, 0.08 * opacityBias);
+    const endColor = colors[to].clone().lerp(warmWhite, 0.04 * opacityBias);
 
-    const towardHub = hub.current.clone().sub(point.clone().multiplyScalar(dot)).normalize();
-    const aroundHub = new THREE.Vector3().crossVectors(point, hub.current).normalize();
-    const streamBias = Math.sin(streamIndex * 0.37 + hubIndex * 1.8) > 0 ? 1 : -1;
+    linePositions.push(start.x, start.y, start.z, end.x, end.y, end.z);
+    lineColors.push(
+      startColor.r,
+      startColor.g,
+      startColor.b,
+      endColor.r,
+      endColor.g,
+      endColor.b,
+    );
+  };
 
-    out.add(towardHub.multiplyScalar(influence * hub.pull));
-    out.add(aroundHub.multiplyScalar(influence * hub.swirl * streamBias));
+  const pushFace = (a: number, b: number, c: number) => {
+    const tone = seeded((a + b + c) * 0.71);
+    const color = deepOrange.clone().lerp(brandOrange, 0.28 + tone * 0.42).lerp(paleOrange, tone * 0.16);
+
+    [a, b, c].forEach((index) => {
+      const point = points[index];
+      facePositions.push(point.x, point.y, point.z);
+      faceColors.push(color.r, color.g, color.b);
+    });
+  };
+
+  for (let row = 0; row < POINT_CLOUD_ROWS; row += 1) {
+    for (let column = 0; column < POINT_CLOUD_COLUMNS; column += 1) {
+      const index = row * POINT_CLOUD_COLUMNS + column;
+      const nextColumn = row * POINT_CLOUD_COLUMNS + ((column + 1) % POINT_CLOUD_COLUMNS);
+
+      if (seeded(index * 5.11) > 0.16) {
+        pushLine(index, nextColumn, 0.7);
+      }
+
+      if (row < POINT_CLOUD_ROWS - 1) {
+        const down = (row + 1) * POINT_CLOUD_COLUMNS + column;
+        const diagonal = (row + 1) * POINT_CLOUD_COLUMNS + ((column + 1) % POINT_CLOUD_COLUMNS);
+
+        if (seeded(index * 6.17) > 0.24) {
+          pushLine(index, down, 0.8);
+        }
+
+        if (seeded(index * 4.13) > 0.6) {
+          pushLine(index, diagonal, 1);
+        }
+
+        if (seeded(index * 8.37) > 0.74) {
+          pushFace(index, down, diagonal);
+        }
+      }
+    }
+  }
+
+  const pointPositions = new Float32Array(points.length * 3);
+  const pointColors = new Float32Array(colors.length * 3);
+
+  points.forEach((point, index) => {
+    const color = colors[index];
+    pointPositions[index * 3] = point.x;
+    pointPositions[index * 3 + 1] = point.y;
+    pointPositions[index * 3 + 2] = point.z;
+    pointColors[index * 3] = color.r;
+    pointColors[index * 3 + 1] = color.g;
+    pointColors[index * 3 + 2] = color.b;
   });
 
-  return out.normalize();
+  return {
+    pointPositions,
+    pointColors,
+    linePositions: new Float32Array(linePositions),
+    lineColors: new Float32Array(lineColors),
+    facePositions: new Float32Array(facePositions),
+    faceColors: new Float32Array(faceColors),
+  };
 };
 
 function ReviewSplineSphere({ rotation }: ReviewSphereCanvasProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const lineGeometries = useRef<Array<THREE.BufferGeometry | null>>([]);
-  const hubMeshes = useRef<Array<THREE.Mesh | null>>([]);
-  const lastRotation = useRef(rotation);
-  const hubSeed = useRef(1);
-  const tangentRef = useRef(new THREE.Vector3());
 
-  const streamSeeds = useMemo(createStreamSeeds, []);
   const particlePositions = useMemo(createParticlePositions, []);
-  const streamPositions = useMemo(
-    () =>
-      Array.from(
-        { length: STREAM_COUNT },
-        () => new Float32Array(STREAM_POINTS * 3),
-      ),
-    [],
-  );
-
-  const hubs = useRef<Hub[]>(
-    Array.from({ length: HUB_COUNT }, (_, index) => ({
-      current: hubTarget(index, 1),
-      target: hubTarget(index, 1),
-      pull: 0.42 + seeded(index + 2.7) * 0.44,
-      swirl: 0.18 + seeded(index + 8.4) * 0.34,
-      size: 0.024 + seeded(index + 5.6) * 0.018,
-    })),
-  );
-
-  useEffect(() => {
-    if (lastRotation.current === rotation) return;
-
-    lastRotation.current = rotation;
-    hubSeed.current += 1;
-    hubs.current.forEach((hub, index) => {
-      hub.target.copy(hubTarget(index, hubSeed.current));
-    });
-  }, [rotation]);
+  const pointCloudNetwork = useMemo(createPointCloudNetwork, []);
 
   useFrame(({ clock }) => {
     const elapsed = clock.getElapsedTime();
@@ -196,102 +186,54 @@ function ReviewSplineSphere({ rotation }: ReviewSphereCanvasProps) {
       group.rotation.x = THREE.MathUtils.lerp(group.rotation.x, -0.14, 0.035);
       group.rotation.z = Math.sin(elapsed * 0.045) * 0.014;
     }
-
-    hubs.current.forEach((hub, index) => {
-      hub.current.lerp(hub.target, 0.008).normalize();
-
-      const mesh = hubMeshes.current[index];
-      if (!mesh) return;
-      mesh.position.copy(hub.current).multiplyScalar(SPHERE_RADIUS + 0.046);
-      mesh.scale.setScalar(hub.size * (1.08 + Math.sin(elapsed * 0.72 + index) * 0.12));
-    });
-
-    lineGeometries.current.forEach((geometry, streamIndex) => {
-      if (!geometry) return;
-
-      const seed = streamSeeds[streamIndex];
-      const positions = streamPositions[streamIndex];
-      const point = seed.start
-        .clone()
-        .add(
-          tangentRef.current
-            .set(
-              Math.sin(elapsed * 0.035 + seed.wave) * 0.006,
-              Math.cos(elapsed * 0.028 + seed.wave) * 0.006,
-              Math.sin(elapsed * 0.032 + seed.wave * 0.7) * 0.006,
-            ),
-        )
-        .normalize();
-
-      for (let index = 0; index < STREAM_POINTS; index += 1) {
-        const radius =
-          SPHERE_RADIUS +
-          0.02 +
-          Math.sin(index * 0.5 + streamIndex * 0.17 + elapsed * 0.1) * 0.002;
-        positions[index * 3] = point.x * radius;
-        positions[index * 3 + 1] = point.y * radius;
-        positions[index * 3 + 2] = point.z * radius;
-
-        const direction = flowDirection(
-          point,
-          hubs.current,
-          elapsed,
-          streamIndex,
-          tangentRef.current,
-        ).multiplyScalar(seed.speed * seed.direction);
-
-        point.add(direction).normalize();
-      }
-
-      const positionAttribute = geometry.getAttribute("position");
-      positionAttribute.needsUpdate = true;
-    });
   });
 
   return (
     <group ref={groupRef}>
       <mesh renderOrder={0}>
-        <sphereGeometry args={[SPHERE_RADIUS, 128, 128]} />
-        <meshPhysicalMaterial
-          color="#050200"
-          roughness={0.62}
-          metalness={0.04}
-          clearcoat={0.46}
-          clearcoatRoughness={0.2}
-          emissive="#3d1600"
-          emissiveIntensity={0.12}
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[pointCloudNetwork.facePositions, 3]} />
+          <bufferAttribute attach="attributes-color" args={[pointCloudNetwork.faceColors, 3]} />
+        </bufferGeometry>
+        <meshBasicMaterial
+          vertexColors
+          transparent
+          opacity={0.18}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          side={THREE.DoubleSide}
         />
       </mesh>
 
-      <mesh renderOrder={1} scale={1.012}>
-        <sphereGeometry args={[SPHERE_RADIUS, 96, 96]} />
-        <meshBasicMaterial
-          color="#ff9000"
+      <lineSegments renderOrder={1}>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[pointCloudNetwork.linePositions, 3]} />
+          <bufferAttribute attach="attributes-color" args={[pointCloudNetwork.lineColors, 3]} />
+        </bufferGeometry>
+        <lineBasicMaterial
+          vertexColors
           transparent
-          opacity={0.055}
+          opacity={0.44}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
         />
-      </mesh>
+      </lineSegments>
 
-      {streamPositions.map((positions, index) => (
-        <FlowLine key={`review-flow-${index}`} renderOrder={2}>
-          <bufferGeometry
-            ref={(node) => {
-              lineGeometries.current[index] = node;
-            }}
-          >
-            <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-          </bufferGeometry>
-          <lineBasicMaterial
-            color={index % 9 === 0 ? paleOrange : index % 4 === 0 ? brightOrange : brandOrange}
-            transparent
-            opacity={index % 9 === 0 ? 0.72 : index % 4 === 0 ? 0.48 : 0.28}
-            blending={THREE.AdditiveBlending}
-            depthWrite={false}
-          />
-        </FlowLine>
-      ))}
+      <points renderOrder={2}>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[pointCloudNetwork.pointPositions, 3]} />
+          <bufferAttribute attach="attributes-color" args={[pointCloudNetwork.pointColors, 3]} />
+        </bufferGeometry>
+        <pointsMaterial
+          vertexColors
+          size={0.019}
+          sizeAttenuation
+          transparent
+          opacity={0.95}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </points>
 
       <points renderOrder={3}>
         <bufferGeometry>
@@ -302,31 +244,12 @@ function ReviewSplineSphere({ rotation }: ReviewSphereCanvasProps) {
           size={0.014}
           sizeAttenuation
           transparent
-          opacity={0.88}
+          opacity={0.72}
+          blending={THREE.AdditiveBlending}
           depthWrite={false}
         />
       </points>
 
-      {hubs.current.map((hub, index) => (
-        <mesh
-          key={`review-flow-hub-${index}`}
-          ref={(node) => {
-            hubMeshes.current[index] = node;
-          }}
-          position={hub.current.clone().multiplyScalar(SPHERE_RADIUS + 0.046)}
-          scale={hub.size}
-          renderOrder={4}
-        >
-          <sphereGeometry args={[1, 20, 20]} />
-          <meshBasicMaterial
-            color={index % 2 === 0 ? "#fff6df" : "#ffb13d"}
-            transparent
-            opacity={0.96}
-            blending={THREE.AdditiveBlending}
-            depthWrite={false}
-          />
-        </mesh>
-      ))}
     </group>
   );
 }

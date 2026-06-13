@@ -9,9 +9,9 @@ import {
   contactPoints,
   defaultDescription,
   defaultTitle,
-  isIndexablePath,
   logoUrl,
   normalizeSeoPath,
+  robotsContentForPath,
   sameAs,
   siteName,
   siteUrl as baseSiteUrl,
@@ -277,7 +277,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const description = matchedSeo?.description || DEFAULT_DESCRIPTION;
   const ogImagePath = matchedSeo?.ogImage || DEFAULT_OG_IMAGE;
   const ogImage = `${siteUrl}${ogImagePath.startsWith("/") ? "" : "/"}${ogImagePath}`;
-  const shouldNoindex = !isIndexablePath(normalizedPath);
+  const robotsContent = robotsContentForPath(normalizedPath);
 
   return (
     <>
@@ -286,7 +286,7 @@ export default function App({ Component, pageProps }: AppProps) {
         defaultTitle={defaultTitle}
         description={description}
         canonical={canonicalUrl}
-        norobots={shouldNoindex}
+        norobots
         openGraph={{
           type: "website",
           url: canonicalUrl,
@@ -307,6 +307,7 @@ export default function App({ Component, pageProps }: AppProps) {
         additionalLinkTags={[
           { rel: "alternate", hrefLang: "en-PK", href: canonicalUrl },
           { rel: "alternate", hrefLang: "x-default", href: canonicalUrl },
+          { rel: "alternate", type: "text/plain", href: `${siteUrl}/llms.txt` },
         ]}
       />
       <OrganizationJsonLd
@@ -324,13 +325,15 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta
           key="robots"
           name="robots"
-          content={shouldNoindex ? "noindex,follow" : "index,follow"}
+          content={robotsContent}
         />
         <meta
           key="googlebot"
           name="googlebot"
-          content={shouldNoindex ? "noindex,follow" : "index,follow"}
+          content={robotsContent}
         />
+        <meta key="geo-region" name="geo.region" content="PK" />
+        <meta key="geo-placename" name="geo.placename" content="Pakistan" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -22,6 +22,7 @@ import {
   INDEXABLE_PATHS,
   contactPoints,
   logoUrl,
+  robotsContentForPath,
   sameAs,
   siteName,
   siteUrl,
@@ -523,11 +524,11 @@ export default function PublicHomePage() {
           name="keywords"
           content="3Musafir, safe group travel, global community travel, women-first group travel, Pakistan group tours, Hunza group tour, Skardu group tour, Fairy Meadows trip, verified group travel, community-led travel, Pakistan DMC, inbound Pakistan tour operator"
         />
-        <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
-        <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+        <meta key="robots" name="robots" content={robotsContentForPath("/")} />
+        <meta key="googlebot" name="googlebot" content={robotsContentForPath("/")} />
         <meta name="language" content="en-PK" />
-        <meta name="geo.region" content="PK" />
-        <meta name="geo.placename" content="Pakistan" />
+        <meta key="geo-region" name="geo.region" content="PK" />
+        <meta key="geo-placename" name="geo.placename" content="Pakistan" />
         <meta name="classification" content="Travel agency, safe community travel, Pakistan group tours, Pakistan DMC" />
         <link rel="canonical" href={siteUrl} key="canonical" />
         <link rel="alternate" hrefLang="en-PK" href={siteUrl} />

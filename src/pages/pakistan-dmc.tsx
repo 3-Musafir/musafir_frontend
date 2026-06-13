@@ -2,11 +2,11 @@ import Head from "next/head";
 
 import DmcLandingPage from "@/components/dmc/DmcLandingPage";
 import { dmcDescription, dmcFaqs, dmcTitle } from "@/components/dmc/dmcContent";
-import { isIndexablePath, siteUrl } from "@/lib/seo/seoConfig";
+import { robotsContentForPath, siteUrl } from "@/lib/seo/seoConfig";
 
 const configuredSiteUrl = siteUrl;
 const absoluteUrl = (path: string) =>
-  configuredSiteUrl ? `${configuredSiteUrl}${path === "/" ? "" : path}` : undefined;
+  `${configuredSiteUrl}${path === "/" ? "" : path}`;
 
 const pruneJsonLd = (value: unknown): unknown => {
   if (Array.isArray(value)) {
@@ -26,9 +26,9 @@ const pruneJsonLd = (value: unknown): unknown => {
 
 const pagePath = "/pakistan-dmc";
 const pageUrl = absoluteUrl(pagePath);
-const orgId = configuredSiteUrl ? `${configuredSiteUrl}#organization` : undefined;
-const dmcId = pageUrl ? `${pageUrl}#travelagency` : undefined;
-const provider = orgId ? { "@id": orgId } : { name: "3Musafir" };
+const orgId = `${configuredSiteUrl}#organization`;
+const dmcId = `${pageUrl}#travelagency`;
+const provider = { "@id": orgId };
 
 const dmcJsonLd = pruneJsonLd({
   "@context": "https://schema.org",
@@ -79,7 +79,7 @@ const dmcJsonLd = pruneJsonLd({
     },
     {
       "@type": "Service",
-      "@id": pageUrl ? `${pageUrl}#destination-management-services` : undefined,
+      "@id": `${pageUrl}#destination-management-services`,
       name: "Pakistan destination management services",
       serviceType: "Destination management services",
       provider,
@@ -96,7 +96,7 @@ const dmcJsonLd = pruneJsonLd({
     },
     {
       "@type": "Service",
-      "@id": pageUrl ? `${pageUrl}#mice-corporate-retreats` : undefined,
+      "@id": `${pageUrl}#mice-corporate-retreats`,
       name: "Pakistan MICE and corporate retreat services",
       serviceType: "MICE and corporate retreat services",
       provider,
@@ -113,7 +113,7 @@ const dmcJsonLd = pruneJsonLd({
     },
     {
       "@type": "Service",
-      "@id": pageUrl ? `${pageUrl}#hotel-transport-logistics` : undefined,
+      "@id": `${pageUrl}#hotel-transport-logistics`,
       name: "Pakistan hotel contracting and transport logistics",
       serviceType: "Hotel contracting and transport logistics",
       provider,
@@ -130,7 +130,7 @@ const dmcJsonLd = pruneJsonLd({
     },
     {
       "@type": "FAQPage",
-      "@id": pageUrl ? `${pageUrl}#faq` : undefined,
+      "@id": `${pageUrl}#faq`,
       mainEntity: dmcFaqs.map((faq) => ({
         "@type": "Question",
         name: faq.question,
@@ -142,7 +142,7 @@ const dmcJsonLd = pruneJsonLd({
     },
     {
       "@type": "BreadcrumbList",
-      "@id": pageUrl ? `${pageUrl}#breadcrumb` : undefined,
+      "@id": `${pageUrl}#breadcrumb`,
       itemListElement: [
         {
           "@type": "ListItem",
@@ -168,9 +168,12 @@ export default function DmcPage() {
         <title>{dmcTitle}</title>
         <meta name="description" content={dmcDescription} />
         <meta
+          key="robots"
           name="robots"
-          content={isIndexablePath(pagePath) ? "index, follow" : "noindex, follow"}
+          content={robotsContentForPath(pagePath)}
         />
+        <meta key="googlebot" name="googlebot" content={robotsContentForPath(pagePath)} />
+        <link rel="canonical" href={pageUrl} key="canonical" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

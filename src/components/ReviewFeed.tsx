@@ -169,7 +169,7 @@ function ReviewOrbRotator({
             onPointerCancel={handlePointerUp}
             className="relative grid h-64 w-64 cursor-grab touch-pan-y place-items-center rounded-full outline-none active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-brand-primary sm:h-72 sm:w-72"
           >
-            <div className="review-orb-frame absolute inset-7 z-0 rounded-full">
+            <div className="review-orb-frame absolute inset-6 z-0 rounded-full sm:inset-5">
               <ReviewSphereCanvas rotation={rotation} />
             </div>
 
@@ -185,13 +185,13 @@ function ReviewOrbRotator({
                     setActiveIndex(index);
                     setRotation(angle);
                   }}
-                  className={`absolute left-1/2 top-1/2 z-10 -ml-1.5 -mt-1.5 h-3.5 w-3.5 rounded-full border transition ${
+                  className={`absolute left-1/2 top-1/2 z-10 -ml-2 -mt-2 h-4 w-4 rounded-full border transition ${
                     isActive
-                      ? "border-heading bg-heading shadow-[0_0_0_6px_rgba(255,144,0,0.18)]"
-                      : "border-white bg-brand-primary"
+                      ? "border-[#ffd6a3] bg-heading shadow-[0_0_0_10px_rgba(253,103,5,0.2)]"
+                      : "border-white bg-[#fd6705] shadow-[0_0_14px_rgba(253,103,5,0.36)]"
                   }`}
                   style={{
-                    transform: `rotate(${angle}deg) translate(118px) rotate(-${angle}deg)`,
+                    transform: `rotate(${angle}deg) translate(122px) rotate(-${angle}deg)`,
                   }}
                 />
               );

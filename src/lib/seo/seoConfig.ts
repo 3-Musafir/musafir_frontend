@@ -30,6 +30,14 @@ export const normalizeSeoPath = (path: string) => {
 export const isIndexablePath = (path: string) =>
   indexablePathSet.has(normalizeSeoPath(path));
 
+export const indexableRobotsContent =
+  "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1";
+
+export const noindexRobotsContent = "noindex,follow";
+
+export const robotsContentForPath = (path: string) =>
+  isIndexablePath(path) ? indexableRobotsContent : noindexRobotsContent;
+
 export const socialProfiles = [
   {
     label: "Instagram",
